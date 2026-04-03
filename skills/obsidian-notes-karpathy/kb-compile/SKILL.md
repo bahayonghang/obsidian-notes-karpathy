@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: Incrementally compile an LLM knowledge base wiki from raw sources. Scans raw/ for new or updated materials, generates summaries and concept articles in wiki/, maintains wikilinks and index files, and runs health checks (lint). Use this skill when the user says "compile wiki", "编译wiki", "更新知识库", "compile kb", "sync wiki", "lint知识库", "检查知识库", "health check", or wants to process newly clipped articles into the wiki. This is the core skill — run it after adding new sources to raw/.
+description: Incrementally compile an LLM knowledge base wiki from raw sources. Scans raw/ for new or updated materials, generates summaries and concept articles in wiki/, maintains wikilinks and index files, and runs health checks with a quantitative health score. Use this skill when the user says "compile wiki", "编译wiki", "更新知识库", "compile kb", "sync wiki", "lint知识库", "检查知识库", "health check", "process new articles", "编译", "同步wiki", "build wiki", "refresh wiki", "消化文章", or wants to process newly clipped articles into the wiki. Also trigger when the user has added new files to raw/ and asks what to do next, or mentions their wiki feels outdated or disconnected — this skill handles both compilation and diagnostic health checks. This is the core skill — run it after adding new sources to raw/.
 ---
 
 # KB Compile — Incremental Wiki Compilation
@@ -261,23 +261,42 @@ Run automatically after compilation, or independently when the user requests a h
 - Find concept articles with no incoming links
 - Find summaries that link to no concepts
 
-#### 3.5 Generate health report
+#### 3.5 Staleness detection
 
-Write results to `outputs/reports/health-check-{date}.md`:
+Check for content that may need refreshing:
+
+- Flag raw sources where `compiled_at` is older than 30 days — they may benefit from recompilation to pick up new concept connections established since then
+- Identify concept articles in `wiki/concepts/` not updated in 60+ days
+- List these in the health report as "potentially stale" entries
+
+#### 3.6 Generate health report
+
+Write results to `outputs/health/health-check-{date}.md`:
 
 ```markdown
 ---
 title: "Health Check Report"
 date: {datetime}
+tags:
+  - health-check
 ---
 
 # Knowledge Base Health Check
 
+## Health Score: {score}/100
+
+| Dimension | Score | Details |
+|-----------|-------|---------|
+| Completeness | {0-100} | {N} raw sources missing summaries, {N} concepts with sparse content |
+| Consistency | {0-100} | {N} definition conflicts found |
+| Connectivity | {0-100} | {N} orphan nodes, {N} missing cross-links |
+| Freshness | {0-100} | {N} concepts not updated in 60+ days, {N} stale compilations |
+
 ## Summary
-- Overall health: {Good / Needs Attention / Poor}
 - Sources: {total} ({new} new, {orphaned} orphaned)
 - Concepts: {total} ({sparse} sparse, {well-connected} well-connected)
 - Broken links: {count}
+- Stale entries: {count}
 
 ## Issues Found
 
@@ -297,6 +316,36 @@ date: {datetime}
 1. {Action item with specific file references}
 2. {Action item}
 ```
+
+The health score is calculated as a weighted average: Completeness (30%), Consistency (30%), Connectivity (20%), Freshness (20%). This gives a quick at-a-glance indicator of knowledge base quality over time.
+
+## First-Time vs Incremental Compilation
+
+The compiler behaves differently depending on whether the wiki already exists:
+
+### First-time compilation (empty `wiki/`)
+
+When `wiki/concepts/` and `wiki/summaries/` are empty or don't exist yet:
+
+1. **Read all sources first** before writing anything — scan every file in `raw/` to build a mental map of all concepts, themes, and connections across the entire corpus
+2. **Plan the concept taxonomy** — decide which concepts deserve their own articles and how they relate to each other, aiming for a coherent structure rather than a bag of isolated articles
+3. **Compile in chronological order** (oldest source first) — this mirrors the natural evolution of ideas
+4. **After all sources are compiled**, do a final cross-linking pass: re-read all concept articles and add connections that only became visible after the full corpus was processed
+5. **Generate all index files** from scratch
+
+This "read everything, then write" approach produces a much more coherent initial wiki than processing sources one at a time. Expect the first compilation to take significantly longer.
+
+### Incremental compilation (existing `wiki/`)
+
+When the wiki already has content:
+
+1. **Read `wiki/indices/INDEX.md` first** to understand the existing concept structure
+2. **Only process new/updated sources** (Phase 1 discovery handles this)
+3. **Merge into existing concepts** — update, don't recreate
+4. **Look for new connections** between the new source and existing concepts
+5. **Update indices incrementally** — append rather than rebuild from scratch (unless the index is corrupted)
+
+Incremental runs are much faster and should be the normal operating mode after initial setup.
 
 ## Execution Notes
 

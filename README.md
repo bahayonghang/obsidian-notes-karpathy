@@ -15,8 +15,8 @@ raw/ (human adds sources) → kb-compile → wiki/ (LLM maintains) → kb-query 
 | Skill | Command | Description |
 |-------|---------|-------------|
 | **kb-init** | `kb init` | One-time setup: creates directory structure + AGENTS.md schema |
-| **kb-compile** | `compile wiki` | Core engine: preprocess raw/ → compile summaries & concepts → lint |
-| **kb-query** | `query kb` | Search + Q&A + multi-format output (reports, Marp slides, Mermaid, Canvas) |
+| **kb-compile** | `compile wiki` | Core engine: preprocess raw/ → compile summaries & concepts → health check with quantitative score |
+| **kb-query** | `query kb` | Search + Q&A (auto-archived) + multi-format output (reports, Marp slides, Mermaid, Canvas) |
 
 ## Workflow
 
@@ -31,8 +31,8 @@ graph LR
 1. **Initialize** — Run `kb-init` once to set up the vault structure
 2. **Collect** — Use Obsidian Web Clipper or manually add sources to `raw/`
 3. **Compile** — Run `kb-compile` to incrementally build the wiki (summaries, concepts, indices, wikilinks)
-4. **Query** — Run `kb-query` to ask questions, search, or generate reports/slides/diagrams
-5. **Lint** — `kb-compile` includes health checks: consistency, orphans, missing links, new article suggestions
+4. **Query** — Run `kb-query` to ask questions, search, or generate reports/slides/diagrams. Q&A results are auto-archived to `outputs/qa/` and feed insights back into the wiki
+5. **Lint** — `kb-compile` includes health checks with a quantitative score: completeness, consistency, connectivity, freshness
 
 ## Directory Structure
 
@@ -41,12 +41,17 @@ After `kb-init`, your vault looks like:
 ```
 vault/
 ├── raw/                  # Source materials (articles, papers, tweets...)
+│   ├── articles/         # Web Clipper clipped articles
+│   ├── podcasts/         # Podcast transcripts
+│   ├── papers/           # Academic papers
 │   └── assets/           # Images from sources
 ├── wiki/                 # LLM-compiled wiki (don't edit manually)
 │   ├── concepts/         # One article per key concept
 │   ├── summaries/        # One summary per raw source
 │   └── indices/          # INDEX.md, CONCEPTS.md, SOURCES.md, RECENT.md
 ├── outputs/              # Generated content
+│   ├── qa/               # Q&A research archives (auto-saved)
+│   ├── health/           # Health check reports
 │   ├── reports/          # Markdown research reports
 │   ├── slides/           # Marp slide decks
 │   └── charts/           # Mermaid diagrams, Canvas files
@@ -63,10 +68,38 @@ These skills build on [kepano/obsidian-skills](https://github.com/kepano/obsidia
 
 ## Installation
 
-Copy the `skills/obsidian-notes-karpathy/` directory into your `.claude/skills/` folder:
+### Option 1: Install via npx (Recommended)
+
+Install globally for use across all your projects:
+
+```bash
+npx skills add bahayonghang/obsidian-notes-karpathy -g
+```
+
+### Option 2: Install to Project Directory
+
+Install to your Obsidian project directory for project-specific use:
+
+```bash
+# Navigate to your Obsidian vault root
+cd /path/to/your/obsidian-vault
+
+# Install the skills locally
+npx skills add bahayonghang/obsidian-notes-karpathy
+```
+
+### Option 3: Manual Installation
+
+Copy the skills directory to your Claude Code skills folder:
 
 ```bash
 cp -r skills/obsidian-notes-karpathy/* ~/.claude/skills/
+```
+
+On Windows (PowerShell):
+
+```powershell
+Copy-Item -Recurse skills/obsidian-notes-karpathy\* $env:USERPROFILE\.claude\skills\
 ```
 
 ## References

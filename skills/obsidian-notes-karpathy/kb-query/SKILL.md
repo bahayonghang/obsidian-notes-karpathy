@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate outputs from an LLM knowledge base wiki. Supports Q&A research against the compiled wiki, full-text search with concept filtering, and multi-format output generation (Markdown reports, Marp slides, Mermaid diagrams, Obsidian Canvas). Use this skill when the user asks questions about their knowledge base, wants to search it, says "query kb", "问知识库", "research", "ask kb", "搜索知识库", "search kb", generates reports or slides from knowledge base content, says "生成报告", "create slides", "kb output", "生成幻灯片", "可视化", or wants to explore and extract insights from their collected knowledge.
+description: Query, search, and generate outputs from an LLM knowledge base wiki. Supports Q&A research against the compiled wiki (with automatic archival to outputs/qa/), full-text search with concept filtering, and multi-format output generation (Markdown reports, Marp slides, Mermaid diagrams, Obsidian Canvas). Use this skill when the user asks questions about their knowledge base, wants to search it, says "query kb", "问知识库", "research", "ask kb", "搜索知识库", "search kb", "查一下", "帮我研究", "知识库里有没有", generates reports or slides from knowledge base content, says "生成报告", "create slides", "kb output", "生成幻灯片", "可视化", "write a report on", "summarize what I know about", or wants to explore and extract insights from their collected knowledge. Also trigger when the user asks a complex question that could be answered by cross-referencing multiple wiki articles — even if they don't explicitly mention the knowledge base.
 ---
 
 # KB Query — Search, Q&A, and Output Generation
@@ -54,6 +54,8 @@ _Searched {N} articles in wiki/_
 
 ## Capability 2: Q&A Research
 
+The core philosophy: **every conversation with the LLM adds a new layer to the knowledge base.** Q&A results are not disposable chat history — they are knowledge artifacts that accumulate over time, making future research faster and richer.
+
 ### Research workflow
 
 For complex questions, follow this multi-step research process:
@@ -65,7 +67,19 @@ Parse the user's question and identify:
 - Type of answer expected (factual, analytical, comparative, exploratory)
 - Scope (narrow fact vs. broad synthesis)
 
-#### Step 2: Navigate the wiki
+#### Step 2: Check existing Q&A
+
+Before researching from scratch, check if this question (or a similar one) has already been answered:
+
+1. Search `outputs/qa/` for files with related keywords in filename or `question` frontmatter
+2. If a matching Q&A exists and is still relevant:
+   - Use it as the research starting point — cite it and build on it
+   - If fully sufficient, return the existing answer with a note: "This was previously researched on {date}"
+3. If a partial match exists, read it first to avoid redundant work, then extend the research
+
+This avoids re-deriving answers that already exist in the knowledge base.
+
+#### Step 3: Navigate the wiki
 
 1. Read `wiki/indices/INDEX.md` for the knowledge base overview
 2. Read `wiki/indices/CONCEPTS.md` to find relevant concept articles
@@ -75,14 +89,33 @@ Parse the user's question and identify:
 
 For complex questions, decompose into sub-questions and research each one.
 
-#### Step 3: Synthesize the answer
+#### Step 4: Synthesize and archive the answer
 
-Compose a thorough, well-structured answer:
+Compose a thorough answer and **save it by default** to `outputs/qa/{date}-{slug}.md`. This is not optional — every substantive Q&A interaction produces a persistent knowledge artifact.
+
+The Q&A file format:
 
 ```markdown
-## Answer: {Rephrased question as title}
+---
+question: "{The user's original question}"
+asked_at: {date}
+sources:
+  - "[[raw/source-1]]"
+  - "[[wiki/concepts/concept-a]]"
+tags:
+  - qa
+  - {topic/subtopic}
+---
 
-{Direct answer — 1-2 paragraphs addressing the core question}
+# {Rephrased question as title}
+
+## TL;DR
+
+{One-sentence conclusion — the most direct answer to the question}
+
+## Conclusions
+
+{2-4 paragraphs covering the detailed answer, arguments, and reasoning}
 
 ### Key Findings
 
@@ -92,25 +125,34 @@ Compose a thorough, well-structured answer:
 2. **{Finding 2}** — {Explanation}
    - Sources: [[wiki/concepts/concept-a]], [[wiki/summaries/source-b]]
 
-### Analysis
+## Evidence
 
-{Deeper analysis synthesizing multiple sources, noting patterns, contradictions, or gaps}
-
-### References
+{Link back to original sources with specific references}
 
 - [[wiki/concepts/relevant-concept]] — {what it contributed}
 - [[wiki/summaries/relevant-source]] — {what it contributed}
+- [[raw/original-article]] — {specific paragraph or data point}
+
+## Uncertainty
+
+{Knowledge gaps, unverified claims, contradictions found, and what additional sources could help}
+
+- {What we don't know yet}
+- {Where sources disagree}
+- {What raw materials could be added to `raw/` to fill gaps}
 ```
 
-#### Step 4: Optional — Archive to wiki
+Only skip archiving if the user explicitly says "don't save this" or the question is trivial (e.g., "how many concepts are there?").
 
-If the answer reveals new insights worth preserving, offer to archive it:
+#### Step 5: Feed insights back into the wiki
 
-- **As a new concept**: Create `wiki/concepts/{new-concept}.md` if a new concept emerged
-- **As a report**: Save to `outputs/reports/{date}-{topic}.md` for reference
-- **Update existing concepts**: Enrich concept articles with new connections discovered during research
+After archiving the Q&A, check whether the research revealed:
 
-Always ask the user before archiving: "This answer revealed some interesting connections. Would you like me to archive it back into the wiki?"
+- **New concepts** → Create `wiki/concepts/{concept-name}.md` entries
+- **New evidence for existing concepts** → Update the relevant concept articles with new findings and source links
+- **New connections between concepts** → Update `related` fields in frontmatter on both sides
+
+Report what was updated: "Archived Q&A to `outputs/qa/{filename}`. Also updated [[Concept X]] with new evidence and created new concept [[Concept Y]]."
 
 ## Capability 3: Multi-Format Output
 
