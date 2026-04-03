@@ -1,0 +1,23 @@
+{
+  "name": "obsidian-notes-karpathy-docs",
+  "version": "1.0.0",
+  "description": "Bilingual documentation for Obsidian Notes Karpathy - LLM-driven knowledge base skills",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  },
+  "keywords": [
+    "obsidian",
+    "knowledge-base",
+    "karpathy",
+    "llm",
+    "skills",
+    "documentation"
+  ],
+  "license": "MIT"
+}
