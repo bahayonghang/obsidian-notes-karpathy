@@ -1,0 +1,102 @@
+[
+  {
+    "query": "I have an Obsidian vault with half a Karpathy workflow in it and I honestly do not know what step to run first. Can you inspect the structure and tell me whether this is setup, compile, query, or maintenance work?",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Workflow-level ambiguity and lifecycle diagnosis."
+  },
+  {
+    "query": "My notes feel disconnected and a couple of index pages render strangely in Obsidian. Which workflow step should I run first?",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Symptom-based routing before picking health."
+  },
+  {
+    "query": "Set up a fresh Obsidian sub-vault as a compile-first AI research knowledge base with raw/wiki/outputs, starter indices, and local guidance files.",
+    "expected_skill": "kb-init",
+    "reason": "Explicit initialization request."
+  },
+  {
+    "query": "Repair this partially initialized vault before I ingest anything else. It has a raw folder and a lonely wiki/index.md but the contract is obviously incomplete.",
+    "expected_skill": "kb-init",
+    "reason": "Explicit repair of support layer."
+  },
+  {
+    "query": "Compile the new markdown notes I dropped under raw/ and update summaries, concepts, and indices without touching the raw files.",
+    "expected_skill": "kb-compile",
+    "reason": "Explicit compile pass."
+  },
+  {
+    "query": "I clipped two articles and one repo companion note into raw/. Please sync the compiled wiki layer now.",
+    "expected_skill": "kb-compile",
+    "reason": "Clear source-to-wiki update."
+  },
+  {
+    "query": "What do my notes already say about retrieval-augmented generation versus markdown indices? If the answer is substantive, archive it.",
+    "expected_skill": "kb-query",
+    "reason": "Research question against compiled layer."
+  },
+  {
+    "query": "Turn my compiled vault into a short X thread about why personal knowledge bases should stay markdown-first before jumping to RAG.",
+    "expected_skill": "kb-query",
+    "reason": "Publish-mode artifact grounded in wiki."
+  },
+  {
+    "query": "Run a weekly health check on this vault. I care about contradictions, orphan pages, alias drift, stale Q&A, and whether I should upgrade search.",
+    "expected_skill": "kb-health",
+    "reason": "Explicit maintenance and health pass."
+  },
+  {
+    "query": "Lint and repair the Obsidian rendering issues in my wiki tables, then tell me which fixes were safe and which still need judgment.",
+    "expected_skill": "kb-health",
+    "reason": "Mechanical repair plus maintenance report."
+  },
+  {
+    "query": "I want a living book in Obsidian instead of redoing RAG every time. How does this workflow hang together, and which step should I start with?",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Workflow-as-a-whole request."
+  },
+  {
+    "query": "Initialize a second brain vault for reading notes, but keep repo ingestion and entity pages optional unless the domain clearly needs them.",
+    "expected_skill": "kb-init",
+    "reason": "Explicit setup plus option boundaries."
+  },
+  {
+    "query": "Refresh the wiki because the raw article mtime moved forward and the summary is now stale.",
+    "expected_skill": "kb-compile",
+    "reason": "Incremental compile delta request."
+  },
+  {
+    "query": "Search the compiled wiki for everything related to local markdown search, show me the strongest notes, and give short relevance comments.",
+    "expected_skill": "kb-query",
+    "reason": "Search-mode retrieval."
+  },
+  {
+    "query": "My compiled wiki is fine structurally, but the Q&A notes are a month old and may conflict with newer source summaries. Please audit drift first.",
+    "expected_skill": "kb-health",
+    "reason": "Health-first due stale Q&A drift."
+  },
+  {
+    "query": "Help me design a vector retrieval service for SaaS documentation with embeddings, reranking, and a retrieval API. This is not an Obsidian vault.",
+    "expected_skill": null,
+    "reason": "Search infrastructure design, not this bundle."
+  },
+  {
+    "query": "My Notion workspace needs a better tagging strategy for product notes. Should I rebuild the database or rely on relation properties?",
+    "expected_skill": null,
+    "reason": "Not an Obsidian compile-first knowledge-base request."
+  },
+  {
+    "query": "Summarize this one article for me in plain English. I do not want to add it to any wiki or archive anything.",
+    "expected_skill": null,
+    "reason": "Single summarization request without knowledge-base intent."
+  },
+  {
+    "query": "Make a Mermaid architecture diagram for my backend service from the codebase. No Obsidian vault involved.",
+    "expected_skill": null,
+    "reason": "Diagramming request outside bundle scope."
+  },
+  {
+    "query": "I already know I need maintenance, not compilation. Run the deep KB health workflow and separate fix-now items from human-review items.",
+    "expected_skill": "kb-health",
+    "reason": "Explicit maintenance workflow."
+  }
+]
