@@ -21,9 +21,10 @@ The central idea is not "ask RAG every time". It is "compile knowledge once, kee
 
 ```text
 skills/
-├── obsidian-notes-karpathy/  # package-level entry skill + bundled references/evals
+├── obsidian-notes-karpathy/  # package-level entry skill + bundled references/scripts/evals
 │   ├── SKILL.md
 │   ├── references/
+│   ├── scripts/
 │   └── evals/
 ├── kb-init/                  # initialize the vault contract
 ├── kb-compile/               # compile raw sources into wiki/
@@ -57,6 +58,8 @@ The workflow has four concrete operations:
 | `kb-compile` | Turn new raw sources into summaries, concepts, optional entities, indices, and log entries | "compile wiki", "编译wiki", "sync wiki", "digest these notes" |
 | `kb-query` | Search the wiki, answer questions, archive Q&A, feed insights back into the wiki, and generate reports/slides/charts/content drafts | "query kb", "问知识库", "write a report on", "turn my notes into a thread" |
 | `kb-health` | Run deep lint and maintenance checks over the compiled wiki and recommend the next search tier | "kb health", "health check", "my notes feel disconnected" |
+
+`obsidian-notes-karpathy` is the ambiguity router. When the operation is already explicit, prefer `kb-init`, `kb-compile`, `kb-query`, or `kb-health` directly.
 
 ## Core design decisions
 
@@ -127,11 +130,28 @@ Copy the bundle's skill directories into your skills home:
 cp -r skills/* ~/.claude/skills/
 ```
 
+Codex:
+
+```bash
+cp -r skills/* ~/.codex/skills/
+```
+
 PowerShell:
 
 ```powershell
 Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 ```
+
+## Bundle support assets
+
+The entry skill also ships deterministic helpers and shared routing assets:
+
+- `skills/obsidian-notes-karpathy/references/lifecycle-matrix.md`
+- `skills/obsidian-notes-karpathy/scripts/detect_lifecycle.py`
+- `skills/obsidian-notes-karpathy/scripts/scan_compile_delta.py`
+- `skills/obsidian-notes-karpathy/scripts/lint_obsidian_mechanics.py`
+- `skills/obsidian-notes-karpathy/evals/evals.json`
+- `skills/obsidian-notes-karpathy/evals/trigger-evals.json`
 
 ## Recommended companion skills
 

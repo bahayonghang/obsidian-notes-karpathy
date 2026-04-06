@@ -10,16 +10,19 @@ Core workflow: `raw/` (human adds immutable sources) → `kb-compile` (LLM compi
 
 ## Repository Structure
 
-- `skills/obsidian-notes-karpathy/` — The distributable skill bundle
-- `skills/obsidian-notes-karpathy/obsidian-notes-karpathy/` — Package-level entry skill
-- `skills/obsidian-notes-karpathy/references/` — Shared templates and conventions used by multiple skills
-- `skills/obsidian-notes-karpathy/evals/` — Example eval prompts for regression checks
+- `skills/obsidian-notes-karpathy/SKILL.md` — Package-level entry skill
+- `skills/obsidian-notes-karpathy/references/` — Shared templates, lifecycle matrix, and conventions used by multiple skills
+- `skills/obsidian-notes-karpathy/scripts/` — Deterministic helpers for lifecycle detection, compile delta scanning, and mechanical linting
+- `skills/obsidian-notes-karpathy/evals/` — Eval prompts, fixtures, and trigger-eval coverage
+- `skills/kb-init/SKILL.md`, `skills/kb-compile/SKILL.md`, `skills/kb-query/SKILL.md`, `skills/kb-health/SKILL.md` — Operational skills
 - `ref/` — Read-only reference material (original Karpathy tweet thread). Do not modify or distribute.
 - `README.md` (English) and `README_CN.md` (Chinese) — Must be kept in sync when either is updated.
 
 ## Skill Development
 
-Each skill lives at `skills/obsidian-notes-karpathy/{skill-name}/SKILL.md` with this format:
+Operational skills live at `skills/<skill-name>/SKILL.md`. The package entry skill lives at `skills/obsidian-notes-karpathy/SKILL.md`.
+
+Every `SKILL.md` follows this format:
 
 ```yaml
 ---
@@ -40,5 +43,6 @@ description: When and how to use this skill (used for matching)
 ## Installation (for end users)
 
 ```bash
-cp -r skills/obsidian-notes-karpathy/* ~/.claude/skills/
+cp -r skills/* ~/.claude/skills/
+cp -r skills/* ~/.codex/skills/
 ```

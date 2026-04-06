@@ -6,6 +6,8 @@ Package-level entry skill for the Karpathy-style workflow.
 
 This skill does not execute the whole workflow itself. It diagnoses the vault's lifecycle stage and routes to the correct operational skill.
 
+When the operation is already explicit, the package skill should get out of the way and let the matching `kb-*` skill trigger directly.
+
 ## Routing matrix
 
 | Detected signal | Route to | Expected next move |
@@ -18,6 +20,8 @@ This skill does not execute the whole workflow itself. It diagnoses the vault's 
 ## What it inspects before routing
 
 - shared references under `skills/obsidian-notes-karpathy/references/`
+- the shared lifecycle matrix
+- `skills/obsidian-notes-karpathy/scripts/detect_lifecycle.py` when available
 - local `AGENTS.md`
 - local `CLAUDE.md` when present
 - the top of `wiki/index.md`

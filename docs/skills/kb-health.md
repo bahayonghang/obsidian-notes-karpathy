@@ -12,6 +12,8 @@ The health pass focuses on:
 
 It references `raw/` only when provenance or freshness requires a spot check.
 
+When available, it should start with `scripts/lint_obsidian_mechanics.py` so that deterministic mechanical issues are separated from judgment-heavy audit findings.
+
 ## What it checks
 
 - contradictory definitions or superseded claims

@@ -12,7 +12,8 @@ The live skill contract reads:
 
 - local `AGENTS.md`
 - local `CLAUDE.md` when present
-- shared templates for schema, summaries, concepts, entities, indices, logs, and Obsidian-safe markdown
+- shared templates for schema, summaries, concepts, entities, indices, logs, lifecycle routing, and Obsidian-safe markdown
+- `scripts/scan_compile_delta.py` when available, before any manual compile-status inference
 
 ## Incremental model
 

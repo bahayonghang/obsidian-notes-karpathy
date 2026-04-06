@@ -35,8 +35,10 @@ This bundle has one package entry skill and four operational skills.
 
 The entry skill also ships:
 
-- `references/` for schema, summary, concept, entity, Q&A, content, and health templates
+- `references/` for schema, lifecycle matrix, summary, concept, entity, Q&A, content, and health templates
+- `scripts/` for deterministic lifecycle detection, compile-delta scanning, and mechanical linting
 - `evals/evals.json` for package-level regression prompts
+- `evals/trigger-evals.json` for description and routing coverage
 - `evals/fixtures/` for fresh, partial, compiled, drifted, and broken vault states
 
 ## Next pages

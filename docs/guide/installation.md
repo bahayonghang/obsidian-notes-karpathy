@@ -23,6 +23,12 @@ npx skills add bahayonghang/obsidian-notes-karpathy
 cp -r skills/* ~/.claude/skills/
 ```
 
+Codex:
+
+```bash
+cp -r skills/* ~/.codex/skills/
+```
+
 PowerShell:
 
 ```powershell
@@ -42,6 +48,7 @@ List your skills home and confirm these directories exist:
 Then confirm the bundled resources live inside the entry skill:
 
 - `obsidian-notes-karpathy/references/`
+- `obsidian-notes-karpathy/scripts/`
 - `obsidian-notes-karpathy/evals/`
 
 ## Recommended companion skills

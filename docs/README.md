@@ -7,7 +7,8 @@ This folder contains the bilingual VitePress site for Obsidian Notes Karpathy.
 Treat the skill contracts as authoritative:
 
 - `skills/*/SKILL.md` defines trigger surface, lifecycle intent, required reads, writes, and output guarantees.
-- `skills/obsidian-notes-karpathy/references/*` defines the shared file model, templates, health rubric, and search posture.
+- `skills/obsidian-notes-karpathy/references/*` defines the shared file model, lifecycle matrix, templates, health rubric, and search posture.
+- `skills/obsidian-notes-karpathy/scripts/*` defines deterministic helper behavior that docs may describe, but not reinterpret.
 
 The site should explain those contracts for humans. It should not invent parallel behavior.
 
