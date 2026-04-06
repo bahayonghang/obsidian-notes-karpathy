@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate outputs from a compiled Obsidian knowledge base. Use this skill whenever the user asks what their notes say about something, wants to search or summarize the wiki, asks for a report, thread, post, article, slide deck, or talk outline from their notes, says "query kb", "search kb", "问知识库", "搜索知识库", "帮我研究", "summarize what I know about", "write a report on", "把笔记写成文章", "生成推文串", "生成报告", "生成幻灯片", or wants a substantive answer to be archived instead of disappearing into chat.
+description: Query, search, and generate outputs from a compiled Obsidian knowledge base. Use this skill whenever the user asks what their notes say about something, wants to search or summarize the wiki, asks for a report, thread, post, article, slide deck, or talk outline from their notes, says "query kb", "search kb", "问知识库", "搜索知识库", "帮我研究", "summarize what I know about", "write a report on", "把笔记写成文章", "生成推文串", "生成报告", "生成幻灯片", or wants a substantive answer grounded in the KB to be archived instead of disappearing into chat.
 ---
 
 # KB Query
@@ -14,12 +14,21 @@ The key principle is that substantive research answers become persistent knowled
 Read these files first:
 
 - local `AGENTS.md`
-- local `CLAUDE.md`
-- `../references/file-model.md`
-- `../references/qa-template.md`
-- `../references/content-output-template.md`
-- `../references/search-upgrades.md`
-- `../references/activity-log-template.md`
+- local `CLAUDE.md` if present
+- `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/qa-template.md`
+- `../obsidian-notes-karpathy/references/content-output-template.md`
+- `../obsidian-notes-karpathy/references/search-upgrades.md`
+- `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
+
+If one or more shared references are missing, continue with the minimum compatible contract:
+
+- ground answers in the compiled wiki instead of improvising from chat context
+- archive substantive answers by default
+- obey Obsidian-safe markdown rules whenever you emit tables
+
+Report missing shared references in the final summary.
 
 Then start with:
 
@@ -82,7 +91,7 @@ Answer using wiki citations and explicit uncertainty when sources disagree or ev
 
 ### Step 5: archive by default
 
-If the answer is substantive, save it to `outputs/qa/{date}-{slug}.md` using `../references/qa-template.md`.
+If the answer is substantive, save it to `outputs/qa/{date}-{slug}.md` using `../obsidian-notes-karpathy/references/qa-template.md`.
 
 Only skip archival when:
 
@@ -91,7 +100,7 @@ Only skip archival when:
 
 ### Step 6: append the query log
 
-When the answer is archived or materially updated, append a `query` entry to `wiki/log.md` using `../references/activity-log-template.md`.
+When the answer is archived or materially updated, append a `query` entry to `wiki/log.md` using `../obsidian-notes-karpathy/references/activity-log-template.md`.
 
 ### Step 7: feed useful insights back into the wiki
 
@@ -121,10 +130,11 @@ For every generated artifact:
 
 - look for an existing supporting Q&A note first
 - if no strong supporting Q&A exists, create one before or immediately after the publish artifact
-- use `../references/content-output-template.md` when the output is audience-facing
+- use `../obsidian-notes-karpathy/references/content-output-template.md` when the output is audience-facing
 - cite the wiki pages and prior Q&A consulted
 - keep filenames date-prefixed and slugged
 - append a `publish` entry to `wiki/log.md` when the artifact is substantive
+- if the artifact uses tables, keep them Obsidian-safe; never place alias-style wikilinks inside table cells
 
 ## Output requirements
 
@@ -135,6 +145,7 @@ In your user-facing summary, report:
 3. where the new artifact was saved
 4. whether you updated any concept or entity pages as a result
 5. whether you appended a `query` or `publish` entry to `wiki/log.md`
+6. whether any shared references or optional local files were missing
 
 ## Tooling notes
 

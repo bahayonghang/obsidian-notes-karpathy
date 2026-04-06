@@ -1,6 +1,6 @@
 ---
 name: kb-health
-description: Run a deep health check on a Karpathy-style Obsidian knowledge base. Use this skill whenever the user says "kb health", "health check", "lint wiki", "find contradictions", "find orphan notes", "stale claims", "broken wikilinks", "missing cross references", "my notes feel disconnected", "my wiki is outdated", "检查知识库", "知识库体检", "笔记越来越乱", or wants a periodic maintenance pass over a compiled wiki, including stale Q&A, alias drift, duplicate entities, and search-upgrade recommendations.
+description: Run a deep health check on a Karpathy-style Obsidian knowledge base. Use this skill whenever the user says "kb health", "health check", "lint wiki", "find contradictions", "find orphan notes", "stale claims", "broken wikilinks", "missing cross references", "my notes feel disconnected", "my wiki is outdated", "broken Obsidian rendering", "malformed index", "检查知识库", "知识库体检", "笔记越来越乱", or wants a periodic maintenance pass over a compiled wiki, including stale Q&A, alias drift, duplicate entities, search-upgrade recommendations, and mechanical Obsidian rendering problems.
 ---
 
 # KB Health
@@ -13,13 +13,16 @@ Use this skill for scheduled quality review, not for routine ingestion. `kb-comp
 
 Read these shared references first:
 
-- `../references/file-model.md`
-- `../references/health-rubric.md`
-- `../references/schema-template.md`
-- `../references/search-upgrades.md`
-- `../references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/health-rubric.md`
+- `../obsidian-notes-karpathy/references/schema-template.md`
+- `../obsidian-notes-karpathy/references/search-upgrades.md`
+- `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
 
 Then read the vault's local `AGENTS.md` and `CLAUDE.md` if present.
+
+If one or more shared references are missing, continue with the minimum compatible contract and surface the missing files in the report summary. Missing support files are part of the diagnosis, not an excuse to skip the pass.
 
 ## Scope
 
@@ -64,13 +67,17 @@ Evaluate the knowledge base across these dimensions:
 6. Asset integrity
    - missing local image references
    - image references that are never reviewed even though they likely affect understanding
-7. Search posture
+7. Syntax and render integrity
+   - alias-style wikilinks inside Markdown table cells
+   - malformed tables that render incorrectly in Obsidian
+   - generated markdown that looks plausible in plain text but breaks Obsidian navigation or layout
+8. Search posture
    - whether markdown-first navigation is still sufficient
    - whether the vault now justifies Backlinks/Properties discipline, qmd, DuckDB, or full vector retrieval
 
 ## Output
 
-Write a report to `outputs/health/health-check-{date}.md` using the rubric from `../references/health-rubric.md`.
+Write a report to `outputs/health/health-check-{date}.md` using the rubric from `../obsidian-notes-karpathy/references/health-rubric.md`.
 
 The report must include:
 
@@ -90,9 +97,10 @@ The report must include:
   - update derived indices
   - normalize clearly duplicated aliases into one concept or entity page when the mapping is unambiguous
   - annotate clearly stale Q&A with updated context when the evidence is obvious
+  - replace alias-style wikilinks inside Markdown table cells with plain wikilinks or standard Markdown links when the target is unambiguous
 - Put uncertain but probably good fixes under `Propose Fix`.
 - Do not silently rewrite disputed claims. Flag them and preserve provenance.
 
 ## Log the maintenance pass
 
-After writing the report, append a `health` entry to `wiki/log.md` using `../references/activity-log-template.md`.
+After writing the report, append a `health` entry to `wiki/log.md` using `../obsidian-notes-karpathy/references/activity-log-template.md`.

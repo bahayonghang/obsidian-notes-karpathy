@@ -13,6 +13,8 @@ Treat the vault like a codebase:
 - `raw/` is source code.
 - `wiki/` is the compiled artifact.
 - `outputs/` is runtime output plus durable deliverables.
+- `AGENTS.md` is required local guidance.
+- `CLAUDE.md` is recommended and should mirror `AGENTS.md` when present, but the workflow must not hard-fail if it is absent.
 
 ## Core rules
 
@@ -30,6 +32,7 @@ Treat the vault like a codebase:
 ```text
 vault/
 ├── raw/
+│   ├── *.md            # also valid for direct captures or inbox-style source notes
 │   ├── articles/
 │   ├── papers/
 │   ├── podcasts/
@@ -53,13 +56,19 @@ vault/
 │       ├── threads/
 │       └── talks/
 ├── AGENTS.md
-└── CLAUDE.md
+└── CLAUDE.md           # optional but recommended
 ```
 
 Optional directories are opt-in expansions:
 
 - `raw/repos/` for repo snapshots, README exports, or repo companion notes
 - `wiki/entities/` for people, organizations, products, projects, or repos that deserve stable pages
+
+Accepted raw discovery patterns:
+
+- markdown files directly under `raw/`
+- categorized markdown files under `raw/articles/`, `raw/papers/`, and `raw/podcasts/`
+- optional repo companion notes or repo overviews under `raw/repos/`
 
 If the vault already has channel-specific publishing folders such as `x/`, `公众号/`, or `小红书/`, preserve them. Do not force-migrate them unless the user asks.
 
@@ -68,6 +77,8 @@ If the vault already has channel-specific publishing folders such as `x/`, `公�
 ### Raw source notes
 
 Live under `raw/` and preserve the original material plus metadata.
+
+Raw source notes may live directly under `raw/` or inside a typed subdirectory. The compiler should accept both without rewriting paths just to satisfy a stricter ideal layout.
 
 Expected properties:
 
@@ -182,6 +193,14 @@ Prefer Obsidian-native graph affordances before heavier infrastructure:
 - use consistent property names so the Properties view and property search stay effective
 - use reciprocal `related` fields only when the relationship is real, not speculative
 - treat `wiki/index.md` and `wiki/log.md` as the two top-level navigation surfaces: content-first and time-first
+
+## Obsidian-safe markdown conventions
+
+Follow `obsidian-safe-markdown.md` whenever you emit tables or repair rendered markdown.
+
+- Never place alias-style wikilinks such as `[[note|Alias]]` inside Markdown table cells.
+- In tables, use plain wikilinks or standard Markdown links instead.
+- If a page needs many linked labels, prefer a list over a dense table.
 
 ## Incremental compilation contract
 

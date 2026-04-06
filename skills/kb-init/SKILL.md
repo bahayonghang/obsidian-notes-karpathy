@@ -1,6 +1,6 @@
 ---
 name: kb-init
-description: Initialize a Karpathy-style LLM knowledge base inside an Obsidian vault. Use this skill whenever the user says "kb init", "initialize knowledge base", "Karpathy setup", "LLM Wiki setup", "setup vault", "turn my Obsidian into a living book", "set up a second brain", "start a compile-first knowledge base", "初始化知识库", "新建知识库", "创建wiki", "搭建知识库编译流程", or wants a fresh vault or sub-vault to follow the raw/wiki/outputs contract.
+description: Initialize or repair a Karpathy-style LLM knowledge base inside an Obsidian vault. Use this skill whenever the user says "kb init", "initialize knowledge base", "Karpathy setup", "LLM Wiki setup", "setup vault", "repair vault", "fix my KB structure", "turn my Obsidian into a living book", "set up a second brain", "start a compile-first knowledge base", "初始化知识库", "新建知识库", "创建wiki", "修知识库结构", "搭建知识库编译流程", or wants a fresh vault or sub-vault to follow the raw/wiki/outputs contract or needs a partially initialized vault repaired.
 ---
 
 # KB Init
@@ -13,15 +13,16 @@ This skill creates the vault contract that later skills depend on. The main arch
 
 Read these shared references first:
 
-- `../references/file-model.md`
-- `../references/schema-template.md`
-- `../references/concept-template.md`
-- `../references/entity-template.md`
-- `../references/source-registry-template.md`
-- `../references/content-output-template.md`
-- `../references/clipper-template.md`
-- `../references/index-home-template.md`
-- `../references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/schema-template.md`
+- `../obsidian-notes-karpathy/references/concept-template.md`
+- `../obsidian-notes-karpathy/references/entity-template.md`
+- `../obsidian-notes-karpathy/references/source-registry-template.md`
+- `../obsidian-notes-karpathy/references/content-output-template.md`
+- `../obsidian-notes-karpathy/references/clipper-template.md`
+- `../obsidian-notes-karpathy/references/index-home-template.md`
+- `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
 
 ## Inputs to gather
 
@@ -35,6 +36,28 @@ Determine:
 
 If the target already contains files, preserve existing content and only create missing directories and templates.
 
+If one or more shared references are unavailable, continue with the minimum compatible contract:
+
+- preserve `raw/` immutability
+- create or repair the vault support layer first
+- keep schema/frontmatter aligned across local guidance files
+- follow Obsidian-safe markdown rules for any generated tables
+
+Report missing shared references in the final summary instead of silently pretending they existed.
+
+## Repair the support layer first
+
+If the target vault is only partially initialized, repair the KB support layer before doing any cosmetic setup.
+
+At minimum, restore or create:
+
+- the local guidance contract
+- `wiki/index.md`
+- `wiki/log.md`
+- the `wiki/indices/` pages that later KB skills depend on
+
+Treat this as safe bootstrap work, not as an exceptional path.
+
 ## Create the canonical structure
 
 Create the minimum canonical structure:
@@ -42,6 +65,7 @@ Create the minimum canonical structure:
 ```text
 {root}/
 ├── raw/
+│   ├── *.md            # allowed for direct captures or inbox-style source notes
 │   ├── articles/
 │   ├── papers/
 │   ├── podcasts/
@@ -76,7 +100,13 @@ If the user already has channel-specific content folders, preserve them and docu
 
 ## Generate schema files
 
-Create both `AGENTS.md` and `CLAUDE.md`.
+For a fresh vault, create both `AGENTS.md` and `CLAUDE.md`.
+
+For a repair pass over an existing vault:
+
+- always restore or create `AGENTS.md` when it is missing
+- create or refresh `CLAUDE.md` when it is missing or stale, but treat its absence as a repair target rather than a hard failure
+- if the vault clearly standardizes on `AGENTS.md` only, preserve that choice and report it
 
 Requirements:
 
@@ -87,8 +117,9 @@ Requirements:
 - both should mention `outputs/content/` when publish-mode artifacts are in scope
 - both should mention that `raw/repos/` and `wiki/entities/` are optional expansions, not mandatory defaults
 - both should preserve canonical `wiki/indices/` naming while tolerating older `wiki/indexes/` vaults
+- both should include the Obsidian-safe markdown rule that alias-style wikilinks must not appear inside Markdown table cells
 
-Use `../references/schema-template.md` as the baseline, then customize the topic wording for the user's domain.
+Use `../obsidian-notes-karpathy/references/schema-template.md` as the baseline, then customize the topic wording for the user's domain.
 
 ## Create starter files
 
@@ -96,7 +127,7 @@ Create these initial files:
 
 ### `wiki/index.md`
 
-Build it from `../references/index-home-template.md`.
+Build it from `../obsidian-notes-karpathy/references/index-home-template.md`.
 
 Include:
 
@@ -112,7 +143,7 @@ Include:
 
 - append-only notice
 - short note explaining the four event types: `ingest`, `query`, `publish`, and `health`
-- starter examples adapted from `../references/activity-log-template.md`
+- starter examples adapted from `../obsidian-notes-karpathy/references/activity-log-template.md`
 
 ### `wiki/indices/INDEX.md`
 
@@ -124,7 +155,7 @@ Create a zero-state concept map.
 
 ### `wiki/indices/SOURCES.md`
 
-Create a zero-state source registry using `../references/source-registry-template.md`.
+Create a zero-state source registry using `../obsidian-notes-karpathy/references/source-registry-template.md`.
 
 ### `wiki/indices/RECENT.md`
 
@@ -136,24 +167,26 @@ Create this only when `wiki/entities/` exists.
 
 ### `wiki/concepts/_example-concept.md`
 
-Create one example concept page using `../references/concept-template.md` so future compile passes have a concrete contract to follow.
+Create one example concept page using `../obsidian-notes-karpathy/references/concept-template.md` so future compile passes have a concrete contract to follow.
 
 ### `wiki/entities/_example-entity.md`
 
-Create this only when the entity layer is enabled, using `../references/entity-template.md`.
+Create this only when the entity layer is enabled, using `../obsidian-notes-karpathy/references/entity-template.md`.
 
 ### `raw/articles/_web-clipper-template.md`
 
-Write a ready-to-import clipper template using `../references/clipper-template.md`.
+Write a ready-to-import clipper template using `../obsidian-notes-karpathy/references/clipper-template.md`.
 
 ## Property and naming conventions
 
 Document:
 
-- standardized property names from `../references/schema-template.md`
+- standardized property names from `../obsidian-notes-karpathy/references/schema-template.md`
 - lowercase kebab-case filenames
 - concept aliases as a first-class tool for discoverability and backlink quality
 - entity aliases when the entity layer is enabled
+- root-level raw notes are valid and do not need to be moved into category folders just to satisfy the workflow
+- Markdown tables must obey `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
 
 ## Output to the user
 
@@ -163,7 +196,8 @@ Report:
 2. any existing content that was preserved
 3. whether publish-mode folders were enabled
 4. whether optional `raw/repos/` or `wiki/entities/` support was enabled
-5. the next recommended command
+5. whether any missing support files were repaired
+6. the next recommended command
 
 Then give the two-week bootstrap:
 

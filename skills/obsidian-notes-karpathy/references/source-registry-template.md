@@ -15,3 +15,4 @@ Rules:
 - one row per raw source note
 - `Compile State` should be human-readable, such as `new`, `summarized`, `changed`, or `needs-review`
 - key concepts or entities should link to wiki pages, not plain text labels
+- never use alias-style wikilinks inside table cells; use plain wikilinks or standard Markdown links if a display label matters

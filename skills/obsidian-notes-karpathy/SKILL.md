@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route Karpathy-style LLM Wiki requests inside Obsidian. Use this skill whenever the user mentions Andrej Karpathy's markdown-wiki pattern, "LLM Wiki", a "living book", "compile my notes", "not RAG", "AI knowledge base", "personal wiki", "second brain", "PKM workflow", "query my vault", "archive answers", "health check my notes", "知识库编译", "不是 RAG", "会自动生长的书", "问知识库", "知识库体检", or wants to set up, compile, query, publish from, or lint an Obsidian knowledge base. This is the package-level entry point: it inspects lifecycle signals and routes to kb-init, kb-compile, kb-query, or kb-health.
+description: Diagnose and route Karpathy-style LLM Wiki requests inside Obsidian. Use this skill whenever the user mentions Andrej Karpathy's markdown-wiki pattern, "LLM Wiki", a "living book", "compile my notes", "not RAG", "AI knowledge base", "personal wiki", "second brain", "PKM workflow", "query my vault", "archive answers", "health check my notes", "repair my vault", "broken Obsidian index", "my notes are rotting", "knowledge base feels disconnected", "知识库编译", "不是 RAG", "会自动生长的书", "问知识库", "知识库体检", "修知识库", or wants to set up, repair, compile, query, publish from, or lint an Obsidian knowledge base. This is the package-level entry point: it inspects lifecycle signals and routes to kb-init, kb-compile, kb-query, or kb-health.
 ---
 
 # Obsidian Notes Karpathy
@@ -13,14 +13,14 @@ Use this skill when the user talks about the workflow as a whole, not just one o
 
 Read these shared references first:
 
-- `../references/file-model.md`
-- `../references/search-upgrades.md`
-- `../references/activity-log-template.md`
+- `./references/file-model.md`
+- `./references/search-upgrades.md`
+- `./references/activity-log-template.md`
 
 If the target vault already exists, inspect:
 
 - local `AGENTS.md`
-- local `CLAUDE.md`
+- local `CLAUDE.md` if present
 - the top of `wiki/index.md`
 - the most recent entries in `wiki/log.md` when available
 
@@ -36,11 +36,14 @@ Route to `kb-init` when the target does not yet express the contract:
 - no `wiki/`
 - no `outputs/`
 - no schema files
+- missing or obviously partial KB support files that make the workflow structurally incomplete
+- the user explicitly wants to repair a half-initialized vault before doing normal work
 
 ### Compile signals
 
 Route to `kb-compile` when the vault exists and new source material appears to be waiting for compilation:
 
+- new or changed files directly under `raw/`
 - new or changed files under `raw/articles/`, `raw/papers/`, `raw/podcasts/`, or optional `raw/repos/`
 - missing summaries for recent raw notes
 - the user asks to ingest, digest, compile, refresh, sync, summarize, or turn clips into notes
@@ -61,11 +64,13 @@ Route to `kb-health` when the compiled layer feels stale, contradictory, disconn
 - the user says the notes feel disconnected, outdated, contradictory, or messy
 - stale Q&A or drift is more likely than missing compilation
 - the user asks for contradictions, orphan notes, stale claims, alias drift, or missing cross-links
+- the user reports broken Obsidian rendering, malformed indices, or pages that look syntactically wrong even though the files still exist
 
 ## Ambiguous cases
 
 When the user asks "what should I do first?" or gives symptoms rather than a command:
 
+- choose `kb-init` first if the vault looks only partially initialized or the support layer is missing
 - choose `kb-compile` first if recent raw material has clearly not been compiled yet
 - choose `kb-health` first if the main symptom is compiled-layer drift, contradiction, stale Q&A, or weak linking
 - choose `kb-query` if the vault already looks compiled and the user wants conclusions, comparison, or outward-facing content
@@ -90,4 +95,4 @@ When the user asks what to do next, answer with:
 2. the concrete signals that led you there
 3. the operational skill you are routing to
 4. the next concrete action in the vault
-5. any assumption you had to make about compile state or vault health
+5. any assumption you had to make about compile state, vault health, or missing support files

@@ -20,13 +20,13 @@ npx skills add bahayonghang/obsidian-notes-karpathy
 ## Manual installation
 
 ```bash
-cp -r skills/obsidian-notes-karpathy/* ~/.claude/skills/
+cp -r skills/* ~/.claude/skills/
 ```
 
 PowerShell:
 
 ```powershell
-Copy-Item -Recurse skills/obsidian-notes-karpathy\* $env:USERPROFILE\.claude\skills\
+Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 ```
 
 ## Verify
@@ -38,6 +38,11 @@ List your skills home and confirm these directories exist:
 - `kb-compile/`
 - `kb-query/`
 - `kb-health/`
+
+Then confirm the bundled resources live inside the entry skill:
+
+- `obsidian-notes-karpathy/references/`
+- `obsidian-notes-karpathy/evals/`
 
 ## Recommended companion skills
 

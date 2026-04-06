@@ -100,3 +100,13 @@ Suggested weighting:
 - concept pages missing source links
 - entity pages missing source links
 - archived answers without enough evidence trail
+
+## Mechanical render integrity
+
+Treat these as report-worthy mechanical issues even though they do not add a new scored dimension:
+
+- alias-style wikilinks inside Markdown table cells
+- table rows that render misaligned in Obsidian
+- generated markdown that looks valid in plain text but breaks Obsidian navigation or rendering
+
+When the problem is unambiguous, list it under `Fix Now`.

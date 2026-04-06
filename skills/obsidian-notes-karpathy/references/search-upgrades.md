@@ -64,3 +64,5 @@ Prefer the cheapest stage that solves the user's problem while preserving tracea
 - metadata/reporting problem -> Stage 2 or 3
 - search-scale problem -> Stage 3
 - semantic-recall-at-scale problem -> Stage 4
+
+If the user's problem is malformed indices, broken table rendering, or syntactically wrong markdown, do not treat it as a search-upgrade problem first. Route that work through health or repair before adding more retrieval infrastructure.

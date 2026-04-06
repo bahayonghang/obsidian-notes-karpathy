@@ -1,6 +1,6 @@
 # Schema Template Notes
 
-Keep `AGENTS.md` and `CLAUDE.md` aligned. They should describe the same vault contract with only minimal agent-specific wrapper text.
+Keep `AGENTS.md` and `CLAUDE.md` aligned when both exist. `AGENTS.md` is the required contract surface; `CLAUDE.md` is recommended and should mirror it if present rather than introducing a second policy.
 
 Use ISO dates whenever possible:
 
@@ -8,6 +8,8 @@ Use ISO dates whenever possible:
 - datetime: `YYYY-MM-DDTHH:mm:ssZ`
 
 Use one property vocabulary consistently across the vault. Global property consistency matters because Obsidian Properties view and property search depend on it.
+
+When reading or writing frontmatter, prefer a YAML-aware parse path. Regex-only slicing is a brittle fallback because field order, arrays, quoting, and multiline values may vary.
 
 ## Raw source frontmatter
 
@@ -34,7 +36,7 @@ Notes:
 ```yaml
 ---
 title: "Summary: Source Title"
-source_file: "[[raw/articles/2026-04-01-source-title]]"
+source_file: "[[raw/2026-04-01-source-title]]"
 source_url: "https://example.com"
 source_type: article
 source_mtime: "2026-04-01T12:00:00Z"
@@ -52,6 +54,7 @@ Rules:
 
 - `source_hash` is preferred when the environment supports deterministic hashing.
 - If both hash and mtime are available, keep both.
+- `source_file` may point to a root-level raw note or a categorized raw note; do not normalize the path by rewriting the source.
 - `key_concepts` should reference real concept pages or clearly planned new ones.
 - `key_entities` is optional and should be used only when named entities deserve stable pages.
 
@@ -165,3 +168,4 @@ Use a parseable heading prefix:
 - concept aliases belong in `aliases`, not in duplicated concept pages
 - entity aliases belong in `aliases`, not in duplicated entity pages
 - if a concept gets renamed, preserve the old term in `aliases`
+- any generated tables must obey `obsidian-safe-markdown.md`; never emit alias-style wikilinks inside table cells

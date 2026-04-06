@@ -20,13 +20,13 @@ npx skills add bahayonghang/obsidian-notes-karpathy
 ## 手动安装
 
 ```bash
-cp -r skills/obsidian-notes-karpathy/* ~/.claude/skills/
+cp -r skills/* ~/.claude/skills/
 ```
 
 PowerShell：
 
 ```powershell
-Copy-Item -Recurse skills/obsidian-notes-karpathy\* $env:USERPROFILE\.claude\skills\
+Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 ```
 
 ## 验证
@@ -38,6 +38,11 @@ Copy-Item -Recurse skills/obsidian-notes-karpathy\* $env:USERPROFILE\.claude\ski
 - `kb-compile/`
 - `kb-query/`
 - `kb-health/`
+
+然后确认内置资源位于入口 skill 内部：
+
+- `obsidian-notes-karpathy/references/`
+- `obsidian-notes-karpathy/evals/`
 
 ## 推荐搭配技能
 

@@ -20,14 +20,15 @@ The central idea is not "ask RAG every time". It is "compile knowledge once, kee
 ## Package layout
 
 ```text
-skills/obsidian-notes-karpathy/
-├── obsidian-notes-karpathy/  # package-level entry skill
+skills/
+├── obsidian-notes-karpathy/  # package-level entry skill + bundled references/evals
+│   ├── SKILL.md
+│   ├── references/
+│   └── evals/
 ├── kb-init/                  # initialize the vault contract
 ├── kb-compile/               # compile raw sources into wiki/
 ├── kb-query/                 # search, answer, archive, and publish from the wiki
-├── kb-health/                # deep health check and maintenance review
-├── references/               # shared templates and conventions
-└── evals/                    # eval prompts plus fixture vaults
+└── kb-health/                # deep health check and maintenance review
 ```
 
 ## Workflow
@@ -123,13 +124,13 @@ npx skills add bahayonghang/obsidian-notes-karpathy
 Copy the bundle's skill directories into your skills home:
 
 ```bash
-cp -r skills/obsidian-notes-karpathy/* ~/.claude/skills/
+cp -r skills/* ~/.claude/skills/
 ```
 
 PowerShell:
 
 ```powershell
-Copy-Item -Recurse skills/obsidian-notes-karpathy\* $env:USERPROFILE\.claude\skills\
+Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 ```
 
 ## Recommended companion skills
