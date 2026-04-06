@@ -2,25 +2,39 @@
 
 Package-level entry skill for the Karpathy-style workflow.
 
-## What it does
+## Responsibility
 
-This skill does not perform the whole workflow itself. It detects the current lifecycle stage and routes to the correct operational skill.
+This skill does not execute the whole workflow itself. It diagnoses the vault's lifecycle stage and routes to the correct operational skill.
 
-## Routing logic
+## Routing matrix
 
-- missing vault structure -> `kb-init`
-- new or changed raw sources -> `kb-compile`
-- question, report, slide, or publish request -> `kb-query`
-- lint, stale-claim review, contradiction audit, or disconnected-note diagnosis -> `kb-health`
+| Detected signal | Route to | Expected next move |
+| --- | --- | --- |
+| Missing `raw/`, `wiki/`, `outputs/`, or support files | `kb-init` | Create or repair the contract first |
+| New or changed notes under `raw/` | `kb-compile` | Update summaries, concepts, indices, and logs |
+| A question, report, article, thread, or slide request | `kb-query` | Ground the answer in the compiled layer and archive it when substantive |
+| Drift, contradiction, stale claims, broken indices, or weak links | `kb-health` | Score the vault and separate safe fixes from judgment calls |
 
-## Why this exists
+## What it inspects before routing
 
-Without a package entry skill, broad prompts such as "help me set up a Karpathy workflow in Obsidian" are easy to under-trigger. This page-level skill gives the bundle a discoverable front door.
+- shared references under `skills/obsidian-notes-karpathy/references/`
+- local `AGENTS.md`
+- local `CLAUDE.md` when present
+- the top of `wiki/index.md`
+- recent entries in `wiki/log.md`
 
-## Key doctrine
+## Why the router matters
 
-- treat `raw/` as immutable
-- start from `wiki/index.md` and `wiki/log.md`
-- archive substantive Q&A by default
-- prefer markdown-first search before infrastructure upgrades
-- use backlinks and properties before heavier retrieval infrastructure
+Broad prompts such as "set up a living book in Obsidian" or "my notes are rotting" are easy to under-specify. The package entry skill makes the workflow discoverable without forcing the user to know the lifecycle vocabulary in advance.
+
+## Package doctrine
+
+- treat `raw/` as immutable input
+- treat `wiki/` as the LLM-owned compiled artifact
+- treat `outputs/qa/` as persistent research memory
+- keep `wiki/index.md` and `wiki/log.md` as complementary entry surfaces
+- prefer markdown-first navigation before heavier retrieval infrastructure
+
+## Use this page when
+
+Use the package entry skill whenever the user is talking about the workflow as a whole, wants a recommendation about the next operation, or gives symptoms instead of a concrete lifecycle command.

@@ -2,44 +2,42 @@
 
 This bundle has one package entry skill and four operational skills.
 
-## Why the split exists
+## Choose by lifecycle signal
 
-The workflow has distinct phases:
+| Signal in the vault or request | Route to | Why |
+| --- | --- | --- |
+| The support layer is missing, partial, or obviously broken | `kb-init` | Later skills depend on the contract being present |
+| New or changed sources are waiting under `raw/` | `kb-compile` | The compiled layer is behind the source layer |
+| The compiled wiki exists and the user wants an answer or deliverable | `kb-query` | The task is extraction, synthesis, archival, or publishing |
+| The compiled layer feels stale, contradictory, or disconnected | `kb-health` | The task is maintenance, diagnosis, or repair |
+| The user talks about the workflow as a whole or asks what to do next | `obsidian-notes-karpathy` | The package entry skill diagnoses lifecycle state first |
 
-- detect lifecycle stage
-- initialize a vault contract
-- compile immutable raw sources into a wiki
-- query the wiki and persist useful answers
-- run deep health checks
+## Skill matrix
 
-Keeping these phases separate makes triggering cleaner and keeps each SKILL.md focused.
+| Skill | Primary job | Reads first | Writes to |
+| --- | --- | --- | --- |
+| `obsidian-notes-karpathy` | Diagnose lifecycle stage and route | shared references, local guidance, top of `wiki/index.md`, recent `wiki/log.md` | routing recommendation only |
+| `kb-init` | Create or repair the vault contract | shared templates and file model references | support layer, starter indices, local guidance files |
+| `kb-compile` | Turn raw notes into maintained wiki pages | shared templates, local guidance, raw sources | `wiki/`, derived indices, `wiki/log.md` |
+| `kb-query` | Search, answer, archive, and publish from the compiled layer | shared references, `wiki/index.md`, indices, prior Q&A | `outputs/`, `wiki/log.md`, sometimes `wiki/` |
+| `kb-health` | Score and audit the compiled layer | shared health rubric, local guidance, compiled layers | `outputs/health/`, `wiki/log.md`, safe mechanical fixes |
 
-## Skills
+## Shared contract across all skills
 
-| Skill | Role | Use when |
-|-------|------|----------|
-| `obsidian-notes-karpathy` | Package entry and router | The user talks about the workflow as a whole |
-| `kb-init` | One-time setup | The canonical vault structure does not exist yet |
-| `kb-compile` | Ingest and compile | New or changed raw sources need to become wiki pages |
-| `kb-query` | Search, answer, generate | The user wants insights or deliverables from the wiki |
-| `kb-health` | Deep lint and maintenance | The user wants a report-oriented health pass |
+- `raw/` is immutable from the compiler's point of view.
+- `wiki/` is the maintained, compiled artifact.
+- `outputs/qa/` stores substantive answers by default.
+- `wiki/index.md` is the content-first entry surface.
+- `wiki/log.md` is the time-first entry surface.
+- Search should stay markdown-first until the vault genuinely needs a heavier upgrade.
 
-## Shared resources
+## Bundled support material
 
-The package also ships:
+The entry skill also ships:
 
-- `references/` for schema, summary, concept, Q&A, publish, and health-report templates
+- `references/` for schema, summary, concept, entity, Q&A, content, and health templates
 - `evals/evals.json` for package-level regression prompts
-- `evals/fixtures/` for realistic vault states such as fresh, compiled, and drifted vaults
-
-## Design contract
-
-- `raw/` is immutable
-- `wiki/` is the compiled artifact
-- `outputs/qa/` stores substantive Q&A by default
-- `outputs/content/` stores grounded publishable artifacts
-- `wiki/index.md` is the content entry point
-- `wiki/log.md` is the chronological log
+- `evals/fixtures/` for fresh, partial, compiled, drifted, and broken vault states
 
 ## Next pages
 

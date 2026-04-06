@@ -2,31 +2,44 @@
 
 Run a deep, report-oriented health check on the compiled knowledge base.
 
-## Checks
+## Audit scope
 
-- contradictory definitions
-- stale claims and stale Q&A
-- alias drift and duplicated concepts
-- sparse pages
-- orphan pages
-- weak cross-linking
-- broken local asset references
+The health pass focuses on:
+
+- `wiki/`
+- `outputs/qa/`
+- `outputs/health/`
+
+It references `raw/` only when provenance or freshness requires a spot check.
+
+## What it checks
+
+- contradictory definitions or superseded claims
+- stale Q&A and stale concept or entity pages
+- alias drift and duplicate concepts or entities
+- sparse pages and missing obvious topics
+- orphan pages and weak cross-linking
+- missing local assets
 - weak provenance
+- malformed tables or wikilinks that render badly in Obsidian
+- whether the vault now needs a search upgrade
 
-## Output
+## Report output
 
-Writes a scored report to `outputs/health/health-check-{date}.md`.
+The health report is written to `outputs/health/health-check-{date}.md`.
 
-The report includes:
+It should include:
 
-- overall score
+- an overall score out of 100
 - sub-scores for Completeness, Consistency, Connectivity, Freshness, and Provenance
 - critical issues
 - warnings
-- suggested follow-up questions and source gaps
+- suggested follow-up questions or source gaps
+- a search upgrade recommendation
+- clear separation between safe fixes and human-judgment items
 
 ## Relationship to kb-compile
 
-`kb-compile` can repair obvious mechanical issues after ingestion.
+`kb-compile` can repair obvious mechanical issues immediately after ingestion.
 
-`kb-health` is the dedicated maintenance pass when the user wants a deeper diagnosis.
+`kb-health` owns the deeper maintenance pass, including drift, contradictions, provenance gaps, and long-horizon structure problems.

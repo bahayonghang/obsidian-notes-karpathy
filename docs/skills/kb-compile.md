@@ -2,32 +2,54 @@
 
 Compile immutable raw notes into the maintained wiki.
 
-## What it does
+## Responsibility
 
-- discovers new or changed raw sources
-- writes or updates summary pages
-- creates or updates concept pages
-- expands aliases and contradiction markers when needed
-- rebuilds index and log surfaces
-- runs a light post-compile sanity check
+`kb-compile` behaves like a compiler pass, not like a source editor. It reads from `raw/`, writes to `wiki/`, and keeps provenance intact.
 
-## What it does not do
+## Read first
 
-- it does not rewrite raw source files
-- it does not own the deep health-check workflow
+The live skill contract reads:
+
+- local `AGENTS.md`
+- local `CLAUDE.md` when present
+- shared templates for schema, summaries, concepts, entities, indices, logs, and Obsidian-safe markdown
 
 ## Incremental model
 
-`kb-compile` compares each raw source with the metadata stored in its corresponding summary page. If the summary is missing or older than the raw source, that source is recompiled.
+Each raw source is matched against its summary in `wiki/summaries/`.
 
-The preferred tracking fields are `source_hash` and `source_mtime`.
+Recompile when:
+
+- the summary is missing
+- `source_hash` is older than the raw file
+- `source_mtime` is older than the raw file
+
+Skip when the compiled summary already matches the current raw source.
 
 ## Main outputs
 
 - `wiki/summaries/*.md`
 - `wiki/concepts/*.md`
+- `wiki/entities/*.md` when enabled
 - `wiki/index.md`
 - `wiki/log.md`
-- `wiki/indices/*`
+- `wiki/indices/INDEX.md`
+- `wiki/indices/CONCEPTS.md`
+- `wiki/indices/SOURCES.md`
+- `wiki/indices/RECENT.md`
+- `wiki/indices/ENTITIES.md` when the entity layer exists
 
-If the user wants a full maintenance report, follow with [kb-health](/skills/kb-health).
+## Conflict handling
+
+When new evidence conflicts with an existing concept or entity page, the compiler should not silently overwrite the old claim. It should surface the tension and keep provenance visible.
+
+## Light sanity check
+
+After compilation, the skill can fix obvious mechanical issues introduced by the pass, such as:
+
+- broken links created during the update
+- missing reciprocal `related` fields
+- summary metadata gaps
+- alias-style wikilinks inside Markdown table cells
+
+For a full maintenance report, hand off to [kb-health](/skills/kb-health).
