@@ -1,11 +1,10 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
   name: "Obsidian Notes Karpathy"
-  text: "LLM-Driven Knowledge Base"
-  tagline: Transform raw information into structured, queryable wisdom — inspired by Andrej Karpathy's workflow
+  text: "LLM-Compiled Knowledge Bases for Obsidian"
+  tagline: Keep raw sources immutable, compile a persistent wiki, and let questions compound into reusable artifacts.
   image:
     src: /hero-image.svg
     alt: Obsidian Notes Karpathy
@@ -21,22 +20,25 @@ hero:
       link: /zh/guide/introduction
 
 features:
-  - title: 🔄 Karpathy Workflow
-    details: Raw data → LLM compilation → Structured wiki → Q&A and outputs. A complete knowledge management pipeline.
-    link: /guide/karpathy-workflow
-  - title: 🤖 LLM-Compiled Wiki
-    details: The wiki is the LLM's domain. Humans rarely edit it manually — the LLM builds and maintains it from raw sources.
-    link: /skills/kb-compile
-  - title: 🔍 Intelligent Query
-    details: Ask complex questions and get synthesized answers with full traceability back to original sources.
+  - title: Package Entry + 4 Operations
+    details: One package-level entry skill routes requests into kb-init, kb-compile, kb-query, or kb-health.
+    link: /skills/obsidian-notes-karpathy
+  - title: Immutable Raw Layer
+    details: Source notes stay untouched. Compilation state lives in wiki summaries and health outputs.
+    link: /guide/directory-structure
+  - title: Persistent Q&A Memory
+    details: Substantive answers are archived to outputs/qa and can feed back into concept pages and future research.
     link: /skills/kb-query
-  - title: 📊 Multi-Format Output
-    details: Generate reports, slide decks, diagrams, and Canvas visualizations from your compiled knowledge.
+  - title: Publish From The Wiki
+    details: kb-query can turn grounded research into article drafts, social threads, and talk outlines under outputs/content.
     link: /workflow/query
-  - title: 🏗️ Three Core Skills
-    details: kb-init for setup, kb-compile for wiki building, kb-query for search and Q&A. Simple but powerful.
-    link: /skills/overview
-  - title: 🔗 Obsidian Integration
-    details: Built on Obsidian Flavored Markdown with wikilinks, callouts, and Canvas support.
-    link: /skills/obsidian-markdown
+  - title: index.md + log.md
+    details: The wiki has both a content-oriented entry point and an append-only operational timeline.
+    link: /workflow/overview
+  - title: Deep Health Checks
+    details: kb-health runs report-oriented linting for contradictions, stale claims, alias drift, weak links, orphan pages, and provenance gaps.
+    link: /skills/kb-health
+  - title: Markdown First, Search Later
+    details: Start with markdown indices, Backlinks, and Properties search. Add DuckDB, Dataview, or heavier retrieval only when scale demands it.
+    link: /workflow/query
 ---

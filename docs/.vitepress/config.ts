@@ -12,10 +12,10 @@ export default defineConfig({
       dark: '/logo-dark.svg',
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/your-org/obsidian-notes-karpathy' },
+      { icon: 'github', link: 'https://github.com/bahayonghang/obsidian-notes-karpathy' },
     ],
     editLink: {
-      pattern: 'https://github.com/your-org/obsidian-notes-karpathy/edit/main/docs/:path',
+      pattern: 'https://github.com/bahayonghang/obsidian-notes-karpathy/edit/main/docs/:path',
       text: 'Edit this page on GitHub',
     },
     footer: {
@@ -138,12 +138,14 @@ function sidebarEn() {
     ],
     '/skills/': [
       {
-        text: 'Core Skills',
+        text: 'Skills',
         items: [
           { text: 'Overview', link: '/skills/overview' },
+          { text: 'obsidian-notes-karpathy', link: '/skills/obsidian-notes-karpathy' },
           { text: 'kb-init', link: '/skills/kb-init' },
           { text: 'kb-compile', link: '/skills/kb-compile' },
           { text: 'kb-query', link: '/skills/kb-query' },
+          { text: 'kb-health', link: '/skills/kb-health' },
         ],
       },
       {
@@ -192,12 +194,14 @@ function sidebarZh() {
     ],
     '/zh/skills/': [
       {
-        text: '核心技能',
+        text: '技能',
         items: [
           { text: '概览', link: '/zh/skills/overview' },
+          { text: 'obsidian-notes-karpathy', link: '/zh/skills/obsidian-notes-karpathy' },
           { text: 'kb-init', link: '/zh/skills/kb-init' },
           { text: 'kb-compile', link: '/zh/skills/kb-compile' },
           { text: 'kb-query', link: '/zh/skills/kb-query' },
+          { text: 'kb-health', link: '/zh/skills/kb-health' },
         ],
       },
       {

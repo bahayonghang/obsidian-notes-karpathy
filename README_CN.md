@@ -1,76 +1,111 @@
 # Obsidian Notes Karpathy
 
-基于 [Andrej Karpathy 知识管理工作流](https://x.com/karpathy/status/2039805659525644595) 的 LLM 驱动 Obsidian 知识库技能。
+> [!WARNING]
+> 这是自用版本喵～。项目目前处于不稳定状态，正在持续迭代中。
 
-## 概述
+基于 Andrej Karpathy 工作流的 Obsidian LLM 知识库技能包。
 
-从多种来源收集原始资料 → LLM 增量编译为 `.md` wiki → Q&A 问答、报告、幻灯片 —— 全部在 Obsidian 中查看。你几乎不需要手动编辑 wiki，这是 LLM 的领域。
+## 这是什么
 
+这个仓库交付的是一组 **技能包**，不是应用程序。它帮助代理维护一个三层知识库：
+
+```text
+raw/     -> 人类整理的不可变原始资料
+wiki/    -> LLM 维护的编译产物
+outputs/ -> 问答沉淀、健康报告、报告、幻灯片、图表和可发布内容
 ```
-raw/（人类添加资料）→ kb-compile → wiki/（LLM 维护）→ kb-query → outputs/
+
+核心思想不是“每次都临时做一遍 RAG”，而是“先编译成可维护的 wiki，再持续更新和复用”。你可以把它理解成一本会不断生长的活书，而不是一堆会腐烂的笔记。
+
+## 包结构
+
+```text
+skills/obsidian-notes-karpathy/
+├── obsidian-notes-karpathy/  # 包级入口技能
+├── kb-init/                  # 初始化知识库结构与 schema
+├── kb-compile/               # 将 raw 编译到 wiki/
+├── kb-query/                 # 搜索、问答、归档和内容生成
+├── kb-health/                # 深度体检与维护建议
+├── references/               # 共享模板与约定
+└── evals/                    # 评测提示词与 fixture vault
 ```
-
-## 技能列表
-
-| 技能 | 触发命令 | 描述 |
-|------|---------|------|
-| **kb-init** | `初始化知识库` / `kb init` | 一次性设置：创建目录结构 + AGENTS.md 模式定义 |
-| **kb-compile** | `编译wiki` / `compile wiki` | 核心引擎：预处理 raw/ → 编译摘要和概念文章 → 量化健康评分 |
-| **kb-query** | `问知识库` / `query kb` | 搜索 + Q&A 问答（自动归档）+ 多格式输出（报告、Marp 幻灯片、Mermaid 图、Canvas） |
 
 ## 工作流
 
 ```mermaid
 graph LR
-    A[Web Clipper / 手动添加] -->|剪藏| B[raw/]
-    B -->|kb-compile| C[wiki/]
-    C -->|kb-query| D[outputs/]
-    D -.->|归档回wiki| C
+    A[raw/] -->|kb-compile| B[wiki/]
+    B -->|kb-query| C[outputs/qa + reports + slides + charts + content]
+    B -->|kb-health| D[outputs/health]
+    C -.->|新证据和新连接| B
 ```
 
-1. **初始化** — 运行 `kb-init` 一次性设置 vault 结构
-2. **收集** — 使用 Obsidian Web Clipper 浏览器插件或手动将资料添加到 `raw/`
-3. **编译** — 运行 `kb-compile` 增量构建 wiki（摘要、概念文章、索引、wikilinks）
-4. **问答** — 运行 `kb-query` 提问、搜索或生成报告/幻灯片/图表。Q&A 结果自动归档到 `outputs/qa/`，新发现自动反哺 wiki
-5. **检查** — `kb-compile` 包含量化健康评分：完整性、一致性、连通性、新鲜度
+这套工作流有四个核心动作：
 
-## 目录结构
+1. `kb-init` 建立契约
+2. `kb-compile` 摄入新资料并更新摘要、概念页与可选实体页
+3. `kb-query` 回答问题、归档高价值 Q&A，并生成对外内容
+4. `kb-health` 审计漂移、矛盾、陈旧 Q&A 和检索升级时机
 
-运行 `kb-init` 后，你的 vault 结构如下：
+## 技能列表
 
-```
+| 技能 | 作用 | 触发示例 |
+|------|------|---------|
+| `obsidian-notes-karpathy` | 包级入口和生命周期路由 | "Karpathy workflow"、"LLM Wiki"、"不是 RAG"、"知识库工作流" |
+| `kb-init` | 创建标准目录和 schema 文件 | "kb init"、"初始化知识库"、"setup vault" |
+| `kb-compile` | 将新 raw 编译成摘要、概念页、可选实体页、索引和日志 | "compile wiki"、"编译wiki"、"sync wiki"、"消化这些笔记" |
+| `kb-query` | 搜索 wiki、回答问题、沉淀问答、回写 wiki、生成报告/幻灯片/图表/内容草稿 | "query kb"、"问知识库"、"生成报告"、"把笔记写成推文串" |
+| `kb-health` | 对编译后的 wiki 做深度体检并给出下一层检索建议 | "kb health"、"health check"、"笔记越来越散" |
+
+## 核心设计约束
+
+- `raw/` 是不可变层，编译状态不回写源文件。
+- `wiki/index.md` 是内容入口。
+- `wiki/log.md` 是 append-only 的运行历史，覆盖 `ingest`、`query`、`publish`、`health` 四类事件。
+- `outputs/qa/` 默认沉淀有价值的问答，让研究结果持续复用。
+- 默认先用 markdown 索引。
+- 下一层优先用 Backlinks、unlinked mentions 和 Properties 搜索。
+- qmd、DuckDB markdown 解析和 FTS 是向量检索之前的本地优先升级路径。
+
+## 标准目录结构
+
+```text
 vault/
-├── raw/                  # 原始资料（文章、论文、推文等）
-│   ├── articles/         # Web Clipper 剪藏的文章
-│   ├── podcasts/         # 播客转写稿
-│   ├── papers/           # 学术论文
-│   └── assets/           # 来源图片
-├── wiki/                 # LLM 编译的 wiki（请勿手动编辑）
-│   ├── concepts/         # 每个关键概念一篇文章
-│   ├── summaries/        # 每个原始资料一篇摘要
-│   └── indices/          # INDEX.md、CONCEPTS.md、SOURCES.md、RECENT.md
-├── outputs/              # 生成的内容
-│   ├── qa/               # Q&A 研究归档（自动保存）
-│   ├── health/           # 健康检查报告
-│   ├── reports/          # Markdown 研究报告
-│   ├── slides/           # Marp 幻灯片
-│   └── charts/           # Mermaid 图表、Canvas 文件
-└── AGENTS.md             # LLM 代理的模式定义
+├── raw/
+│   ├── articles/
+│   ├── papers/
+│   ├── podcasts/
+│   ├── assets/
+│   └── repos/          # 可选
+├── wiki/
+│   ├── concepts/
+│   ├── summaries/
+│   ├── indices/
+│   ├── entities/       # 可选
+│   ├── index.md
+│   └── log.md
+├── outputs/
+│   ├── qa/
+│   ├── health/
+│   ├── reports/
+│   ├── slides/
+│   ├── charts/
+│   └── content/
+│       ├── articles/
+│       ├── threads/
+│       └── talks/
+├── AGENTS.md
+└── CLAUDE.md
 ```
 
-## 依赖
+可选目录按需启用：
 
-这些技能基于 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) 构建：
-
-- `obsidian-markdown` — Obsidian 风味 Markdown 语法
-- `obsidian-cli` — 通过 CLI 与 Vault 交互
-- `obsidian-canvas-creator` — Canvas 可视化
+- `raw/repos/` 用来放 repo 快照或 repo 伴随笔记
+- `wiki/entities/` 用来放人物、组织、产品、项目或仓库等稳定实体页
 
 ## 安装
 
-### 方式一：使用 npx 安装（推荐）
-
-全局安装，可在所有项目中使用：
+### 方式一：通过 `npx` 安装
 
 ```bash
 npx skills add bahayonghang/obsidian-notes-karpathy -g
@@ -78,36 +113,49 @@ npx skills add bahayonghang/obsidian-notes-karpathy -g
 
 ### 方式二：安装到项目目录
 
-安装到你的 Obsidian 项目目录中，仅供该项目使用：
-
 ```bash
-# 导航到你的 Obsidian vault 根目录
 cd /path/to/your/obsidian-vault
-
-# 本地安装技能
 npx skills add bahayonghang/obsidian-notes-karpathy
 ```
 
 ### 方式三：手动安装
 
-将 `skills/obsidian-notes-karpathy/` 目录复制到你的 `.claude/skills/` 文件夹：
+把技能目录复制到本地 skills 目录：
 
 ```bash
 cp -r skills/obsidian-notes-karpathy/* ~/.claude/skills/
 ```
 
-Windows (PowerShell)：
+PowerShell：
 
 ```powershell
 Copy-Item -Recurse skills/obsidian-notes-karpathy\* $env:USERPROFILE\.claude\skills\
 ```
 
-## 参考
+## 推荐搭配技能
 
-- [Karpathy "LLM Knowledge Bases" 推文](https://x.com/karpathy/status/2039805659525644595)
-- [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)
-- [Obsidian](https://obsidian.md)
+这个包默认与你已有的 Obsidian 技能协作：
 
-## 许可证
+- `obsidian-markdown`
+- `obsidian-cli`
+- `obsidian-canvas-creator`
+
+## 可选增强
+
+- **Obsidian Web Clipper**：更稳定地采集 markdown 资料
+- **Backlinks + Properties**：优先用 Obsidian 原生图谱与属性能力
+- **qmd**：在更重的检索基础设施之前，先上本地 markdown 搜索
+- **Dataview / Datacore**：在 Vault 内做动态元数据视图
+- **DuckDB markdown + 全文检索**：当知识库变大后提供本地优先的结构化检索
+- **Marp**：把 markdown 幻灯片导出为可展示内容
+
+## 参考资料
+
+- Andrej Karpathy 知识库线程：https://x.com/karpathy/status/2039805659525644595
+- kepano/obsidian-skills：https://github.com/kepano/obsidian-skills
+- Obsidian Web Clipper 文档：https://obsidian.md/help/web-clipper
+- qmd：https://github.com/tobi/qmd
+
+## License
 
 MIT
