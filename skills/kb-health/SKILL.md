@@ -1,6 +1,6 @@
 ---
 name: kb-health
-description: Run a deep health check on a Karpathy-style Obsidian knowledge base. Use this skill whenever the user says "kb health", "health check", "lint wiki", "find contradictions", "find orphan notes", "stale claims", "broken wikilinks", "missing cross references", "my notes feel disconnected", "my wiki is outdated", "broken Obsidian rendering", "malformed index", "检查知识库", "知识库体检", "笔记越来越乱", or wants a periodic maintenance pass over a compiled wiki, including stale Q&A, alias drift, duplicate entities, search-upgrade recommendations, and mechanical Obsidian rendering problems.
+description: Run a deep health check on a Karpathy-style Obsidian knowledge base. Use this skill whenever the user says "kb health", "health check", "lint wiki", "find contradictions", "find orphan notes", "stale claims", "broken wikilinks", "missing cross references", "my notes feel disconnected", "my wiki is outdated", "broken Obsidian rendering", "malformed index", "检查知识库", "知识库体检", "笔记越来越乱", or wants a periodic maintenance pass over a compiled wiki, including stale Q&A, alias drift, duplicate entities, search-upgrade recommendations, and mechanical Obsidian rendering problems. Prefer this skill over the package router when the main request is maintenance, drift diagnosis, or lint-and-repair rather than setup or compilation.
 ---
 
 # KB Health
@@ -15,12 +15,15 @@ Read these shared references first:
 
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/health-rubric.md`
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/search-upgrades.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
 
 Then read the vault's local `AGENTS.md` and `CLAUDE.md` if present.
+
+If `../obsidian-notes-karpathy/scripts/lint_obsidian_mechanics.py` exists, run it first. Treat its JSON output as the deterministic baseline for mechanical issues such as alias-style wikilinks inside table cells, duplicate concept aliases, stale Q&A flags, broken wikilinks, and orphan pages before you do the deeper rubric-based audit.
 
 If one or more shared references are missing, continue with the minimum compatible contract and surface the missing files in the report summary. Missing support files are part of the diagnosis, not an excuse to skip the pass.
 

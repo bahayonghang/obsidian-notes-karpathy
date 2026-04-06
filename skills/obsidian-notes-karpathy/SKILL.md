@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route Karpathy-style LLM Wiki requests inside Obsidian. Use this skill whenever the user mentions Andrej Karpathy's markdown-wiki pattern, "LLM Wiki", a "living book", "compile my notes", "not RAG", "AI knowledge base", "personal wiki", "second brain", "PKM workflow", "query my vault", "archive answers", "health check my notes", "repair my vault", "broken Obsidian index", "my notes are rotting", "knowledge base feels disconnected", "知识库编译", "不是 RAG", "会自动生长的书", "问知识库", "知识库体检", "修知识库", or wants to set up, repair, compile, query, publish from, or lint an Obsidian knowledge base. This is the package-level entry point: it inspects lifecycle signals and routes to kb-init, kb-compile, kb-query, or kb-health.
+description: Diagnose and route ambiguous, workflow-level Karpathy-style LLM Wiki requests inside Obsidian. Use this skill when the user talks about the workflow as a whole, mentions Andrej Karpathy's markdown-wiki pattern, "LLM Wiki", a "living book", "not RAG", "AI knowledge base", "personal wiki", "second brain", "PKM workflow", asks what step to run next, or describes symptoms like "my notes are rotting", "knowledge base feels disconnected", "broken Obsidian index", "知识库工作流", "不是 RAG", "会自动生长的书", "笔记越来越乱", or "我该先做哪一步". Prefer the operation-specific skills when the user already clearly means init, compile, query, or health.
 ---
 
 # Obsidian Notes Karpathy
@@ -14,6 +14,7 @@ Use this skill when the user talks about the workflow as a whole, not just one o
 Read these shared references first:
 
 - `./references/file-model.md`
+- `./references/lifecycle-matrix.md`
 - `./references/search-upgrades.md`
 - `./references/activity-log-template.md`
 
@@ -24,9 +25,13 @@ If the target vault already exists, inspect:
 - the top of `wiki/index.md`
 - the most recent entries in `wiki/log.md` when available
 
+If `./scripts/detect_lifecycle.py` exists, run it against the target vault first and treat its JSON output as the default structural diagnosis. Override the default only when the user's symptoms clearly point to a different lifecycle step.
+
 ## Lifecycle signals
 
 Diagnose the vault using signals, not just user phrasing.
+
+Prefer the shared lifecycle matrix and the deterministic lifecycle script over ad-hoc guessing.
 
 ### Init signals
 
@@ -76,6 +81,8 @@ When the user asks "what should I do first?" or gives symptoms rather than a com
 - choose `kb-query` if the vault already looks compiled and the user wants conclusions, comparison, or outward-facing content
 
 State the assumption you made if the lifecycle diagnosis is inferred rather than explicit.
+
+If the structural diagnosis says `query-ready` but the user's main complaint is drift, contradiction, broken rendering, or weak links, explicitly override to `kb-health` and say why.
 
 ## Package doctrine
 

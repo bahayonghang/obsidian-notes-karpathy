@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: Incrementally compile an Obsidian knowledge base from immutable raw sources. Use this skill whenever the user says "compile wiki", "compile kb", "sync wiki", "refresh wiki", "digest these articles", "turn my clips into notes", "process my repo notes", "编译wiki", "更新知识库", "同步wiki", "消化文章", "编译笔记", or wants newly added sources turned into summaries, concepts, entities, links, and indices. Also trigger when new files landed under `raw/`, including markdown files placed directly under `raw/`, and the user asks what to do next.
+description: Incrementally compile an Obsidian knowledge base from immutable raw sources. Use this skill whenever the user says "compile wiki", "compile kb", "sync wiki", "refresh wiki", "digest these articles", "turn my clips into notes", "process my repo notes", "编译wiki", "更新知识库", "同步wiki", "消化文章", "编译笔记", or wants newly added sources turned into summaries, concepts, entities, links, and indices. Also trigger when new files landed under `raw/`, including markdown files placed directly under `raw/`, and the user asks what to do next. Prefer this skill over the package router when the operation is clearly a compile pass rather than a workflow-level diagnosis.
 ---
 
 # KB Compile
@@ -16,6 +16,7 @@ Read these files first:
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/summary-template.md`
 - `../obsidian-notes-karpathy/references/concept-template.md`
@@ -24,6 +25,8 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/index-home-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
+
+If `../obsidian-notes-karpathy/scripts/scan_compile_delta.py` exists, run it first and use its JSON result as the authoritative starting point for new, changed, unchanged, and skipped counts. Fall back to manual inspection only when the script is unavailable.
 
 If one or more shared references are missing, do not hard-fail immediately. Continue with the minimum compatible contract:
 

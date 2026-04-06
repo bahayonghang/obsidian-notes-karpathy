@@ -1,6 +1,6 @@
 ---
 name: kb-init
-description: Initialize or repair a Karpathy-style LLM knowledge base inside an Obsidian vault. Use this skill whenever the user says "kb init", "initialize knowledge base", "Karpathy setup", "LLM Wiki setup", "setup vault", "repair vault", "fix my KB structure", "turn my Obsidian into a living book", "set up a second brain", "start a compile-first knowledge base", "初始化知识库", "新建知识库", "创建wiki", "修知识库结构", "搭建知识库编译流程", or wants a fresh vault or sub-vault to follow the raw/wiki/outputs contract or needs a partially initialized vault repaired.
+description: Initialize or repair a Karpathy-style LLM knowledge base inside an Obsidian vault. Use this skill whenever the user says "kb init", "initialize knowledge base", "Karpathy setup", "LLM Wiki setup", "setup vault", "repair vault", "fix my KB structure", "turn my Obsidian into a living book", "set up a second brain", "start a compile-first knowledge base", "初始化知识库", "新建知识库", "创建wiki", "修知识库结构", "搭建知识库编译流程", or wants a fresh vault or a partially initialized vault repaired. Prefer this skill over the package router when the task is clearly setup or repair rather than lifecycle diagnosis.
 ---
 
 # KB Init
@@ -14,6 +14,7 @@ This skill creates the vault contract that later skills depend on. The main arch
 Read these shared references first:
 
 - `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/concept-template.md`
 - `../obsidian-notes-karpathy/references/entity-template.md`
@@ -23,6 +24,8 @@ Read these shared references first:
 - `../obsidian-notes-karpathy/references/index-home-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
+
+If `../obsidian-notes-karpathy/scripts/detect_lifecycle.py` exists, run it against the target vault before writing anything. Use it to distinguish fresh setup from partial repair, then preserve existing content accordingly.
 
 ## Inputs to gather
 

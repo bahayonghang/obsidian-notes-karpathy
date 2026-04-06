@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate outputs from a compiled Obsidian knowledge base. Use this skill whenever the user asks what their notes say about something, wants to search or summarize the wiki, asks for a report, thread, post, article, slide deck, or talk outline from their notes, says "query kb", "search kb", "问知识库", "搜索知识库", "帮我研究", "summarize what I know about", "write a report on", "把笔记写成文章", "生成推文串", "生成报告", "生成幻灯片", or wants a substantive answer grounded in the KB to be archived instead of disappearing into chat.
+description: Query, search, and generate outputs from a compiled Obsidian knowledge base. Use this skill whenever the user asks what their notes say about something, wants to search or summarize the wiki, asks for a report, thread, post, article, slide deck, or talk outline from their notes, says "query kb", "search kb", "问知识库", "搜索知识库", "帮我研究", "summarize what I know about", "write a report on", "把笔记写成文章", "生成推文串", "生成报告", "生成幻灯片", or wants a substantive answer grounded in the KB to be archived instead of disappearing into chat. Prefer this skill over the package router when the compiled layer already exists and the user clearly wants retrieval, synthesis, or publishing rather than setup or repair.
 ---
 
 # KB Query
@@ -16,6 +16,7 @@ Read these files first:
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/qa-template.md`
 - `../obsidian-notes-karpathy/references/content-output-template.md`
 - `../obsidian-notes-karpathy/references/search-upgrades.md`
