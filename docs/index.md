@@ -4,41 +4,44 @@ layout: home
 hero:
   name: "Obsidian Notes Karpathy"
   text: "LLM-Compiled Knowledge Bases for Obsidian"
-  tagline: Keep raw sources immutable, compile a persistent wiki, and let questions compound into reusable artifacts.
+  tagline: Route the vault by lifecycle, keep raw sources immutable, and turn questions into durable research artifacts.
   image:
     src: /hero-image.svg
     alt: Obsidian Notes Karpathy
   actions:
     - theme: brand
-      text: Get Started
-      link: /guide/introduction
+      text: Quick Start
+      link: /guide/quick-start
     - theme: alt
-      text: View Skills
+      text: Choose a Skill
       link: /skills/overview
     - theme: alt
       text: 中文文档
       link: /zh/guide/introduction
 
 features:
-  - title: Package Entry + 4 Operations
-    details: One package-level entry skill routes requests into kb-init, kb-compile, kb-query, or kb-health.
+  - title: Route by Lifecycle Signal
+    details: The package entry skill diagnoses whether the vault needs initialization, compilation, querying, or a health pass.
     link: /skills/obsidian-notes-karpathy
-  - title: Immutable Raw Layer
-    details: Source notes stay untouched. Compilation state lives in wiki summaries and health outputs.
-    link: /guide/directory-structure
-  - title: Persistent Q&A Memory
-    details: Substantive answers are archived to outputs/qa and can feed back into concept pages and future research.
+  - title: Compile, Do Not Improvise
+    details: Source notes stay untouched. The LLM updates summaries, concept pages, indices, logs, and optional entities in the compiled layer.
+    link: /skills/kb-compile
+  - title: Persistent Research Memory
+    details: Substantive answers live in outputs/qa instead of disappearing into chat history.
     link: /skills/kb-query
-  - title: Publish From The Wiki
-    details: kb-query can turn grounded research into article drafts, social threads, and talk outlines under outputs/content.
-    link: /workflow/query
+  - title: Publish From Grounded Notes
+    details: Reports, article drafts, social threads, and talk outlines are generated from wiki-backed evidence.
+    link: /workflow/overview
+  - title: Immutable Raw Layer
+    details: Raw markdown is human-curated input, not a place to store compilation state or generated edits.
+    link: /guide/directory-structure
   - title: index.md + log.md
-    details: The wiki has both a content-oriented entry point and an append-only operational timeline.
+    details: The vault keeps both a content-oriented entry surface and an append-only operational history.
     link: /workflow/overview
   - title: Deep Health Checks
-    details: kb-health runs report-oriented linting for contradictions, stale claims, alias drift, weak links, orphan pages, and provenance gaps.
+    details: kb-health scores completeness, consistency, connectivity, freshness, and provenance, then separates safe fixes from judgment calls.
     link: /skills/kb-health
   - title: Markdown First, Search Later
-    details: Start with markdown indices, Backlinks, and Properties search. Add DuckDB, Dataview, or heavier retrieval only when scale demands it.
+    details: Start with index pages, backlinks, unlinked mentions, and Properties search before adding heavier retrieval infrastructure.
     link: /workflow/query
 ---

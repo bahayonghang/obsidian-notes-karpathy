@@ -1,70 +1,60 @@
-# Documentation
+# Docs Maintenance
 
-Bilingual (English/Chinese) VitePress documentation for Obsidian Notes Karpathy.
+This folder contains the bilingual VitePress site for Obsidian Notes Karpathy.
 
-## Development
+## Source of truth
 
-### Install Dependencies
+Treat the skill contracts as authoritative:
+
+- `skills/*/SKILL.md` defines trigger surface, lifecycle intent, required reads, writes, and output guarantees.
+- `skills/obsidian-notes-karpathy/references/*` defines the shared file model, templates, health rubric, and search posture.
+
+The site should explain those contracts for humans. It should not invent parallel behavior.
+
+## Documentation shape
+
+```text
+docs/
+├── index.md               # English landing page
+├── guide/                 # Mental model, quick start, installation, structure
+├── skills/                # Skill-by-skill routing and behavior
+├── workflow/              # End-to-end lifecycle flow
+├── zh/                    # Chinese mirror of the public docs
+└── .vitepress/            # Site configuration and theme
+```
+
+## Editing rules
+
+1. Update the docs when a `SKILL.md` contract changes in a reader-visible way.
+2. Keep English and Chinese pages aligned in scope, even if the wording differs.
+3. Prefer summaries, routing matrices, and lifecycle explanations over duplicating full skill prose.
+4. Do not document behavior that is not grounded in the current skill bundle.
+5. When a page starts drifting from the skill contract, fix the page or delete the duplicated claim.
+
+## Local development
+
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-### Start Development Server
+Start the dev server:
 
 ```bash
 npm run dev
 ```
 
-This starts a local server with hot reload at `http://localhost:5173`.
-
-### Build for Production
+Build the static site:
 
 ```bash
 npm run build
 ```
 
-Output is generated in `.vitepress/dist/`.
-
-### Preview Production Build
+Preview the production build:
 
 ```bash
 npm run preview
 ```
 
-## Structure
-
-```
-docs/
-├── .vitepress/
-│   ├── config.ts          # VitePress configuration
-│   └── theme/
-│       ├── index.js       # Custom theme entry
-│       └── custom.css     # Custom styles
-├── public/                # Static assets (logos, images)
-├── guide/                 # English guide pages
-├── skills/                # English skills documentation
-├── workflow/              # English workflow documentation
-├── zh/                    # Chinese translations
-│   ├── guide/
-│   ├── skills/
-│   └── workflow/
-├── index.md               # English landing page
-└── zh/index.md            # Chinese landing page
-```
-
-## Adding New Content
-
-1. Create the English version in the appropriate directory (`guide/`, `skills/`, `workflow/`)
-2. Create the Chinese translation in the corresponding `zh/` subdirectory
-3. Update `.vitepress/config.ts` to add navigation and sidebar entries
-4. Test with `npm run dev`
-5. Build with `npm run build`
-
-## Language Switching
-
-The site supports automatic language switching:
-- English: root paths (`/guide/introduction`)
-- Chinese: `/zh/` prefix (`/zh/guide/introduction`)
-
-Users can switch languages using the language selector in the navigation bar.
+The build output is written to `.vitepress/dist/`.

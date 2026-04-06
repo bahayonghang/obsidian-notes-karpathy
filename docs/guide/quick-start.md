@@ -1,12 +1,12 @@
 # Quick Start
 
-Get a minimal Karpathy-style knowledge base running quickly.
+Use this page when you want a minimal, working vault loop in one session.
 
-## 1. Initialize the vault contract
+## 1. Create or repair the vault contract
 
-Ask the package entry skill or run `kb-init`.
+Start with the package entry skill or route directly to `kb-init`.
 
-This creates:
+Expected support layer:
 
 ```text
 raw/{articles,papers,podcasts,assets}
@@ -18,11 +18,16 @@ AGENTS.md
 CLAUDE.md
 ```
 
-## 2. Add your first raw source
+Optional layers are enabled only when needed:
 
-Create a markdown file under `raw/articles/`, `raw/papers/`, or `raw/podcasts/`.
+- `raw/repos/` for repo snapshots or companion notes
+- `wiki/entities/` plus `wiki/indices/ENTITIES.md` for durable named entities
 
-Use source metadata only:
+## 2. Add 5 to 10 real sources
+
+Place markdown notes under `raw/`, `raw/articles/`, `raw/papers/`, or `raw/podcasts/`.
+
+Raw notes should keep only source metadata:
 
 ```yaml
 ---
@@ -38,42 +43,54 @@ clipped_at: 2026-04-03T10:00:00
 ---
 ```
 
-Do not add compilation-state fields to raw notes.
+Do not put compilation state in raw notes.
 
-## 3. Compile the wiki
+## 3. Compile in small batches
 
-Run `kb-compile`.
+Run `kb-compile` after each batch of about 5 sources.
 
-Expected results:
+You should see:
 
-- summary pages in `wiki/summaries/`
+- summaries in `wiki/summaries/`
 - concept pages in `wiki/concepts/`
+- optional entity pages when the entity layer is warranted
 - rebuilt `wiki/index.md`, `wiki/log.md`, and `wiki/indices/*`
 
-## 4. Ask a substantive question
+## 4. Ask one substantive question
 
-Use `kb-query`.
+Run `kb-query` after the first compilation pass.
 
-Substantive answers should be archived to `outputs/qa/` by default.
+The skill should:
 
-## 5. Turn one answer into content
+- search the compiled wiki first
+- check prior answers in `outputs/qa/`
+- answer with provenance
+- archive a substantive result to `outputs/qa/`
 
-Use `kb-query` again in publish mode.
+## 5. Publish one derivative artifact
+
+Use `kb-query` in publish mode when you want an outward-facing deliverable.
 
 Typical targets:
 
+- `outputs/reports/`
+- `outputs/slides/`
+- `outputs/charts/`
 - `outputs/content/articles/`
 - `outputs/content/threads/`
 - `outputs/content/talks/`
 
-## 6. Run a health pass
+## 6. Run a health baseline
 
-Use `kb-health` to generate a scored report in `outputs/health/`.
+Use `kb-health` once the first round-trip is complete.
 
-## Recommended first-week loop
+The report should land in `outputs/health/health-check-{date}.md` and score the vault across completeness, consistency, connectivity, freshness, and provenance.
 
-1. add 5-10 sources
-2. compile in small batches
-3. ask one or two synthesis questions
-4. turn one good answer into a publishable draft
-5. run a health pass
+## Minimal bootstrap loop
+
+1. create the support layer with `kb-init`
+2. add a small batch of sources
+3. compile with `kb-compile`
+4. ask a real research question with `kb-query`
+5. turn one answer into a publishable artifact if relevant
+6. run `kb-health` to establish a maintenance baseline

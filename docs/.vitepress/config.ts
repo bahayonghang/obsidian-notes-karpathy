@@ -120,7 +120,7 @@ function sidebarEn() {
   return {
     '/guide/': [
       {
-        text: 'Getting Started',
+        text: 'Start Here',
         items: [
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Quick Start', link: '/guide/quick-start' },
@@ -128,7 +128,7 @@ function sidebarEn() {
         ],
       },
       {
-        text: 'Concepts',
+        text: 'Operating Model',
         items: [
           { text: 'Karpathy Workflow', link: '/guide/karpathy-workflow' },
           { text: 'Directory Structure', link: '/guide/directory-structure' },
@@ -138,7 +138,7 @@ function sidebarEn() {
     ],
     '/skills/': [
       {
-        text: 'Skills',
+        text: 'Routing & Core Skills',
         items: [
           { text: 'Overview', link: '/skills/overview' },
           { text: 'obsidian-notes-karpathy', link: '/skills/obsidian-notes-karpathy' },
@@ -149,7 +149,7 @@ function sidebarEn() {
         ],
       },
       {
-        text: 'Dependencies',
+        text: 'Companion Skills',
         items: [
           { text: 'Obsidian Markdown', link: '/skills/obsidian-markdown' },
           { text: 'Obsidian CLI', link: '/skills/obsidian-cli' },
@@ -159,7 +159,7 @@ function sidebarEn() {
     ],
     '/workflow/': [
       {
-        text: 'Workflow Guide',
+        text: 'Lifecycle Flow',
         items: [
           { text: 'Overview', link: '/workflow/overview' },
           { text: 'Collect Sources', link: '/workflow/collect' },
@@ -176,7 +176,7 @@ function sidebarZh() {
   return {
     '/zh/guide/': [
       {
-        text: '快速开始',
+        text: '从这里开始',
         items: [
           { text: '简介', link: '/zh/guide/introduction' },
           { text: '快速开始', link: '/zh/guide/quick-start' },
@@ -184,7 +184,7 @@ function sidebarZh() {
         ],
       },
       {
-        text: '核心概念',
+        text: '运行模型',
         items: [
           { text: 'Karpathy 工作流', link: '/zh/guide/karpathy-workflow' },
           { text: '目录结构', link: '/zh/guide/directory-structure' },
@@ -194,7 +194,7 @@ function sidebarZh() {
     ],
     '/zh/skills/': [
       {
-        text: '技能',
+        text: '路由与核心技能',
         items: [
           { text: '概览', link: '/zh/skills/overview' },
           { text: 'obsidian-notes-karpathy', link: '/zh/skills/obsidian-notes-karpathy' },
@@ -205,7 +205,7 @@ function sidebarZh() {
         ],
       },
       {
-        text: '依赖技能',
+        text: '搭配技能',
         items: [
           { text: 'Obsidian Markdown', link: '/zh/skills/obsidian-markdown' },
           { text: 'Obsidian CLI', link: '/zh/skills/obsidian-cli' },
@@ -215,7 +215,7 @@ function sidebarZh() {
     ],
     '/zh/workflow/': [
       {
-        text: '工作流指南',
+        text: '生命周期流程',
         items: [
           { text: '概览', link: '/zh/workflow/overview' },
           { text: '收集资料', link: '/zh/workflow/collect' },
