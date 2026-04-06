@@ -11,6 +11,10 @@ default:
 docs-install:
   cd docs && npm install
 
+# Start docs dev server with hot reload (top-level shortcut)
+docs:
+  cd docs && npm run dev
+
 # Start docs dev server with hot reload
 docs-dev:
   cd docs && npm run dev
@@ -27,6 +31,7 @@ docs-preview:
 
 # Run all CI checks locally
 ci:
+  just test
   just lint
   just docs-build
 
@@ -35,6 +40,10 @@ lint:
   @echo "Checking docs for issues..."
   @just --dry-run ci
   @echo "All checks passed!"
+
+# Run deterministic skill-bundle regression tests
+test:
+  python3 -m unittest tests/test_skill_bundle.py
 
 # ==================== Git / Workflow ====================
 
