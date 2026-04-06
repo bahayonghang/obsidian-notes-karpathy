@@ -1,333 +1,143 @@
 ---
 name: kb-query
-description: Query, search, and generate outputs from an LLM knowledge base wiki. Supports Q&A research against the compiled wiki (with automatic archival to outputs/qa/), full-text search with concept filtering, and multi-format output generation (Markdown reports, Marp slides, Mermaid diagrams, Obsidian Canvas). Use this skill when the user asks questions about their knowledge base, wants to search it, says "query kb", "问知识库", "research", "ask kb", "搜索知识库", "search kb", "查一下", "帮我研究", "知识库里有没有", generates reports or slides from knowledge base content, says "生成报告", "create slides", "kb output", "生成幻灯片", "可视化", "write a report on", "summarize what I know about", or wants to explore and extract insights from their collected knowledge. Also trigger when the user asks a complex question that could be answered by cross-referencing multiple wiki articles — even if they don't explicitly mention the knowledge base.
+description: Query, search, and generate outputs from a compiled Obsidian knowledge base. Use this skill whenever the user asks what their notes say about something, wants to search or summarize the wiki, asks for a report, thread, post, article, slide deck, or talk outline from their notes, says "query kb", "search kb", "问知识库", "搜索知识库", "帮我研究", "summarize what I know about", "write a report on", "把笔记写成文章", "生成推文串", "生成报告", "生成幻灯片", or wants a substantive answer to be archived instead of disappearing into chat.
 ---
 
-# KB Query — Search, Q&A, and Output Generation
+# KB Query
 
-The "consumption" side of the Karpathy knowledge base. Once raw sources are compiled into a wiki, this skill helps you extract value: ask complex questions, search for specific information, and generate polished outputs in multiple formats.
+Search, answer, and generate outputs from the compiled wiki.
 
-The power of this approach (as Karpathy noted): once your wiki is big enough, you can ask complex questions and the LLM will research the answers by navigating the interlinked wiki. No fancy RAG needed — the LLM reads index files and follows wikilinks to find what it needs.
+The key principle is that substantive research answers become persistent knowledge artifacts. Do not treat valuable Q&A as disposable chat.
 
-## When to Use
+## Read before querying
 
-- User asks a question about their knowledge base content
-- User wants to search for specific information in the wiki
-- User requests a report, slide deck, diagram, or other formatted output
-- User says "问知识库", "query", "research", "search kb", "生成报告", "create slides"
-- User wants to explore connections or patterns in their collected knowledge
+Read these files first:
 
-## Prerequisites
+- local `AGENTS.md`
+- local `CLAUDE.md`
+- `../references/file-model.md`
+- `../references/qa-template.md`
+- `../references/content-output-template.md`
+- `../references/search-upgrades.md`
+- `../references/activity-log-template.md`
 
-- Knowledge base must be initialized and compiled (`kb-init` + `kb-compile`)
-- `AGENTS.md` must exist at the vault/project root
-- `wiki/indices/INDEX.md` should exist with current content
+Then start with:
 
-## Capability 1: Search
+- `wiki/index.md`
+- `wiki/indices/INDEX.md`
+- `wiki/indices/CONCEPTS.md`
+- `wiki/indices/SOURCES.md`
+- `wiki/indices/ENTITIES.md` when it exists
 
-### How to search
+## Mode selection
 
-1. **Start with the index**: Read `wiki/indices/INDEX.md` to understand the knowledge base scope and structure
-2. **Concept search**: Check `wiki/indices/CONCEPTS.md` for relevant concept articles
-3. **Full-text search**: Use `obsidian-cli` (`obsidian search query="..."`) or Grep tool to search wiki content
-4. **Tag-based filtering**: Search by tags in frontmatter to narrow results
-5. **Source search**: Check `wiki/indices/SOURCES.md` to find raw sources by type or date
+Choose one of three modes:
 
-### Search output format
+1. search mode for finding relevant notes and evidence quickly
+2. research mode for answering a substantive question
+3. publish mode for generating outward-facing artifacts grounded in the wiki
 
-Return results as a structured list with context:
+## Search mode
 
-```markdown
-## Search Results: "{query}"
+For search-like requests:
 
-Found {N} relevant articles:
+1. inspect `wiki/index.md`
+2. inspect concept, source, and optional entity indices
+3. use ordinary file search or `obsidian-cli`
+4. use backlinks, unlinked mentions, or property search when they can surface related evidence faster than plain text search
+5. return a structured result list with short relevance notes and a few excerpts
 
-1. **[[wiki/concepts/concept-name]]** — {one-line summary of relevance}
-   > {Key excerpt from the article, 1-2 sentences}
-   > Tags: #tag1 #tag2
+Prefer markdown-first navigation before suggesting any search infrastructure upgrade.
 
-2. **[[wiki/summaries/source-name]]** — {one-line summary of relevance}
-   > {Key excerpt}
+## Research mode
 
-_Searched {N} articles in wiki/_
-```
+For complex questions, follow this order:
 
-## Capability 2: Q&A Research
+### Step 1: understand the question
 
-The core philosophy: **every conversation with the LLM adds a new layer to the knowledge base.** Q&A results are not disposable chat history — they are knowledge artifacts that accumulate over time, making future research faster and richer.
+Identify:
 
-### Research workflow
+- key concepts
+- key entities when relevant
+- expected answer shape
+- whether the question is factual, comparative, analytical, or exploratory
 
-For complex questions, follow this multi-step research process:
+### Step 2: check existing Q&A
 
-#### Step 1: Understand the question
+Search `outputs/qa/` first.
 
-Parse the user's question and identify:
-- Key concepts/entities involved
-- Type of answer expected (factual, analytical, comparative, exploratory)
-- Scope (narrow fact vs. broad synthesis)
+If you find a strong prior answer:
 
-#### Step 2: Check existing Q&A
+- use it as a starting point
+- update or extend it when needed
+- avoid re-deriving the same answer from scratch
 
-Before researching from scratch, check if this question (or a similar one) has already been answered:
+### Step 3: navigate the wiki
 
-1. Search `outputs/qa/` for files with related keywords in filename or `question` frontmatter
-2. If a matching Q&A exists and is still relevant:
-   - Use it as the research starting point — cite it and build on it
-   - If fully sufficient, return the existing answer with a note: "This was previously researched on {date}"
-3. If a partial match exists, read it first to avoid redundant work, then extend the research
+Read the most relevant concept pages, entity pages, and summaries, following wikilinks where they add evidence or contrast.
 
-This avoids re-deriving answers that already exist in the knowledge base.
+### Step 4: synthesize with provenance
 
-#### Step 3: Navigate the wiki
+Answer using wiki citations and explicit uncertainty when sources disagree or evidence is thin.
 
-1. Read `wiki/indices/INDEX.md` for the knowledge base overview
-2. Read `wiki/indices/CONCEPTS.md` to find relevant concept articles
-3. Open and read the most relevant concept articles
-4. Follow wikilinks to discover related content
-5. Check raw source summaries for detailed evidence
+### Step 5: archive by default
 
-For complex questions, decompose into sub-questions and research each one.
+If the answer is substantive, save it to `outputs/qa/{date}-{slug}.md` using `../references/qa-template.md`.
 
-#### Step 4: Synthesize and archive the answer
+Only skip archival when:
 
-Compose a thorough answer and **save it by default** to `outputs/qa/{date}-{slug}.md`. This is not optional — every substantive Q&A interaction produces a persistent knowledge artifact.
+- the user explicitly says not to save it, or
+- the interaction is trivial and purely operational
 
-The Q&A file format:
+### Step 6: append the query log
 
-```markdown
----
-question: "{The user's original question}"
-asked_at: {date}
-sources:
-  - "[[raw/source-1]]"
-  - "[[wiki/concepts/concept-a]]"
-tags:
-  - qa
-  - {topic/subtopic}
----
+When the answer is archived or materially updated, append a `query` entry to `wiki/log.md` using `../references/activity-log-template.md`.
 
-# {Rephrased question as title}
+### Step 7: feed useful insights back into the wiki
 
-## TL;DR
+After archiving, check whether the answer revealed:
 
-{One-sentence conclusion — the most direct answer to the question}
+- a new concept page that should exist
+- a new entity page that should exist
+- new evidence for an existing concept or entity
+- a missing connection between pages
 
-## Conclusions
+Update the wiki when the improvement is mechanical and well-supported.
 
-{2-4 paragraphs covering the detailed answer, arguments, and reasoning}
+## Publish mode
 
-### Key Findings
+Use this when the user wants content for an audience rather than only an internal answer.
 
-1. **{Finding 1}** — {Explanation with evidence}
-   - Source: [[wiki/summaries/source-name]]
+Supported artifacts:
 
-2. **{Finding 2}** — {Explanation}
-   - Sources: [[wiki/concepts/concept-a]], [[wiki/summaries/source-b]]
+- `outputs/content/articles/` for article drafts
+- `outputs/content/threads/` for X or social threads
+- `outputs/content/talks/` for talk outlines
+- `outputs/reports/` for markdown reports
+- `outputs/slides/` for Marp decks
+- `outputs/charts/` for Mermaid or Canvas outputs
 
-## Evidence
+For every generated artifact:
 
-{Link back to original sources with specific references}
+- look for an existing supporting Q&A note first
+- if no strong supporting Q&A exists, create one before or immediately after the publish artifact
+- use `../references/content-output-template.md` when the output is audience-facing
+- cite the wiki pages and prior Q&A consulted
+- keep filenames date-prefixed and slugged
+- append a `publish` entry to `wiki/log.md` when the artifact is substantive
 
-- [[wiki/concepts/relevant-concept]] — {what it contributed}
-- [[wiki/summaries/relevant-source]] — {what it contributed}
-- [[raw/original-article]] — {specific paragraph or data point}
+## Output requirements
 
-## Uncertainty
+In your user-facing summary, report:
 
-{Knowledge gaps, unverified claims, contradictions found, and what additional sources could help}
+1. which wiki pages or prior Q&A you relied on
+2. which mode you used
+3. where the new artifact was saved
+4. whether you updated any concept or entity pages as a result
+5. whether you appended a `query` or `publish` entry to `wiki/log.md`
 
-- {What we don't know yet}
-- {Where sources disagree}
-- {What raw materials could be added to `raw/` to fill gaps}
-```
+## Tooling notes
 
-Only skip archiving if the user explicitly says "don't save this" or the question is trivial (e.g., "how many concepts are there?").
-
-#### Step 5: Feed insights back into the wiki
-
-After archiving the Q&A, check whether the research revealed:
-
-- **New concepts** → Create `wiki/concepts/{concept-name}.md` entries
-- **New evidence for existing concepts** → Update the relevant concept articles with new findings and source links
-- **New connections between concepts** → Update `related` fields in frontmatter on both sides
-
-Report what was updated: "Archived Q&A to `outputs/qa/{filename}`. Also updated [[Concept X]] with new evidence and created new concept [[Concept Y]]."
-
-## Capability 3: Multi-Format Output
-
-### Markdown Report
-
-For "生成报告", "create report", "write a report on...":
-
-Save to `outputs/reports/{date}-{topic}.md`:
-
-```markdown
----
-title: "{Report Title}"
-date: {date}
-tags:
-  - report
-  - {topic}
-sources_consulted: {count}
----
-
-# {Report Title}
-
-## Table of Contents
-
-- [[#Executive Summary]]
-- [[#Section 1]]
-- [[#Section 2]]
-- [[#Conclusions]]
-- [[#References]]
-
-## Executive Summary
-
-{2-3 paragraph high-level overview}
-
-## {Section 1}
-
-{Detailed content with [[wikilinks]] to sources}
-
-## {Section 2}
-
-{Content}
-
-## Conclusions
-
-{Key takeaways and implications}
-
-## References
-
-| Source | Type | Key Contribution |
-|--------|------|-----------------|
-| [[source]] | {type} | {what it contributed} |
-```
-
-### Marp Slides
-
-For "生成幻灯片", "create slides", "make a presentation":
-
-Save to `outputs/slides/{date}-{topic}.md`. Use Marp format compatible with the Obsidian Marp Slides plugin:
-
-```markdown
----
-marp: true
-theme: default
-paginate: true
-title: "{Presentation Title}"
----
-
-# {Presentation Title}
-
-{Subtitle or context}
-
----
-
-## {Slide 2 Title}
-
-- {Key point 1}
-- {Key point 2}
-- {Key point 3}
-
----
-
-## {Slide 3 Title}
-
-{Content — keep each slide focused on one idea}
-
-> {Notable quote from sources}
-
----
-
-## Key Takeaways
-
-1. {Takeaway 1}
-2. {Takeaway 2}
-3. {Takeaway 3}
-
----
-
-## References
-
-- [[wiki/concepts/concept-a]]
-- [[wiki/summaries/source-b]]
-```
-
-Marp slide guidelines:
-- Use `---` to separate slides
-- Keep each slide concise (5-7 bullet points max, or 1-2 short paragraphs)
-- Include speaker notes with `<!-- speaker notes here -->` where helpful
-- Use images with `![bg right](image.png)` for visual slides
-- Total slides: aim for 10-20 for a comprehensive topic
-
-### Mermaid Diagrams
-
-For "可视化", "create diagram", "show relationships", "concept map":
-
-Generate Mermaid diagrams that render directly in Obsidian:
-
-**Concept relationship map:**
-````markdown
-```mermaid
-graph LR
-    A[Concept A] --> B[Concept B]
-    A --> C[Concept C]
-    B --> D[Concept D]
-    C --> D
-    style A fill:#4A90E2,color:#fff
-    style D fill:#E24A4A,color:#fff
-```
-````
-
-**Timeline diagram:**
-````markdown
-```mermaid
-timeline
-    title Knowledge Base Timeline
-    2026-03-01 : Source A added
-    2026-03-15 : Source B added
-                : Concept X discovered
-    2026-04-01 : Source C added
-                : Major insight Y
-```
-````
-
-**Mind map:**
-````markdown
-```mermaid
-mindmap
-  root((Topic))
-    Concept A
-      Detail 1
-      Detail 2
-    Concept B
-      Detail 3
-    Concept C
-```
-````
-
-Save standalone diagrams to `outputs/charts/{date}-{topic}.md`, or embed directly in reports.
-
-### Obsidian Canvas
-
-For "知识图谱", "canvas", "visual knowledge map":
-
-Use the `obsidian-canvas-creator` skill to generate `.canvas` files that visualize:
-- Concept relationship networks
-- Source-to-concept mapping
-- Topic clusters and categories
-
-Save to `outputs/charts/{topic}.canvas`.
-
-## Execution Notes
-
-- Always read `AGENTS.md` first to understand this knowledge base's specific conventions
-- Use `obsidian-markdown` skill for all Markdown output (wikilinks, callouts, frontmatter)
-- Use `obsidian-cli` skill for searching vault content when available
-- Use `obsidian-canvas-creator` skill when generating Canvas files
-- When the wiki is large, start from indices rather than reading everything — follow links as needed
-- For multi-step research, report progress: "Researching sub-question 1/3..."
-- Always cite sources with `[[wikilinks]]` — traceability is essential
-- If the wiki doesn't contain enough information to answer a question fully, say so honestly and suggest what sources could be added to `raw/` to fill the gap
+- Use `obsidian-markdown` for all markdown outputs and wikilinks.
+- Use `obsidian-cli` when available for vault-aware search.
+- Use `obsidian-canvas-creator` only when the user explicitly wants a canvas-style artifact.

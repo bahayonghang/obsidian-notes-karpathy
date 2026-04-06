@@ -4,13 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Claude Code **skills-only** project — there is no application code, build system, or test suite. The deliverables are SKILL.md files that implement an LLM-driven knowledge base workflow for Obsidian, inspired by Andrej Karpathy's approach.
+This is a Claude Code **skills-only** project. The deliverables are SKILL.md files, shared references, docs pages, and eval fixtures that implement an LLM-driven knowledge base workflow for Obsidian, inspired by Andrej Karpathy's approach.
 
-Core workflow: `raw/` (human adds sources) → `kb-compile` (LLM compiles wiki) → `wiki/` (LLM maintains) → `kb-query` → `outputs/`
+Core workflow: `raw/` (human adds immutable sources) → `kb-compile` (LLM compiles wiki) → `wiki/` (LLM maintains) → `kb-query` / `kb-health` → `outputs/`
 
 ## Repository Structure
 
-- `skills/obsidian-notes-karpathy/` — The distributable skills (kb-init, kb-compile, kb-query)
+- `skills/obsidian-notes-karpathy/` — The distributable skill bundle
+- `skills/obsidian-notes-karpathy/obsidian-notes-karpathy/` — Package-level entry skill
+- `skills/obsidian-notes-karpathy/references/` — Shared templates and conventions used by multiple skills
+- `skills/obsidian-notes-karpathy/evals/` — Example eval prompts for regression checks
 - `ref/` — Read-only reference material (original Karpathy tweet thread). Do not modify or distribute.
 - `README.md` (English) and `README_CN.md` (Chinese) — Must be kept in sync when either is updated.
 
@@ -31,6 +34,8 @@ description: When and how to use this skill (used for matching)
 - Skills must use **Obsidian Flavored Markdown**: `[[wikilinks]]`, `> [!callout]` blocks, YAML frontmatter with properties
 - Include both English and Chinese trigger phrases in the description field (e.g., "compile wiki" / "编译wiki")
 - Reference dependent skills by name: `obsidian-markdown`, `obsidian-cli`, `obsidian-canvas-creator` (from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills))
+- Keep `raw/` immutable in all user-facing guidance. Compilation state belongs in `wiki/` metadata or health outputs, never in raw source files.
+- Keep generated `AGENTS.md` and `CLAUDE.md` templates aligned whenever initialization behavior changes.
 
 ## Installation (for end users)
 

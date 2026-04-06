@@ -1,0 +1,135 @@
+{
+  "skill_name": "obsidian-notes-karpathy",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a fresh Obsidian vault at evals/fixtures/fresh-vault and want to set up the full Karpathy-style workflow for AI engineering notes. Create the right folders and schema files so future agents know how to maintain it, and document any optional repo/entity extensions without forcing them on.",
+      "expected_output": "Routes to kb-init, creates the raw/wiki/outputs contract, documents immutable raw guidance, and explains optional repo/entity support as opt-in.",
+      "files": [
+        "evals/fixtures/fresh-vault/README.md"
+      ],
+      "expectations": [
+        "The workflow chooses kb-init rather than compile, query, or health.",
+        "The setup includes raw, wiki, outputs, AGENTS.md, and CLAUDE.md.",
+        "The response preserves the idea that raw notes are immutable.",
+        "The response treats raw/repos and wiki/entities as optional rather than mandatory."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Use evals/fixtures/compiled-vault as the target vault. I clipped a new article, updated an older one, and dropped a repo companion note. Compile the wiki without touching the raw notes themselves.",
+      "expected_output": "Routes to kb-compile, detects new or changed sources, updates summaries and concepts, optionally updates entities if the evidence is strong enough, refreshes indices, and keeps raw files unchanged.",
+      "files": [
+        "evals/fixtures/compiled-vault/raw/articles/2026-04-01-rag-vs-markdown.md",
+        "evals/fixtures/compiled-vault/raw/articles/2026-04-03-knowledge-compilers.md",
+        "evals/fixtures/compiled-vault/raw/repos/2026-04-05-qmd-local-search.md",
+        "evals/fixtures/compiled-vault/wiki/summaries/2026-04-01-rag-vs-markdown.md",
+        "evals/fixtures/compiled-vault/wiki/concepts/retrieval-augmented-generation.md",
+        "evals/fixtures/compiled-vault/wiki/log.md"
+      ],
+      "expectations": [
+        "The workflow chooses kb-compile.",
+        "The compile pass uses summary metadata such as source_mtime or source_hash.",
+        "The response reports new, changed, and skipped counts.",
+        "The response reports concept and entity updates separately rather than conflating them."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Using evals/fixtures/compiled-vault, what do my notes say about retrieval-augmented generation versus markdown indices? Save the answer if it is substantive, and log the query if you archive it.",
+      "expected_output": "Routes to kb-query in research mode, checks existing Q&A first, cites concept and summary pages, archives the answer, and notes the query-log write-back.",
+      "files": [
+        "evals/fixtures/compiled-vault/wiki/index.md",
+        "evals/fixtures/compiled-vault/wiki/log.md",
+        "evals/fixtures/compiled-vault/wiki/concepts/retrieval-augmented-generation.md",
+        "evals/fixtures/compiled-vault/outputs/qa/2026-04-04-rag-vs-markdown.md"
+      ],
+      "expectations": [
+        "The workflow chooses kb-query.",
+        "The query pass checks outputs/qa before re-deriving the answer.",
+        "The answer includes provenance and an archive-by-default posture.",
+        "The response mentions appending a query entry to wiki/log.md when the answer is substantive."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Take evals/fixtures/compiled-vault and turn the current knowledge into a short X thread about why people should not jump straight to RAG for personal knowledge bases.",
+      "expected_output": "Routes to kb-query in publish mode, uses prior Q&A or creates supporting Q&A first, saves a grounded thread draft, and records the publish step in the log.",
+      "files": [
+        "evals/fixtures/compiled-vault/wiki/log.md",
+        "evals/fixtures/compiled-vault/wiki/concepts/retrieval-augmented-generation.md",
+        "evals/fixtures/compiled-vault/outputs/qa/2026-04-04-rag-vs-markdown.md"
+      ],
+      "expectations": [
+        "The workflow uses publish mode rather than only research mode.",
+        "The output stays grounded in wiki pages or prior Q&A.",
+        "The workflow identifies where the thread draft should be saved.",
+        "The workflow identifies that a publish entry should be appended to wiki/log.md for a substantive artifact."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run a weekly health check on evals/fixtures/drift-vault. I care about contradictions, orphan notes, stale claims, alias drift, missing cross-links, and whether I should still stay markdown-first or upgrade search.",
+      "expected_output": "Routes to kb-health, scores the vault across the health rubric, calls out stale Q&A and alias drift, and gives a search upgrade recommendation.",
+      "files": [
+        "evals/fixtures/drift-vault/wiki/concepts/retrieval-augmented-generation.md",
+        "evals/fixtures/drift-vault/wiki/concepts/rag.md",
+        "evals/fixtures/drift-vault/outputs/qa/2026-03-01-rag-answer.md"
+      ],
+      "expectations": [
+        "The workflow chooses kb-health.",
+        "The report includes Completeness, Consistency, Connectivity, Freshness, and Provenance scores.",
+        "The report calls out alias drift or duplicated concepts.",
+        "The report includes a search upgrade recommendation instead of assuming RAG by default."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "My Obsidian wiki at evals/fixtures/drift-vault feels disconnected and outdated after a month of new reading. Which workflow step should I run first and why?",
+      "expected_output": "Routes through the package entry skill, identifies the vault as a health-first case, and explains the recommendation.",
+      "files": [
+        "evals/fixtures/drift-vault/wiki/index.md",
+        "evals/fixtures/drift-vault/wiki/concepts/retrieval-augmented-generation.md"
+      ],
+      "expectations": [
+        "The package entry skill makes a lifecycle diagnosis rather than blindly compiling.",
+        "The recommendation prefers kb-health because the symptom is compiled-layer drift.",
+        "The answer explains the assumption behind the routing decision."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "My Notion workspace is messy and I want a tagging strategy for product notes. Should I rebuild the database or use relation properties?",
+      "expected_output": "Does not force the Obsidian Karpathy workflow onto a Notion-specific problem.",
+      "files": [],
+      "expectations": [
+        "The response recognizes that this is not an Obsidian knowledge-base workflow request.",
+        "The workflow avoids pretending kb-init, kb-compile, kb-query, or kb-health are the right tools."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I need help designing a vector search service for my SaaS docs with embeddings, reranking, and a retrieval API. This is not an Obsidian vault.",
+      "expected_output": "Does not over-trigger on generic knowledge-base language and should avoid forcing the markdown-wiki workflow.",
+      "files": [],
+      "expectations": [
+        "The response recognizes a search infrastructure request rather than an Obsidian vault workflow.",
+        "The workflow does not default to this skill just because RAG or knowledge base was mentioned."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Use evals/fixtures/compiled-vault. I dropped a repo note at raw/repos/2026-04-05-qmd-local-search.md about qmd. Compile it and decide whether qmd should stay a concept or get an entity page, without rewriting the raw note.",
+      "expected_output": "Routes to kb-compile, accepts raw/repos as a valid input class, preserves raw immutability, and uses a durable-entity threshold instead of blindly creating an entity page for every named tool.",
+      "files": [
+        "evals/fixtures/compiled-vault/raw/repos/2026-04-05-qmd-local-search.md",
+        "evals/fixtures/compiled-vault/wiki/log.md"
+      ],
+      "expectations": [
+        "The workflow treats raw/repos as an optional but valid source location.",
+        "The response preserves the idea that raw notes are immutable.",
+        "The response treats entity-page creation as conditional on durable evidence rather than mandatory."
+      ]
+    }
+  ]
+}
