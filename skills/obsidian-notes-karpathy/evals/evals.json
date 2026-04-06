@@ -130,6 +130,56 @@
         "The response preserves the idea that raw notes are immutable.",
         "The response treats entity-page creation as conditional on durable evidence rather than mandatory."
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "Use evals/fixtures/root-raw-vault. The vault is already initialized, but I dumped two markdown notes directly under raw/ and never created a CLAUDE.md. Compile the new sources into the wiki without rewriting the raw files.",
+      "expected_output": "Routes to kb-compile, accepts root-level raw notes, treats missing CLAUDE.md as non-blocking, and reports the missing optional file rather than failing.",
+      "files": [
+        "evals/fixtures/root-raw-vault/AGENTS.md",
+        "evals/fixtures/root-raw-vault/raw/2026-04-06-markdown-first.md",
+        "evals/fixtures/root-raw-vault/raw/2026-04-07-backlinks-before-rag.md",
+        "evals/fixtures/root-raw-vault/wiki/index.md",
+        "evals/fixtures/root-raw-vault/wiki/log.md"
+      ],
+      "expectations": [
+        "The package entry diagnoses this as a compile case rather than an init case.",
+        "The compile pass accepts markdown files directly under raw/ as valid sources.",
+        "The workflow does not treat missing CLAUDE.md as blocking.",
+        "The response preserves raw immutability and surfaces the missing optional file in the summary."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Inspect evals/fixtures/partial-vault. It has some KB folders already, but the setup is incomplete and I want the workflow repaired before I start compiling new notes. What should run first?",
+      "expected_output": "Routes through the package entry skill to kb-init in repair mode because the vault is only partially initialized and the support layer is incomplete.",
+      "files": [
+        "evals/fixtures/partial-vault/raw/2026-04-01-partial-bootstrap.md",
+        "evals/fixtures/partial-vault/wiki/index.md"
+      ],
+      "expectations": [
+        "The package entry diagnoses a partial-init or repair case rather than compile, query, or health.",
+        "The recommendation prefers kb-init because the support layer is incomplete.",
+        "The answer calls out missing contract files or directories as the decisive signal."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Run a KB health pass on evals/fixtures/broken-render-vault. The index table looks broken in Obsidian and I want lint-and-repair behavior, not just a vague warning.",
+      "expected_output": "Routes to kb-health, detects alias-style wikilinks inside table cells, and treats the issue as a safe mechanical repair when the target note is clear.",
+      "files": [
+        "evals/fixtures/broken-render-vault/AGENTS.md",
+        "evals/fixtures/broken-render-vault/wiki/index.md",
+        "evals/fixtures/broken-render-vault/wiki/log.md",
+        "evals/fixtures/broken-render-vault/wiki/concepts/retrieval-augmented-generation.md",
+        "evals/fixtures/broken-render-vault/wiki/indices/SOURCES.md"
+      ],
+      "expectations": [
+        "The workflow chooses kb-health.",
+        "The health pass explicitly flags alias-style wikilinks inside Markdown table cells.",
+        "The remediation posture treats the table rewrite as a safe mechanical fix when the target is clear.",
+        "The response distinguishes render integrity from a generic search-upgrade recommendation."
+      ]
     }
   ]
 }
