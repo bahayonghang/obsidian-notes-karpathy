@@ -1,6 +1,8 @@
 # Justfile for Obsidian Notes Karpathy
 # Usage: just <command>
 
+python_cmd := if os_family() == "windows" { "py -3" } else { "python3" }
+
 # Default recipe
 default:
   @just --list
@@ -8,24 +10,29 @@ default:
 # ==================== Documentation ====================
 
 # Install docs dependencies
+[working-directory: "docs"]
 docs-install:
-  cd docs && npm install
+  npm install
 
 # Start docs dev server with hot reload (top-level shortcut)
+[working-directory: "docs"]
 docs:
-  cd docs && npm run dev
+  npm run dev
 
 # Start docs dev server with hot reload
+[working-directory: "docs"]
 docs-dev:
-  cd docs && npm run dev
+  npm run dev
 
 # Build docs for production
+[working-directory: "docs"]
 docs-build:
-  cd docs && npm run build
+  npm run build
 
 # Preview production docs build
+[working-directory: "docs"]
 docs-preview:
-  cd docs && npm run preview
+  npm run preview
 
 # ==================== CI / Quality ====================
 
@@ -43,7 +50,7 @@ lint:
 
 # Run deterministic skill-bundle regression tests
 test:
-  python3 -m unittest tests/test_skill_bundle.py
+  {{python_cmd}} -m unittest tests/test_skill_bundle.py
 
 # ==================== Git / Workflow ====================
 
@@ -62,11 +69,11 @@ commit msg type="feat":
 
 # Clean build artifacts
 clean:
-  rm -rf docs/.vitepress/dist
-  rm -rf docs/node_modules
+  {{python_cmd}} -c "from pathlib import Path; import shutil; [shutil.rmtree(Path(p), ignore_errors=True) for p in ['docs/.vitepress/dist', 'docs/.vitepress/cache', 'docs/node_modules']]"
   @echo "Cleaned build artifacts"
 
 # Install all dependencies (docs + skills)
+[working-directory: "docs"]
 install:
-  cd docs && npm install
+  npm install
   @echo "All dependencies installed"

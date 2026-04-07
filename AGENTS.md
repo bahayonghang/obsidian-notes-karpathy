@@ -11,7 +11,7 @@
 - `just docs-install` installs the VitePress dependencies in `docs/`.
 - `just docs` or `just docs-dev` starts the local docs server.
 - `just docs-build` builds the production site; `just docs-preview` serves the build locally.
-- `just test` runs `python3 -m unittest tests/test_skill_bundle.py`.
+- `just test` runs `py -3 -m unittest tests/test_skill_bundle.py` on Windows and `python3 -m unittest tests/test_skill_bundle.py` elsewhere.
 - `just ci` runs the current local validation chain: tests, the lightweight `lint` recipe, and a docs build.
 
 For docs-only work, you can also run `cd docs && npm run dev`.
