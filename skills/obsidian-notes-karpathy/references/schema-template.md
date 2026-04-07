@@ -59,6 +59,7 @@ Rules:
 - If both hash and mtime are available, keep both.
 - `source_file` may point to a root-level raw note or a categorized raw note; do not normalize the path by rewriting the source.
 - `compile_method` should be `markdown`, `alphaxiv`, or `pdf`.
+- `paper_handle` is optional metadata for paper PDFs; it does not control whether `alphaxiv` is used.
 - Omit `paper_handle` and `companion_used` for non-PDF sources.
 - `key_concepts` should reference real concept pages or clearly planned new ones.
 - `key_entities` is optional and should be used only when named entities deserve stable pages.

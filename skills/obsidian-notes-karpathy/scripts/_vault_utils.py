@@ -330,20 +330,14 @@ def pdf_ingest_plan(
             plan["paper_handle_source"] = "filename"
 
     alphaxiv_available = companion_status["alphaxiv-paper-lookup"]
-    pdf_available = companion_status["pdf"]
 
-    if plan["paper_handle"] and alphaxiv_available:
+    if alphaxiv_available:
         plan["ingest_plan"] = "alphaxiv"
-        plan["ingest_reason"] = "paper_handle_available"
-        return plan
-
-    if pdf_available:
-        plan["ingest_plan"] = "pdf"
-        plan["ingest_reason"] = "alphaxiv_unavailable" if plan["paper_handle"] else "missing_paper_handle"
+        plan["ingest_reason"] = "paper_pdf_directory_policy"
         return plan
 
     plan["ingest_plan"] = "skip"
-    plan["ingest_reason"] = "missing_companion_skills" if plan["paper_handle"] else "missing_paper_handle_and_pdf"
+    plan["ingest_reason"] = "alphaxiv_required_for_raw_papers"
     return plan
 
 

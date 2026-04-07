@@ -61,14 +61,14 @@ Supported source classes:
 
 For PDF papers under `raw/papers/`:
 
-1. first resolve a deterministic paper handle:
+1. treat the directory itself as the routing signal: any `raw/papers/*.pdf` is a paper and must use `alphaxiv-paper-lookup`
+2. still resolve optional paper metadata:
    - prefer an optional `foo.source.md` sidecar next to `foo.pdf` with frontmatter such as `paper_id` or `source`
    - otherwise accept an arXiv-style ID embedded in the PDF filename
-2. use `alphaxiv-paper-lookup` only when that deterministic handle exists
-3. if the PDF does not resolve to a deterministic handle, go straight to the `pdf` skill rather than guessing from title text
-4. if neither companion skill is available, skip only that PDF source and report install guidance for `alphaxiv-paper-lookup` and `pdf`
+3. use any resolved handle as metadata for reporting, summary frontmatter, and debugging, not as the routing gate
+4. if `alphaxiv-paper-lookup` is unavailable, skip only that PDF source and report install guidance; do not fall back to the `pdf` skill for `raw/papers/*.pdf`
 5. never write extracted markdown back into `raw/`; go straight from the PDF handling step into the compiled summary, concept, and entity outputs
-6. report the chosen PDF ingest method as `alphaxiv`, `pdf`, or `skipped`
+6. report the chosen PDF ingest method as `alphaxiv` or `skipped`
 7. do not keep both `foo.md` and `foo.pdf` with the same basename under `raw/papers/`; `foo.source.md` is allowed only as metadata sidecar, not as a second raw source
 
 For each raw source:
@@ -96,7 +96,7 @@ For each new or changed source:
    - otherwise `source_mtime`
    - keep both when both are available
    - `compile_method` as `markdown`, `alphaxiv`, or `pdf`
-   - `paper_handle` when the source is a paper PDF and a deterministic handle exists
+   - `paper_handle` when the source is a paper PDF and deterministic handle metadata exists
    - `companion_used` when a companion skill handled the PDF
 7. include:
    - thesis
@@ -186,7 +186,7 @@ Always report:
 4. how many entities were created or updated
 5. whether any contradictions were surfaced
 6. whether any shared references or optional local files were missing
-7. whether any PDF papers had to fall back from `alphaxiv-paper-lookup` to `pdf`, or were skipped because neither companion skill was available
+7. whether any PDF papers were skipped because `alphaxiv-paper-lookup` was unavailable or the paper could not be processed through the strict `raw/papers` route
 8. whether a deeper `kb-health` pass is recommended
 
 ## Tooling notes

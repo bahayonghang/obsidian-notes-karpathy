@@ -183,8 +183,8 @@
     },
     {
       "id": 13,
-      "prompt": "Use evals/fixtures/pdf-only-vault. There is a paper PDF under raw/papers/ and an adjacent .source.md sidecar with paper metadata. Compile the vault without touching raw/, use alphaxiv-paper-lookup only if that deterministic handle is present, fall back to the pdf skill otherwise, and tell me what to install if neither companion skill exists.",
-      "expected_output": "Routes to kb-compile, treats the PDF as a valid paper source, uses the sidecar to resolve a deterministic paper handle, prefers alphaxiv-paper-lookup only when that handle exists, and reports missing companion skills without pretending the PDF compiled successfully when both are absent.",
+      "prompt": "Use evals/fixtures/pdf-only-vault. There is a paper PDF under raw/papers/ and an adjacent .source.md sidecar with paper metadata. Compile the vault without touching raw/. Treat any PDF under raw/papers/ as a paper that must go through alphaxiv-paper-lookup, use the sidecar only as metadata, and report the missing install step if alphaxiv-paper-lookup is unavailable.",
+      "expected_output": "Routes to kb-compile, treats the PDF as a valid paper source, still records the sidecar-derived paper handle as metadata, always prefers alphaxiv-paper-lookup for raw/papers PDFs, and reports missing companion skills without pretending the PDF compiled successfully when alphaxiv is absent.",
       "files": [
         "evals/fixtures/pdf-only-vault/raw/papers/2026-04-08-transformers.pdf",
         "evals/fixtures/pdf-only-vault/raw/papers/2026-04-08-transformers.source.md",
@@ -194,8 +194,8 @@
       "expectations": [
         "The workflow chooses kb-compile.",
         "The compile pass treats raw/papers/*.pdf as valid source material.",
-        "The response uses the sidecar or filename to resolve a deterministic paper handle before choosing alphaxiv-paper-lookup.",
-        "The response says to skip only the affected PDF and surface install guidance when both companion skills are missing."
+        "The response uses the sidecar or filename only as metadata for the paper PDF, not as the routing gate.",
+        "The response says to skip only the affected PDF and surface install guidance when alphaxiv-paper-lookup is missing."
       ]
     },
     {
@@ -214,8 +214,8 @@
     },
     {
       "id": 15,
-      "prompt": "Use evals/fixtures/pdf-no-handle-vault. There is a paper PDF under raw/papers/, but there is no arXiv handle in a sidecar or the filename. Compile the vault without touching raw/ and choose between alphaxiv-paper-lookup and the pdf skill without guessing from title text.",
-      "expected_output": "Routes to kb-compile, treats the PDF as a valid paper source, skips alphaxiv-paper-lookup because no deterministic handle exists, and falls back directly to the pdf skill.",
+      "prompt": "Use evals/fixtures/pdf-no-handle-vault. There is a paper PDF under raw/papers/, but there is no arXiv handle in a sidecar or the filename. Compile the vault without touching raw/, still route it through alphaxiv-paper-lookup because the directory means it is a paper, and do not fall back to pdf if alphaxiv-paper-lookup is unavailable.",
+      "expected_output": "Routes to kb-compile, treats the PDF as a valid paper source, uses alphaxiv-paper-lookup even without a deterministic handle because raw/papers is the routing signal, and skips with install guidance instead of falling back to pdf when alphaxiv is unavailable.",
       "files": [
         "evals/fixtures/pdf-no-handle-vault/raw/papers/2026-04-09-local-whitepaper.pdf",
         "evals/fixtures/pdf-no-handle-vault/wiki/index.md",
@@ -224,7 +224,7 @@
       "expectations": [
         "The workflow chooses kb-compile.",
         "The compile pass does not try to infer a paper identity from title text alone.",
-        "The response falls back directly to the pdf skill when no deterministic paper handle exists."
+        "The response still routes through alphaxiv-paper-lookup when no deterministic paper handle exists."
       ]
     }
   ]

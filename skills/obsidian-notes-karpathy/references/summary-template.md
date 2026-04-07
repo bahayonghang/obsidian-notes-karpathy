@@ -70,5 +70,6 @@ Rules:
 - Prefer concrete evidence over abstract praise.
 - If an image materially changes meaning, inspect it and mention that in the summary.
 - Keep source provenance explicit enough that a later health check can audit the claim trail.
-- Omit `paper_handle` and `companion_used` when the source is not a PDF or no deterministic handle exists.
+- Omit `paper_handle` when the source is not a PDF or no deterministic handle metadata exists.
+- Omit `companion_used` only when no companion skill handled the source.
 - Omit `key_entities` and the `Key Entities` section when the source does not introduce durable named entities.

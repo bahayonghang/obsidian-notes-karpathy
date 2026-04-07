@@ -104,7 +104,7 @@ class SkillBundleContractTests(unittest.TestCase):
         self.assertEqual(pdf_only["items"][0]["path"], "raw/papers/2026-04-08-transformers.pdf")
         self.assertEqual(pdf_only["items"][0]["summary_path"], "wiki/summaries/2026-04-08-transformers.md")
         self.assertEqual(pdf_only["items"][0]["source_class"], "paper_pdf")
-        self.assertIn(pdf_only["items"][0]["ingest_plan"], {"alphaxiv", "pdf", "skip"})
+        self.assertIn(pdf_only["items"][0]["ingest_plan"], {"alphaxiv", "skip"})
 
     def test_scan_compile_delta_builds_pdf_ingest_manifest(self) -> None:
         skill_home_root = FIXTURES_DIR / "companion-skill-homes"
@@ -113,7 +113,12 @@ class SkillBundleContractTests(unittest.TestCase):
             str(FIXTURES_DIR / "pdf-only-vault"),
             env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "both")},
         )
-        pdf_fallback = run_json_script(
+        alphaxiv_without_handle = run_json_script(
+            "scan_compile_delta.py",
+            str(FIXTURES_DIR / "pdf-no-handle-vault"),
+            env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "both")},
+        )
+        strict_skip = run_json_script(
             "scan_compile_delta.py",
             str(FIXTURES_DIR / "pdf-no-handle-vault"),
             env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "pdf-only")},
@@ -126,7 +131,7 @@ class SkillBundleContractTests(unittest.TestCase):
 
         alphaxiv_item = both_companions["items"][0]
         self.assertEqual(alphaxiv_item["ingest_plan"], "alphaxiv")
-        self.assertEqual(alphaxiv_item["ingest_reason"], "paper_handle_available")
+        self.assertEqual(alphaxiv_item["ingest_reason"], "paper_pdf_directory_policy")
         self.assertEqual(alphaxiv_item["paper_handle"], "1706.03762")
         self.assertEqual(alphaxiv_item["paper_handle_source"], "paper_id")
         self.assertEqual(
@@ -136,16 +141,23 @@ class SkillBundleContractTests(unittest.TestCase):
         self.assertTrue(both_companions["companion_skills"]["skills"]["alphaxiv-paper-lookup"])
         self.assertTrue(both_companions["companion_skills"]["skills"]["pdf"])
 
-        pdf_item = pdf_fallback["items"][0]
-        self.assertEqual(pdf_item["ingest_plan"], "pdf")
-        self.assertEqual(pdf_item["ingest_reason"], "missing_paper_handle")
-        self.assertIsNone(pdf_item["paper_handle"])
-        self.assertFalse(pdf_fallback["companion_skills"]["skills"]["alphaxiv-paper-lookup"])
-        self.assertTrue(pdf_fallback["companion_skills"]["skills"]["pdf"])
+        no_handle_item = alphaxiv_without_handle["items"][0]
+        self.assertEqual(no_handle_item["ingest_plan"], "alphaxiv")
+        self.assertEqual(no_handle_item["ingest_reason"], "paper_pdf_directory_policy")
+        self.assertIsNone(no_handle_item["paper_handle"])
+        self.assertTrue(alphaxiv_without_handle["companion_skills"]["skills"]["alphaxiv-paper-lookup"])
+        self.assertTrue(alphaxiv_without_handle["companion_skills"]["skills"]["pdf"])
+
+        strict_skip_item = strict_skip["items"][0]
+        self.assertEqual(strict_skip_item["ingest_plan"], "skip")
+        self.assertEqual(strict_skip_item["ingest_reason"], "alphaxiv_required_for_raw_papers")
+        self.assertIsNone(strict_skip_item["paper_handle"])
+        self.assertFalse(strict_skip["companion_skills"]["skills"]["alphaxiv-paper-lookup"])
+        self.assertTrue(strict_skip["companion_skills"]["skills"]["pdf"])
 
         skipped_item = skipped_pdf["items"][0]
         self.assertEqual(skipped_item["ingest_plan"], "skip")
-        self.assertEqual(skipped_item["ingest_reason"], "missing_companion_skills")
+        self.assertEqual(skipped_item["ingest_reason"], "alphaxiv_required_for_raw_papers")
         self.assertEqual(skipped_pdf["ingest_counts"]["skip"], 1)
 
     def test_accepted_raw_sources_skips_pdf_sidecars(self) -> None:
