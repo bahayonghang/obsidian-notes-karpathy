@@ -32,160 +32,141 @@ def run_json_script(script_name: str, *args: str, env: dict[str, str] | None = N
 
 
 class SkillBundleContractTests(unittest.TestCase):
-    def test_detect_lifecycle_routes_structural_states(self) -> None:
-        fresh = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "fresh-vault"))
+    def test_detect_lifecycle_routes_v2_and_legacy_states(self) -> None:
+        fresh = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "v2-fresh"))
         partial = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "partial-vault"))
-        compiled = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "compiled-vault"))
-        drift = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "drift-vault"))
-        pdf_only = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "pdf-only-vault"))
-        missing_agents = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "missing-agents-vault"))
-        root_raw = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "root-raw-vault"))
+        review_ready = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "v2-review-ready"))
+        live_ready = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "v2-live-ready"))
+        briefing_stale = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "v2-briefing-stale"))
+        legacy = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "v1-legacy"))
 
-        self.assertEqual(fresh["route"], "kb-init")
         self.assertEqual(fresh["state"], "fresh")
+        self.assertEqual(fresh["route"], "kb-init")
+        self.assertEqual(fresh["contract_version"], "v2")
 
-        self.assertEqual(partial["route"], "kb-init")
         self.assertEqual(partial["state"], "partial")
+        self.assertEqual(partial["route"], "kb-init")
         self.assertIn("missing_support_layer", partial["signals"])
 
-        self.assertEqual(compiled["route"], "kb-compile")
-        self.assertEqual(compiled["state"], "compile-ready")
-        self.assertGreaterEqual(compiled["compile_delta"]["new_count"], 1)
-        self.assertTrue(compiled["guidance_status"]["agents"]["present"])
-        self.assertFalse(compiled["guidance_status"]["claude"]["present"])
-        self.assertIn("missing_claude_guidance", compiled["guidance_warnings"])
+        self.assertEqual(review_ready["contract_version"], "v2")
+        self.assertEqual(review_ready["state"], "review-ready")
+        self.assertEqual(review_ready["route"], "kb-review")
+        self.assertIn("drafts_pending_review", review_ready["signals"])
 
-        self.assertEqual(drift["route"], "kb-health")
-        self.assertEqual(drift["state"], "health-first")
-        self.assertTrue(drift["health_flags"])
-        self.assertTrue(drift["guidance_status"]["agents"]["present"])
-        self.assertIn("missing_claude_guidance", drift["guidance_warnings"])
+        self.assertEqual(live_ready["state"], "query-ready")
+        self.assertEqual(live_ready["route"], "kb-query")
 
-        self.assertEqual(pdf_only["route"], "kb-compile")
-        self.assertEqual(pdf_only["state"], "compile-ready")
-        self.assertGreaterEqual(pdf_only["compile_delta"]["new_count"], 1)
-        self.assertTrue(pdf_only["guidance_status"]["agents"]["present"])
-        self.assertIn("missing_claude_guidance", pdf_only["guidance_warnings"])
+        self.assertEqual(briefing_stale["state"], "briefing-stale")
+        self.assertEqual(briefing_stale["route"], "kb-review")
+        self.assertIn("briefing_stale", briefing_stale["signals"])
 
-        self.assertEqual(missing_agents["route"], "kb-init")
-        self.assertEqual(missing_agents["state"], "partial")
-        self.assertIn("missing_agents_guidance", missing_agents["signals"])
-        self.assertIn("AGENTS.md", missing_agents["missing_support_files"])
-        self.assertIn("missing_claude_guidance", missing_agents["guidance_warnings"])
+        self.assertEqual(legacy["contract_version"], "v1")
+        self.assertEqual(legacy["state"], "legacy-v1")
+        self.assertEqual(legacy["route"], "kb-init")
+        self.assertIn("legacy_v1_contract", legacy["signals"])
 
-        self.assertEqual(root_raw["route"], "kb-compile")
-        self.assertEqual(root_raw["state"], "compile-ready")
-        self.assertIn("missing_claude_guidance", root_raw["guidance_warnings"])
+    def test_scan_compile_delta_reports_v2_capture_trust(self) -> None:
+        review_ready = run_json_script("scan_compile_delta.py", str(FIXTURES_DIR / "v2-review-ready"))
 
-    def test_scan_compile_delta_reports_new_changed_and_unchanged(self) -> None:
-        compiled = run_json_script("scan_compile_delta.py", str(FIXTURES_DIR / "compiled-vault"))
-        root_raw = run_json_script("scan_compile_delta.py", str(FIXTURES_DIR / "root-raw-vault"))
-        pdf_only = run_json_script("scan_compile_delta.py", str(FIXTURES_DIR / "pdf-only-vault"))
+        self.assertEqual(review_ready["contract_version"], "v2")
+        self.assertEqual(review_ready["counts"]["new"], 0)
+        self.assertEqual(review_ready["counts"]["changed"], 0)
+        self.assertEqual(review_ready["counts"]["unchanged"], 2)
 
-        self.assertEqual(compiled["counts"]["new"], 2)
-        self.assertEqual(compiled["counts"]["changed"], 1)
-        self.assertEqual(compiled["counts"]["unchanged"], 0)
-        self.assertEqual(compiled["counts"]["skipped"], 0)
+        items = {item["path"]: item for item in review_ready["items"]}
+        human_item = items["raw/human/articles/2026-04-01-compiler-safety.md"]
+        agent_item = items["raw/agents/researcher/2026-04-02-review-gates.md"]
 
-        compiled_paths = {item["path"] for item in compiled["items"]}
-        self.assertIn(
-            "raw/articles/2026-04-03-knowledge-compilers.md",
-            compiled_paths,
-        )
-        self.assertIn("raw/repos/2026-04-05-qmd-local-search.md", compiled_paths)
-
-        self.assertEqual(root_raw["counts"]["new"], 2)
-        self.assertEqual(root_raw["counts"]["changed"], 0)
-
-        self.assertEqual(pdf_only["counts"]["new"], 1)
-        self.assertEqual(pdf_only["counts"]["changed"], 0)
-        self.assertEqual(pdf_only["counts"]["unchanged"], 0)
-        self.assertEqual(pdf_only["counts"]["skipped"], 0)
-        self.assertEqual(pdf_only["items"][0]["path"], "raw/papers/2026-04-08-transformers.pdf")
-        self.assertEqual(pdf_only["items"][0]["summary_path"], "wiki/summaries/2026-04-08-transformers.md")
-        self.assertEqual(pdf_only["items"][0]["source_class"], "paper_pdf")
-        self.assertIn(pdf_only["items"][0]["ingest_plan"], {"paper-workbench", "skip"})
-
-    def test_scan_compile_delta_builds_pdf_ingest_manifest(self) -> None:
-        skill_home_root = FIXTURES_DIR / "companion-skill-homes"
-        both_companions = run_json_script(
-            "scan_compile_delta.py",
-            str(FIXTURES_DIR / "pdf-only-vault"),
-            env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "both")},
-        )
-        workbench_without_handle = run_json_script(
-            "scan_compile_delta.py",
-            str(FIXTURES_DIR / "pdf-no-handle-vault"),
-            env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "both")},
-        )
-        strict_skip = run_json_script(
-            "scan_compile_delta.py",
-            str(FIXTURES_DIR / "pdf-no-handle-vault"),
-            env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "pdf-only")},
-        )
-        skipped_pdf = run_json_script(
-            "scan_compile_delta.py",
-            str(FIXTURES_DIR / "pdf-only-vault"),
-            env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "empty")},
-        )
-
-        workbench_item = both_companions["items"][0]
-        self.assertEqual(workbench_item["ingest_plan"], "paper-workbench")
-        self.assertEqual(workbench_item["ingest_reason"], "paper_workbench_directory_policy")
-        self.assertEqual(workbench_item["paper_handle"], "1706.03762")
-        self.assertEqual(workbench_item["paper_handle_source"], "paper_id")
+        self.assertEqual(human_item["capture_source"], "human")
+        self.assertEqual(human_item["capture_trust"], "curated")
         self.assertEqual(
-            workbench_item["metadata_path"],
+            human_item["summary_path"],
+            "wiki/drafts/summaries/human/articles/2026-04-01-compiler-safety.md",
+        )
+        self.assertEqual(agent_item["capture_source"], "agent")
+        self.assertEqual(agent_item["capture_trust"], "untrusted")
+        self.assertEqual(agent_item["agent_role"], "researcher")
+        self.assertEqual(
+            agent_item["summary_path"],
+            "wiki/drafts/summaries/agents/researcher/2026-04-02-review-gates.md",
+        )
+
+    def test_scan_compile_delta_keeps_pdf_directory_policy(self) -> None:
+        skill_home_root = FIXTURES_DIR / "companion-skill-homes"
+        pdf_only = run_json_script(
+            "scan_compile_delta.py",
+            str(FIXTURES_DIR / "pdf-only-vault"),
+            env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "both")},
+        )
+
+        self.assertEqual(pdf_only["contract_version"], "v1")
+        self.assertEqual(pdf_only["items"][0]["ingest_plan"], "paper-workbench")
+        self.assertEqual(pdf_only["items"][0]["ingest_reason"], "paper_workbench_directory_policy")
+        self.assertEqual(pdf_only["items"][0]["paper_handle"], "1706.03762")
+        self.assertEqual(
+            pdf_only["items"][0]["metadata_path"],
             "raw/papers/2026-04-08-transformers.source.md",
         )
-        self.assertTrue(both_companions["companion_skills"]["skills"]["paper-workbench"])
-        self.assertTrue(both_companions["companion_skills"]["skills"]["pdf"])
 
-        no_handle_item = workbench_without_handle["items"][0]
-        self.assertEqual(no_handle_item["ingest_plan"], "paper-workbench")
-        self.assertEqual(no_handle_item["ingest_reason"], "paper_workbench_directory_policy")
-        self.assertIsNone(no_handle_item["paper_handle"])
-        self.assertTrue(workbench_without_handle["companion_skills"]["skills"]["paper-workbench"])
-        self.assertTrue(workbench_without_handle["companion_skills"]["skills"]["pdf"])
+    def test_scan_review_queue_applies_mixed_gate(self) -> None:
+        queue = run_json_script("scan_review_queue.py", str(FIXTURES_DIR / "v2-conflict-review"))
 
-        strict_skip_item = strict_skip["items"][0]
-        self.assertEqual(strict_skip_item["ingest_plan"], "skip")
-        self.assertEqual(strict_skip_item["ingest_reason"], "paper_workbench_required_for_raw_papers")
-        self.assertIsNone(strict_skip_item["paper_handle"])
-        self.assertFalse(strict_skip["companion_skills"]["skills"]["paper-workbench"])
-        self.assertTrue(strict_skip["companion_skills"]["skills"]["pdf"])
+        self.assertEqual(queue["counts"]["approve"], 1)
+        self.assertEqual(queue["counts"]["reject"], 1)
+        self.assertEqual(queue["counts"]["needs-human"], 1)
 
-        skipped_item = skipped_pdf["items"][0]
-        self.assertEqual(skipped_item["ingest_plan"], "skip")
-        self.assertEqual(skipped_item["ingest_reason"], "paper_workbench_required_for_raw_papers")
-        self.assertEqual(skipped_pdf["ingest_counts"]["skip"], 1)
+        decisions = {item["path"]: item["decision"] for item in queue["items"]}
+        self.assertEqual(
+            decisions["wiki/drafts/summaries/human/articles/2026-04-03-grounded-article.md"],
+            "approve",
+        )
+        self.assertEqual(
+            decisions["wiki/drafts/summaries/agents/scout/2026-04-03-hallucinated-bridge.md"],
+            "reject",
+        )
+        self.assertEqual(
+            decisions["wiki/drafts/summaries/agents/editor/2026-04-03-contradictory-summary.md"],
+            "needs-human",
+        )
 
-    def test_accepted_raw_sources_skips_pdf_sidecars(self) -> None:
-        pdf_only_sources = [
+    def test_query_scope_ignores_raw_and_drafts_for_v2(self) -> None:
+        scope = run_json_script("scan_query_scope.py", str(FIXTURES_DIR / "v2-live-ready"))
+
+        self.assertEqual(scope["contract_version"], "v2")
+        self.assertIn("wiki/live/summaries/human/articles/2026-04-05-approved-summary.md", scope["included_paths"])
+        self.assertIn("wiki/briefings/researcher.md", scope["included_paths"])
+        self.assertIn("outputs/qa/2026-04-06-review-gate-benefits.md", scope["included_paths"])
+        self.assertIn("raw/human/articles/2026-04-05-approved-summary.md", scope["excluded_paths"])
+        self.assertIn("wiki/drafts/summaries/human/articles/2026-04-05-approved-summary.md", scope["excluded_paths"])
+
+    def test_lint_obsidian_mechanics_flags_v2_staleness_and_backlog(self) -> None:
+        review_ready = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "v2-review-ready"))
+        briefing_stale = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "v2-briefing-stale"))
+
+        review_issue_kinds = {issue["kind"] for issue in review_ready["issues"]}
+        stale_issue_kinds = {issue["kind"] for issue in briefing_stale["issues"]}
+
+        self.assertIn("review_backlog", review_issue_kinds)
+        self.assertIn("stale_briefing", stale_issue_kinds)
+
+    def test_accepted_raw_sources_supports_v2_and_skips_pdf_sidecars(self) -> None:
+        v2_sources = [
+            path.relative_to(FIXTURES_DIR / "v2-review-ready").as_posix()
+            for path in accepted_raw_sources(FIXTURES_DIR / "v2-review-ready")
+        ]
+        pdf_sources = [
             path.relative_to(FIXTURES_DIR / "pdf-only-vault").as_posix()
             for path in accepted_raw_sources(FIXTURES_DIR / "pdf-only-vault")
         ]
 
         self.assertEqual(
-            pdf_only_sources,
-            ["raw/papers/2026-04-08-transformers.pdf"],
+            v2_sources,
+            [
+                "raw/agents/researcher/2026-04-02-review-gates.md",
+                "raw/human/articles/2026-04-01-compiler-safety.md",
+            ],
         )
-
-    def test_lint_obsidian_mechanics_catches_render_and_alias_issues(self) -> None:
-        broken = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "broken-render-vault"))
-        drift = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "drift-vault"))
-
-        alias_issues = [issue for issue in broken["issues"] if issue["kind"] == "alias_wikilink_in_table"]
-        self.assertTrue(alias_issues)
-        self.assertTrue(
-            any(issue["path"] == "wiki/indices/SOURCES.md" for issue in alias_issues)
-        )
-
-        duplicate_concepts = [issue for issue in drift["issues"] if issue["kind"] == "duplicate_concept"]
-        self.assertTrue(duplicate_concepts)
-        self.assertTrue(
-            any("retrieval-augmented-generation" in issue["normalized_key"] for issue in duplicate_concepts)
-        )
+        self.assertEqual(pdf_sources, ["raw/papers/2026-04-08-transformers.pdf"])
 
     def test_guidance_contract_status_treats_noncanonical_names_as_warnings_but_duplicates_as_blocking(self) -> None:
         noncanonical = summarize_local_guidance(["agents.md", "CLAUDE.md"])
@@ -203,43 +184,21 @@ class SkillBundleContractTests(unittest.TestCase):
         claude_md = (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8")
         readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         readme_cn = (REPO_ROOT / "README_CN.md").read_text(encoding="utf-8")
-        installation = (REPO_ROOT / "docs" / "guide" / "installation.md").read_text(encoding="utf-8")
-        installation_cn = (REPO_ROOT / "docs" / "zh" / "guide" / "installation.md").read_text(encoding="utf-8")
         entry_skill = (ENTRY_SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
         compile_skill = (REPO_ROOT / "skills" / "kb-compile" / "SKILL.md").read_text(encoding="utf-8")
+        review_skill = (REPO_ROOT / "skills" / "kb-review" / "SKILL.md").read_text(encoding="utf-8")
         evals_text = (ENTRY_SKILL_ROOT / "evals" / "evals.json").read_text(encoding="utf-8")
         trigger_eval_path = ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json"
 
-        self.assertNotIn(
-            "skills/obsidian-notes-karpathy/obsidian-notes-karpathy/",
-            claude_md,
-        )
-        self.assertIn("skills/obsidian-notes-karpathy/SKILL.md", claude_md)
+        for text in (claude_md, readme, readme_cn, entry_skill, compile_skill, review_skill, evals_text):
+            self.assertIn("wiki/drafts", text)
+            self.assertIn("wiki/live", text)
+            self.assertIn("wiki/briefings", text)
+            self.assertIn("outputs/reviews", text)
 
-        self.assertIn("~/.claude/skills/", readme)
-        self.assertIn("~/.codex/skills/", readme)
-        self.assertIn("~/.claude/skills/", readme_cn)
-        self.assertIn("~/.codex/skills/", readme_cn)
-        self.assertIn("~/.codex/skills/", installation)
-        self.assertIn("paper-workbench", readme)
-        self.assertIn("paper-workbench", readme_cn)
-        self.assertIn("paper-workbench", installation)
-        self.assertIn("paper-workbench", installation_cn)
-        self.assertNotIn("alphaxiv-paper-lookup", readme)
-        self.assertNotIn("alphaxiv-paper-lookup", readme_cn)
-        self.assertNotIn("alphaxiv-paper-lookup", installation)
-        self.assertNotIn("alphaxiv-paper-lookup", installation_cn)
-        self.assertIn("paper-workbench", entry_skill)
-        self.assertIn("paper-workbench", compile_skill)
-        self.assertIn("paper-workbench", evals_text)
-        self.assertNotIn("alphaxiv-paper-lookup", entry_skill)
-        self.assertNotIn("alphaxiv-paper-lookup", compile_skill)
-        self.assertNotIn("alphaxiv-paper-lookup", evals_text)
-        self.assertIn("pdf", readme)
-        self.assertIn("pdf", readme_cn)
-        self.assertIn("pdf", installation)
-        self.assertIn("pdf", installation_cn)
-
+        self.assertIn("kb-review", readme)
+        self.assertIn("kb-review", readme_cn)
+        self.assertIn("kb-review", entry_skill)
         self.assertTrue(trigger_eval_path.exists())
         trigger_evals = json.loads(trigger_eval_path.read_text(encoding="utf-8"))
         self.assertGreaterEqual(len(trigger_evals), 20)

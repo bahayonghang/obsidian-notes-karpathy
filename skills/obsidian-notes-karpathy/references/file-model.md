@@ -1,51 +1,64 @@
 # File Model
 
-Canonical knowledge-base layering:
+Canonical V2 layering:
 
 ```text
-raw/     -> immutable source materials curated by the human
-wiki/    -> compiled markdown wiki maintained by the LLM
-outputs/ -> generated research memory, health reports, and publishable artifacts
+raw/            -> immutable capture intake
+wiki/drafts/    -> compiled but unapproved draft knowledge
+wiki/live/      -> approved long-term brain
+wiki/briefings/ -> role-specific context built from live only
+outputs/        -> reviews, Q&A, health reports, and publishable derivatives
 ```
 
-Treat the vault like a codebase:
+Treat the vault like a codebase with a promotion gate:
 
-- `raw/` is source code.
-- `wiki/` is the compiled artifact.
-- `outputs/` is runtime output plus durable deliverables.
-- `AGENTS.md` is the required local guidance contract.
-- `CLAUDE.md` is the generated companion contract. `kb-init` should create or repair it by default, but compile/query/health work must not hard-fail solely because it is absent.
+- `raw/` is source evidence.
+- `wiki/drafts/` is build output waiting for review.
+- `wiki/live/` is the deployed truth layer.
+- `wiki/briefings/` is generated runtime context for agents.
+- `outputs/reviews/` is the decision ledger for promotion.
 
 ## Core rules
 
 1. `raw/` is read-only from the workflow's point of view.
-2. Compilation state lives in `wiki/` frontmatter or `outputs/health/`, never in raw source files.
-3. `wiki/index.md` is the content-oriented landing page.
-4. `wiki/log.md` is the chronological append-only activity log for `ingest`, `query`, `publish`, and `health`.
-5. `wiki/indices/` is the canonical derived-navigation directory.
-6. If a vault already uses `wiki/indexes/`, preserve it and read from it rather than forcing a rename.
+2. `kb-compile` writes only to `wiki/drafts/`, never directly to `wiki/live/`.
+3. `kb-review` is the only skill that can promote draft knowledge into `wiki/live/`.
+4. `kb-query` reads `wiki/live/`, `wiki/briefings/`, and prior `outputs/qa/`; it must not treat `raw/` or `wiki/drafts/` as retrieval truth.
+5. `wiki/index.md` is the content-oriented landing page for the whole contract, including live, draft, and briefing state.
+6. `wiki/log.md` is the append-only activity ledger for `ingest`, `review`, `brief`, `query`, `publish`, and `health`.
 7. `outputs/qa/` stores durable research answers, not disposable chat residue.
-8. `outputs/content/` stores publishable derivatives such as article drafts, threads, and talk outlines.
+8. `outputs/reviews/` stores reviewer decisions and scoring details.
+9. Existing V1 vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-v1` and migrated before normal V2 operation.
 
 ## Expected directories
 
 ```text
 vault/
 ├── raw/
-│   ├── *.md            # also valid for direct captures or inbox-style source notes
-│   ├── articles/
-│   ├── papers/
-│   ├── podcasts/
-│   ├── assets/
-│   └── repos/          # optional
+│   ├── human/
+│   │   ├── articles/
+│   │   ├── papers/
+│   │   ├── podcasts/
+│   │   ├── repos/
+│   │   └── assets/
+│   └── agents/
+│       └── {role}/
 ├── wiki/
-│   ├── concepts/
-│   ├── summaries/
-│   ├── indices/
-│   ├── entities/       # optional
+│   ├── drafts/
+│   │   ├── summaries/
+│   │   ├── concepts/
+│   │   ├── entities/
+│   │   └── indices/
+│   ├── live/
+│   │   ├── summaries/
+│   │   ├── concepts/
+│   │   ├── entities/
+│   │   └── indices/
+│   ├── briefings/
 │   ├── index.md
 │   └── log.md
 ├── outputs/
+│   ├── reviews/
 │   ├── qa/
 │   ├── health/
 │   ├── reports/
@@ -56,174 +69,101 @@ vault/
 │       ├── threads/
 │       └── talks/
 ├── AGENTS.md
-└── CLAUDE.md           # generated companion; recommended for portability
+└── CLAUDE.md
 ```
 
-Optional directories are opt-in expansions:
+## Raw capture classes
 
-- `raw/repos/` for repo snapshots, README exports, or repo companion notes
-- `wiki/entities/` for people, organizations, products, projects, or repos that deserve stable pages
+### Human captures
 
-Accepted raw discovery patterns:
+Live under `raw/human/**`.
 
-- markdown files directly under `raw/`
-- categorized markdown files under `raw/articles/`, `raw/papers/`, and `raw/podcasts/`
-- PDF files under `raw/papers/` when the paper should be compiled via `paper-workbench`; deterministic handles from the sidecar or filename remain optional metadata, not the routing gate
-- optional repo companion notes or repo overviews under `raw/repos/`
+- treated as curated evidence
+- may be markdown notes or PDFs under a `papers/` subtree
+- should preserve source metadata only
 
-If the vault already has channel-specific publishing folders such as `x/`, `公众号/`, or `小红书/`, preserve them. Do not force-migrate them unless the user asks.
+### Agent captures
 
-## Note classes
+Live under `raw/agents/{role}/**`.
 
-### Raw source notes
+- treated as untrusted until reviewed
+- should preserve provenance and role identity
+- must never be promoted directly into the live brain
 
-Live under `raw/` and preserve the original material plus metadata.
+### Legacy captures
 
-Raw source notes may live directly under `raw/` or inside a typed subdirectory. The compiler should accept both without rewriting paths just to satisfy a stricter ideal layout.
+Older vaults may still use V1 paths such as `raw/articles/` or `raw/papers/`.
 
-Expected properties:
+- continue to detect them for migration
+- do not silently reinterpret them as fully valid V2 support layers
 
-- `title`
-- `source`
-- `author`
-- `date`
-- `type`
-- `tags`
-- `clipped_at`
+## Draft summaries
 
-Never add compile state here.
-
-### Raw paper PDFs
-
-Live under `raw/papers/` when the source artifact is a PDF instead of a markdown note.
-
-- treat the PDF file itself as immutable raw input
-- allow an optional `paper-name.source.md` sidecar to store metadata such as `paper_id` or `source`; do not treat it as a second source note
-- do not add sidecar extracted markdown back into `raw/` during compilation
-- always route the PDF through `paper-workbench` because `raw/papers/` already marks it as a paper
-- normalize the PDF through `paper-workbench` in `json` mode before generating summary content
-- resolve a deterministic paper handle from the sidecar or filename only for metadata, provenance, and debugging
-- if `paper-workbench` is unavailable, report an install recommendation rather than pretending the paper was compiled
-- avoid keeping both `paper-name.md` and `paper-name.pdf` with the same basename in `raw/papers/`
-
-### Summary notes
-
-Live under `wiki/summaries/` and mirror one source note per file.
+Live under `wiki/drafts/summaries/**` and mirror raw captures.
 
 Expected properties:
 
 - `title`
 - `source_file`
-- `source_url`
-- `source_type`
-- `source_mtime` or `source_hash`
-- `compile_method`
-- `paper_handle` when the source is a PDF and deterministic handle metadata is available
-- `companion_used` when a companion skill handled the PDF
+- `source_hash` or `source_mtime`
 - `compiled_at`
-- `key_concepts`
-- `key_entities` when applicable
+- `draft_id`
+- `compiled_from`
+- `capture_sources`
+- `review_state`
+- `review_score`
+- `blocking_flags`
 
-### Concept notes
+## Live pages
 
-Live under `wiki/concepts/` and merge evidence across summaries and Q&A.
+Live under `wiki/live/{summaries,concepts,entities}/`.
 
 Expected properties:
 
 - `title`
-- `concept_id`
-- `aliases`
+- `approved_at`
+- `approved_from`
+- `review_record`
+- `trust_level: approved`
 - `updated_at`
-- `status`
 - `sources`
 - `related`
 
-### Entity notes
+## Briefings
 
-Live under `wiki/entities/` when the vault benefits from a dedicated entity layer.
+Live under `wiki/briefings/`.
 
 Expected properties:
 
 - `title`
-- `entity_id`
-- `entity_type`
-- `aliases`
+- `brief_for`
+- `built_from`
 - `updated_at`
-- `status`
-- `sources`
-- `related`
+- `staleness_after`
+- `source_live_pages`
 
-### Q&A notes
+## Review records
 
-Live under `outputs/qa/` and capture substantial research answers.
-
-Expected properties:
-
-- `question`
-- `asked_at`
-- `sources`
-- `tags`
-
-### Health reports
-
-Live under `outputs/health/`.
+Live under `outputs/reviews/`.
 
 Expected properties:
 
 - `title`
-- `date`
-- `scope`
-- `health_score`
+- `decision`
+- `accuracy`
+- `provenance`
+- `conflict_risk`
+- `composability`
+- `reviewed_at`
 
-### Publish-mode artifacts
+## Query outputs
 
-Live under `outputs/content/`, `outputs/reports/`, `outputs/slides/`, or `outputs/charts/` depending on deliverable type.
+`outputs/qa/` remains the durable answer archive, but all cited knowledge should trace back to `wiki/live/`.
 
-Expected properties:
+## Naming and graph conventions
 
-- `title`
-- `created_at`
-- `artifact_type`
-- `sources`
-- `derived_from`
-
-## Naming and slug rules
-
-Use stable lowercase kebab-case paths unless the user already has a strong naming convention.
-
-- raw source file: `YYYY-MM-DD-short-title.md` when a date is known
-- summary file: same basename as the source file
-- concept file: semantic slug such as `retrieval-augmented-generation.md`
-- entity file: semantic slug such as `andrej-karpathy.md` or `qmd.md`
-- q&a file: `YYYY-MM-DD-question-slug.md`
-- health report: `health-check-YYYY-MM-DD.md`
-- publish artifact: `YYYY-MM-DD-channel-slug.md`
-
-Human-readable titles live in frontmatter and headings. File paths should stay stable even if titles get polished.
-
-## Metadata and graph conventions
-
-Prefer Obsidian-native graph affordances before heavier infrastructure:
-
-- use wikilinks for summary-to-concept, summary-to-entity, and page-to-page references
-- maintain `aliases` on concept and entity notes so Backlinks and unlinked mentions remain useful
-- use consistent property names so the Properties view and property search stay effective
-- use reciprocal `related` fields only when the relationship is real, not speculative
-- treat `wiki/index.md` and `wiki/log.md` as the two top-level navigation surfaces: content-first and time-first
-
-## Obsidian-safe markdown conventions
-
-Follow `obsidian-safe-markdown.md` whenever you emit tables or repair rendered markdown.
-
-- Never place alias-style wikilinks such as `[[note|Alias]]` inside Markdown table cells.
-- In tables, use plain wikilinks or standard Markdown links instead.
-- If a page needs many linked labels, prefer a list over a dense table.
-
-## Incremental compilation contract
-
-The compiler should compare each raw note against its matching summary using:
-
-1. `source_hash` when available and deterministic
-2. otherwise `source_mtime`
-
-If neither is reliable, the compiler may fall back to a full rescan, but it must still avoid mutating `raw/`.
+- use stable lowercase kebab-case paths
+- keep `wiki/live/indices/` as the canonical derived navigation directory
+- allow a promoted draft to keep the same basename when moved into `wiki/live/`
+- keep alias-style wikilinks out of Markdown table cells
+- treat `review_record` and `approved_from` as first-class provenance edges

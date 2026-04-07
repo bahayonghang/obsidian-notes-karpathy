@@ -1,5 +1,6 @@
 {
   "skill_name": "obsidian-notes-karpathy",
+  "contract_note": "V2 review-gated contract uses raw/, wiki/drafts/, wiki/live/, wiki/briefings/, and outputs/reviews/.",
   "evals": [
     {
       "id": 1,

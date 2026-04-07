@@ -26,6 +26,21 @@ GUIDANCE_CONTRACTS = (
 )
 PDF_SIDECAR_SUFFIX = ".source.md"
 PDF_COMPANION_SKILLS = ("paper-workbench", "pdf")
+REVIEWABLE_DRAFT_ROOTS = (
+    "wiki/drafts/summaries",
+    "wiki/drafts/concepts",
+    "wiki/drafts/entities",
+)
+TERMINAL_REVIEW_STATES = {"promoted", "rejected", "archived"}
+HEALTH_FLAG_KINDS = {
+    "duplicate_concept",
+    "duplicate_entity",
+    "stale_qa",
+    "alias_wikilink_in_table",
+    "unapproved_live_page",
+    "approved_conflict",
+    "review_backlog",
+}
 
 
 @dataclass(frozen=True)
@@ -59,17 +74,22 @@ def load_markdown(path: Path, vault_root: Path | None = None) -> MarkdownRecord:
 
 
 def classify_markdown_path(rel_path: str) -> str:
-    if rel_path.startswith("wiki/concepts/"):
+    normalized = rel_path.replace("\\", "/")
+    if normalized.startswith("wiki/briefings/"):
+        return "briefing"
+    if normalized.startswith("outputs/reviews/"):
+        return "review"
+    if normalized.startswith("wiki/live/concepts/") or normalized.startswith("wiki/drafts/concepts/"):
         return "concept"
-    if rel_path.startswith("wiki/entities/"):
+    if normalized.startswith("wiki/live/entities/") or normalized.startswith("wiki/drafts/entities/"):
         return "entity"
-    if rel_path.startswith("wiki/summaries/"):
+    if normalized.startswith("wiki/live/summaries/") or normalized.startswith("wiki/drafts/summaries/"):
         return "summary"
-    if rel_path.startswith("wiki/indices/") or rel_path.startswith("wiki/indexes/"):
+    if normalized.startswith("wiki/indices/") or normalized.startswith("wiki/indexes/"):
         return "index"
-    if rel_path.startswith("outputs/qa/"):
+    if normalized.startswith("outputs/qa/"):
         return "qa"
-    if rel_path.startswith("raw/"):
+    if normalized.startswith("raw/"):
         return "raw"
     return "other"
 
@@ -205,12 +225,100 @@ def collapse_posix(path_like: str) -> str:
     return "/".join(parts)
 
 
+def parse_number(value: Any) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            return None
+        try:
+            return float(stripped)
+        except ValueError:
+            return None
+    return None
+
+
+def list_field(frontmatter: dict[str, Any], key: str) -> list[str]:
+    raw_value = frontmatter.get(key, [])
+    if isinstance(raw_value, list):
+        return [item for item in raw_value if isinstance(item, str) and item.strip()]
+    if isinstance(raw_value, str) and raw_value.strip():
+        return [raw_value.strip()]
+    return []
+
+
 def is_pdf_sidecar(path: Path) -> bool:
     return path.name.endswith(PDF_SIDECAR_SUFFIX)
 
 
 def sidecar_for_pdf(raw_path: Path) -> Path:
     return raw_path.with_name(f"{raw_path.stem}{PDF_SIDECAR_SUFFIX}")
+
+
+def detect_contract_version(vault_root: Path) -> str:
+    has_v2 = any(
+        (vault_root / rel_path).exists()
+        for rel_path in (
+            "wiki/drafts",
+            "wiki/live",
+            "wiki/briefings",
+            "outputs/reviews",
+            "raw/human",
+            "raw/agents",
+        )
+    )
+    if has_v2:
+        return "v2"
+
+    has_v1 = any(
+        (vault_root / rel_path).exists()
+        for rel_path in (
+            "wiki/summaries",
+            "wiki/concepts",
+            "wiki/entities",
+            "raw/articles",
+            "raw/papers",
+            "raw/podcasts",
+            "raw/repos",
+        )
+    )
+    if has_v1:
+        return "v1"
+
+    return "none"
+
+
+def raw_source_metadata(vault_root: Path, raw_path: Path) -> dict[str, Any]:
+    rel_parts = raw_path.relative_to(vault_root).parts
+    metadata = {
+        "capture_source": "legacy",
+        "capture_trust": "legacy",
+        "agent_role": None,
+        "legacy_layout": True,
+    }
+
+    if len(rel_parts) >= 3 and rel_parts[1] == "human":
+        metadata.update(
+            {
+                "capture_source": "human",
+                "capture_trust": "curated",
+                "legacy_layout": False,
+            }
+        )
+    elif len(rel_parts) >= 4 and rel_parts[1] == "agents":
+        metadata.update(
+            {
+                "capture_source": "agent",
+                "capture_trust": "untrusted",
+                "agent_role": rel_parts[2],
+                "legacy_layout": False,
+            }
+        )
+
+    return metadata
 
 
 def source_class_for_raw(raw_path: Path) -> str:
@@ -329,9 +437,7 @@ def pdf_ingest_plan(
             plan["paper_handle"] = handle
             plan["paper_handle_source"] = "filename"
 
-    paper_workbench_available = companion_status["paper-workbench"]
-
-    if paper_workbench_available:
+    if companion_status["paper-workbench"]:
         plan["ingest_plan"] = "paper-workbench"
         plan["ingest_reason"] = "paper_workbench_directory_policy"
         return plan
@@ -350,6 +456,7 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
     for path in sorted(raw_root.rglob("*")):
         if not path.is_file():
             continue
+
         rel = path.relative_to(vault_root)
         if any(part.startswith(".") for part in rel.parts):
             continue
@@ -359,23 +466,34 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
             continue
         if "assets" in rel.parts:
             continue
+
         suffix = path.suffix.lower()
         if suffix not in {".md", ".pdf"}:
             continue
-        if suffix == ".pdf" and (len(rel.parts) < 3 or rel.parts[1] != "papers"):
+
+        if suffix == ".pdf" and "papers" not in rel.parts:
             continue
-        if len(rel.parts) == 2:
-            if suffix == ".md":
-                sources.append(path)
-            continue
-        if rel.parts[1] in {"articles", "papers", "podcasts", "repos"}:
-            sources.append(path)
+
+        sources.append(path)
+
     return sources
 
 
-def summary_for_raw(vault_root: Path, raw_path: Path) -> Path:
+def draft_summary_for_raw(vault_root: Path, raw_path: Path) -> Path:
+    rel = raw_path.relative_to(vault_root / "raw")
+    return vault_root / "wiki" / "drafts" / "summaries" / rel.with_suffix(".md")
+
+
+def legacy_summary_for_raw(vault_root: Path, raw_path: Path) -> Path:
     summary_name = raw_path.name if raw_path.suffix.lower() == ".md" else f"{raw_path.stem}.md"
     return vault_root / "wiki" / "summaries" / summary_name
+
+
+def summary_for_raw(vault_root: Path, raw_path: Path) -> Path:
+    contract_version = detect_contract_version(vault_root)
+    if contract_version == "v1":
+        return legacy_summary_for_raw(vault_root, raw_path)
+    return draft_summary_for_raw(vault_root, raw_path)
 
 
 def iso_from_timestamp(timestamp: float) -> str:
@@ -414,6 +532,7 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
     ingest_counts = Counter()
     companion_skills = detect_companion_skills()
     companion_status = companion_skills["skills"]
+    contract_version = detect_contract_version(vault_root)
 
     for raw_path in accepted_raw_sources(vault_root):
         rel_path = raw_path.relative_to(vault_root).as_posix()
@@ -426,7 +545,9 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
             "raw_hash": raw_hash,
             "raw_mtime": raw_mtime,
             "source_class": source_class_for_raw(raw_path),
+            "contract_version": contract_version if contract_version != "none" else "v2",
         }
+        item.update(raw_source_metadata(vault_root, raw_path))
 
         if item["source_class"] == "paper_pdf":
             item.update(pdf_ingest_plan(vault_root, raw_path, companion_status))
@@ -484,6 +605,7 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
 
     return {
         "vault_root": str(vault_root),
+        "contract_version": contract_version if contract_version != "none" else "v2",
         "counts": payload_counts,
         "ingest_counts": dict(sorted(ingest_counts.items())),
         "companion_skills": companion_skills,
@@ -491,9 +613,9 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
     }
 
 
-def collect_markdown_records(vault_root: Path) -> list[MarkdownRecord]:
+def iter_markdown_records(vault_root: Path, roots: tuple[str, ...]) -> list[MarkdownRecord]:
     records: list[MarkdownRecord] = []
-    for rel_root in ("raw", "wiki", "outputs/qa"):
+    for rel_root in roots:
         root = vault_root / rel_root
         if not root.exists():
             continue
@@ -505,6 +627,21 @@ def collect_markdown_records(vault_root: Path) -> list[MarkdownRecord]:
     return records
 
 
+def collect_markdown_records(vault_root: Path) -> list[MarkdownRecord]:
+    contract_version = detect_contract_version(vault_root)
+    if contract_version == "v2":
+        return iter_markdown_records(
+            vault_root,
+            ("raw", "wiki/live", "wiki/briefings", "outputs/qa", "outputs/reviews"),
+        )
+    return iter_markdown_records(vault_root, ("raw", "wiki", "outputs/qa"))
+
+
+def reviewable_draft_records(vault_root: Path) -> list[MarkdownRecord]:
+    records = iter_markdown_records(vault_root, REVIEWABLE_DRAFT_ROOTS)
+    return [record for record in records if not record.basename.startswith("_")]
+
+
 def extract_wikilinks(text: str) -> list[str]:
     return WIKILINK_RE.findall(text)
 
@@ -514,7 +651,10 @@ def extract_markdown_links(text: str) -> list[str]:
 
 
 def strip_link_alias(target: str) -> str:
-    candidate = target.split("|", 1)[0].strip()
+    candidate = target.strip()
+    if candidate.startswith("[[") and candidate.endswith("]]"):
+        candidate = candidate[2:-2].strip()
+    candidate = candidate.split("|", 1)[0].strip()
     return candidate.split("#", 1)[0].strip()
 
 
@@ -590,6 +730,8 @@ def duplicate_identity_issues(records: list[MarkdownRecord]) -> list[dict[str, A
     for record in records:
         if record.kind not in {"concept", "entity"}:
             continue
+        if "/drafts/" in record.path:
+            continue
         for identity in record_identities(record):
             normalized = normalize_identity(identity)
             if not normalized:
@@ -663,6 +805,7 @@ def orphan_page_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
         for record in records
         if record.kind in {"concept", "entity", "summary", "qa"}
         and not record.basename.startswith("_")
+        and "/drafts/" not in record.path
     }
 
     for record in records:
@@ -695,20 +838,16 @@ def stale_qa_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
         if not asked_at:
             continue
 
-        sources = record.frontmatter.get("sources", [])
-        if not isinstance(sources, list):
-            continue
-
+        sources = list_field(record.frontmatter, "sources")
         newer_sources: list[str] = []
         for source in sources:
-            if not isinstance(source, str):
-                continue
             resolved = resolve_target(record, strip_link_alias(source), by_path, by_basename)
             if not resolved:
                 continue
             candidate = resolved[0]
             updated_at = (
                 parse_datetime(candidate.frontmatter.get("updated_at"))
+                or parse_datetime(candidate.frontmatter.get("approved_at"))
                 or parse_datetime(candidate.frontmatter.get("compiled_at"))
                 or parse_datetime(candidate.frontmatter.get("date"))
             )
@@ -727,18 +866,260 @@ def stale_qa_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     return issues
 
 
+def live_record_for_draft(vault_root: Path, draft_record: MarkdownRecord) -> str:
+    relative = draft_record.path.removeprefix("wiki/drafts/")
+    live_path = vault_root / "wiki" / "live" / relative
+    return live_path.relative_to(vault_root).as_posix()
+
+
+def review_record_for_draft(draft_record: MarkdownRecord) -> str:
+    suffix = draft_record.path.removeprefix("wiki/drafts/").replace("/", "--")
+    return f"outputs/reviews/{suffix}"
+
+
+def compute_review_score(frontmatter: dict[str, Any]) -> float | None:
+    explicit = parse_number(frontmatter.get("review_score"))
+    if explicit is not None:
+        return round(explicit, 3)
+
+    components: list[float] = []
+    for key in ("accuracy", "provenance", "composability"):
+        value = parse_number(frontmatter.get(key))
+        if value is not None:
+            components.append(value)
+
+    conflict_risk = parse_number(frontmatter.get("conflict_risk"))
+    if conflict_risk is not None:
+        components.append(max(0.0, 1.0 - conflict_risk))
+
+    if not components:
+        return None
+
+    return round(sum(components) / len(components), 3)
+
+
+def scan_review_queue(vault_root: Path) -> dict[str, Any]:
+    items: list[dict[str, Any]] = []
+    decision_counts = Counter()
+    state_counts = Counter()
+    pending_count = 0
+
+    for record in reviewable_draft_records(vault_root):
+        frontmatter = record.frontmatter
+        state = str(frontmatter.get("review_state") or "pending").strip() or "pending"
+        score = compute_review_score(frontmatter)
+        blocking_flags = list_field(frontmatter, "blocking_flags")
+        live_conflict = "live_conflict" in blocking_flags or frontmatter.get("status") == "conflicting"
+        hard_flags = [flag for flag in blocking_flags if flag != "live_conflict"]
+        live_path = live_record_for_draft(vault_root, record)
+        live_exists = (vault_root / live_path).exists()
+
+        if state in TERMINAL_REVIEW_STATES:
+            pending = False
+            decision = "approve" if state == "promoted" else "reject"
+            reason = "terminal_state"
+        else:
+            pending = True
+            pending_count += 1
+            if hard_flags:
+                decision = "reject"
+                reason = "blocking_flags"
+            elif score is None:
+                decision = "needs-human"
+                reason = "missing_review_score"
+            elif live_conflict:
+                decision = "needs-human"
+                reason = "live_conflict"
+            elif score >= 0.85:
+                decision = "approve"
+                reason = "threshold_met"
+            elif score < 0.60:
+                decision = "reject"
+                reason = "score_below_floor"
+            else:
+                decision = "needs-human"
+                reason = "score_band_requires_judgment"
+
+        decision_counts[decision] += 1
+        state_counts[state] += 1
+        items.append(
+            {
+                "path": record.path,
+                "kind": record.kind,
+                "review_state": state,
+                "review_score": score,
+                "blocking_flags": blocking_flags,
+                "decision": decision,
+                "reason": reason,
+                "pending": pending,
+                "live_path": live_path,
+                "live_exists": live_exists,
+                "review_record_path": review_record_for_draft(record),
+            }
+        )
+
+    return {
+        "vault_root": str(vault_root),
+        "counts": {
+            "pending": pending_count,
+            "approve": decision_counts["approve"],
+            "reject": decision_counts["reject"],
+            "needs-human": decision_counts["needs-human"],
+        },
+        "state_counts": dict(sorted(state_counts.items())),
+        "items": items,
+    }
+
+
+def query_scope(vault_root: Path) -> dict[str, Any]:
+    contract_version = detect_contract_version(vault_root)
+    if contract_version == "v2":
+        included_roots = ("wiki/live", "wiki/briefings", "outputs/qa")
+        excluded_roots = ("raw", "wiki/drafts", "outputs/reviews")
+    else:
+        included_roots = ("wiki", "outputs/qa")
+        excluded_roots = ("raw",)
+
+    included = [
+        path.relative_to(vault_root).as_posix()
+        for rel_root in included_roots
+        for path in sorted((vault_root / rel_root).rglob("*.md"))
+        if (vault_root / rel_root).exists()
+    ]
+    excluded = [
+        path.relative_to(vault_root).as_posix()
+        for rel_root in excluded_roots
+        for path in sorted((vault_root / rel_root).rglob("*.md"))
+        if (vault_root / rel_root).exists()
+    ]
+
+    return {
+        "vault_root": str(vault_root),
+        "contract_version": contract_version,
+        "included_paths": included,
+        "excluded_paths": excluded,
+        "excluded_prefixes": list(excluded_roots),
+    }
+
+
+def live_records(records: list[MarkdownRecord]) -> list[MarkdownRecord]:
+    return [record for record in records if record.path.startswith("wiki/live/")]
+
+
+def briefing_staleness_issues(vault_root: Path) -> list[dict[str, Any]]:
+    records = collect_markdown_records(vault_root)
+    by_path, by_basename = registry_for_records(records)
+    issues: list[dict[str, Any]] = []
+
+    for record in records:
+        if record.kind != "briefing":
+            continue
+
+        updated_at = parse_datetime(record.frontmatter.get("updated_at"))
+        staleness_after = parse_datetime(record.frontmatter.get("staleness_after"))
+        source_live_pages = list_field(record.frontmatter, "source_live_pages")
+        resolved_sources: list[MarkdownRecord] = []
+        for source in source_live_pages:
+            resolved_sources.extend(resolve_target(record, source, by_path, by_basename))
+
+        newest_source_time: datetime | None = None
+        newest_source_path: str | None = None
+        for source in resolved_sources:
+            candidate_time = (
+                parse_datetime(source.frontmatter.get("updated_at"))
+                or parse_datetime(source.frontmatter.get("approved_at"))
+                or parse_datetime(source.frontmatter.get("compiled_at"))
+            )
+            if candidate_time and (newest_source_time is None or candidate_time > newest_source_time):
+                newest_source_time = candidate_time
+                newest_source_path = source.path
+
+        stale = False
+        reason = None
+        if newest_source_time and updated_at and newest_source_time > updated_at:
+            stale = True
+            reason = "source_live_page_newer_than_briefing"
+        elif newest_source_time and staleness_after and newest_source_time > staleness_after:
+            stale = True
+            reason = "staleness_threshold_crossed"
+
+        if stale:
+            issues.append(
+                {
+                    "kind": "stale_briefing",
+                    "path": record.path,
+                    "reason": reason,
+                    "newer_source": newest_source_path,
+                }
+            )
+
+    return issues
+
+
+def unapproved_live_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind not in {"summary", "concept", "entity"}:
+            continue
+        trust_level = record.frontmatter.get("trust_level")
+        approved_at = record.frontmatter.get("approved_at")
+        review_record = record.frontmatter.get("review_record")
+        if trust_level == "approved" and approved_at and review_record:
+            continue
+        issues.append(
+            {
+                "kind": "unapproved_live_page",
+                "path": record.path,
+            }
+        )
+    return issues
+
+
+def approved_conflict_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind not in {"concept", "entity"}:
+            continue
+        if record.frontmatter.get("trust_level") == "approved" and record.frontmatter.get("status") == "conflicting":
+            issues.append(
+                {
+                    "kind": "approved_conflict",
+                    "path": record.path,
+                }
+            )
+    return issues
+
+
+def review_backlog_issues(vault_root: Path) -> list[dict[str, Any]]:
+    queue = scan_review_queue(vault_root)
+    return [
+        {
+            "kind": "review_backlog",
+            "path": item["path"],
+            "decision": item["decision"],
+        }
+        for item in queue["items"]
+        if item["pending"]
+    ]
+
+
 def audit_vault_mechanics(vault_root: Path) -> dict[str, Any]:
     records = collect_markdown_records(vault_root)
-    issues = []
+    issues: list[dict[str, Any]] = []
     issues.extend(alias_wikilink_table_issues(records))
     issues.extend(duplicate_identity_issues(records))
     issues.extend(stale_qa_issues(records))
     issues.extend(broken_wikilink_issues(records))
     issues.extend(orphan_page_issues(records))
+    issues.extend(unapproved_live_issues(records))
+    issues.extend(approved_conflict_issues(records))
+    issues.extend(review_backlog_issues(vault_root))
+    issues.extend(briefing_staleness_issues(vault_root))
 
     counts = Counter(issue["kind"] for issue in issues)
     return {
         "vault_root": str(vault_root),
+        "contract_version": detect_contract_version(vault_root),
         "issue_counts": dict(sorted(counts.items())),
         "issues": sorted(issues, key=lambda issue: (issue["kind"], issue.get("path", ""), issue.get("line", 0))),
     }

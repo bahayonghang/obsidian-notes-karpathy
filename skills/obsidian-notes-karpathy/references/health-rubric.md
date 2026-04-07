@@ -6,7 +6,7 @@ Use this structure for `outputs/health/health-check-{date}.md`.
 ---
 title: "Health Check Report"
 date: "{datetime}"
-scope: "wiki/, outputs/qa/"
+scope: "wiki/live/, wiki/briefings/, outputs/qa/, outputs/reviews/"
 health_score: {overall}
 ---
 
@@ -29,6 +29,14 @@ health_score: {overall}
 ## Warnings
 
 - {warning}
+
+## Review Backlog
+
+- {pending draft or human review queue item}
+
+## Briefing Staleness
+
+- {stale briefing}
 
 ## Suggested Follow-Up Questions
 
@@ -55,58 +63,48 @@ health_score: {overall}
 
 Suggested weighting:
 
-- Completeness: 25%
+- Completeness: 20%
 - Consistency: 25%
-- Connectivity: 20%
+- Connectivity: 15%
 - Freshness: 15%
-- Provenance: 15%
+- Provenance: 25%
 
 ## What to grade
 
 ### Completeness
 
-- sparse concept pages
-- sparse entity pages
-- summaries missing concepts, evidence, or metadata
-- important source clusters with no concept coverage
-- high-frequency named entities or tools with no stable page when one is clearly warranted
+- live concept or entity gaps relative to approved summaries
+- missing briefings for active roles
+- review outputs that never generated the corresponding live page or briefing
 
 ### Consistency
 
-- conflicting definitions
-- alias drift
-- duplicated concepts that should be merged
-- duplicated entities that should be merged
-- stale claims contradicted by newer summaries or Q&A
+- conflicting approved concepts or entities
+- duplicate approved concepts or entities
+- approved claims contradicted by newer approved sources
 
 ### Connectivity
 
-- orphan summaries
-- orphan concepts
-- orphan entities
-- orphan Q&A notes
-- weakly linked clusters
-- missing obvious reciprocal relations
+- orphan live summaries, concepts, entities, or Q&A
+- weak cross-linking between live pages and briefings
+- missing `approved_from` / `review_record` provenance edges
 
 ### Freshness
 
-- concepts not updated despite newer relevant material
-- entities not updated despite newer relevant material
-- old Q&A that should be refreshed or annotated
+- stale briefings
+- approved pages that should have been rebuilt after new reviews
+- old Q&A that should be refreshed against newer approved knowledge
 
 ### Provenance
 
-- claims with weak source backing
-- concept pages missing source links
-- entity pages missing source links
-- archived answers without enough evidence trail
+- live pages missing `review_record`
+- live pages missing `trust_level: approved`
+- answers or briefings that cite drafts or raw captures as truth
 
-## Mechanical render integrity
+## Mechanical integrity
 
 Treat these as report-worthy mechanical issues even though they do not add a new scored dimension:
 
 - alias-style wikilinks inside Markdown table cells
-- table rows that render misaligned in Obsidian
-- generated markdown that looks valid in plain text but breaks Obsidian navigation or rendering
-
-When the problem is unambiguous, list it under `Fix Now`.
+- unapproved pages under `wiki/live/`
+- pending review backlog that is aging without resolution

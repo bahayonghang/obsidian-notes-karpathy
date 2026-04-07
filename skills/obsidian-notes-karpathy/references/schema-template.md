@@ -7,11 +7,9 @@ Use ISO dates whenever possible:
 - date only: `YYYY-MM-DD`
 - datetime: `YYYY-MM-DDTHH:mm:ssZ`
 
-Use one property vocabulary consistently across the vault. Global property consistency matters because Obsidian Properties view and property search depend on it.
+Use one property vocabulary consistently across the vault. Global property consistency matters because routing, review, and briefing regeneration depend on it.
 
-When reading or writing frontmatter, prefer a YAML-aware parse path. Regex-only slicing is a brittle fallback because field order, arrays, quoting, and multiline values may vary.
-
-## Raw source frontmatter
+## Raw capture frontmatter
 
 ```yaml
 ---
@@ -26,106 +24,92 @@ clipped_at: 2026-04-01T12:00:00Z
 ---
 ```
 
-Notes:
+Rules:
 
-- Do not add compilation-state fields here.
-- If metadata is missing, leave the field blank or omit it; do not hallucinate.
+- use `raw/human/**` for curated captures
+- use `raw/agents/{role}/**` for untrusted agent captures
+- do not add compile or review state to raw captures
 
-## Summary frontmatter
+## Draft summary frontmatter
 
 ```yaml
 ---
-title: "Summary: Source Title"
-source_file: "[[raw/2026-04-01-source-title]]"
-source_url: "https://example.com"
-source_type: article
+title: "Draft Summary: Source Title"
+source_file: "[[raw/human/articles/2026-04-01-source-title]]"
+source_hash: "stable-hash"
 source_mtime: "2026-04-01T12:00:00Z"
-source_hash: "optional-stable-hash"
-compile_method: "markdown"
-paper_handle: "1706.03762"
-companion_used: "paper-workbench"
 compiled_at: "2026-04-02T08:00:00Z"
-key_concepts:
-  - "[[retrieval-augmented-generation]]"
-  - "[[markdown-index]]"
-key_entities:
-  - "[[wiki/entities/andrej-karpathy]]"
+draft_id: "draft-source-title"
+compiled_from:
+  - "[[raw/human/articles/2026-04-01-source-title]]"
+capture_sources:
+  - "[[raw/human/articles/2026-04-01-source-title]]"
+review_state: pending | promoted | rejected
+review_score: 0.88
+blocking_flags:
+  - "live_conflict"
 ---
 ```
 
-Rules:
-
-- `source_hash` is preferred when the environment supports deterministic hashing.
-- If both hash and mtime are available, keep both.
-- `source_file` may point to a root-level raw note or a categorized raw note; do not normalize the path by rewriting the source.
-- `compile_method` should be `markdown`, `paper-workbench`, or `pdf`.
-- `paper_handle` is optional metadata for paper PDFs; it does not control whether `paper-workbench` is used.
-- Omit `paper_handle` and `companion_used` for non-PDF sources.
-- `key_concepts` should reference real concept pages or clearly planned new ones.
-- `key_entities` is optional and should be used only when named entities deserve stable pages.
-
-## Concept frontmatter
+## Live page frontmatter
 
 ```yaml
 ---
-title: "Retrieval-Augmented Generation"
-concept_id: "retrieval-augmented-generation"
-aliases:
-  - "RAG"
-updated_at: "2026-04-05T09:00:00Z"
-status: active | draft | conflicting
+title: "Source Title"
+approved_at: "2026-04-02T10:00:00Z"
+approved_from: "[[wiki/drafts/summaries/human/articles/2026-04-01-source-title]]"
+review_record: "[[outputs/reviews/source-title]]"
+trust_level: approved
+updated_at: "2026-04-02T10:00:00Z"
+status: active | conflicting
 sources:
-  - "[[wiki/summaries/2026-04-01-rag-vs-markdown]]"
+  - "[[wiki/live/summaries/human/articles/2026-04-01-source-title]]"
 related:
-  - "[[wiki/concepts/markdown-index]]"
-  - "[[wiki/concepts/vector-search]]"
+  - "[[wiki/live/concepts/review-gate]]"
 ---
 ```
 
-Rules:
-
-- `concept_id` should match the concept filename basename.
-- `aliases` should capture common abbreviations and alternate spellings.
-- Set `status: conflicting` when the concept contains unresolved tension across sources.
-
-## Entity frontmatter
+## Briefing frontmatter
 
 ```yaml
 ---
-title: "Andrej Karpathy"
-entity_id: "andrej-karpathy"
-entity_type: person
-aliases:
-  - "Karpathy"
-updated_at: "2026-04-05T09:00:00Z"
-status: active | draft | conflicting
-sources:
-  - "[[wiki/summaries/2026-04-04-llm-wiki]]"
-related:
-  - "[[wiki/concepts/knowledge-compilation]]"
-  - "[[wiki/entities/qmd]]"
+title: "Researcher Briefing"
+brief_for: "researcher"
+built_from: "wiki/live/"
+updated_at: "2026-04-02T11:00:00Z"
+staleness_after: "2026-04-02T11:00:00Z"
+source_live_pages:
+  - "[[wiki/live/concepts/review-gate]]"
+  - "[[wiki/live/summaries/human/articles/2026-04-01-source-title]]"
 ---
 ```
 
-Rules:
+## Review record frontmatter
 
-- `entity_id` should match the entity filename basename.
-- `entity_type` should stay small and stable.
-- Only create entity pages for named things with durable value in the vault.
+```yaml
+---
+title: "Review Record: Source Title"
+decision: approve | reject | needs-human
+accuracy: 0.92
+provenance: 0.95
+conflict_risk: 0.18
+composability: 0.90
+reviewed_at: "2026-04-02T10:00:00Z"
+---
+```
 
 ## Q&A frontmatter
 
 ```yaml
 ---
-question: "When should I use markdown indices instead of RAG?"
+question: "When should I rebuild briefings?"
 asked_at: "2026-04-05T11:15:00Z"
 sources:
-  - "[[wiki/concepts/retrieval-augmented-generation]]"
-  - "[[wiki/entities/qmd]]"
-  - "[[wiki/summaries/2026-04-01-rag-vs-markdown]]"
+  - "[[wiki/live/concepts/review-gate]]"
+  - "[[wiki/live/summaries/human/articles/2026-04-01-source-title]]"
 tags:
   - qa
-  - retrieval
+  - review
 ---
 ```
 
@@ -135,43 +119,14 @@ tags:
 ---
 title: "Health Check Report"
 date: "2026-04-05T12:00:00Z"
-scope: "wiki/, outputs/qa/"
+scope: "wiki/live/, wiki/briefings/, outputs/qa/, outputs/reviews/"
 health_score: 84
 ---
 ```
 
-## Publish artifact frontmatter
-
-```yaml
----
-title: "Why Markdown Indices Beat Premature RAG"
-created_at: "2026-04-05T13:00:00Z"
-artifact_type: article | thread | newsletter | talk-outline | report | slide-deck | chart
-sources:
-  - "[[wiki/concepts/retrieval-augmented-generation]]"
-  - "[[wiki/entities/qmd]]"
-  - "[[outputs/qa/2026-04-05-rag-vs-markdown]]"
-derived_from:
-  - "[[outputs/qa/2026-04-05-rag-vs-markdown]]"
----
-```
-
-## Log entry header
-
-Use a parseable heading prefix:
-
-```markdown
-## [2026-04-05] ingest | source-title
-## [2026-04-05] query | rag-vs-markdown
-## [2026-04-05] publish | why-markdown-indices-beat-premature-rag
-## [2026-04-05] health | weekly-check
-```
-
 ## Naming rules
 
-- filenames should use lowercase kebab-case
-- frontmatter `title` should stay human-readable
-- concept aliases belong in `aliases`, not in duplicated concept pages
-- entity aliases belong in `aliases`, not in duplicated entity pages
-- if a concept gets renamed, preserve the old term in `aliases`
+- keep raw capture filenames stable and lowercase kebab-case
+- preserve relative capture structure under `wiki/drafts/summaries/**`
+- keep promoted live slugs stable even when titles evolve
 - any generated tables must obey `obsidian-safe-markdown.md`; never emit alias-style wikilinks inside table cells

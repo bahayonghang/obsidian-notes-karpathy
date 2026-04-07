@@ -10,47 +10,52 @@ If `../scripts/detect_lifecycle.py` is available, run it against the target vaul
 
 The script is the deterministic baseline for:
 
-- fresh vault detection
+- fresh V2 vault detection
 - partial support-layer repair detection
+- legacy V1 migration detection
 - compile-delta detection
-- health-first flags such as duplicate concepts, stale Q&A, or Obsidian render breakage
-
-Human judgment still matters when the user's symptom should override a structurally query-ready vault.
+- pending review queue detection
+- briefing staleness detection
+- health-first integrity flags over the approved layer
 
 ## Routing table
 
 | Structural state | Default route | Why | Must inspect next | Typical writes |
 | --- | --- | --- | --- | --- |
-| `fresh` | `kb-init` | The raw/wiki/outputs contract does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
+| `fresh` | `kb-init` | The V2 support layer does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
 | `partial` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
-| `compile-ready` | `kb-compile` | New or changed raw sources are ahead of the compiled layer. | `scan_compile_delta.py`, raw notes or paper PDFs, matching summaries | `wiki/`, derived indices, `wiki/log.md` |
-| `query-ready` | `kb-query` | The compiled layer exists and there is no obvious source delta or urgent health drift. | `wiki/index.md`, indices, prior `outputs/qa/` | `outputs/`, sometimes `wiki/`, `wiki/log.md` |
-| `health-first` | `kb-health` | Drift or mechanical breakage is more urgent than another compile or query pass. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, safe mechanical fixes, `wiki/log.md` |
+| `legacy-v1` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before V2 operation. | migration path, old compiled files, missing companions | migration guidance or repair |
+| `compile-ready` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `scan_compile_delta.py`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
+| `review-ready` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `scan_review_queue.py`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
+| `briefing-stale` | `kb-review` | The approved brain changed after the last briefing build. | briefing sources, latest live timestamps | regenerated `wiki/briefings/`, `wiki/log.md` |
+| `query-ready` | `kb-query` | The live layer exists and there is no obvious source delta, review backlog, or stale briefing. | `wiki/live/index`, live indices, prior `outputs/qa/`, relevant briefings | `outputs/`, sometimes follow-up draft recommendations, `wiki/log.md` |
+| `health-first` | `kb-health` | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, safe mechanical fixes, `wiki/log.md` |
 
 ## Symptom overrides
 
 These symptoms should push routing toward `kb-health` even when the structure alone might allow `kb-query`:
 
-- the notes feel disconnected or contradictory
-- stale Q&A is more likely than missing compilation
-- an index or table renders incorrectly in Obsidian
-- there are obvious duplicate concepts or entity aliases drifting apart
+- the live notes feel contradictory or unreliable
+- briefings seem wrong even after a recent review pass
+- there are obvious duplicate live concepts or approved conflicts
+- the approved layer renders badly in Obsidian
 
 These symptoms should push routing toward `kb-init` even when `raw/` and `wiki/` both exist:
 
 - `AGENTS.md` is missing
-- multiple case-variant guidance files exist for `AGENTS.md` or `CLAUDE.md`
 - `wiki/index.md` or `wiki/log.md` is missing
-- the `wiki/indices/` support layer is incomplete
+- the V2 directories `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, or `outputs/reviews/` are missing
+- a vault is still clearly V1 and has not been migrated
 
-These symptoms should be surfaced as repair targets without blocking compile/query/health by themselves:
+These symptoms should be surfaced as repair targets without blocking compile/query/review/health by themselves:
 
 - only `CLAUDE.md` is missing
 - a single noncanonical filename such as `agents.md` or `claude.md` exists but the contract is otherwise usable
 
 ## Operational reminders
 
-- `kb-init` owns contract creation and repair, not content compilation.
-- `kb-compile` owns source-to-wiki updates, not full maintenance diagnosis.
-- `kb-query` owns synthesis, archival, and publish artifacts once the compiled layer is trustworthy.
-- `kb-health` owns deep maintenance passes and mechanical repair recommendations.
+- `kb-init` owns contract creation, migration, and repair.
+- `kb-compile` owns source-to-draft updates.
+- `kb-review` owns draft promotion, rejection, and briefing refresh.
+- `kb-query` owns synthesis, archival, and publish artifacts from the approved layer only.
+- `kb-health` owns deep maintenance passes over live knowledge, briefings, and review backlog.

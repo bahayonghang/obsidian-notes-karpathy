@@ -1,31 +1,29 @@
-# Summary Template
+# Draft Summary Template
+
+Use this structure for `wiki/drafts/summaries/**`.
 
 ```markdown
 ---
-title: "Summary: {Source Title}"
+title: "Draft Summary: {Source Title}"
 source_file: "[[{raw-link}]]"
-source_url: "{source-url}"
-source_type: "{type}"
-source_mtime: "{mtime}"
 source_hash: "{optional-hash}"
-compile_method: "{compile-method}"
-paper_handle: "{optional-paper-handle}"
-companion_used: "{optional-companion-skill}"
+source_mtime: "{mtime}"
 compiled_at: "{datetime}"
-key_concepts:
-  - "[[concept-a]]"
-  - "[[concept-b]]"
-key_entities:
-  - "[[wiki/entities/entity-a]]"
+draft_id: "{stable-draft-id}"
+compiled_from:
+  - "[[{raw-link}]]"
+capture_sources:
+  - "[[{raw-link}]]"
+review_state: "pending"
+review_score: 0.88
+blocking_flags: []
+accuracy: 0.90
+provenance: 0.92
+composability: 0.84
+conflict_risk: 0.12
 ---
 
-# Summary: {Source Title}
-
-> [!abstract] Source
-> **Type**: {type} | **Author**: {author} | **Date**: {date}
-> **Compile method**: {compile-method}
-> **Source note**: [[{raw-link}]]
-> **Original URL**: {source-url}
+# Draft Summary: {Source Title}
 
 ## Thesis
 
@@ -37,39 +35,27 @@ key_entities:
 - {takeaway 2}
 - {takeaway 3}
 
-## Detailed Summary
-
-{2-4 paragraphs}
-
-## Key Concepts
-
-- [[concept-a]] - {relationship}
-- [[concept-b]] - {relationship}
-
-## Key Entities
-
-- [[wiki/entities/entity-a]] - {relationship}
-- [[wiki/entities/entity-b]] - {relationship}
-
 ## Evidence
 
 - "{quote or concrete datapoint}" - {where it appears}
 - "{second datapoint}" - {why it matters}
 
-## Tensions or Caveats
+## Proposed Concepts
 
-- {uncertainty, disagreement, or limitation}
+- [[wiki/drafts/concepts/concept-a]] - {relationship}
+- [[wiki/drafts/concepts/concept-b]] - {relationship}
 
-## Related Sources
+## Proposed Entities
 
-- [[wiki/summaries/other-source]] - {relationship}
+- [[wiki/drafts/entities/entity-a]] - {relationship}
+
+## Tensions and Review Notes
+
+- {uncertainty, contradiction, or reason this may need human review}
 ```
 
 Rules:
 
-- Prefer concrete evidence over abstract praise.
-- If an image materially changes meaning, inspect it and mention that in the summary.
-- Keep source provenance explicit enough that a later health check can audit the claim trail.
-- Omit `paper_handle` when the source is not a PDF or no deterministic handle metadata exists.
-- Omit `companion_used` only when no companion skill handled the source.
-- Omit `key_entities` and the `Key Entities` section when the source does not introduce durable named entities.
+- draft summaries are reviewable evidence packages, not polished prose
+- keep provenance explicit enough that a reviewer can judge the draft without agent-specific production context
+- omit entity sections when the source does not introduce durable named entities

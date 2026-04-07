@@ -1,13 +1,11 @@
 ---
 name: kb-compile
-description: Incrementally compile an Obsidian knowledge base from immutable raw sources. Use this skill whenever the user says "compile wiki", "compile kb", "sync wiki", "refresh wiki", "digest these articles", "turn my clips into notes", "process my repo notes", "编译wiki", "更新知识库", "同步wiki", "消化文章", "编译笔记", or wants newly added sources turned into summaries, concepts, entities, links, and indices. Also trigger when new files landed under `raw/`, including markdown files placed directly under `raw/` and PDF papers placed under `raw/papers/`, and the user asks what to do next. Prefer this skill over the package router when the operation is clearly a compile pass rather than a workflow-level diagnosis.
+description: Incrementally compile immutable raw captures into V2 draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants newly added raw material turned into reviewable summaries, concepts, entities, and draft indices.
 ---
 
 # KB Compile
 
-Incrementally turn immutable raw notes into a maintained wiki.
-
-This skill behaves like a compiler, not an editor of source material. Read from `raw/`, write to `wiki/` and `outputs/`, and keep provenance intact.
+Incrementally turn immutable raw captures into reviewable draft knowledge.
 
 ## Read before compiling
 
@@ -19,179 +17,57 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/summary-template.md`
-- `../obsidian-notes-karpathy/references/concept-template.md`
-- `../obsidian-notes-karpathy/references/entity-template.md`
-- `../obsidian-notes-karpathy/references/source-registry-template.md`
-- `../obsidian-notes-karpathy/references/index-home-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
-- `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
 
-If `../obsidian-notes-karpathy/scripts/scan_compile_delta.py` exists, run it first and use its JSON result as the authoritative starting point for new, changed, unchanged, and skipped counts. Fall back to manual inspection only when the script is unavailable.
-
-If one or more shared references are missing, do not hard-fail immediately. Continue with the minimum compatible contract:
-
-- do not rewrite `raw/`
-- parse frontmatter with a YAML-aware path when available
-- preserve deterministic summary and index paths
-- obey Obsidian-safe markdown rules for generated tables
-
-Report missing shared references in the final user summary.
+If `../obsidian-notes-karpathy/scripts/scan_compile_delta.py` exists, run it first.
 
 ## Non-negotiable rules
 
-- Do not rewrite raw source files.
-- Determine incremental state by comparing raw file mtime or hash against the metadata stored in the corresponding summary page.
-- Treat `wiki/index.md`, `wiki/log.md`, and `wiki/indices/*` as derived content that can be rebuilt.
-- Preserve and refine existing concept pages. Do not blow them away just because a new source arrived.
-- Preserve and refine entity pages when the optional entity layer exists.
-- Use deterministic target paths: summaries should keep the source basename, and concepts or entities should keep stable slugs.
-- Prefer canonical `wiki/indices/`; tolerate `wiki/indexes/` only when the target vault already uses it.
+- do not rewrite `raw/`
+- write only to `wiki/drafts/` and draft indices
+- never promote directly into `wiki/live/`
+- keep human captures and agent captures distinguishable in provenance
+- keep PDF paper handling strict: `raw/**/papers/*.pdf` still routes through `paper-workbench`
 
-## Phase 1: Discover work
+## Source discovery
 
-Scan `raw/` for supported source files, excluding `raw/assets/` and template files.
+Accept:
 
-Supported source classes:
+- markdown captures under `raw/human/**`
+- markdown captures under `raw/agents/{role}/**`
+- legacy markdown captures under V1 paths only during migration
+- paper PDFs under any `papers/` subtree inside raw
 
-- markdown notes directly under `raw/`
-- markdown notes under `raw/articles/`, `raw/papers/`, and `raw/podcasts/`
-- PDF papers under `raw/papers/`
-- optional repo notes under `raw/repos/`
-- optional full repo folders under `raw/repos/`, but in that case compile from a top-level `README.md` or explicit overview note unless the user asked for deeper code synthesis
+## Main outputs
 
-For PDF papers under `raw/papers/`:
+- `wiki/drafts/summaries/**`
+- `wiki/drafts/concepts/**`
+- `wiki/drafts/entities/**` when needed
+- `wiki/drafts/indices/*`
+- batch `ingest` entry in `wiki/log.md`
 
-1. treat the directory itself as the routing signal: any `raw/papers/*.pdf` is a paper and must use `paper-workbench`
-2. normalize the paper through `paper-workbench` in `json` mode before writing any compiled summary, concept, or entity output
-3. still resolve optional paper metadata:
-   - prefer an optional `foo.source.md` sidecar next to `foo.pdf` with frontmatter such as `paper_id` or `source`
-   - otherwise accept an arXiv-style ID embedded in the PDF filename
-4. use any resolved handle as metadata for reporting, summary frontmatter, and debugging, not as the routing gate
-5. if `paper-workbench` is unavailable, skip only that PDF source and report install guidance; do not fall back to the `pdf` skill for `raw/papers/*.pdf`
-6. never write extracted markdown back into `raw/`; go straight from the normalized paper record into the compiled summary, concept, and entity outputs
-7. report the chosen PDF ingest method as `paper-workbench` or `skipped`
-8. do not keep both `foo.md` and `foo.pdf` with the same basename under `raw/papers/`; `foo.source.md` is allowed only as metadata sidecar, not as a second raw source
+The compile pass exists to hand clean draft packages to `kb-review`, which then writes `outputs/reviews/**`, promotes approved pages into `wiki/live/**`, and rebuilds `wiki/briefings/**`.
 
-For each raw source:
+## Draft requirements
 
-1. locate the matching summary in `wiki/summaries/`
-2. if no summary exists, mark as new
-3. if summary exists and its stored `source_hash` or `source_mtime` is older than the current raw file, mark as changed
-4. otherwise skip
+Every draft should include:
 
-Report a short status such as:
+- explicit evidence
+- `draft_id`
+- `compiled_from`
+- `capture_sources`
+- `review_state`
+- `review_score`
+- `blocking_flags`
 
-`Found 3 new sources, 1 changed source, 9 unchanged sources.`
-
-## Phase 2: Compile summaries
-
-For each new or changed source:
-
-1. if the source is markdown, read the raw markdown
-2. if the source is a PDF under `raw/papers/`, derive the working paper understanding through the PDF handling chain above without mutating `raw/`
-3. parse frontmatter with a YAML-aware path when metadata matters
-4. inspect local images from `raw/assets/` only when they materially affect meaning
-5. create or update `wiki/summaries/{source-name}.md` using `../obsidian-notes-karpathy/references/summary-template.md`
-6. store tracking fields in summary frontmatter:
-   - `source_hash` when available
-   - otherwise `source_mtime`
-   - keep both when both are available
-   - `compile_method` as `markdown`, `paper-workbench`, or `pdf`
-   - `paper_handle` when the source is a paper PDF and deterministic handle metadata exists
-   - `companion_used` when a companion skill handled the PDF
-7. include:
-   - thesis
-   - key takeaways
-   - evidence with a concrete locator when possible
-   - extracted key concepts
-   - extracted key entities when the source anchors durable named things
-   - related-source links where they are real, not speculative
-
-## Phase 3: Compile concept pages and entity pages
-
-After each summary:
-
-1. extract recurring concepts, entities, tools, people, organizations, products, repositories, or themes
-2. create new concept pages when the concept is significant or repeated
-3. create or update entity pages only when the named thing is durable enough to deserve a stable page
-4. otherwise keep the item in summary prose or concept aliases rather than forcing a weak entity page
-
-When updating a concept or entity page:
-
-- merge the new evidence into existing sections
-- update `sources`, `related`, `aliases`, and `updated_at`
-- preserve older evidence unless it is explicitly superseded
-
-If new evidence conflicts with the existing page:
-
-- do not silently overwrite the old definition
-- add or update a `Tensions and Contradictions` section
-- set `status: conflicting` when the disagreement remains unresolved
-
-If durable entity coverage becomes necessary and `wiki/entities/` does not exist yet:
-
-- create `wiki/entities/`
-- create `wiki/indices/ENTITIES.md`
-- then continue the compile pass
-
-## Phase 4: Rebuild navigation surfaces
-
-Rebuild or refresh:
-
-- `wiki/index.md`
-- `wiki/indices/INDEX.md`
-- `wiki/indices/CONCEPTS.md`
-- `wiki/indices/SOURCES.md`
-- `wiki/indices/RECENT.md`
-- `wiki/indices/ENTITIES.md` when the entity layer exists
-
-Any table emitted during this phase must obey `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`. Never place alias-style wikilinks inside table cells.
-
-`wiki/index.md` should stay content-oriented:
-
-- counts
-- high-level entry points
-- notable concepts, entities, or recent themes
-- recent activity derived from the log rather than hand-written drift
-
-Append one batch entry to `wiki/log.md` using `../obsidian-notes-karpathy/references/activity-log-template.md`.
-
-## Phase 5: Light sanity check
-
-Run a lightweight post-compile check and fix obvious mechanical issues:
-
-- broken links introduced by this compile pass
-- missing reciprocal `related` fields you can infer confidently
-- summaries missing `key_concepts`
-- entity pages without source backing
-- source registry rows that no longer match the compiled state
-- alias-style wikilinks inside Markdown table cells that would break Obsidian rendering
-
-If the user asked for a full health review, route or continue into `kb-health`.
-
-## Large batches
-
-For first-time or heavy ingestion:
-
-- recommend batches of 5 sources
-- update indices after each batch
-- report progress in batch terms rather than waiting for the entire run to finish
+Drafts should be shaped for review, not for final polish.
 
 ## Output to the user
 
 Always report:
 
-1. how many sources were new, changed, or skipped
-2. how many summaries were created or updated
-3. how many concepts were created or updated
-4. how many entities were created or updated
-5. whether any contradictions were surfaced
-6. whether any shared references or optional local files were missing
-7. whether any PDF papers were skipped because `paper-workbench` was unavailable or the paper could not be processed through the strict `raw/papers` route
-8. whether a deeper `kb-health` pass is recommended
-
-## Tooling notes
-
-- Use `obsidian-markdown` for all markdown output.
-- Use `obsidian-cli` when available for search and vault-aware operations.
-- Keep health reports in `outputs/health/`, not `outputs/reports/`.
+1. how many captures were new, changed, or unchanged
+2. how many draft summaries were created or updated
+3. how many draft concepts or entities were touched
+4. whether any PDFs were skipped because `paper-workbench` was unavailable
+5. whether the next step is `kb-review`

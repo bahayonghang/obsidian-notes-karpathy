@@ -7,18 +7,39 @@ Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-bas
 ```markdown
 ## [{date}] ingest | {batch-slug}
 
-- Sources scanned: {count}
-- New summaries: {count}
-- Updated summaries: {count}
-- New concepts: {count}
-- Updated concepts: {count}
-- New entities: {count}
-- Updated entities: {count}
-- Notable tensions: {count}
+- Raw captures scanned: {count}
+- Draft summaries created: {count}
+- Draft summaries updated: {count}
+- Draft concepts touched: {count}
+- Draft entities touched: {count}
 - Touched files:
-  - [[wiki/summaries/source-a]]
-  - [[wiki/concepts/concept-b]]
-  - [[wiki/entities/entity-c]]
+  - [[wiki/drafts/summaries/human/articles/source-a]]
+  - [[wiki/drafts/concepts/concept-b]]
+```
+
+## Review pass
+
+```markdown
+## [{date}] review | {batch-slug}
+
+- Review report:
+  - [[outputs/reviews/{file}]]
+- Decisions: approve={count} reject={count} needs-human={count}
+- Promoted to live:
+  - [[wiki/live/summaries/human/articles/source-a]]
+- Rejected drafts:
+  - [[wiki/drafts/summaries/agents/researcher/source-b]]
+```
+
+## Briefing refresh
+
+```markdown
+## [{date}] brief | {role}
+
+- Briefing: [[wiki/briefings/{role}]]
+- Rebuilt from:
+  - [[wiki/live/concepts/concept-a]]
+  - [[wiki/live/summaries/human/articles/source-b]]
 ```
 
 ## Query archive
@@ -27,14 +48,11 @@ Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-bas
 ## [{date}] query | {question-slug}
 
 - Question: {human-readable question}
-- Reused prior Q&A: yes | no
-- Consulted:
-  - [[wiki/concepts/concept-a]]
-  - [[wiki/summaries/source-b]]
+- Consulted live pages:
+  - [[wiki/live/concepts/concept-a]]
+  - [[wiki/live/summaries/human/articles/source-b]]
+- Used briefing: [[wiki/briefings/{role}]]
 - Archived answer: [[outputs/qa/{file}]]
-- Fed back into the wiki:
-  - [[wiki/concepts/concept-a]]
-  - [[wiki/entities/entity-b]]
 ```
 
 ## Publish artifact
@@ -46,8 +64,6 @@ Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-bas
 - Channel: thread | article | talk | report | slides | chart
 - Derived from:
   - [[outputs/qa/{file}]]
-- Supporting pages:
-  - [[wiki/concepts/concept-a]]
 ```
 
 ## Health pass
@@ -58,13 +74,12 @@ Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-bas
 - Report: [[outputs/health/health-check-{date}]]
 - Overall score: {score}/100
 - Critical issues: {count}
-- Fix-now items completed: {count}
-- Follow-up recommendations:
-  - {recommendation}
+- Review backlog items: {count}
+- Stale briefings: {count}
 ```
 
 Rules:
 
-- Append only. Do not rewrite history except to correct obvious formatting mistakes.
-- Log batches and substantive answers, not every micro-edit.
-- Include touched files whenever practical so later diagnosis can trace changes.
+- append only
+- log batch-level work, not every micro-edit
+- include enough paths that later diagnosis can trace a promotion chain
