@@ -67,9 +67,11 @@ The workflow has four concrete operations:
 
 - markdown paper notes are compiled directly
 - PDF papers may carry an optional `paper-name.source.md` sidecar with metadata such as `paper_id` or `source`
-- any PDF under `raw/papers/` is treated as a paper and compiled through `alphaxiv-paper-lookup`
+- any PDF under `raw/papers/` is treated as a paper and compiled by first normalizing it through `paper-workbench` in `json` mode
 - sidecar or filename handles remain useful metadata for provenance and debugging, but they do not decide the route
-- if `alphaxiv-paper-lookup` is unavailable, the compiler should skip only the affected PDFs and tell the user what to install instead of falling back to `pdf`
+- if `paper-workbench` is unavailable, the compiler should skip only the affected PDFs and tell the user what to install instead of falling back to `pdf`
+
+Outside the strict compile path, `paper-workbench` should stay the single public paper entrypoint: use `interpret` for direct reading/explanation and `xray` for critique/deconstruction.
 
 Do not keep both `paper-name.md` and `paper-name.pdf` with the same basename under `raw/papers/`.
 
@@ -176,10 +178,10 @@ This package assumes the following Obsidian-oriented skills are available:
 
 For paper/PDF ingestion under `raw/papers/`, also install:
 
-- `alphaxiv-paper-lookup` as the required paper companion for `raw/papers/*.pdf`
+- `paper-workbench` as the required paper companion for `raw/papers/*.pdf`; use `json` for compile-time normalization, `interpret` for direct paper explanation, and `xray` for deeper critique
 - `pdf` for non-paper PDF handling outside the strict `raw/papers` compile path
 
-If `raw/papers` PDFs are still skipped unexpectedly, verify those companion skills are installed in the active skill home your agent is actually resolving from, such as `~/.codex/skills/` or `~/.claude/skills/`.
+If `raw/papers` PDFs are still skipped unexpectedly, verify those companion skills are installed in the active skill home your agent is actually resolving from, such as `~/.codex/skills/` or `~/.claude/skills/`, and confirm that `paper-workbench` is the paper companion being resolved.
 
 ## Optional enhancements
 

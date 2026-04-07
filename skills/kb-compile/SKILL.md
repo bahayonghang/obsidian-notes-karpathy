@@ -61,15 +61,16 @@ Supported source classes:
 
 For PDF papers under `raw/papers/`:
 
-1. treat the directory itself as the routing signal: any `raw/papers/*.pdf` is a paper and must use `alphaxiv-paper-lookup`
-2. still resolve optional paper metadata:
+1. treat the directory itself as the routing signal: any `raw/papers/*.pdf` is a paper and must use `paper-workbench`
+2. normalize the paper through `paper-workbench` in `json` mode before writing any compiled summary, concept, or entity output
+3. still resolve optional paper metadata:
    - prefer an optional `foo.source.md` sidecar next to `foo.pdf` with frontmatter such as `paper_id` or `source`
    - otherwise accept an arXiv-style ID embedded in the PDF filename
-3. use any resolved handle as metadata for reporting, summary frontmatter, and debugging, not as the routing gate
-4. if `alphaxiv-paper-lookup` is unavailable, skip only that PDF source and report install guidance; do not fall back to the `pdf` skill for `raw/papers/*.pdf`
-5. never write extracted markdown back into `raw/`; go straight from the PDF handling step into the compiled summary, concept, and entity outputs
-6. report the chosen PDF ingest method as `alphaxiv` or `skipped`
-7. do not keep both `foo.md` and `foo.pdf` with the same basename under `raw/papers/`; `foo.source.md` is allowed only as metadata sidecar, not as a second raw source
+4. use any resolved handle as metadata for reporting, summary frontmatter, and debugging, not as the routing gate
+5. if `paper-workbench` is unavailable, skip only that PDF source and report install guidance; do not fall back to the `pdf` skill for `raw/papers/*.pdf`
+6. never write extracted markdown back into `raw/`; go straight from the normalized paper record into the compiled summary, concept, and entity outputs
+7. report the chosen PDF ingest method as `paper-workbench` or `skipped`
+8. do not keep both `foo.md` and `foo.pdf` with the same basename under `raw/papers/`; `foo.source.md` is allowed only as metadata sidecar, not as a second raw source
 
 For each raw source:
 
@@ -95,7 +96,7 @@ For each new or changed source:
    - `source_hash` when available
    - otherwise `source_mtime`
    - keep both when both are available
-   - `compile_method` as `markdown`, `alphaxiv`, or `pdf`
+   - `compile_method` as `markdown`, `paper-workbench`, or `pdf`
    - `paper_handle` when the source is a paper PDF and deterministic handle metadata exists
    - `companion_used` when a companion skill handled the PDF
 7. include:
@@ -186,7 +187,7 @@ Always report:
 4. how many entities were created or updated
 5. whether any contradictions were surfaced
 6. whether any shared references or optional local files were missing
-7. whether any PDF papers were skipped because `alphaxiv-paper-lookup` was unavailable or the paper could not be processed through the strict `raw/papers` route
+7. whether any PDF papers were skipped because `paper-workbench` was unavailable or the paper could not be processed through the strict `raw/papers` route
 8. whether a deeper `kb-health` pass is recommended
 
 ## Tooling notes

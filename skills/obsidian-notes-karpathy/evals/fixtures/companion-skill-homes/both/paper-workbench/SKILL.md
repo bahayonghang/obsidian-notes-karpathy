@@ -1,5 +1,5 @@
 ---
-name: alphaxiv-paper-lookup
+name: paper-workbench
 description: Fixture companion skill for tests.
 ---
 

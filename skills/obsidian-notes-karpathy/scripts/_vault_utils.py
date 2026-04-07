@@ -25,7 +25,7 @@ GUIDANCE_CONTRACTS = (
     ("claude", "CLAUDE.md", False),
 )
 PDF_SIDECAR_SUFFIX = ".source.md"
-PDF_COMPANION_SKILLS = ("alphaxiv-paper-lookup", "pdf")
+PDF_COMPANION_SKILLS = ("paper-workbench", "pdf")
 
 
 @dataclass(frozen=True)
@@ -329,15 +329,15 @@ def pdf_ingest_plan(
             plan["paper_handle"] = handle
             plan["paper_handle_source"] = "filename"
 
-    alphaxiv_available = companion_status["alphaxiv-paper-lookup"]
+    paper_workbench_available = companion_status["paper-workbench"]
 
-    if alphaxiv_available:
-        plan["ingest_plan"] = "alphaxiv"
-        plan["ingest_reason"] = "paper_pdf_directory_policy"
+    if paper_workbench_available:
+        plan["ingest_plan"] = "paper-workbench"
+        plan["ingest_reason"] = "paper_workbench_directory_policy"
         return plan
 
     plan["ingest_plan"] = "skip"
-    plan["ingest_reason"] = "alphaxiv_required_for_raw_papers"
+    plan["ingest_reason"] = "paper_workbench_required_for_raw_papers"
     return plan
 
 

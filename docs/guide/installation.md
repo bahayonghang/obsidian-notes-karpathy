@@ -59,7 +59,7 @@ Then confirm the bundled resources live inside the entry skill:
 
 For paper/PDF ingestion under `raw/papers/`, also install:
 
-- `alphaxiv-paper-lookup` as the required paper companion for `raw/papers/*.pdf`
+- `paper-workbench` as the required paper companion for `raw/papers/*.pdf`; use `json` for compile-time normalization, `interpret` for direct paper explanation, and `xray` for deeper critique
 - `pdf` for non-paper PDF handling outside the strict `raw/papers` compile path
 
-Install those companion skills into the same skill home your runtime is actually using. If `raw/papers` PDFs are still skipped, verify that `alphaxiv-paper-lookup` is available in the active home before changing the vault.
+Install those companion skills into the same skill home your runtime is actually using. If `raw/papers` PDFs are still skipped, verify that `paper-workbench` is available in the active home before changing the vault.

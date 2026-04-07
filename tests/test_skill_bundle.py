@@ -104,7 +104,7 @@ class SkillBundleContractTests(unittest.TestCase):
         self.assertEqual(pdf_only["items"][0]["path"], "raw/papers/2026-04-08-transformers.pdf")
         self.assertEqual(pdf_only["items"][0]["summary_path"], "wiki/summaries/2026-04-08-transformers.md")
         self.assertEqual(pdf_only["items"][0]["source_class"], "paper_pdf")
-        self.assertIn(pdf_only["items"][0]["ingest_plan"], {"alphaxiv", "skip"})
+        self.assertIn(pdf_only["items"][0]["ingest_plan"], {"paper-workbench", "skip"})
 
     def test_scan_compile_delta_builds_pdf_ingest_manifest(self) -> None:
         skill_home_root = FIXTURES_DIR / "companion-skill-homes"
@@ -113,7 +113,7 @@ class SkillBundleContractTests(unittest.TestCase):
             str(FIXTURES_DIR / "pdf-only-vault"),
             env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "both")},
         )
-        alphaxiv_without_handle = run_json_script(
+        workbench_without_handle = run_json_script(
             "scan_compile_delta.py",
             str(FIXTURES_DIR / "pdf-no-handle-vault"),
             env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "both")},
@@ -129,35 +129,35 @@ class SkillBundleContractTests(unittest.TestCase):
             env={"KB_COMPANION_SKILL_PATHS": str(skill_home_root / "empty")},
         )
 
-        alphaxiv_item = both_companions["items"][0]
-        self.assertEqual(alphaxiv_item["ingest_plan"], "alphaxiv")
-        self.assertEqual(alphaxiv_item["ingest_reason"], "paper_pdf_directory_policy")
-        self.assertEqual(alphaxiv_item["paper_handle"], "1706.03762")
-        self.assertEqual(alphaxiv_item["paper_handle_source"], "paper_id")
+        workbench_item = both_companions["items"][0]
+        self.assertEqual(workbench_item["ingest_plan"], "paper-workbench")
+        self.assertEqual(workbench_item["ingest_reason"], "paper_workbench_directory_policy")
+        self.assertEqual(workbench_item["paper_handle"], "1706.03762")
+        self.assertEqual(workbench_item["paper_handle_source"], "paper_id")
         self.assertEqual(
-            alphaxiv_item["metadata_path"],
+            workbench_item["metadata_path"],
             "raw/papers/2026-04-08-transformers.source.md",
         )
-        self.assertTrue(both_companions["companion_skills"]["skills"]["alphaxiv-paper-lookup"])
+        self.assertTrue(both_companions["companion_skills"]["skills"]["paper-workbench"])
         self.assertTrue(both_companions["companion_skills"]["skills"]["pdf"])
 
-        no_handle_item = alphaxiv_without_handle["items"][0]
-        self.assertEqual(no_handle_item["ingest_plan"], "alphaxiv")
-        self.assertEqual(no_handle_item["ingest_reason"], "paper_pdf_directory_policy")
+        no_handle_item = workbench_without_handle["items"][0]
+        self.assertEqual(no_handle_item["ingest_plan"], "paper-workbench")
+        self.assertEqual(no_handle_item["ingest_reason"], "paper_workbench_directory_policy")
         self.assertIsNone(no_handle_item["paper_handle"])
-        self.assertTrue(alphaxiv_without_handle["companion_skills"]["skills"]["alphaxiv-paper-lookup"])
-        self.assertTrue(alphaxiv_without_handle["companion_skills"]["skills"]["pdf"])
+        self.assertTrue(workbench_without_handle["companion_skills"]["skills"]["paper-workbench"])
+        self.assertTrue(workbench_without_handle["companion_skills"]["skills"]["pdf"])
 
         strict_skip_item = strict_skip["items"][0]
         self.assertEqual(strict_skip_item["ingest_plan"], "skip")
-        self.assertEqual(strict_skip_item["ingest_reason"], "alphaxiv_required_for_raw_papers")
+        self.assertEqual(strict_skip_item["ingest_reason"], "paper_workbench_required_for_raw_papers")
         self.assertIsNone(strict_skip_item["paper_handle"])
-        self.assertFalse(strict_skip["companion_skills"]["skills"]["alphaxiv-paper-lookup"])
+        self.assertFalse(strict_skip["companion_skills"]["skills"]["paper-workbench"])
         self.assertTrue(strict_skip["companion_skills"]["skills"]["pdf"])
 
         skipped_item = skipped_pdf["items"][0]
         self.assertEqual(skipped_item["ingest_plan"], "skip")
-        self.assertEqual(skipped_item["ingest_reason"], "alphaxiv_required_for_raw_papers")
+        self.assertEqual(skipped_item["ingest_reason"], "paper_workbench_required_for_raw_papers")
         self.assertEqual(skipped_pdf["ingest_counts"]["skip"], 1)
 
     def test_accepted_raw_sources_skips_pdf_sidecars(self) -> None:
@@ -205,6 +205,9 @@ class SkillBundleContractTests(unittest.TestCase):
         readme_cn = (REPO_ROOT / "README_CN.md").read_text(encoding="utf-8")
         installation = (REPO_ROOT / "docs" / "guide" / "installation.md").read_text(encoding="utf-8")
         installation_cn = (REPO_ROOT / "docs" / "zh" / "guide" / "installation.md").read_text(encoding="utf-8")
+        entry_skill = (ENTRY_SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        compile_skill = (REPO_ROOT / "skills" / "kb-compile" / "SKILL.md").read_text(encoding="utf-8")
+        evals_text = (ENTRY_SKILL_ROOT / "evals" / "evals.json").read_text(encoding="utf-8")
         trigger_eval_path = ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json"
 
         self.assertNotIn(
@@ -218,10 +221,20 @@ class SkillBundleContractTests(unittest.TestCase):
         self.assertIn("~/.claude/skills/", readme_cn)
         self.assertIn("~/.codex/skills/", readme_cn)
         self.assertIn("~/.codex/skills/", installation)
-        self.assertIn("alphaxiv-paper-lookup", readme)
-        self.assertIn("alphaxiv-paper-lookup", readme_cn)
-        self.assertIn("alphaxiv-paper-lookup", installation)
-        self.assertIn("alphaxiv-paper-lookup", installation_cn)
+        self.assertIn("paper-workbench", readme)
+        self.assertIn("paper-workbench", readme_cn)
+        self.assertIn("paper-workbench", installation)
+        self.assertIn("paper-workbench", installation_cn)
+        self.assertNotIn("alphaxiv-paper-lookup", readme)
+        self.assertNotIn("alphaxiv-paper-lookup", readme_cn)
+        self.assertNotIn("alphaxiv-paper-lookup", installation)
+        self.assertNotIn("alphaxiv-paper-lookup", installation_cn)
+        self.assertIn("paper-workbench", entry_skill)
+        self.assertIn("paper-workbench", compile_skill)
+        self.assertIn("paper-workbench", evals_text)
+        self.assertNotIn("alphaxiv-paper-lookup", entry_skill)
+        self.assertNotIn("alphaxiv-paper-lookup", compile_skill)
+        self.assertNotIn("alphaxiv-paper-lookup", evals_text)
         self.assertIn("pdf", readme)
         self.assertIn("pdf", readme_cn)
         self.assertIn("pdf", installation)
