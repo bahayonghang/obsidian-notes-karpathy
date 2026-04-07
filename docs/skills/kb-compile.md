@@ -33,10 +33,11 @@ Skip when the compiled summary already matches the current raw source.
 
 For PDFs under `raw/papers/`:
 
-1. treat `raw/papers/` as the routing signal and always use `alphaxiv-paper-lookup`
-2. resolve a deterministic paper handle from an optional `paper-name.source.md` sidecar or an arXiv-style ID in the filename only for metadata
-3. do not fall back to `pdf` for `raw/papers/*.pdf`
-4. if `alphaxiv-paper-lookup` is not installed, skip only that PDF and tell the user what to install
+1. treat `raw/papers/` as the routing signal and always use `paper-workbench`
+2. normalize the paper through `paper-workbench` in `json` mode before generating the compiled summary
+3. resolve a deterministic paper handle from an optional `paper-name.source.md` sidecar or an arXiv-style ID in the filename only for metadata
+4. do not fall back to `pdf` for `raw/papers/*.pdf`
+5. if `paper-workbench` is not installed, skip only that PDF and tell the user what to install
 
 The compiler should never write extracted markdown back into `raw/`.
 

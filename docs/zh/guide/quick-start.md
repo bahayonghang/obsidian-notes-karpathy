@@ -33,9 +33,11 @@ CLAUDE.md
 
 遇到 PDF 时：
 
-- 只要 PDF 放在 `raw/papers/` 下，就强制使用 `alphaxiv-paper-lookup`
+- 只要 PDF 放在 `raw/papers/` 下，就强制使用 `paper-workbench` 的 `json` 模式
 - sidecar 或文件名里的确定 handle 只作为元数据保留，不再决定路由
-- 如果 `alphaxiv-paper-lookup` 没安装，只跳过该 PDF，并提示安装，不再降级到 `pdf`
+- 如果 `paper-workbench` 没安装，只跳过该 PDF，并提示安装，不再降级到 `pdf`
+
+如果不是编译场景，也继续把 `paper-workbench` 当作唯一公开入口：`interpret` 用于讲解，`xray` 用于拆解。
 
 raw 笔记里只保留来源元数据：
 

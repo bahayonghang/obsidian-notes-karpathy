@@ -5,7 +5,7 @@
 ## 输入
 
 - `raw/` 下的 markdown 资料
-- `raw/papers/` 下的 PDF 论文，一律走 `alphaxiv-paper-lookup`；sidecar 或文件名里的确定性 handle 只保留为元数据
+- `raw/papers/` 下的 PDF 论文，一律走 `paper-workbench` 的 `json` 模式；sidecar 或文件名里的确定性 handle 只保留为元数据
 - `AGENTS.md` 与 `CLAUDE.md` 中定义的本地契约
 
 ## 输出
@@ -20,6 +20,6 @@
 
 编译会读取 raw，但不会修改 raw。
 
-如果 `alphaxiv-paper-lookup` 没安装，只跳过受影响的 `raw/papers` PDF，并返回安装提示。
+如果 `paper-workbench` 没安装，只跳过受影响的 `raw/papers` PDF，并返回安装提示。
 
 PDF 旁边允许放一个可选的 `paper-name.source.md` sidecar，用来提供 `paper_id` 或 `source` 元数据，但它不算第二份 raw source。

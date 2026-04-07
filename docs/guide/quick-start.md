@@ -33,9 +33,11 @@ Place markdown notes under `raw/`, `raw/articles/`, `raw/papers/`, or `raw/podca
 
 When the source is a PDF:
 
-- always use `alphaxiv-paper-lookup` when the PDF lives under `raw/papers/`
+- always use `paper-workbench` in `json` mode when the PDF lives under `raw/papers/`
 - use the sidecar or filename only to capture deterministic metadata such as `paper_handle`
-- if `alphaxiv-paper-lookup` is unavailable, skip only that PDF and show install guidance instead of falling back to `pdf`
+- if `paper-workbench` is unavailable, skip only that PDF and show install guidance instead of falling back to `pdf`
+
+If you want to read or critique the paper outside compilation, keep using `paper-workbench` as the public entrypoint: `interpret` for explanation and `xray` for deconstruction.
 
 Raw notes should keep only source metadata:
 

@@ -5,7 +5,7 @@
 ## Inputs
 
 - markdown files under `raw/`
-- paper PDFs under `raw/papers/`, always handled through `alphaxiv-paper-lookup`; deterministic handles from sidecars or filenames remain optional metadata only
+- paper PDFs under `raw/papers/`, always handled through `paper-workbench` in `json` mode; deterministic handles from sidecars or filenames remain optional metadata only
 - local schema from `AGENTS.md` and `CLAUDE.md`
 
 ## Outputs
@@ -20,7 +20,7 @@
 
 Compilation reads raw notes but does not mutate them.
 
-If `alphaxiv-paper-lookup` is not installed, the compiler should skip only the affected `raw/papers` PDFs and return install guidance.
+If `paper-workbench` is not installed, the compiler should skip only the affected `raw/papers` PDFs and return install guidance.
 
 An optional `paper-name.source.md` sidecar may sit next to the PDF to provide `paper_id` or `source` metadata without becoming a second raw source.
 

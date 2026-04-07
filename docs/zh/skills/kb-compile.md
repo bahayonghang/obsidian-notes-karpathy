@@ -32,10 +32,11 @@
 
 对 `raw/papers/` 下的 PDF：
 
-1. 把 `raw/papers/` 目录本身当作路由信号，一律使用 `alphaxiv-paper-lookup`
-2. 仍然从可选的 `paper-name.source.md` sidecar 或文件名里解析确定的 paper handle，但只作为元数据
-3. 对 `raw/papers/*.pdf` 不再降级到 `pdf`
-4. 如果 `alphaxiv-paper-lookup` 没安装，只跳过该 PDF，并明确提示安装什么
+1. 把 `raw/papers/` 目录本身当作路由信号，一律使用 `paper-workbench`
+2. 在生成编译产物前，先通过 `paper-workbench` 的 `json` 模式把论文标准化
+3. 仍然从可选的 `paper-name.source.md` sidecar 或文件名里解析确定的 paper handle，但只作为元数据
+4. 对 `raw/papers/*.pdf` 不再降级到 `pdf`
+5. 如果 `paper-workbench` 没安装，只跳过该 PDF，并明确提示安装什么
 
 编译器不应把提取后的 markdown 回写到 `raw/`。
 

@@ -23,7 +23,7 @@ Karpathy 式知识库工作流的包级入口技能。
 - `wiki/index.md` 顶部
 - `wiki/log.md` 最近几条记录
 
-如果 `raw/papers/` 下有待处理的 PDF，预期的编译行为是：把目录本身视为论文信号，一律走 `alphaxiv-paper-lookup`，sidecar 或文件名里的 handle 只作为元数据保留；如果缺少 `alphaxiv-paper-lookup`，就明确提示，而不是降级到 `pdf`。
+如果 `raw/papers/` 下有待处理的 PDF，预期的编译行为是：把目录本身视为论文信号，一律走 `paper-workbench`，并先通过 `json` 模式标准化后再编译；sidecar 或文件名里的 handle 只作为元数据保留；如果缺少 `paper-workbench`，就明确提示，而不是降级到 `pdf`。
 
 如果 Vault 其余部分已经可用，只是缺 `CLAUDE.md`，路由器应把它视为修复项，而不是立即强制回到 `kb-init`。
 
