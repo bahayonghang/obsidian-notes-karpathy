@@ -1,204 +1,46 @@
 # Obsidian Notes Karpathy
 
-> [!WARNING]
-> 这是自用版本喵～。项目目前处于不稳定状态，正在持续迭代中。
-
-基于 Andrej Karpathy 工作流的 Obsidian LLM 知识库技能包。
-
-## 这是什么
-
-这个仓库交付的是一组 **技能包**，不是应用程序。它帮助代理维护一个三层知识库：
+面向多 Agent 的、带显式审校门的 Obsidian 知识库技能包。
 
 ```text
-raw/     -> 人类整理的不可变原始资料
-wiki/    -> LLM 维护的编译产物
-outputs/ -> 问答沉淀、健康报告、报告、幻灯片、图表和可发布内容
+raw/            -> 不可变的人类/Agent 捕获层
+wiki/drafts/    -> 编译出的草稿知识层
+wiki/live/      -> 已批准的长期知识层
+wiki/briefings/ -> 只从 live 生成的角色 briefing
+outputs/        -> reviews、Q&A、health 报告和对外交付物
 ```
 
-核心思想不是“每次都临时做一遍 RAG”，而是“先编译成可维护的 wiki，再持续更新和复用”。你可以把它理解成一本会不断生长的活书，而不是一堆会腐烂的笔记。
-
-## 包结构
-
-```text
-skills/
-├── obsidian-notes-karpathy/  # 包级入口技能 + 内置 references/scripts/evals
-│   ├── SKILL.md
-│   ├── references/
-│   ├── scripts/
-│   └── evals/
-├── kb-init/                  # 初始化知识库结构与 schema
-├── kb-compile/               # 将 raw 编译到 wiki/
-├── kb-query/                 # 搜索、问答、归档和内容生成
-└── kb-health/                # 深度体检与维护建议
-```
-
-## 工作流
-
-```mermaid
-graph LR
-    A[raw/] -->|kb-compile| B[wiki/]
-    B -->|kb-query| C[outputs/qa + reports + slides + charts + content]
-    B -->|kb-health| D[outputs/health]
-    C -.->|新证据和新连接| B
-```
-
-这套工作流有四个核心动作：
-
-1. `kb-init` 建立契约
-2. `kb-compile` 摄入新资料并更新摘要、概念页与可选实体页
-3. `kb-query` 回答问题、归档高价值 Q&A，并生成对外内容
-4. `kb-health` 审计漂移、矛盾、陈旧 Q&A 和检索升级时机
+核心思想不再只是“把笔记编译成 wiki”，而是“把生产和裁决分开，避免未审草稿进入可复用真相层并持续复利。”
 
 ## 技能列表
 
-| 技能 | 作用 | 触发示例 |
-|------|------|---------|
-| `obsidian-notes-karpathy` | 包级入口和生命周期路由 | "Karpathy workflow"、"LLM Wiki"、"不是 RAG"、"知识库工作流" |
-| `kb-init` | 创建标准目录和 schema 文件 | "kb init"、"初始化知识库"、"setup vault" |
-| `kb-compile` | 将新 raw 编译成摘要、概念页、可选实体页、索引和日志 | "compile wiki"、"编译wiki"、"sync wiki"、"消化这些笔记" |
-| `kb-query` | 搜索 wiki、回答问题、沉淀问答、回写 wiki、生成报告/幻灯片/图表/内容草稿 | "query kb"、"问知识库"、"生成报告"、"把笔记写成推文串" |
-| `kb-health` | 对编译后的 wiki 做深度体检并给出下一层检索建议 | "kb health"、"health check"、"笔记越来越散" |
+- `obsidian-notes-karpathy`：生命周期路由
+- `kb-init`：初始化、修复或迁移到 V2
+- `kb-compile`：把 raw 编译到 `wiki/drafts/`
+- `kb-review`：批准 / 拒绝 / 升级人工复核，并重建 `wiki/briefings/`
+- `kb-query`：只从 `wiki/live/` 检索和产出
+- `kb-health`：审计 `wiki/live/`、`wiki/briefings/`、`outputs/qa/`、`outputs/reviews/`
 
-`obsidian-notes-karpathy` 只负责模糊场景下的生命周期诊断。用户已经明确要初始化、编译、查询或体检时，应优先直接触发对应的 `kb-*` skill。
+## 关键契约
 
-## PDF 论文处理
+- `raw/` 永远不可变。
+- `kb-compile` 只能写 `wiki/drafts/`。
+- 只有 `kb-review` 可以把草稿提升到 `wiki/live/`。
+- `wiki/briefings/` 只能从 approved live 生成。
+- `kb-query` 读取 live、briefings 和历史 Q&A，不把 drafts 当真相层。
+- 旧的 V1 Vault 会被识别出来，并应先迁移再进入正常 V2 工作流。
 
-`raw/papers/` 现在是双模目录：
+## 确定性脚本
 
-- markdown 论文笔记直接参与编译
-- PDF 论文可以带一个可选的 `paper-name.source.md` sidecar，只放 `paper_id`、`source` 这类元数据
-- 任何放进 `raw/papers/` 的 PDF 都会被当作论文，并先通过 `paper-workbench` 的 `json` 模式做标准化
-- sidecar 或文件名里解析出的 handle 仍然有价值，但只作为溯源和调试元数据，不再决定路由
-- 如果 `paper-workbench` 不可用，只跳过受影响的 PDF，并明确提示用户安装什么，不再降级到 `pdf` skill
-
-如果不是严格的 compile 场景，`paper-workbench` 也应作为唯一公开 paper 入口：`interpret` 用来直接阅读/讲解，`xray` 用来拆解和批判式分析。
-
-不要在 `raw/papers/` 里同时保留同名的 `paper-name.md` 和 `paper-name.pdf`。
-
-## 核心设计约束
-
-- `raw/` 是不可变层，编译状态不回写源文件。
-- `AGENTS.md` 是必需的本地契约，`CLAUDE.md` 是生成出来的 companion；如果只是缺 companion，应给出修复建议，而不是阻断正常的 compile/query/health。
-- `wiki/index.md` 是内容入口。
-- `wiki/log.md` 是 append-only 的运行历史，覆盖 `ingest`、`query`、`publish`、`health` 四类事件。
-- `outputs/qa/` 默认沉淀有价值的问答，让研究结果持续复用。
-- 默认先用 markdown 索引。
-- 下一层优先用 Backlinks、unlinked mentions 和 Properties 搜索。
-- qmd、DuckDB markdown 解析和 FTS 是向量检索之前的本地优先升级路径。
-
-## 标准目录结构
-
-```text
-vault/
-├── raw/
-│   ├── articles/
-│   ├── papers/
-│   ├── podcasts/
-│   ├── assets/
-│   └── repos/          # 可选
-├── wiki/
-│   ├── concepts/
-│   ├── summaries/
-│   ├── indices/
-│   ├── entities/       # 可选
-│   ├── index.md
-│   └── log.md
-├── outputs/
-│   ├── qa/
-│   ├── health/
-│   ├── reports/
-│   ├── slides/
-│   ├── charts/
-│   └── content/
-│       ├── articles/
-│       ├── threads/
-│       └── talks/
-├── AGENTS.md
-└── CLAUDE.md          # 生成出来的 companion
-```
-
-可选目录按需启用：
-
-- `raw/repos/` 用来放 repo 快照或 repo 伴随笔记
-- `wiki/entities/` 用来放人物、组织、产品、项目或仓库等稳定实体页
+- `scripts/detect_lifecycle.py`
+- `scripts/scan_compile_delta.py`
+- `scripts/scan_review_queue.py`
+- `scripts/scan_query_scope.py`
+- `scripts/lint_obsidian_mechanics.py`
 
 ## 安装
 
-### 方式一：通过 `npx` 安装
-
-```bash
-npx skills add bahayonghang/obsidian-notes-karpathy -g
-```
-
-### 方式二：安装到项目目录
-
-```bash
-cd /path/to/your/obsidian-vault
-npx skills add bahayonghang/obsidian-notes-karpathy
-```
-
-### 方式三：手动安装
-
-把技能目录复制到本地 skills 目录：
-
 ```bash
 cp -r skills/* ~/.claude/skills/
-```
-
-Codex：
-
-```bash
 cp -r skills/* ~/.codex/skills/
 ```
-
-PowerShell：
-
-```powershell
-Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
-```
-
-## Bundle 内置支撑资产
-
-包级入口技能还自带一组 deterministic helper 和共享路由资产：
-
-- `skills/obsidian-notes-karpathy/references/lifecycle-matrix.md`
-- `skills/obsidian-notes-karpathy/scripts/detect_lifecycle.py`
-- `skills/obsidian-notes-karpathy/scripts/scan_compile_delta.py`
-- `skills/obsidian-notes-karpathy/scripts/lint_obsidian_mechanics.py`
-- `skills/obsidian-notes-karpathy/evals/evals.json`
-- `skills/obsidian-notes-karpathy/evals/trigger-evals.json`
-
-## 推荐搭配技能
-
-这个包默认与你已有的 Obsidian 技能协作：
-
-- `obsidian-markdown`
-- `obsidian-cli`
-- `obsidian-canvas-creator`
-
-如果你准备把 PDF 论文直接放进 `raw/papers/`，还建议安装：
-
-- `paper-workbench`：`raw/papers/*.pdf` 必需的论文 companion skill；`json` 用于编译前标准化，`interpret` 用于直接讲解论文，`xray` 用于深拆论文
-- `pdf`：严格 `raw/papers` 编译链之外的通用 PDF 处理 companion skill
-
-如果 `raw/papers` 下的 PDF 还是被跳过，先确认这两个 companion skill 安装在当前代理真正读取的 skill home 里，比如 `~/.codex/skills/` 或 `~/.claude/skills/`，并确认实际被解析到的论文 companion 就是 `paper-workbench`。
-
-## 可选增强
-
-- **Obsidian Web Clipper**：更稳定地采集 markdown 资料
-- **Backlinks + Properties**：优先用 Obsidian 原生图谱与属性能力
-- **qmd**：在更重的检索基础设施之前，先上本地 markdown 搜索
-- **Dataview / Datacore**：在 Vault 内做动态元数据视图
-- **DuckDB markdown + 全文检索**：当知识库变大后提供本地优先的结构化检索
-- **Marp**：把 markdown 幻灯片导出为可展示内容
-
-## 参考资料
-
-- Andrej Karpathy 知识库线程：https://x.com/karpathy/status/2039805659525644595
-- kepano/obsidian-skills：https://github.com/kepano/obsidian-skills
-- Obsidian Web Clipper 文档：https://obsidian.md/help/web-clipper
-- qmd：https://github.com/tobi/qmd
-
-## License
-
-MIT

@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "Obsidian Notes Karpathy"
-  text: "LLM-Compiled Knowledge Bases for Obsidian"
-  tagline: Route the vault by lifecycle, keep raw sources immutable, and turn questions into durable research artifacts.
+  text: "Review-Gated Knowledge Bases for Obsidian"
+  tagline: Separate capture, draft compilation, approval, and briefing so multi-agent knowledge compounds on approved truth instead of raw hallucinations.
   image:
     src: /hero-image.svg
     alt: Obsidian Notes Karpathy
@@ -21,27 +21,30 @@ hero:
 
 features:
   - title: Route by Lifecycle Signal
-    details: The package entry skill diagnoses whether the vault needs initialization, compilation, querying, or a health pass.
+    details: The package entry skill diagnoses whether the vault needs initialization, compilation, review, querying, or a health pass.
     link: /skills/obsidian-notes-karpathy
-  - title: Compile, Do Not Improvise
-    details: Source notes stay untouched. The LLM updates summaries, concept pages, indices, logs, and optional entities in the compiled layer.
+  - title: Draft Before Live
+    details: "`kb-compile` turns immutable captures into `wiki/drafts/`; nothing becomes durable truth until `kb-review` promotes it."
     link: /skills/kb-compile
+  - title: Independent Review Gate
+    details: "`kb-review` scores drafts, writes review records, promotes only approved knowledge into `wiki/live/`, and rebuilds briefings."
+    link: /skills/kb-review
   - title: Persistent Research Memory
-    details: Substantive answers live in outputs/qa instead of disappearing into chat history.
+    details: "Substantive answers live in `outputs/qa/`, but only approved live pages and briefings should feed query-time synthesis."
     link: /skills/kb-query
   - title: Publish From Grounded Notes
-    details: Reports, article drafts, social threads, and talk outlines are generated from wiki-backed evidence.
+    details: "Reports, article drafts, social threads, and talk outlines are generated from `wiki/live/` evidence."
     link: /workflow/overview
   - title: Immutable Raw Layer
-    details: Raw markdown is human-curated input, not a place to store compilation state or generated edits.
+    details: "`raw/human/**` and `raw/agents/{role}/**` are evidence intake only, never the deployed brain."
     link: /guide/directory-structure
-  - title: index.md + log.md
-    details: The vault keeps both a content-oriented entry surface and an append-only operational history.
+  - title: Live Brain + Briefings
+    details: "`wiki/live/` stores approved knowledge and `wiki/briefings/` turns it into role-specific context for agents."
     link: /workflow/overview
   - title: Deep Health Checks
-    details: kb-health scores completeness, consistency, connectivity, freshness, and provenance, then separates safe fixes from judgment calls.
+    details: "`kb-health` audits approved knowledge, stale briefings, review backlog, render integrity, and provenance quality."
     link: /skills/kb-health
   - title: Markdown First, Search Later
-    details: Start with index pages, backlinks, unlinked mentions, and Properties search before adding heavier retrieval infrastructure.
+    details: Start with approved live indices, backlinks, and briefings before upgrading retrieval infrastructure.
     link: /workflow/query
 ---

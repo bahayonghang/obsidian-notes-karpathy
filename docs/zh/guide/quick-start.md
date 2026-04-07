@@ -1,110 +1,30 @@
 # 快速开始
 
-如果你想在一轮会话里跑通最小可用闭环，就按这个页面走。
+## 1. 建好 V2 支撑层
 
-## 1. 先创建或修复 Vault 契约
+需要有：
 
-从包级入口技能开始，或者直接调用 `kb-init`。
+- `raw/human/**`
+- `raw/agents/{role}/**`
+- `wiki/drafts/**`
+- `wiki/live/**`
+- `wiki/briefings/**`
+- `outputs/reviews/**`
+- `outputs/qa/**`
 
-预期的支撑层结构：
+## 2. 放入捕获内容
 
-```text
-raw/{articles,papers,podcasts,assets}
-wiki/{concepts,summaries,indices}
-wiki/index.md
-wiki/log.md
-outputs/{qa,health,reports,slides,charts,content/{articles,threads,talks}}
-AGENTS.md
-CLAUDE.md
-```
+- 人类整理的资料放进 `raw/human/**`
+- Agent 自动产出的内容放进 `raw/agents/{role}/**`
 
-`kb-init` 应默认生成这两份文件。初始化完成后，`AGENTS.md` 仍然是必需的本地契约；如果只是缺 `CLAUDE.md`，应视为后续修复项，而不是直接阻断 compile/query/health。
+## 3. 编译成草稿
 
-只有在确实需要时才启用可选层：
+运行 `kb-compile`，输出应该落在 `wiki/drafts/`。
 
-- `raw/repos/`：仓库快照或 repo 伴随笔记
-- `wiki/entities/` 和 `wiki/indices/ENTITIES.md`：稳定命名实体层
+## 4. 通过审校门
 
-## 2. 放入 5 到 10 条真实资料
+运行 `kb-review`，把合格草稿提升到 `wiki/live/`，并重建 `wiki/briefings/`。
 
-把 markdown 资料放进 `raw/`、`raw/articles/`、`raw/papers/` 或 `raw/podcasts/`。
+## 5. 基于批准层提问
 
-`raw/papers/` 也接受 PDF 论文。你也可以在 PDF 旁边放一个可选的 `paper-name.source.md` sidecar，只存 `paper_id`、`source` 这类确定元数据。
-
-遇到 PDF 时：
-
-- 只要 PDF 放在 `raw/papers/` 下，就强制使用 `paper-workbench` 的 `json` 模式
-- sidecar 或文件名里的确定 handle 只作为元数据保留，不再决定路由
-- 如果 `paper-workbench` 没安装，只跳过该 PDF，并提示安装，不再降级到 `pdf`
-
-如果不是编译场景，也继续把 `paper-workbench` 当作唯一公开入口：`interpret` 用于讲解，`xray` 用于拆解。
-
-raw 笔记里只保留来源元数据：
-
-```yaml
----
-title: "Attention Is All You Need"
-source: "https://arxiv.org/abs/1706.03762"
-author: "Vaswani et al."
-date: 2017-06-12
-type: paper
-tags:
-  - transformers
-  - attention
-clipped_at: 2026-04-03T10:00:00
----
-```
-
-不要把编译状态写进 raw。
-
-不要在 `raw/papers/` 里同时保留同名的 `paper-name.md` 和 `paper-name.pdf`。
-
-## 3. 小批量编译
-
-每大约 5 条资料跑一次 `kb-compile`。
-
-预期结果：
-
-- `wiki/summaries/` 下生成摘要页
-- `wiki/concepts/` 下生成概念页
-- 如果需要实体层，则生成 `wiki/entities/`
-- `wiki/index.md`、`wiki/log.md` 和 `wiki/indices/*` 被刷新
-
-## 4. 提一个实质性问题
-
-第一次编译完成后，立刻用 `kb-query` 提一个真实研究问题。
-
-这一步应该做到：
-
-- 先检索编译层
-- 先看 `outputs/qa/` 里是否已经有相关答案
-- 用可溯源证据作答
-- 把实质性结果归档到 `outputs/qa/`
-
-## 5. 产出一个衍生交付物
-
-如果你的 Vault 还要服务外部输出，就让 `kb-query` 进入 publish mode。
-
-常见落点：
-
-- `outputs/reports/`
-- `outputs/slides/`
-- `outputs/charts/`
-- `outputs/content/articles/`
-- `outputs/content/threads/`
-- `outputs/content/talks/`
-
-## 6. 建立第一次体检基线
-
-跑一次 `kb-health`。
-
-报告应写入 `outputs/health/health-check-{date}.md`，并对完整性、一致性、连通性、新鲜度和溯源质量打分。
-
-## 最小启动闭环
-
-1. 用 `kb-init` 建好支撑层
-2. 放入一小批资料
-3. 用 `kb-compile` 编译
-4. 用 `kb-query` 提一个真实问题
-5. 如果有外部输出需求，就把其中一个答案转成内容
-6. 用 `kb-health` 建立维护基线
+运行 `kb-query`，只从 `wiki/live/` 和相关 briefing 做检索与生成。
