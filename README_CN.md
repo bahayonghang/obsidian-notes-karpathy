@@ -67,9 +67,9 @@ graph LR
 
 - markdown 论文笔记直接参与编译
 - PDF 论文可以带一个可选的 `paper-name.source.md` sidecar，只放 `paper_id`、`source` 这类元数据
-- 只有当 PDF 能从 sidecar 或文件名解析出确定的 paper handle 时，才优先走 `alphaxiv-paper-lookup`
-- 如果没有确定 handle，或者 `alphaxiv-paper-lookup` 不可用，再降级到 `pdf` skill
-- 如果两个 companion skill 都没装，只跳过受影响的 PDF，并明确提示用户安装什么
+- 任何放进 `raw/papers/` 的 PDF 都会被当作论文，并强制走 `alphaxiv-paper-lookup`
+- sidecar 或文件名里解析出的 handle 仍然有价值，但只作为溯源和调试元数据，不再决定路由
+- 如果 `alphaxiv-paper-lookup` 不可用，只跳过受影响的 PDF，并明确提示用户安装什么，不再降级到 `pdf` skill
 
 不要在 `raw/papers/` 里同时保留同名的 `paper-name.md` 和 `paper-name.pdf`。
 
@@ -176,10 +176,10 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 
 如果你准备把 PDF 论文直接放进 `raw/papers/`，还建议安装：
 
-- `alphaxiv-paper-lookup`：优先的论文 companion skill
-- `pdf`：PDF 提取 fallback companion skill
+- `alphaxiv-paper-lookup`：`raw/papers/*.pdf` 必需的论文 companion skill
+- `pdf`：严格 `raw/papers` 编译链之外的通用 PDF 处理 companion skill
 
-如果 PDF 还是被降级或跳过，先确认这两个 companion skill 安装在当前代理真正读取的 skill home 里，比如 `~/.codex/skills/` 或 `~/.claude/skills/`。
+如果 `raw/papers` 下的 PDF 还是被跳过，先确认这两个 companion skill 安装在当前代理真正读取的 skill home 里，比如 `~/.codex/skills/` 或 `~/.claude/skills/`。
 
 ## 可选增强
 

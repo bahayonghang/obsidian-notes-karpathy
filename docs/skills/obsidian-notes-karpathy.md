@@ -29,7 +29,7 @@ When the operation is already explicit, the package skill should get out of the 
 
 If only `CLAUDE.md` is missing while the vault is otherwise usable, the router should surface that as repair work instead of forcing `kb-init` immediately.
 
-When pending paper PDFs are found under `raw/papers/`, the expected compile behavior is: resolve a deterministic handle from a sidecar or filename, use `alphaxiv-paper-lookup` only when that handle exists, otherwise fall back to `pdf`, then report missing companion skills if needed.
+When pending paper PDFs are found under `raw/papers/`, the expected compile behavior is: treat the directory as the paper signal, always route through `alphaxiv-paper-lookup`, keep any sidecar or filename handle only as metadata, and report missing `alphaxiv-paper-lookup` instead of falling back to `pdf`.
 
 ## Why the router matters
 

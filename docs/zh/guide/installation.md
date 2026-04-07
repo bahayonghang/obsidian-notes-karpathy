@@ -52,7 +52,7 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 
 如果你准备把 PDF 论文直接放进 `raw/papers/`，还建议安装：
 
-- `alphaxiv-paper-lookup`：优先的论文 companion skill
-- `pdf`：PDF 提取 fallback companion skill
+- `alphaxiv-paper-lookup`：`raw/papers/*.pdf` 必需的论文 companion skill
+- `pdf`：严格 `raw/papers` 编译链之外的通用 PDF 处理 companion skill
 
-这两个 companion skill 要装到当前运行时真正使用的 skill home 里；如果 PDF 还是被跳过，先确认这一点，再怀疑 vault 本身。
+这两个 companion skill 要装到当前运行时真正使用的 skill home 里；如果 `raw/papers` 下的 PDF 还是被跳过，先确认 `alphaxiv-paper-lookup` 是否真的在 active skill home 里。

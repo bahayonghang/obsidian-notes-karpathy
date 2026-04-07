@@ -33,9 +33,9 @@ Place markdown notes under `raw/`, `raw/articles/`, `raw/papers/`, or `raw/podca
 
 When the source is a PDF:
 
-- use `alphaxiv-paper-lookup` only if the PDF resolves to a deterministic paper handle from the sidecar or filename
-- otherwise fall back directly to `pdf`
-- if neither skill is installed, skip only that PDF and show install guidance
+- always use `alphaxiv-paper-lookup` when the PDF lives under `raw/papers/`
+- use the sidecar or filename only to capture deterministic metadata such as `paper_handle`
+- if `alphaxiv-paper-lookup` is unavailable, skip only that PDF and show install guidance instead of falling back to `pdf`
 
 Raw notes should keep only source metadata:
 

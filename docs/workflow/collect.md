@@ -31,9 +31,9 @@ Use the same metadata shape, but keep raw notes free of compilation-state fields
 If the source artifact is a paper PDF, place it under `raw/papers/`.
 
 - if you already know the paper handle, optionally add `paper-name.source.md` next to the PDF with frontmatter such as `paper_id` or `source`
-- prefer `alphaxiv-paper-lookup` during compilation only when the PDF resolves to a deterministic paper handle
-- otherwise fall back to the `pdf` skill
-- if neither companion skill is installed, report the missing install step instead of pretending the paper was compiled
+- compilation treats the directory as the routing signal, so any `raw/papers/*.pdf` must go through `alphaxiv-paper-lookup`
+- the sidecar or filename handle is metadata for provenance and debugging, not the routing gate
+- if `alphaxiv-paper-lookup` is not installed, report the missing install step instead of pretending the paper was compiled
 
 ## Raw-layer rule
 

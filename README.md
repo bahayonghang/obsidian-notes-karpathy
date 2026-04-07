@@ -67,9 +67,9 @@ The workflow has four concrete operations:
 
 - markdown paper notes are compiled directly
 - PDF papers may carry an optional `paper-name.source.md` sidecar with metadata such as `paper_id` or `source`
-- PDF papers are compiled with `alphaxiv-paper-lookup` only when the PDF resolves to a deterministic paper handle from the sidecar or filename
-- if no deterministic handle exists, or `alphaxiv-paper-lookup` is unavailable, fall back to the `pdf` skill
-- if neither companion skill is installed, the compiler should skip only the affected PDFs and tell the user what to install
+- any PDF under `raw/papers/` is treated as a paper and compiled through `alphaxiv-paper-lookup`
+- sidecar or filename handles remain useful metadata for provenance and debugging, but they do not decide the route
+- if `alphaxiv-paper-lookup` is unavailable, the compiler should skip only the affected PDFs and tell the user what to install instead of falling back to `pdf`
 
 Do not keep both `paper-name.md` and `paper-name.pdf` with the same basename under `raw/papers/`.
 
@@ -176,10 +176,10 @@ This package assumes the following Obsidian-oriented skills are available:
 
 For paper/PDF ingestion under `raw/papers/`, also install:
 
-- `alphaxiv-paper-lookup` as the preferred paper companion
-- `pdf` as the fallback PDF extraction companion
+- `alphaxiv-paper-lookup` as the required paper companion for `raw/papers/*.pdf`
+- `pdf` for non-paper PDF handling outside the strict `raw/papers` compile path
 
-If PDF ingestion still falls back or skips unexpectedly, verify those companion skills are installed in the active skill home your agent is actually resolving from, such as `~/.codex/skills/` or `~/.claude/skills/`.
+If `raw/papers` PDFs are still skipped unexpectedly, verify those companion skills are installed in the active skill home your agent is actually resolving from, such as `~/.codex/skills/` or `~/.claude/skills/`.
 
 ## Optional enhancements
 

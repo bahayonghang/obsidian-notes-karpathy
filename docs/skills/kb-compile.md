@@ -29,14 +29,14 @@ Recompile when:
 
 Skip when the compiled summary already matches the current raw source.
 
-## PDF paper fallback chain
+## PDF paper handling chain
 
 For PDFs under `raw/papers/`:
 
-1. resolve a deterministic paper handle from an optional `paper-name.source.md` sidecar or an arXiv-style ID in the filename
-2. use `alphaxiv-paper-lookup` only when that handle exists
-3. if no handle exists, fall back directly to `pdf`
-4. if neither companion skill is installed, skip only that PDF and tell the user what to install
+1. treat `raw/papers/` as the routing signal and always use `alphaxiv-paper-lookup`
+2. resolve a deterministic paper handle from an optional `paper-name.source.md` sidecar or an arXiv-style ID in the filename only for metadata
+3. do not fall back to `pdf` for `raw/papers/*.pdf`
+4. if `alphaxiv-paper-lookup` is not installed, skip only that PDF and tell the user what to install
 
 The compiler should never write extracted markdown back into `raw/`.
 

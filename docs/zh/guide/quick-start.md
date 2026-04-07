@@ -33,9 +33,9 @@ CLAUDE.md
 
 遇到 PDF 时：
 
-- 只有当 sidecar 或文件名能解析出确定的 paper handle 时，才用 `alphaxiv-paper-lookup`
-- 否则直接降级到 `pdf`
-- 如果两个技能都没安装，只跳过该 PDF，并提示安装
+- 只要 PDF 放在 `raw/papers/` 下，就强制使用 `alphaxiv-paper-lookup`
+- sidecar 或文件名里的确定 handle 只作为元数据保留，不再决定路由
+- 如果 `alphaxiv-paper-lookup` 没安装，只跳过该 PDF，并提示安装，不再降级到 `pdf`
 
 raw 笔记里只保留来源元数据：
 
