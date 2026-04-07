@@ -27,6 +27,7 @@ This bundle has one package entry skill and four operational skills.
 - `raw/` is immutable from the compiler's point of view.
 - `wiki/` is the maintained, compiled artifact.
 - `outputs/qa/` stores substantive answers by default.
+- `AGENTS.md` is the required local contract; `CLAUDE.md` is the generated companion.
 - `wiki/index.md` is the content-first entry surface.
 - `wiki/log.md` is the time-first entry surface.
 - Search should stay markdown-first until the vault genuinely needs a heavier upgrade.

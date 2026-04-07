@@ -54,3 +54,5 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 
 - `alphaxiv-paper-lookup`：优先的论文 companion skill
 - `pdf`：PDF 提取 fallback companion skill
+
+这两个 companion skill 要装到当前运行时真正使用的 skill home 里；如果 PDF 还是被跳过，先确认这一点，再怀疑 vault 本身。

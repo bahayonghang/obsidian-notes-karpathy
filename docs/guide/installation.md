@@ -61,3 +61,5 @@ For paper/PDF ingestion under `raw/papers/`, also install:
 
 - `alphaxiv-paper-lookup` as the preferred paper companion
 - `pdf` as the fallback PDF extraction companion
+
+Install those companion skills into the same skill home your runtime is actually using. If PDF papers are still skipped, verify the active home first before changing the vault.

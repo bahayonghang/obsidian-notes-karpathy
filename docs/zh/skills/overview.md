@@ -27,6 +27,7 @@
 - `raw/` 对编译器来说是不可变输入层。
 - `wiki/` 是持续维护的编译产物层。
 - `outputs/qa/` 默认沉淀实质性回答。
+- `AGENTS.md` 是必需的本地契约；`CLAUDE.md` 是生成出来的 companion。
 - `wiki/index.md` 是内容优先入口。
 - `wiki/log.md` 是时间优先入口。
 - 检索策略应先坚持 markdown-first，再考虑更重的升级。

@@ -39,8 +39,14 @@ These symptoms should push routing toward `kb-health` even when the structure al
 These symptoms should push routing toward `kb-init` even when `raw/` and `wiki/` both exist:
 
 - `AGENTS.md` is missing
+- multiple case-variant guidance files exist for `AGENTS.md` or `CLAUDE.md`
 - `wiki/index.md` or `wiki/log.md` is missing
 - the `wiki/indices/` support layer is incomplete
+
+These symptoms should be surfaced as repair targets without blocking compile/query/health by themselves:
+
+- only `CLAUDE.md` is missing
+- a single noncanonical filename such as `agents.md` or `claude.md` exists but the contract is otherwise usable
 
 ## Operational reminders
 

@@ -18,6 +18,8 @@ AGENTS.md
 CLAUDE.md
 ```
 
+`kb-init` should create both files. After initialization, `AGENTS.md` remains the required local contract, while a missing `CLAUDE.md` should be treated as repair work rather than a reason to stop compile/query/health.
+
 Optional layers are enabled only when needed:
 
 - `raw/repos/` for repo snapshots or companion notes
@@ -27,7 +29,13 @@ Optional layers are enabled only when needed:
 
 Place markdown notes under `raw/`, `raw/articles/`, `raw/papers/`, or `raw/podcasts/`.
 
-`raw/papers/` also accepts paper PDFs. When the source is a PDF, compile by preferring `alphaxiv-paper-lookup`, then falling back to `pdf`. If neither skill is installed, skip only that PDF and show install guidance.
+`raw/papers/` also accepts paper PDFs. You may place an optional `paper-name.source.md` sidecar next to the PDF when you want deterministic metadata such as `paper_id` or `source`.
+
+When the source is a PDF:
+
+- use `alphaxiv-paper-lookup` only if the PDF resolves to a deterministic paper handle from the sidecar or filename
+- otherwise fall back directly to `pdf`
+- if neither skill is installed, skip only that PDF and show install guidance
 
 Raw notes should keep only source metadata:
 

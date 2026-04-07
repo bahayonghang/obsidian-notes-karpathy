@@ -8,7 +8,12 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from _vault_utils import audit_vault_mechanics, json_dump, scan_compile_delta
+from _vault_utils import (
+    audit_vault_mechanics,
+    inspect_local_guidance,
+    json_dump,
+    scan_compile_delta,
+)
 
 
 CORE_SUPPORT_FILES = [
@@ -24,6 +29,13 @@ def detect_lifecycle(vault_root: Path) -> dict:
         for rel_path in CORE_SUPPORT_FILES
         if not (vault_root / rel_path).exists()
     ]
+    guidance = inspect_local_guidance(vault_root)
+    guidance_status = {
+        "agents": guidance["agents"],
+        "claude": guidance["claude"],
+    }
+    guidance_warnings = guidance["warnings"]
+    blocking_guidance_issues = guidance["blocking_issues"]
 
     has_raw = (vault_root / "raw").exists()
     has_wiki = (vault_root / "wiki").exists()
@@ -37,34 +49,62 @@ def detect_lifecycle(vault_root: Path) -> dict:
         )
     )
 
-    if not has_raw and not has_wiki and not has_outputs:
-        signals.append("missing_core_directories")
+    def build_payload(
+        *,
+        state: str,
+        route: str,
+        missing_support_files: list[str],
+        compile_delta: dict,
+        health_flags: list[str],
+    ) -> dict:
         return {
             "vault_root": str(vault_root),
-            "state": "fresh",
-            "route": "kb-init",
+            "state": state,
+            "route": route,
             "signals": signals,
-            "missing_support_files": missing,
-            "compile_delta": {"new_count": 0, "changed_count": 0, "unchanged_count": 0},
-            "health_flags": [],
+            "missing_support_files": missing_support_files,
+            "compile_delta": compile_delta,
+            "health_flags": health_flags,
+            "guidance_status": guidance_status,
+            "guidance_warnings": guidance_warnings,
         }
 
-    if not has_wiki or ((missing or not has_raw) and not compiled_content_exists):
+    if (
+        not has_raw
+        and not has_wiki
+        and not has_outputs
+        and not guidance_status["agents"]["present"]
+        and not guidance_status["claude"]["present"]
+    ):
+        signals.append("missing_core_directories")
+        return build_payload(
+            state="fresh",
+            route="kb-init",
+            missing_support_files=missing,
+            compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
+            health_flags=[],
+        )
+
+    structural_partial = not has_wiki or ((missing or not has_raw) and not compiled_content_exists)
+
+    if blocking_guidance_issues or structural_partial:
+        signals.extend(blocking_guidance_issues)
         if missing:
             signals.append("missing_support_layer")
         if not has_raw:
             signals.append("missing_raw")
         if not has_wiki:
             signals.append("missing_wiki")
-        return {
-            "vault_root": str(vault_root),
-            "state": "partial",
-            "route": "kb-init",
-            "signals": signals,
-            "missing_support_files": missing,
-            "compile_delta": {"new_count": 0, "changed_count": 0, "unchanged_count": 0},
-            "health_flags": [],
-        }
+        missing_support_files = list(missing)
+        if "missing_agents_guidance" in blocking_guidance_issues:
+            missing_support_files.append("AGENTS.md")
+        return build_payload(
+            state="partial",
+            route="kb-init",
+            missing_support_files=sorted(dict.fromkeys(missing_support_files)),
+            compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
+            health_flags=[],
+        )
 
     compile_delta = scan_compile_delta(vault_root)
     new_count = compile_delta["counts"]["new"]
@@ -76,19 +116,17 @@ def detect_lifecycle(vault_root: Path) -> dict:
             signals.append("new_raw_sources")
         if changed_count:
             signals.append("changed_raw_sources")
-        return {
-            "vault_root": str(vault_root),
-            "state": "compile-ready",
-            "route": "kb-compile",
-            "signals": signals,
-            "missing_support_files": [],
-            "compile_delta": {
+        return build_payload(
+            state="compile-ready",
+            route="kb-compile",
+            missing_support_files=[],
+            compile_delta={
                 "new_count": new_count,
                 "changed_count": changed_count,
                 "unchanged_count": unchanged_count,
             },
-            "health_flags": [],
-        }
+            health_flags=[],
+        )
 
     audit = audit_vault_mechanics(vault_root)
     health_flags = [
@@ -99,34 +137,30 @@ def detect_lifecycle(vault_root: Path) -> dict:
 
     if health_flags:
         signals.append("compiled_layer_drift")
-        return {
-            "vault_root": str(vault_root),
-            "state": "health-first",
-            "route": "kb-health",
-            "signals": signals,
-            "missing_support_files": [],
-            "compile_delta": {
+        return build_payload(
+            state="health-first",
+            route="kb-health",
+            missing_support_files=[],
+            compile_delta={
                 "new_count": 0,
                 "changed_count": 0,
                 "unchanged_count": unchanged_count,
             },
-            "health_flags": sorted(set(health_flags)),
-        }
+            health_flags=sorted(set(health_flags)),
+        )
 
     signals.append("compiled_layer_ready")
-    return {
-        "vault_root": str(vault_root),
-        "state": "query-ready",
-        "route": "kb-query",
-        "signals": signals,
-        "missing_support_files": [],
-        "compile_delta": {
+    return build_payload(
+        state="query-ready",
+        route="kb-query",
+        missing_support_files=[],
+        compile_delta={
             "new_count": 0,
             "changed_count": 0,
             "unchanged_count": unchanged_count,
         },
-        "health_flags": [],
-    }
+        health_flags=[],
+    )
 
 
 def main() -> None:

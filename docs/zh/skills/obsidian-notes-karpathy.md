@@ -10,7 +10,7 @@ Karpathy 式知识库工作流的包级入口技能。
 
 | 检测到的信号 | 路由到 | 下一步动作 |
 | --- | --- | --- |
-| 缺少 `raw/`、`wiki/`、`outputs/` 或关键支撑文件 | `kb-init` | 先把契约建好或修好 |
+| 缺少 `raw/`、`wiki/`、`outputs/`、必需的 `AGENTS.md`，或关键支撑文件 | `kb-init` | 先把契约建好或修好 |
 | `raw/` 下有新资料或变更资料，或 `raw/papers/` 下有 PDF 论文 | `kb-compile` | 更新摘要、概念页、索引和日志 |
 | 用户要问题答案、报告、文章、推文串或幻灯片 | `kb-query` | 先基于编译层作答，再在需要时归档 |
 | 出现漂移、矛盾、过时结论、索引损坏或弱连接 | `kb-health` | 给知识库打分，并区分安全修复项和判断题 |
@@ -23,7 +23,9 @@ Karpathy 式知识库工作流的包级入口技能。
 - `wiki/index.md` 顶部
 - `wiki/log.md` 最近几条记录
 
-如果 `raw/papers/` 下有待处理的 PDF，预期的编译行为是：优先 `alphaxiv-paper-lookup`，再降级到 `pdf`，再不行就提示缺失的 companion skill。
+如果 `raw/papers/` 下有待处理的 PDF，预期的编译行为是：先从 sidecar 或文件名解析确定 handle，只有 handle 存在时才用 `alphaxiv-paper-lookup`，否则降级到 `pdf`，再不行就提示缺失的 companion skill。
+
+如果 Vault 其余部分已经可用，只是缺 `CLAUDE.md`，路由器应把它视为修复项，而不是立即强制回到 `kb-init`。
 
 ## 为什么需要包级入口
 

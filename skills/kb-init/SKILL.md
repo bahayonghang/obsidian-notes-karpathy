@@ -27,6 +27,12 @@ Read these shared references first:
 
 If `../obsidian-notes-karpathy/scripts/detect_lifecycle.py` exists, run it against the target vault before writing anything. Use it to distinguish fresh setup from partial repair, then preserve existing content accordingly.
 
+Before writing, explicitly check the target root for local guidance files:
+
+- `AGENTS.md` is the required local contract
+- `CLAUDE.md` is the generated companion contract
+- case-variant guidance names such as `agents.md` or duplicate variants are repair targets and should be normalized to canonical names during init/repair
+
 ## Inputs to gather
 
 Determine:
@@ -108,8 +114,9 @@ For a fresh vault, create both `AGENTS.md` and `CLAUDE.md`.
 For a repair pass over an existing vault:
 
 - always restore or create `AGENTS.md` when it is missing
-- create or refresh `CLAUDE.md` when it is missing or stale, but treat its absence as a repair target rather than a hard failure
-- if the vault clearly standardizes on `AGENTS.md` only, preserve that choice and report it
+- create or refresh `CLAUDE.md` when it is missing or stale
+- normalize noncanonical guidance filenames back to `AGENTS.md` and `CLAUDE.md`
+- if the user explicitly wants an `AGENTS.md`-only vault, preserve that choice and report that the `CLAUDE.md` companion was intentionally skipped
 
 Requirements:
 

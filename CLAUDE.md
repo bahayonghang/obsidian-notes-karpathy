@@ -39,6 +39,7 @@ description: When and how to use this skill (used for matching)
 - Reference dependent skills by name: `obsidian-markdown`, `obsidian-cli`, `obsidian-canvas-creator` (from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills))
 - Keep `raw/` immutable in all user-facing guidance. Compilation state belongs in `wiki/` metadata or health outputs, never in raw source files.
 - Keep generated `AGENTS.md` and `CLAUDE.md` templates aligned whenever initialization behavior changes.
+- Treat generated vault `AGENTS.md` as the required local contract and generated vault `CLAUDE.md` as the companion contract that `kb-init` repairs by default.
 
 ## Installation (for end users)
 

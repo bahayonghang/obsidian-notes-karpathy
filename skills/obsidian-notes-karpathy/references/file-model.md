@@ -13,8 +13,8 @@ Treat the vault like a codebase:
 - `raw/` is source code.
 - `wiki/` is the compiled artifact.
 - `outputs/` is runtime output plus durable deliverables.
-- `AGENTS.md` is required local guidance.
-- `CLAUDE.md` is recommended and should mirror `AGENTS.md` when present, but the workflow must not hard-fail if it is absent.
+- `AGENTS.md` is the required local guidance contract.
+- `CLAUDE.md` is the generated companion contract. `kb-init` should create or repair it by default, but compile/query/health work must not hard-fail solely because it is absent.
 
 ## Core rules
 
@@ -56,7 +56,7 @@ vault/
 │       ├── threads/
 │       └── talks/
 ├── AGENTS.md
-└── CLAUDE.md           # optional but recommended
+└── CLAUDE.md           # generated companion; recommended for portability
 ```
 
 Optional directories are opt-in expansions:
@@ -68,7 +68,7 @@ Accepted raw discovery patterns:
 
 - markdown files directly under `raw/`
 - categorized markdown files under `raw/articles/`, `raw/papers/`, and `raw/podcasts/`
-- PDF files under `raw/papers/` when the paper should be compiled via `alphaxiv-paper-lookup` first, then `pdf`
+- PDF files under `raw/papers/` when the paper should be compiled via deterministic handle resolution, then `alphaxiv-paper-lookup` or `pdf`
 - optional repo companion notes or repo overviews under `raw/repos/`
 
 If the vault already has channel-specific publishing folders such as `x/`, `公众号/`, or `小红书/`, preserve them. Do not force-migrate them unless the user asks.
@@ -98,8 +98,10 @@ Never add compile state here.
 Live under `raw/papers/` when the source artifact is a PDF instead of a markdown note.
 
 - treat the PDF file itself as immutable raw input
+- allow an optional `paper-name.source.md` sidecar to store metadata such as `paper_id` or `source`; do not treat it as a second source note
 - do not add sidecar extracted markdown back into `raw/` during compilation
-- compile these by preferring `alphaxiv-paper-lookup`, then falling back to `pdf`
+- resolve a deterministic paper handle from the sidecar or filename before trying `alphaxiv-paper-lookup`
+- if no deterministic handle exists, fall back directly to `pdf`
 - if neither companion skill is available, report an install recommendation rather than pretending the paper was compiled
 - avoid keeping both `paper-name.md` and `paper-name.pdf` with the same basename in `raw/papers/`
 
@@ -114,6 +116,9 @@ Expected properties:
 - `source_url`
 - `source_type`
 - `source_mtime` or `source_hash`
+- `compile_method`
+- `paper_handle` when the source is a PDF with a deterministic handle
+- `companion_used` when a companion skill handled the PDF
 - `compiled_at`
 - `key_concepts`
 - `key_entities` when applicable

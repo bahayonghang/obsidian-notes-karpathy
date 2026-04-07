@@ -66,8 +66,9 @@ The workflow has four concrete operations:
 `raw/papers/` is dual-mode:
 
 - markdown paper notes are compiled directly
-- PDF papers are compiled by preferring `alphaxiv-paper-lookup`
-- if `alphaxiv-paper-lookup` is unavailable or not applicable, fall back to the `pdf` skill
+- PDF papers may carry an optional `paper-name.source.md` sidecar with metadata such as `paper_id` or `source`
+- PDF papers are compiled with `alphaxiv-paper-lookup` only when the PDF resolves to a deterministic paper handle from the sidecar or filename
+- if no deterministic handle exists, or `alphaxiv-paper-lookup` is unavailable, fall back to the `pdf` skill
 - if neither companion skill is installed, the compiler should skip only the affected PDFs and tell the user what to install
 
 Do not keep both `paper-name.md` and `paper-name.pdf` with the same basename under `raw/papers/`.
@@ -75,6 +76,7 @@ Do not keep both `paper-name.md` and `paper-name.pdf` with the same basename und
 ## Core design decisions
 
 - `raw/` is immutable. Compilation state is tracked in `wiki/`, not by rewriting sources.
+- `AGENTS.md` is the required local contract. `CLAUDE.md` is the generated companion, and missing only the companion should trigger repair guidance rather than block normal compile/query/health work.
 - `wiki/index.md` is the content-oriented entry point.
 - `wiki/log.md` is the append-only operational history across `ingest`, `query`, `publish`, and `health`.
 - `outputs/qa/` stores substantive Q&A by default, so research compounds over time.
@@ -110,7 +112,7 @@ vault/
 │       ├── threads/
 │       └── talks/
 ├── AGENTS.md
-└── CLAUDE.md
+└── CLAUDE.md          # generated companion
 ```
 
 Optional directories are opt-in:
@@ -176,6 +178,8 @@ For paper/PDF ingestion under `raw/papers/`, also install:
 
 - `alphaxiv-paper-lookup` as the preferred paper companion
 - `pdf` as the fallback PDF extraction companion
+
+If PDF ingestion still falls back or skips unexpectedly, verify those companion skills are installed in the active skill home your agent is actually resolving from, such as `~/.codex/skills/` or `~/.claude/skills/`.
 
 ## Optional enhancements
 

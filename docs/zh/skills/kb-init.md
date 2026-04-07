@@ -30,7 +30,8 @@ CLAUDE.md
 ## 关键保证
 
 - 明确 `raw/` 是对编译器不可变的输入层
-- `AGENTS.md` 和 `CLAUDE.md` 对同一个文件模型保持一致
+- `AGENTS.md` 被当作必需的本地契约，`CLAUDE.md` 被当作生成出来的 companion
+- `AGENTS.md` 和 `CLAUDE.md` 在同时存在时对同一个文件模型保持一致
 - 在其他技能运行前先补齐零状态索引页和日志页
 - 预置可执行的概念页样例和 clipper 模板
 - 缺失支撑文件会被视为修复任务，而不是硬失败

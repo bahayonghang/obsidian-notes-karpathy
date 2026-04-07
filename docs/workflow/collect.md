@@ -30,7 +30,8 @@ Use the same metadata shape, but keep raw notes free of compilation-state fields
 
 If the source artifact is a paper PDF, place it under `raw/papers/`.
 
-- prefer `alphaxiv-paper-lookup` during compilation when the PDF has a clean paper handle
+- if you already know the paper handle, optionally add `paper-name.source.md` next to the PDF with frontmatter such as `paper_id` or `source`
+- prefer `alphaxiv-paper-lookup` during compilation only when the PDF resolves to a deterministic paper handle
 - otherwise fall back to the `pdf` skill
 - if neither companion skill is installed, report the missing install step instead of pretending the paper was compiled
 

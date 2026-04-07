@@ -1,6 +1,6 @@
 # Schema Template Notes
 
-Keep `AGENTS.md` and `CLAUDE.md` aligned when both exist. `AGENTS.md` is the required contract surface; `CLAUDE.md` is recommended and should mirror it if present rather than introducing a second policy.
+Keep `AGENTS.md` and `CLAUDE.md` aligned when both exist. `AGENTS.md` is the required contract surface; `CLAUDE.md` is the generated companion and should mirror it rather than introducing a second policy.
 
 Use ISO dates whenever possible:
 
@@ -41,6 +41,9 @@ source_url: "https://example.com"
 source_type: article
 source_mtime: "2026-04-01T12:00:00Z"
 source_hash: "optional-stable-hash"
+compile_method: "markdown"
+paper_handle: "1706.03762"
+companion_used: "alphaxiv-paper-lookup"
 compiled_at: "2026-04-02T08:00:00Z"
 key_concepts:
   - "[[retrieval-augmented-generation]]"
@@ -55,6 +58,8 @@ Rules:
 - `source_hash` is preferred when the environment supports deterministic hashing.
 - If both hash and mtime are available, keep both.
 - `source_file` may point to a root-level raw note or a categorized raw note; do not normalize the path by rewriting the source.
+- `compile_method` should be `markdown`, `alphaxiv`, or `pdf`.
+- Omit `paper_handle` and `companion_used` for non-PDF sources.
 - `key_concepts` should reference real concept pages or clearly planned new ones.
 - `key_entities` is optional and should be used only when named entities deserve stable pages.
 

@@ -21,7 +21,7 @@ Read these shared references first:
 If the target vault already exists, inspect:
 
 - local `AGENTS.md`
-- local `CLAUDE.md` if present
+- local `CLAUDE.md` if present, and surface its absence as a repair target rather than a standalone blocker
 - the top of `wiki/index.md`
 - the most recent entries in `wiki/log.md` when available
 
@@ -40,7 +40,8 @@ Route to `kb-init` when the target does not yet express the contract:
 - no `raw/`
 - no `wiki/`
 - no `outputs/`
-- no schema files
+- no required local `AGENTS.md`
+- ambiguous duplicate case-variant guidance files such as both `AGENTS.md` and `agents.md`
 - missing or obviously partial KB support files that make the workflow structurally incomplete
 - the user explicitly wants to repair a half-initialized vault before doing normal work
 
@@ -50,7 +51,7 @@ Route to `kb-compile` when the vault exists and new source material appears to b
 
 - new or changed files directly under `raw/`
 - new or changed files under `raw/articles/`, `raw/papers/`, `raw/podcasts/`, or optional `raw/repos/`
-- PDF papers under `raw/papers/`, which should be compiled by preferring `alphaxiv-paper-lookup`, then falling back to `pdf`, then reporting missing companion skills if needed
+- PDF papers under `raw/papers/`, which should be compiled by using `alphaxiv-paper-lookup` only when the PDF resolves to a deterministic paper handle, otherwise falling back to `pdf`, then reporting missing companion skills if needed
 - missing summaries for recent raw notes
 - the user asks to ingest, digest, compile, refresh, sync, summarize, or turn clips into notes
 
@@ -77,6 +78,7 @@ Route to `kb-health` when the compiled layer feels stale, contradictory, disconn
 When the user asks "what should I do first?" or gives symptoms rather than a command:
 
 - choose `kb-init` first if the vault looks only partially initialized or the support layer is missing
+- do not choose `kb-init` only because `CLAUDE.md` is missing if the rest of the vault is already usable; surface that as a repair recommendation instead
 - choose `kb-compile` first if recent raw material has clearly not been compiled yet
 - choose `kb-health` first if the main symptom is compiled-layer drift, contradiction, stale Q&A, or weak linking
 - choose `kb-query` if the vault already looks compiled and the user wants conclusions, comparison, or outward-facing content
@@ -104,3 +106,4 @@ When the user asks what to do next, answer with:
 3. the operational skill you are routing to
 4. the next concrete action in the vault
 5. any assumption you had to make about compile state, vault health, or missing support files
+6. any companion-guidance repair target, such as a missing `CLAUDE.md`, that should be fixed later with `kb-init`

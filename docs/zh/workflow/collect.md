@@ -30,8 +30,9 @@
 
 如果原始资料本身就是论文 PDF，就把它放到 `raw/papers/`。
 
-- 编译时优先用 `alphaxiv-paper-lookup`
-- 不适用时降级到 `pdf`
+- 如果你已经知道 paper handle，可以在旁边加一个 `paper-name.source.md` sidecar，写 `paper_id` 或 `source`
+- 只有在能确定解析出 paper handle 时，编译才优先用 `alphaxiv-paper-lookup`
+- 否则降级到 `pdf`
 - 如果两个 companion skill 都没装，就明确提示安装，而不是假装编译成功
 
 ## Raw 层规则

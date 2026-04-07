@@ -61,11 +61,15 @@ Supported source classes:
 
 For PDF papers under `raw/papers/`:
 
-1. prefer `alphaxiv-paper-lookup` when the source metadata gives you a clean paper handle such as an arXiv URL, alphaxiv URL, paper ID, or a strong title match
-2. if that is unavailable or not applicable, fall back to the `pdf` skill
-3. if neither companion skill is available, skip only that PDF source and report install guidance for `alphaxiv-paper-lookup` and `pdf`
-4. never write extracted markdown back into `raw/`; go straight from the PDF handling step into the compiled summary, concept, and entity outputs
-5. do not keep both `foo.md` and `foo.pdf` with the same basename under `raw/papers/`; pick one canonical paper source
+1. first resolve a deterministic paper handle:
+   - prefer an optional `foo.source.md` sidecar next to `foo.pdf` with frontmatter such as `paper_id` or `source`
+   - otherwise accept an arXiv-style ID embedded in the PDF filename
+2. use `alphaxiv-paper-lookup` only when that deterministic handle exists
+3. if the PDF does not resolve to a deterministic handle, go straight to the `pdf` skill rather than guessing from title text
+4. if neither companion skill is available, skip only that PDF source and report install guidance for `alphaxiv-paper-lookup` and `pdf`
+5. never write extracted markdown back into `raw/`; go straight from the PDF handling step into the compiled summary, concept, and entity outputs
+6. report the chosen PDF ingest method as `alphaxiv`, `pdf`, or `skipped`
+7. do not keep both `foo.md` and `foo.pdf` with the same basename under `raw/papers/`; `foo.source.md` is allowed only as metadata sidecar, not as a second raw source
 
 For each raw source:
 
@@ -91,6 +95,9 @@ For each new or changed source:
    - `source_hash` when available
    - otherwise `source_mtime`
    - keep both when both are available
+   - `compile_method` as `markdown`, `alphaxiv`, or `pdf`
+   - `paper_handle` when the source is a paper PDF and a deterministic handle exists
+   - `companion_used` when a companion skill handled the PDF
 7. include:
    - thesis
    - key takeaways

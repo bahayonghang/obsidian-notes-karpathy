@@ -66,8 +66,9 @@ graph LR
 `raw/papers/` 现在是双模目录：
 
 - markdown 论文笔记直接参与编译
-- PDF 论文优先走 `alphaxiv-paper-lookup`
-- 如果 `alphaxiv-paper-lookup` 不可用或不适用，再降级到 `pdf` skill
+- PDF 论文可以带一个可选的 `paper-name.source.md` sidecar，只放 `paper_id`、`source` 这类元数据
+- 只有当 PDF 能从 sidecar 或文件名解析出确定的 paper handle 时，才优先走 `alphaxiv-paper-lookup`
+- 如果没有确定 handle，或者 `alphaxiv-paper-lookup` 不可用，再降级到 `pdf` skill
 - 如果两个 companion skill 都没装，只跳过受影响的 PDF，并明确提示用户安装什么
 
 不要在 `raw/papers/` 里同时保留同名的 `paper-name.md` 和 `paper-name.pdf`。
@@ -75,6 +76,7 @@ graph LR
 ## 核心设计约束
 
 - `raw/` 是不可变层，编译状态不回写源文件。
+- `AGENTS.md` 是必需的本地契约，`CLAUDE.md` 是生成出来的 companion；如果只是缺 companion，应给出修复建议，而不是阻断正常的 compile/query/health。
 - `wiki/index.md` 是内容入口。
 - `wiki/log.md` 是 append-only 的运行历史，覆盖 `ingest`、`query`、`publish`、`health` 四类事件。
 - `outputs/qa/` 默认沉淀有价值的问答，让研究结果持续复用。
@@ -110,7 +112,7 @@ vault/
 │       ├── threads/
 │       └── talks/
 ├── AGENTS.md
-└── CLAUDE.md
+└── CLAUDE.md          # 生成出来的 companion
 ```
 
 可选目录按需启用：
@@ -176,6 +178,8 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 
 - `alphaxiv-paper-lookup`：优先的论文 companion skill
 - `pdf`：PDF 提取 fallback companion skill
+
+如果 PDF 还是被降级或跳过，先确认这两个 companion skill 安装在当前代理真正读取的 skill home 里，比如 `~/.codex/skills/` 或 `~/.claude/skills/`。
 
 ## 可选增强
 

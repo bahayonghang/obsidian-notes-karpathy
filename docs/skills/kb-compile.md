@@ -33,9 +33,10 @@ Skip when the compiled summary already matches the current raw source.
 
 For PDFs under `raw/papers/`:
 
-1. prefer `alphaxiv-paper-lookup`
-2. if that is unavailable or not applicable, fall back to `pdf`
-3. if neither companion skill is installed, skip only that PDF and tell the user what to install
+1. resolve a deterministic paper handle from an optional `paper-name.source.md` sidecar or an arXiv-style ID in the filename
+2. use `alphaxiv-paper-lookup` only when that handle exists
+3. if no handle exists, fall back directly to `pdf`
+4. if neither companion skill is installed, skip only that PDF and tell the user what to install
 
 The compiler should never write extracted markdown back into `raw/`.
 

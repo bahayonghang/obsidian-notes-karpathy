@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -15,6 +16,16 @@ MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 ALIAS_WIKILINK_RE = re.compile(r"\[\[[^|\]]+\|[^\]]+\]\]")
 TABLE_LINE_RE = re.compile(r"^\s*\|.*\|\s*$")
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n?(.*)$", re.DOTALL)
+ARXIV_ID_RE = re.compile(r"(?<!\d)(\d{4}\.\d{4,5}(?:v\d+)?)(?!\d)")
+ARXIV_URL_RE = re.compile(
+    r"https?://(?:www\.)?(?:arxiv\.org/(?:abs|pdf)|alphaxiv\.org/(?:overview|abs))/([^?#/]+)"
+)
+GUIDANCE_CONTRACTS = (
+    ("agents", "AGENTS.md", True),
+    ("claude", "CLAUDE.md", False),
+)
+PDF_SIDECAR_SUFFIX = ".source.md"
+PDF_COMPANION_SKILLS = ("alphaxiv-paper-lookup", "pdf")
 
 
 @dataclass(frozen=True)
@@ -126,6 +137,57 @@ def parse_scalar(value: str) -> Any:
     return stripped
 
 
+def summarize_local_guidance(file_names: list[str]) -> dict[str, Any]:
+    matches_by_name: dict[str, list[str]] = defaultdict(list)
+    for file_name in file_names:
+        matches_by_name[file_name.lower()].append(file_name)
+
+    status: dict[str, Any] = {}
+    warnings: list[str] = []
+    blocking_issues: list[str] = []
+
+    for key, canonical_name, required in GUIDANCE_CONTRACTS:
+        matches = sorted(
+            matches_by_name.get(canonical_name.lower(), []),
+            key=lambda value: (value != canonical_name, value.lower(), value),
+        )
+        present = bool(matches)
+        canonical = canonical_name in matches
+        selected = canonical_name if canonical else (matches[0] if matches else None)
+
+        if len(matches) > 1:
+            issue = f"duplicate_{key}_guidance_files"
+            warnings.append(issue)
+            blocking_issues.append(issue)
+
+        if present and not canonical:
+            warnings.append(f"noncanonical_{key}_guidance_name")
+
+        if required and not present:
+            blocking_issues.append(f"missing_{key}_guidance")
+        elif not required and not present:
+            warnings.append(f"missing_{key}_guidance")
+
+        status[key] = {
+            "present": present,
+            "path": selected,
+            "canonical": canonical,
+            "candidates": matches,
+        }
+
+    status["warnings"] = sorted(set(warnings))
+    status["blocking_issues"] = sorted(set(blocking_issues))
+    return status
+
+
+def inspect_local_guidance(vault_root: Path) -> dict[str, Any]:
+    if not vault_root.exists():
+        return summarize_local_guidance([])
+
+    file_names = [path.name for path in vault_root.iterdir() if path.is_file()]
+    return summarize_local_guidance(file_names)
+
+
 def json_dump(payload: dict[str, Any]) -> str:
     return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
 
@@ -143,6 +205,148 @@ def collapse_posix(path_like: str) -> str:
     return "/".join(parts)
 
 
+def is_pdf_sidecar(path: Path) -> bool:
+    return path.name.endswith(PDF_SIDECAR_SUFFIX)
+
+
+def sidecar_for_pdf(raw_path: Path) -> Path:
+    return raw_path.with_name(f"{raw_path.stem}{PDF_SIDECAR_SUFFIX}")
+
+
+def source_class_for_raw(raw_path: Path) -> str:
+    return "paper_pdf" if raw_path.suffix.lower() == ".pdf" else "markdown"
+
+
+def configured_skill_roots() -> list[Path]:
+    override = os.environ.get("KB_COMPANION_SKILL_PATHS")
+    candidates: list[Path] = []
+
+    if override is not None:
+        candidates.extend(
+            Path(part).expanduser()
+            for part in override.split(os.pathsep)
+            if part.strip()
+        )
+    else:
+        codex_home = os.environ.get("CODEX_HOME")
+        if codex_home:
+            candidates.append(Path(codex_home).expanduser() / "skills")
+
+        home = Path.home()
+        candidates.extend(
+            [
+                home / ".codex" / "skills",
+                home / ".claude" / "skills",
+                home / ".agents" / "skills",
+            ]
+        )
+
+    deduped: list[Path] = []
+    seen: set[str] = set()
+    for candidate in candidates:
+        key = str(candidate)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(candidate)
+    return deduped
+
+
+def detect_companion_skills(skill_roots: list[Path] | None = None) -> dict[str, Any]:
+    roots = skill_roots if skill_roots is not None else configured_skill_roots()
+    availability = {
+        skill_name: any((root / skill_name / "SKILL.md").exists() for root in roots)
+        for skill_name in PDF_COMPANION_SKILLS
+    }
+    return {
+        "search_roots": [str(root) for root in roots],
+        "skills": availability,
+    }
+
+
+def extract_paper_handle(candidate: Any) -> str | None:
+    if not isinstance(candidate, str):
+        return None
+
+    text = candidate.strip()
+    if not text:
+        return None
+
+    url_match = ARXIV_URL_RE.search(text)
+    if url_match:
+        url_tail = url_match.group(1).removesuffix(".pdf")
+        handle_match = ARXIV_ID_RE.search(url_tail)
+        if handle_match:
+            return handle_match.group(1)
+
+    handle_match = ARXIV_ID_RE.search(text)
+    if handle_match:
+        return handle_match.group(1)
+
+    return None
+
+
+def pdf_ingest_plan(
+    vault_root: Path,
+    raw_path: Path,
+    companion_status: dict[str, bool],
+) -> dict[str, Any]:
+    plan: dict[str, Any] = {
+        "source_class": "paper_pdf",
+        "paper_handle": None,
+        "paper_handle_source": None,
+        "ingest_plan": None,
+        "ingest_reason": None,
+        "companion_status": dict(companion_status),
+    }
+
+    sidecar_path = sidecar_for_pdf(raw_path)
+    if sidecar_path.exists():
+        sidecar_record = load_markdown(sidecar_path, vault_root)
+        plan["metadata_path"] = sidecar_record.path
+
+        title = sidecar_record.frontmatter.get("title")
+        if isinstance(title, str) and title.strip():
+            plan["paper_title"] = title.strip()
+
+        source_url = sidecar_record.frontmatter.get("source")
+        if isinstance(source_url, str) and source_url.strip():
+            plan["source_url"] = source_url.strip()
+
+        for source_name, candidate in (
+            ("paper_id", sidecar_record.frontmatter.get("paper_id")),
+            ("source", sidecar_record.frontmatter.get("source")),
+        ):
+            handle = extract_paper_handle(candidate)
+            if handle:
+                plan["paper_handle"] = handle
+                plan["paper_handle_source"] = source_name
+                break
+
+    if not plan["paper_handle"]:
+        handle = extract_paper_handle(raw_path.stem)
+        if handle:
+            plan["paper_handle"] = handle
+            plan["paper_handle_source"] = "filename"
+
+    alphaxiv_available = companion_status["alphaxiv-paper-lookup"]
+    pdf_available = companion_status["pdf"]
+
+    if plan["paper_handle"] and alphaxiv_available:
+        plan["ingest_plan"] = "alphaxiv"
+        plan["ingest_reason"] = "paper_handle_available"
+        return plan
+
+    if pdf_available:
+        plan["ingest_plan"] = "pdf"
+        plan["ingest_reason"] = "alphaxiv_unavailable" if plan["paper_handle"] else "missing_paper_handle"
+        return plan
+
+    plan["ingest_plan"] = "skip"
+    plan["ingest_reason"] = "missing_companion_skills" if plan["paper_handle"] else "missing_paper_handle_and_pdf"
+    return plan
+
+
 def accepted_raw_sources(vault_root: Path) -> list[Path]:
     raw_root = vault_root / "raw"
     if not raw_root.exists():
@@ -156,6 +360,8 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
         if any(part.startswith(".") for part in rel.parts):
             continue
         if path.name.startswith("_"):
+            continue
+        if is_pdf_sidecar(path):
             continue
         if "assets" in rel.parts:
             continue
@@ -211,6 +417,9 @@ def compute_hash(path: Path) -> str:
 def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
     items: list[dict[str, Any]] = []
     counts = Counter()
+    ingest_counts = Counter()
+    companion_skills = detect_companion_skills()
+    companion_status = companion_skills["skills"]
 
     for raw_path in accepted_raw_sources(vault_root):
         rel_path = raw_path.relative_to(vault_root).as_posix()
@@ -222,7 +431,16 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
             "summary_path": summary_path.relative_to(vault_root).as_posix(),
             "raw_hash": raw_hash,
             "raw_mtime": raw_mtime,
+            "source_class": source_class_for_raw(raw_path),
         }
+
+        if item["source_class"] == "paper_pdf":
+            item.update(pdf_ingest_plan(vault_root, raw_path, companion_status))
+        else:
+            item["ingest_plan"] = "markdown"
+            item["ingest_reason"] = "markdown_source"
+
+        ingest_counts[item["ingest_plan"]] += 1
 
         if not summary_path.exists():
             item["status"] = "new"
@@ -273,6 +491,8 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
     return {
         "vault_root": str(vault_root),
         "counts": payload_counts,
+        "ingest_counts": dict(sorted(ingest_counts.items())),
+        "companion_skills": companion_skills,
         "items": items,
     }
 

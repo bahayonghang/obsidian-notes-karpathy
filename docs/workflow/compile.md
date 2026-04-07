@@ -5,7 +5,7 @@
 ## Inputs
 
 - markdown files under `raw/`
-- paper PDFs under `raw/papers/`, handled by preferring `alphaxiv-paper-lookup` and then falling back to `pdf`
+- paper PDFs under `raw/papers/`, handled by deterministic handle resolution, then `alphaxiv-paper-lookup` or `pdf`
 - local schema from `AGENTS.md` and `CLAUDE.md`
 
 ## Outputs
@@ -21,6 +21,8 @@
 Compilation reads raw notes but does not mutate them.
 
 If neither paper companion skill is installed, the compiler should skip only the affected PDFs and return install guidance.
+
+An optional `paper-name.source.md` sidecar may sit next to the PDF to provide `paper_id` or `source` metadata without becoming a second raw source.
 
 ## Large ingest batches
 

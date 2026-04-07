@@ -8,6 +8,9 @@ source_url: "{source-url}"
 source_type: "{type}"
 source_mtime: "{mtime}"
 source_hash: "{optional-hash}"
+compile_method: "{compile-method}"
+paper_handle: "{optional-paper-handle}"
+companion_used: "{optional-companion-skill}"
 compiled_at: "{datetime}"
 key_concepts:
   - "[[concept-a]]"
@@ -20,6 +23,7 @@ key_entities:
 
 > [!abstract] Source
 > **Type**: {type} | **Author**: {author} | **Date**: {date}
+> **Compile method**: {compile-method}
 > **Source note**: [[{raw-link}]]
 > **Original URL**: {source-url}
 
@@ -66,4 +70,5 @@ Rules:
 - Prefer concrete evidence over abstract praise.
 - If an image materially changes meaning, inspect it and mention that in the summary.
 - Keep source provenance explicit enough that a later health check can audit the claim trail.
+- Omit `paper_handle` and `companion_used` when the source is not a PDF or no deterministic handle exists.
 - Omit `key_entities` and the `Key Entities` section when the source does not introduce durable named entities.

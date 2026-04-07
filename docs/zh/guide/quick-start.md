@@ -18,6 +18,8 @@ AGENTS.md
 CLAUDE.md
 ```
 
+`kb-init` 应默认生成这两份文件。初始化完成后，`AGENTS.md` 仍然是必需的本地契约；如果只是缺 `CLAUDE.md`，应视为后续修复项，而不是直接阻断 compile/query/health。
+
 只有在确实需要时才启用可选层：
 
 - `raw/repos/`：仓库快照或 repo 伴随笔记
@@ -27,7 +29,13 @@ CLAUDE.md
 
 把 markdown 资料放进 `raw/`、`raw/articles/`、`raw/papers/` 或 `raw/podcasts/`。
 
-`raw/papers/` 也接受 PDF 论文。遇到 PDF 时，编译阶段应优先用 `alphaxiv-paper-lookup`，再降级到 `pdf`。如果两个技能都没安装，只跳过该 PDF，并提示安装。
+`raw/papers/` 也接受 PDF 论文。你也可以在 PDF 旁边放一个可选的 `paper-name.source.md` sidecar，只存 `paper_id`、`source` 这类确定元数据。
+
+遇到 PDF 时：
+
+- 只有当 sidecar 或文件名能解析出确定的 paper handle 时，才用 `alphaxiv-paper-lookup`
+- 否则直接降级到 `pdf`
+- 如果两个技能都没安装，只跳过该 PDF，并提示安装
 
 raw 笔记里只保留来源元数据：
 

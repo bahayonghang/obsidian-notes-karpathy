@@ -12,7 +12,7 @@ When the operation is already explicit, the package skill should get out of the 
 
 | Detected signal | Route to | Expected next move |
 | --- | --- | --- |
-| Missing `raw/`, `wiki/`, `outputs/`, or support files | `kb-init` | Create or repair the contract first |
+| Missing `raw/`, `wiki/`, `outputs/`, required `AGENTS.md`, or support files | `kb-init` | Create or repair the contract first |
 | New or changed notes under `raw/`, or PDF papers under `raw/papers/` | `kb-compile` | Update summaries, concepts, indices, and logs |
 | A question, report, article, thread, or slide request | `kb-query` | Ground the answer in the compiled layer and archive it when substantive |
 | Drift, contradiction, stale claims, broken indices, or weak links | `kb-health` | Score the vault and separate safe fixes from judgment calls |
@@ -27,7 +27,9 @@ When the operation is already explicit, the package skill should get out of the 
 - the top of `wiki/index.md`
 - recent entries in `wiki/log.md`
 
-When pending paper PDFs are found under `raw/papers/`, the expected compile behavior is: prefer `alphaxiv-paper-lookup`, then fall back to `pdf`, then report missing companion skills if needed.
+If only `CLAUDE.md` is missing while the vault is otherwise usable, the router should surface that as repair work instead of forcing `kb-init` immediately.
+
+When pending paper PDFs are found under `raw/papers/`, the expected compile behavior is: resolve a deterministic handle from a sidecar or filename, use `alphaxiv-paper-lookup` only when that handle exists, otherwise fall back to `pdf`, then report missing companion skills if needed.
 
 ## Why the router matters
 

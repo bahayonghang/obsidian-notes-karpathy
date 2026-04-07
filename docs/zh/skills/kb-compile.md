@@ -32,9 +32,10 @@
 
 对 `raw/papers/` 下的 PDF：
 
-1. 优先用 `alphaxiv-paper-lookup`
-2. 如果不可用或不适用，再降级到 `pdf`
-3. 如果两个 companion skill 都没安装，只跳过该 PDF，并明确提示安装什么
+1. 先从可选的 `paper-name.source.md` sidecar 或文件名里解析确定的 paper handle
+2. 只有 handle 存在时才优先用 `alphaxiv-paper-lookup`
+3. 如果没有 handle，就直接降级到 `pdf`
+4. 如果两个 companion skill 都没安装，只跳过该 PDF，并明确提示安装什么
 
 编译器不应把提取后的 markdown 回写到 `raw/`。
 

@@ -30,7 +30,8 @@ Optional expansions:
 ## Key guarantees
 
 - `raw/` is marked as immutable from the compiler's point of view
-- `AGENTS.md` and `CLAUDE.md` stay aligned on the file model
+- `AGENTS.md` is treated as the required local contract and `CLAUDE.md` as the generated companion
+- `AGENTS.md` and `CLAUDE.md` stay aligned on the file model when both exist
 - zero-state index pages and log files exist before other skills run
 - the vault starts with a concrete concept example and clipper template
 - missing support files are treated as repair work, not as a hard stop

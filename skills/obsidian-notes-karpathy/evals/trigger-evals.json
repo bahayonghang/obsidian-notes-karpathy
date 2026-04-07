@@ -20,6 +20,11 @@
     "reason": "Explicit repair of support layer."
   },
   {
+    "query": "My vault still has raw, wiki, and outputs, but the local AGENTS.md contract file got deleted. Route me to the right repair step before anyone compiles or queries anything else.",
+    "expected_skill": "kb-init",
+    "reason": "Required local guidance is missing."
+  },
+  {
     "query": "Compile the new markdown notes I dropped under raw/ and update summaries, concepts, and indices without touching the raw files.",
     "expected_skill": "kb-compile",
     "reason": "Explicit compile pass."
@@ -63,6 +68,11 @@
     "query": "Refresh the wiki because the raw article mtime moved forward and the summary is now stale.",
     "expected_skill": "kb-compile",
     "reason": "Incremental compile delta request."
+  },
+  {
+    "query": "This older vault still compiles fine, but I never regenerated CLAUDE.md after moving it. Compile the new raw notes now and just tell me if there is companion guidance to repair later.",
+    "expected_skill": "kb-compile",
+    "reason": "Missing only the companion guidance should not block compile."
   },
   {
     "query": "Search the compiled wiki for everything related to local markdown search, show me the strongest notes, and give short relevance comments.",
