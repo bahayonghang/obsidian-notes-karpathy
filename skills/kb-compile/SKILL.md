@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: Incrementally compile an Obsidian knowledge base from immutable raw sources. Use this skill whenever the user says "compile wiki", "compile kb", "sync wiki", "refresh wiki", "digest these articles", "turn my clips into notes", "process my repo notes", "编译wiki", "更新知识库", "同步wiki", "消化文章", "编译笔记", or wants newly added sources turned into summaries, concepts, entities, links, and indices. Also trigger when new files landed under `raw/`, including markdown files placed directly under `raw/`, and the user asks what to do next. Prefer this skill over the package router when the operation is clearly a compile pass rather than a workflow-level diagnosis.
+description: Incrementally compile an Obsidian knowledge base from immutable raw sources. Use this skill whenever the user says "compile wiki", "compile kb", "sync wiki", "refresh wiki", "digest these articles", "turn my clips into notes", "process my repo notes", "编译wiki", "更新知识库", "同步wiki", "消化文章", "编译笔记", or wants newly added sources turned into summaries, concepts, entities, links, and indices. Also trigger when new files landed under `raw/`, including markdown files placed directly under `raw/` and PDF papers placed under `raw/papers/`, and the user asks what to do next. Prefer this skill over the package router when the operation is clearly a compile pass rather than a workflow-level diagnosis.
 ---
 
 # KB Compile
@@ -49,14 +49,23 @@ Report missing shared references in the final user summary.
 
 ## Phase 1: Discover work
 
-Scan `raw/` for markdown files, excluding `raw/assets/` and template files.
+Scan `raw/` for supported source files, excluding `raw/assets/` and template files.
 
 Supported source classes:
 
 - markdown notes directly under `raw/`
 - markdown notes under `raw/articles/`, `raw/papers/`, and `raw/podcasts/`
+- PDF papers under `raw/papers/`
 - optional repo notes under `raw/repos/`
 - optional full repo folders under `raw/repos/`, but in that case compile from a top-level `README.md` or explicit overview note unless the user asked for deeper code synthesis
+
+For PDF papers under `raw/papers/`:
+
+1. prefer `alphaxiv-paper-lookup` when the source metadata gives you a clean paper handle such as an arXiv URL, alphaxiv URL, paper ID, or a strong title match
+2. if that is unavailable or not applicable, fall back to the `pdf` skill
+3. if neither companion skill is available, skip only that PDF source and report install guidance for `alphaxiv-paper-lookup` and `pdf`
+4. never write extracted markdown back into `raw/`; go straight from the PDF handling step into the compiled summary, concept, and entity outputs
+5. do not keep both `foo.md` and `foo.pdf` with the same basename under `raw/papers/`; pick one canonical paper source
 
 For each raw source:
 
@@ -73,15 +82,16 @@ Report a short status such as:
 
 For each new or changed source:
 
-1. read the raw markdown
-2. parse frontmatter with a YAML-aware path when metadata matters
-3. inspect local images from `raw/assets/` only when they materially affect meaning
-4. create or update `wiki/summaries/{source-name}.md` using `../obsidian-notes-karpathy/references/summary-template.md`
-5. store tracking fields in summary frontmatter:
+1. if the source is markdown, read the raw markdown
+2. if the source is a PDF under `raw/papers/`, derive the working paper understanding through the PDF handling chain above without mutating `raw/`
+3. parse frontmatter with a YAML-aware path when metadata matters
+4. inspect local images from `raw/assets/` only when they materially affect meaning
+5. create or update `wiki/summaries/{source-name}.md` using `../obsidian-notes-karpathy/references/summary-template.md`
+6. store tracking fields in summary frontmatter:
    - `source_hash` when available
    - otherwise `source_mtime`
    - keep both when both are available
-6. include:
+7. include:
    - thesis
    - key takeaways
    - evidence with a concrete locator when possible
@@ -169,7 +179,8 @@ Always report:
 4. how many entities were created or updated
 5. whether any contradictions were surfaced
 6. whether any shared references or optional local files were missing
-7. whether a deeper `kb-health` pass is recommended
+7. whether any PDF papers had to fall back from `alphaxiv-paper-lookup` to `pdf`, or were skipped because neither companion skill was available
+8. whether a deeper `kb-health` pass is recommended
 
 ## Tooling notes
 

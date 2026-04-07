@@ -27,6 +27,8 @@ CLAUDE.md
 
 把 markdown 资料放进 `raw/`、`raw/articles/`、`raw/papers/` 或 `raw/podcasts/`。
 
+`raw/papers/` 也接受 PDF 论文。遇到 PDF 时，编译阶段应优先用 `alphaxiv-paper-lookup`，再降级到 `pdf`。如果两个技能都没安装，只跳过该 PDF，并提示安装。
+
 raw 笔记里只保留来源元数据：
 
 ```yaml
@@ -44,6 +46,8 @@ clipped_at: 2026-04-03T10:00:00
 ```
 
 不要把编译状态写进 raw。
+
+不要在 `raw/papers/` 里同时保留同名的 `paper-name.md` 和 `paper-name.pdf`。
 
 ## 3. 小批量编译
 

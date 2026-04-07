@@ -18,7 +18,7 @@
 | --- | --- | --- | --- |
 | `obsidian-notes-karpathy` | 诊断生命周期并路由 | 共享 references、本地 guidance、`wiki/index.md` 顶部、最近的 `wiki/log.md` | 只给出路由建议 |
 | `kb-init` | 创建或修复 Vault 契约 | 文件模型和模板类 references | 支撑层、起始索引、本地 guidance |
-| `kb-compile` | 把 raw 编译成可维护的 wiki | 共享模板、本地 guidance、raw 资料 | `wiki/`、派生索引、`wiki/log.md` |
+| `kb-compile` | 把 raw 资料和论文 PDF 编译成可维护的 wiki | 共享模板、本地 guidance、raw 资料 | `wiki/`、派生索引、`wiki/log.md` |
 | `kb-query` | 从编译层搜索、回答、归档和发布 | 共享 references、`wiki/index.md`、索引页、既有 Q&A | `outputs/`、`wiki/log.md`，必要时回写 `wiki/` |
 | `kb-health` | 为编译层打分并做审计 | 健康评分标准、本地 guidance、编译层内容 | `outputs/health/`、`wiki/log.md`、安全的机械修复项 |
 

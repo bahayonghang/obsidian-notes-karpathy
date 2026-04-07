@@ -23,7 +23,7 @@ Human judgment still matters when the user's symptom should override a structura
 | --- | --- | --- | --- | --- |
 | `fresh` | `kb-init` | The raw/wiki/outputs contract does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
 | `partial` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
-| `compile-ready` | `kb-compile` | New or changed raw sources are ahead of the compiled layer. | `scan_compile_delta.py`, raw notes, matching summaries | `wiki/`, derived indices, `wiki/log.md` |
+| `compile-ready` | `kb-compile` | New or changed raw sources are ahead of the compiled layer. | `scan_compile_delta.py`, raw notes or paper PDFs, matching summaries | `wiki/`, derived indices, `wiki/log.md` |
 | `query-ready` | `kb-query` | The compiled layer exists and there is no obvious source delta or urgent health drift. | `wiki/index.md`, indices, prior `outputs/qa/` | `outputs/`, sometimes `wiki/`, `wiki/log.md` |
 | `health-first` | `kb-health` | Drift or mechanical breakage is more urgent than another compile or query pass. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, safe mechanical fixes, `wiki/log.md` |
 

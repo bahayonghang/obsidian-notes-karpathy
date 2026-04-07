@@ -49,3 +49,8 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 - `obsidian-markdown`
 - `obsidian-cli`
 - `obsidian-canvas-creator`
+
+如果你准备把 PDF 论文直接放进 `raw/papers/`，还建议安装：
+
+- `alphaxiv-paper-lookup`：优先的论文 companion skill
+- `pdf`：PDF 提取 fallback companion skill

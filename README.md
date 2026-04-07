@@ -61,6 +61,17 @@ The workflow has four concrete operations:
 
 `obsidian-notes-karpathy` is the ambiguity router. When the operation is already explicit, prefer `kb-init`, `kb-compile`, `kb-query`, or `kb-health` directly.
 
+## Paper PDF handling
+
+`raw/papers/` is dual-mode:
+
+- markdown paper notes are compiled directly
+- PDF papers are compiled by preferring `alphaxiv-paper-lookup`
+- if `alphaxiv-paper-lookup` is unavailable or not applicable, fall back to the `pdf` skill
+- if neither companion skill is installed, the compiler should skip only the affected PDFs and tell the user what to install
+
+Do not keep both `paper-name.md` and `paper-name.pdf` with the same basename under `raw/papers/`.
+
 ## Core design decisions
 
 - `raw/` is immutable. Compilation state is tracked in `wiki/`, not by rewriting sources.
@@ -160,6 +171,11 @@ This package assumes the following Obsidian-oriented skills are available:
 - `obsidian-markdown`
 - `obsidian-cli`
 - `obsidian-canvas-creator`
+
+For paper/PDF ingestion under `raw/papers/`, also install:
+
+- `alphaxiv-paper-lookup` as the preferred paper companion
+- `pdf` as the fallback PDF extraction companion
 
 ## Optional enhancements
 

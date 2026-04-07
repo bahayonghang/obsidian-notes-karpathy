@@ -180,6 +180,22 @@
         "The remediation posture treats the table rewrite as a safe mechanical fix when the target is clear.",
         "The response distinguishes render integrity from a generic search-upgrade recommendation."
       ]
+    },
+    {
+      "id": 13,
+      "prompt": "Use evals/fixtures/pdf-only-vault. There is a paper PDF waiting under raw/papers/. Compile the vault without touching raw/, prefer alphaxiv-paper-lookup if it can identify the paper cleanly, fall back to the pdf skill otherwise, and tell me what to install if neither companion skill exists.",
+      "expected_output": "Routes to kb-compile, treats the PDF as a valid paper source, uses the alphaxiv-paper-lookup -> pdf fallback chain, and reports missing companion skills without pretending the PDF compiled successfully when both are absent.",
+      "files": [
+        "evals/fixtures/pdf-only-vault/raw/papers/2026-04-08-transformers.pdf",
+        "evals/fixtures/pdf-only-vault/wiki/index.md",
+        "evals/fixtures/pdf-only-vault/wiki/log.md"
+      ],
+      "expectations": [
+        "The workflow chooses kb-compile.",
+        "The compile pass treats raw/papers/*.pdf as valid source material.",
+        "The response prefers alphaxiv-paper-lookup before the pdf skill.",
+        "The response says to skip only the affected PDF and surface install guidance when both companion skills are missing."
+      ]
     }
   ]
 }

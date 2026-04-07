@@ -26,6 +26,14 @@
 
 保持同样的元数据结构，但不要在 raw 中加入编译状态字段。
 
+### PDF 论文
+
+如果原始资料本身就是论文 PDF，就把它放到 `raw/papers/`。
+
+- 编译时优先用 `alphaxiv-paper-lookup`
+- 不适用时降级到 `pdf`
+- 如果两个 companion skill 都没装，就明确提示安装，而不是假装编译成功
+
 ## Raw 层规则
 
 `raw/` 对编译器来说是 immutable 层。

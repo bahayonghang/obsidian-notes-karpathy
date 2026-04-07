@@ -61,6 +61,17 @@ graph LR
 
 `obsidian-notes-karpathy` 只负责模糊场景下的生命周期诊断。用户已经明确要初始化、编译、查询或体检时，应优先直接触发对应的 `kb-*` skill。
 
+## PDF 论文处理
+
+`raw/papers/` 现在是双模目录：
+
+- markdown 论文笔记直接参与编译
+- PDF 论文优先走 `alphaxiv-paper-lookup`
+- 如果 `alphaxiv-paper-lookup` 不可用或不适用，再降级到 `pdf` skill
+- 如果两个 companion skill 都没装，只跳过受影响的 PDF，并明确提示用户安装什么
+
+不要在 `raw/papers/` 里同时保留同名的 `paper-name.md` 和 `paper-name.pdf`。
+
 ## 核心设计约束
 
 - `raw/` 是不可变层，编译状态不回写源文件。
@@ -160,6 +171,11 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 - `obsidian-markdown`
 - `obsidian-cli`
 - `obsidian-canvas-creator`
+
+如果你准备把 PDF 论文直接放进 `raw/papers/`，还建议安装：
+
+- `alphaxiv-paper-lookup`：优先的论文 companion skill
+- `pdf`：PDF 提取 fallback companion skill
 
 ## 可选增强
 

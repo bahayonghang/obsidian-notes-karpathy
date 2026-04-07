@@ -27,6 +27,8 @@ Optional layers are enabled only when needed:
 
 Place markdown notes under `raw/`, `raw/articles/`, `raw/papers/`, or `raw/podcasts/`.
 
+`raw/papers/` also accepts paper PDFs. When the source is a PDF, compile by preferring `alphaxiv-paper-lookup`, then falling back to `pdf`. If neither skill is installed, skip only that PDF and show install guidance.
+
 Raw notes should keep only source metadata:
 
 ```yaml
@@ -44,6 +46,8 @@ clipped_at: 2026-04-03T10:00:00
 ```
 
 Do not put compilation state in raw notes.
+
+Do not keep both `paper-name.md` and `paper-name.pdf` with the same basename under `raw/papers/`.
 
 ## 3. Compile in small batches
 

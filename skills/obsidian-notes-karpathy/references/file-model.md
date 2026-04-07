@@ -68,6 +68,7 @@ Accepted raw discovery patterns:
 
 - markdown files directly under `raw/`
 - categorized markdown files under `raw/articles/`, `raw/papers/`, and `raw/podcasts/`
+- PDF files under `raw/papers/` when the paper should be compiled via `alphaxiv-paper-lookup` first, then `pdf`
 - optional repo companion notes or repo overviews under `raw/repos/`
 
 If the vault already has channel-specific publishing folders such as `x/`, `公众号/`, or `小红书/`, preserve them. Do not force-migrate them unless the user asks.
@@ -91,6 +92,16 @@ Expected properties:
 - `clipped_at`
 
 Never add compile state here.
+
+### Raw paper PDFs
+
+Live under `raw/papers/` when the source artifact is a PDF instead of a markdown note.
+
+- treat the PDF file itself as immutable raw input
+- do not add sidecar extracted markdown back into `raw/` during compilation
+- compile these by preferring `alphaxiv-paper-lookup`, then falling back to `pdf`
+- if neither companion skill is available, report an install recommendation rather than pretending the paper was compiled
+- avoid keeping both `paper-name.md` and `paper-name.pdf` with the same basename in `raw/papers/`
 
 ### Summary notes
 

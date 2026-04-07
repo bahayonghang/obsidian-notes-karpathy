@@ -56,3 +56,8 @@ Then confirm the bundled resources live inside the entry skill:
 - `obsidian-markdown`
 - `obsidian-cli`
 - `obsidian-canvas-creator`
+
+For paper/PDF ingestion under `raw/papers/`, also install:
+
+- `alphaxiv-paper-lookup` as the preferred paper companion
+- `pdf` as the fallback PDF extraction companion

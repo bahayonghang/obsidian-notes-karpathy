@@ -50,6 +50,7 @@ Route to `kb-compile` when the vault exists and new source material appears to b
 
 - new or changed files directly under `raw/`
 - new or changed files under `raw/articles/`, `raw/papers/`, `raw/podcasts/`, or optional `raw/repos/`
+- PDF papers under `raw/papers/`, which should be compiled by preferring `alphaxiv-paper-lookup`, then falling back to `pdf`, then reporting missing companion skills if needed
 - missing summaries for recent raw notes
 - the user asks to ingest, digest, compile, refresh, sync, summarize, or turn clips into notes
 

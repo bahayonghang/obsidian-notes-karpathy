@@ -6,6 +6,8 @@ Compile immutable raw notes into the maintained wiki.
 
 `kb-compile` behaves like a compiler pass, not like a source editor. It reads from `raw/`, writes to `wiki/`, and keeps provenance intact.
 
+`raw/papers/` is dual-mode: it may contain markdown paper notes or PDF papers.
+
 ## Read first
 
 The live skill contract reads:
@@ -26,6 +28,16 @@ Recompile when:
 - `source_mtime` is older than the raw file
 
 Skip when the compiled summary already matches the current raw source.
+
+## PDF paper fallback chain
+
+For PDFs under `raw/papers/`:
+
+1. prefer `alphaxiv-paper-lookup`
+2. if that is unavailable or not applicable, fall back to `pdf`
+3. if neither companion skill is installed, skip only that PDF and tell the user what to install
+
+The compiler should never write extracted markdown back into `raw/`.
 
 ## Main outputs
 

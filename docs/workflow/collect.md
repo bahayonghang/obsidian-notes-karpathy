@@ -26,6 +26,14 @@ Use metadata such as:
 
 Use the same metadata shape, but keep raw notes free of compilation-state fields.
 
+### Paper PDFs
+
+If the source artifact is a paper PDF, place it under `raw/papers/`.
+
+- prefer `alphaxiv-paper-lookup` during compilation when the PDF has a clean paper handle
+- otherwise fall back to the `pdf` skill
+- if neither companion skill is installed, report the missing install step instead of pretending the paper was compiled
+
 ## Raw-layer rule
 
 `raw/` is immutable from the compiler's point of view.

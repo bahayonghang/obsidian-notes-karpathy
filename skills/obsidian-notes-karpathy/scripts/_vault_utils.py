@@ -149,7 +149,9 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
         return []
 
     sources: list[Path] = []
-    for path in sorted(raw_root.rglob("*.md")):
+    for path in sorted(raw_root.rglob("*")):
+        if not path.is_file():
+            continue
         rel = path.relative_to(vault_root)
         if any(part.startswith(".") for part in rel.parts):
             continue
@@ -157,8 +159,14 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
             continue
         if "assets" in rel.parts:
             continue
+        suffix = path.suffix.lower()
+        if suffix not in {".md", ".pdf"}:
+            continue
+        if suffix == ".pdf" and (len(rel.parts) < 3 or rel.parts[1] != "papers"):
+            continue
         if len(rel.parts) == 2:
-            sources.append(path)
+            if suffix == ".md":
+                sources.append(path)
             continue
         if rel.parts[1] in {"articles", "papers", "podcasts", "repos"}:
             sources.append(path)
@@ -166,7 +174,8 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
 
 
 def summary_for_raw(vault_root: Path, raw_path: Path) -> Path:
-    return vault_root / "wiki" / "summaries" / raw_path.name
+    summary_name = raw_path.name if raw_path.suffix.lower() == ".md" else f"{raw_path.stem}.md"
+    return vault_root / "wiki" / "summaries" / summary_name
 
 
 def iso_from_timestamp(timestamp: float) -> str:

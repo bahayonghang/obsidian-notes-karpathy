@@ -18,7 +18,7 @@ This bundle has one package entry skill and four operational skills.
 | --- | --- | --- | --- |
 | `obsidian-notes-karpathy` | Diagnose lifecycle stage and route | shared references, local guidance, top of `wiki/index.md`, recent `wiki/log.md` | routing recommendation only |
 | `kb-init` | Create or repair the vault contract | shared templates and file model references | support layer, starter indices, local guidance files |
-| `kb-compile` | Turn raw notes into maintained wiki pages | shared templates, local guidance, raw sources | `wiki/`, derived indices, `wiki/log.md` |
+| `kb-compile` | Turn raw notes and paper PDFs into maintained wiki pages | shared templates, local guidance, raw sources | `wiki/`, derived indices, `wiki/log.md` |
 | `kb-query` | Search, answer, archive, and publish from the compiled layer | shared references, `wiki/index.md`, indices, prior Q&A | `outputs/`, `wiki/log.md`, sometimes `wiki/` |
 | `kb-health` | Score and audit the compiled layer | shared health rubric, local guidance, compiled layers | `outputs/health/`, `wiki/log.md`, safe mechanical fixes |
 

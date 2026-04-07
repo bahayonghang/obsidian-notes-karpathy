@@ -70,7 +70,7 @@ Create the minimum canonical structure:
 ├── raw/
 │   ├── *.md            # allowed for direct captures or inbox-style source notes
 │   ├── articles/
-│   ├── papers/
+│   ├── papers/         # markdown paper notes or PDF papers
 │   ├── podcasts/
 │   └── assets/
 ├── wiki/
@@ -204,7 +204,7 @@ Report:
 
 Then give the two-week bootstrap:
 
-1. clip or add 5-10 sources into `raw/articles/`, `raw/papers/`, or `raw/podcasts/`
+1. clip or add 5-10 sources into `raw/articles/`, `raw/papers/`, or `raw/podcasts/`; `raw/papers/` may contain markdown paper notes or PDFs
 2. if relevant, add one repo companion note into `raw/repos/`
 3. run `kb-compile` for the first compilation
 4. ask a substantive question with `kb-query`, which should archive into `outputs/qa/`

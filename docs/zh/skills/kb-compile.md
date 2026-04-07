@@ -6,6 +6,8 @@
 
 `kb-compile` 应该像编译器一样工作，而不是像源文件编辑器一样工作。它从 `raw/` 读取资料，把结果写入 `wiki/`，并尽量保持溯源关系清楚。
 
+`raw/papers/` 现在是双模目录：既可以放 markdown 论文笔记，也可以直接放 PDF 论文。
+
 ## 先读什么
 
 真实技能合同要求先读取：
@@ -25,6 +27,16 @@
 - `source_mtime` 落后于当前 raw
 
 如果摘要页已经对应当前 raw，就跳过。
+
+## PDF 论文降级链
+
+对 `raw/papers/` 下的 PDF：
+
+1. 优先用 `alphaxiv-paper-lookup`
+2. 如果不可用或不适用，再降级到 `pdf`
+3. 如果两个 companion skill 都没安装，只跳过该 PDF，并明确提示安装什么
+
+编译器不应把提取后的 markdown 回写到 `raw/`。
 
 ## 主要输出
 
