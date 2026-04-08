@@ -1,5 +1,7 @@
 # Obsidian CLI
 
+> Companion skill reference. This page documents an adjacent ecosystem skill, not one of the six core skills shipped by this repository.
+
 Command-line interface for interacting with Obsidian vaults.
 
 ## Overview
@@ -20,7 +22,7 @@ The `obsidian-cli` skill provides command-line access to Obsidian vault operatio
 ```bash
 obsidian search query="transformer architecture"
 obsidian search tag="concept"
-obsidian search path="wiki/concepts/"
+obsidian search path="wiki/live/concepts/"
 ```
 
 ### Vault Management

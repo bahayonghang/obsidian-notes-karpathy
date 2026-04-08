@@ -1,5 +1,7 @@
 # Obsidian Markdown
 
+> 搭配技能说明：这是相邻生态技能页面，不属于本仓库当前发货的 6 个核心技能。
+
 Obsidian Flavored Markdown 语法参考——所有 wiki 内容的基础。
 
 ## 概览

@@ -42,10 +42,11 @@ List your skills home and confirm these directories exist:
 - `obsidian-notes-karpathy/`
 - `kb-init/`
 - `kb-compile/`
+- `kb-review/`
 - `kb-query/`
 - `kb-health/`
 
-Then confirm the bundled resources live inside the entry skill:
+Then confirm the bundled resources live inside the shared package home:
 
 - `obsidian-notes-karpathy/references/`
 - `obsidian-notes-karpathy/scripts/`

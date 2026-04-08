@@ -36,12 +36,14 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 - `obsidian-notes-karpathy/`
 - `kb-init/`
 - `kb-compile/`
+- `kb-review/`
 - `kb-query/`
 - `kb-health/`
 
-然后确认内置资源位于入口 skill 内部：
+然后确认内置资源位于 shared package home 内部：
 
 - `obsidian-notes-karpathy/references/`
+- `obsidian-notes-karpathy/scripts/`
 - `obsidian-notes-karpathy/evals/`
 
 ## 推荐搭配技能

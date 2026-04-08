@@ -1,5 +1,7 @@
 # Obsidian CLI
 
+> 搭配技能说明：这是相邻生态技能页面，不属于本仓库当前发货的 6 个核心技能。
+
 用于与 Obsidian vault 交互的命令行界面。
 
 ## 概览
@@ -20,7 +22,7 @@
 ```bash
 obsidian search query="transformer architecture"
 obsidian search tag="concept"
-obsidian search path="wiki/concepts/"
+obsidian search path="wiki/live/concepts/"
 ```
 
 ### Vault 管理

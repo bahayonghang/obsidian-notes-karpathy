@@ -1,5 +1,7 @@
 # Obsidian Markdown
 
+> Companion skill reference. This page documents an adjacent ecosystem skill, not one of the six core skills shipped by this repository.
+
 Obsidian Flavored Markdown syntax reference — the foundation for all wiki content.
 
 ## Overview

@@ -16,6 +16,9 @@ hero:
       text: 选择技能
       link: /zh/skills/overview
     - theme: alt
+      text: 架构说明
+      link: /zh/architecture/overview
+    - theme: alt
       text: English Docs
       link: /guide/introduction
 
@@ -47,4 +50,7 @@ features:
   - title: 先 markdown 后搜索升级
     details: 先用 approved live 索引、Backlinks 和 briefings，规模真的上来后再升级检索基础设施。
     link: /zh/workflow/query
+  - title: 先画边界，再谈检索
+    details: 把协作记忆、草稿知识、批准层和回写候选分开，知识库才会增长，而不是慢慢腐烂。
+    link: /zh/architecture/boundaries
 ---

@@ -17,6 +17,7 @@ This workflow treats a knowledge base like a codebase with source, build artifac
 - humans curate sources
 - the LLM maintains structure and cross-links
 - useful Q&A gets stored as artifacts
+- durable outputs can generate writeback work that re-enters drafts and review
 - the wiki can be checked for drift, contradictions, and weak structure
 
 ## Retrieval model

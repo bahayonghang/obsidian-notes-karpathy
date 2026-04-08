@@ -1,6 +1,8 @@
 # 健康检查
 
-`kb-health` 是编译后 wiki 的维护和体检流程。
+`kb-health` 是 approved live brain 及其 review 生态的、默认先出报告的长期维护流程。
+
+适用场景不是“马上给当前 drafts 过门”或“顺手重建这一次 stale briefing”，而是批准层已经出现更持续的维护信号。
 
 ## 适用时机
 
@@ -28,4 +30,6 @@
 - 修复明显的交叉链接问题
 - 标记 alias drift 或重复概念
 - 找出缺失概念页
+- 找出 writeback backlog
+- 找出协作记忆渗入 approved knowledge 的地方
 - 提醒哪些旧 Q&A 该重写或补注释

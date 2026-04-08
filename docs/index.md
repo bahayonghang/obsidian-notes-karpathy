@@ -16,6 +16,9 @@ hero:
       text: Choose a Skill
       link: /skills/overview
     - theme: alt
+      text: Architecture
+      link: /architecture/overview
+    - theme: alt
       text: 中文文档
       link: /zh/guide/introduction
 
@@ -47,4 +50,7 @@ features:
   - title: Markdown First, Search Later
     details: Start with approved live indices, backlinks, and briefings before upgrading retrieval infrastructure.
     link: /workflow/query
+  - title: Boundaries Before Retrieval
+    details: Keep collaboration memory, draft knowledge, approved live pages, and writeback candidates in separate surfaces so the wiki can grow without rotting.
+    link: /architecture/boundaries
 ---

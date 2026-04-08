@@ -1,5 +1,7 @@
 # Canvas Creator
 
+> Companion skill reference. This page documents an adjacent ecosystem skill, not one of the six core skills shipped by this repository.
+
 Create Obsidian Canvas files for visual knowledge mapping.
 
 ## Overview
