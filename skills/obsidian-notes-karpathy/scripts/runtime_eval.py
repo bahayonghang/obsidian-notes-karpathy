@@ -74,6 +74,7 @@ def build_prompt(*, use_skill: bool, skill: str, prompt: str, files: list[str]) 
         "Work in read-only mode. Do not modify any files.\n"
         "Use only repository-local evidence from the listed files.\n"
         "Prefer the listed files over open-ended repo exploration.\n"
+        "If search is required, prefer rg over grep for repository-local searches.\n"
         "On Windows, avoid shell globs inside literal paths. Prefer reading the exact listed files, and if search is required use PowerShell-native commands instead of rg against wildcarded absolute paths.\n"
         "Return a concise answer with:\n"
         "1. the conclusion\n"

@@ -4,13 +4,15 @@ Default posture: stay local-first, markdown-first, and auditable.
 
 Do not jump straight to RAG or a vector database just because the user mentions AI search.
 
+For repository or vault text search, prefer `rg` (ripgrep) over `grep` because it is faster and scales better across large markdown trees. On Windows, avoid using `rg` against wildcarded absolute paths; prefer exact file paths or platform-native alternatives when needed.
+
 ## Stage 1: Native markdown navigation
 
 Use this first for small to medium vaults.
 
 - read `wiki/index.md`
 - read `wiki/live/indices/INDEX.md`, `wiki/live/indices/CONCEPTS.md`, and `wiki/live/indices/SOURCES.md`
-- use ordinary file search over markdown
+- use ordinary file search over markdown, preferring `rg` when CLI search is needed
 - follow real wikilinks between summaries, concepts, entities, and prior Q&A
 
 This stage is enough for many vaults with hundreds of high-signal notes.
