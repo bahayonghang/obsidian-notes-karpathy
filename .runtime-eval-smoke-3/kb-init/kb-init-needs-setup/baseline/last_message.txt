@@ -1,0 +1,19 @@
+主人，结论如下喵～ (..•˘_˘•..)
+
+1. **结论**  
+   这个 fixture 还是一个“全新 vault”，**第一步安全操作是先跑 `kb-init` 做初始化/修复**，而不是直接编译、审校或查询。  
+   原因是它还**没有进入 review-gated contract**：README 明确说这是“brand-new Obsidian vault with no Karpathy-style knowledge-base contract yet”，而项目契约要求先具备支持层。
+
+   **缺失的 support layer** 按仓库契约应至少包括：  
+   `raw/`、`wiki/drafts/`、`wiki/live/`、`wiki/briefings/`、`wiki/index.md`、`wiki/log.md`、`outputs/reviews/`、`AGENTS.md`、`CLAUDE.md`。  
+   对这个 fixture 来说，README 只证明它目前还是“未 setup 状态”，所以最稳妥的判断是：**它缺少整套或至少关键部分 support layer，因此应先由 `kb-init` 补齐/迁移。**
+
+   **下一条该跑的命令**：  
+   `kb-init`
+
+2. **使用的文件**  
+   - `skills/obsidian-notes-karpathy/evals/fixtures/needs-setup/README.md`
+
+3. **假设**  
+   - 浮浮酱只依据该 README 和仓库内已给出的项目契约说明判断，没有额外扫描 fixture 目录内容。  
+   - 因为任务要求只用给定证据，所以“缺失 support layer”这里是基于该 fixture 被定义为“fresh vault / no contract yet”做出的安全判断，而不是逐项目录核验喵～

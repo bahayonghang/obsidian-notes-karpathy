@@ -1,0 +1,1649 @@
+Reading additional input from stdin...
+OpenAI Codex v0.118.0 (research preview)
+--------
+workdir: D:\Documents\Code\Agents\obsidian-notes-karpathy
+model: gpt-5.4
+provider: custom
+approval: never
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 019d6bfa-1fd1-7700-b33b-197264e15be8
+--------
+user
+Read and follow the skill at `D:\Documents\Code\Agents\obsidian-notes-karpathy\skills\kb-init\SKILL.md` for this task.
+codex
+Using `kb-init` because you explicitly routed this turn to that skill. I’m reading the skill contract first, then I’ll follow its workflow for the current task.
+2026-04-08T07:24:23.537615Z ERROR codex_core::tools::router: error=`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-ChildItem -Path 'D:\\Documents\\Code\\Agents\\obsidian-notes-karpathy\\skills\\kb-init' -Force | Select-Object Name,Mode,Length"` rejected: blocked by policy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-ChildItem -Path 'D:\\Documents\\Code\\Agents\\obsidian-notes-karpathy\\skills\\kb-init' -Force | Select-Object Name,Mode,Length" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'D:\\Documents\\Code\\Agents\\obsidian-notes-karpathy\\skills\\kb-init\\SKILL.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+ declined in 0ms:
+`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-ChildItem -Path 'D:\\Documents\\Code\\Agents\\obsidian-notes-karpathy\\skills\\kb-init' -Force | Select-Object Name,Mode,Length"` rejected: blocked by policy
+ succeeded in 3037ms:
+---
+name: kb-init
+description: Initialize, migrate, or repair a review-gated Obsidian knowledge base. Use this skill whenever the user says "kb init", "initialize knowledge base", "repair vault", "migrate an old layout", "add draft/live review gate", "set up briefings", "初始化知识库", "迁移知识库", "修复知识库结构", or wants a fresh vault or legacy-layout vault brought onto the review-gated contract.
+---
+
+# KB Init
+
+One-time setup, migration, and repair for the review-gated workflow.
+
+## Read before writing
+
+Read these shared references first:
+
+- `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
+- `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
+- `../obsidian-notes-karpathy/references/schema-template.md`
+- `../obsidian-notes-karpathy/references/summary-template.md`
+- `../obsidian-notes-karpathy/references/review-template.md`
+- `../obsidian-notes-karpathy/references/briefing-template.md`
+- `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/index-home-template.md`
+
+Treat `skill-contract-registry.json` as the canonical source for role, baseline script, required references, and expected write surfaces.
+
+If `../obsidian-notes-karpathy/scripts/detect_lifecycle.py` exists, run it first to distinguish setup, repair, and `legacy-layout` migration.
+
+## Create or repair the canonical structure
+
+Create the required support layer:
+
+```text
+raw/human/{articles,papers,podcasts,repos,assets}
+raw/agents/{role}/
+wiki/drafts/{summaries,concepts,entities,indices}
+wiki/live/{summaries,concepts,entities,indices}
+wiki/briefings/
+wiki/index.md
+wiki/log.md
+outputs/reviews/
+AGENTS.md
+CLAUDE.md
+```
+
+Create downstream output directories such as `outputs/qa/`, `outputs/health/`, `outputs/reports/`, `outputs/slides/`, `outputs/charts/`, and `outputs/content/**` only when the user wants full scaffolding or the later stages need them.
+
+Treat `MEMORY.md` as recommended collaboration scaffolding. It should hold preferences, editorial priorities, and coordination context, not source-grounded topic knowledge.
+
+## Migration posture
+
+For legacy-layout vaults:
+
+- preserve legacy content
+- explain that direct `wiki/summaries/` / `wiki/concepts/` pages must move into `wiki/live/`
+- scaffold the review-gated directories first
+- treat migration as a repair step, not as a normal compile or query pass
+
+## Contract guarantees
+
+- `raw/` stays immutable
+- `kb-compile` writes only to `wiki/drafts/`
+- `kb-review` owns promotion into `wiki/live/` and briefing refresh
+- `kb-query` must not read drafts as truth
+- `AGENTS.md` and `CLAUDE.md` stay aligned on the review-gated file model
+- downstream outputs beyond `outputs/reviews/` are optional scaffolding, not minimum support-layer requirements
+
+## Starter files
+
+Create:
+
+- `wiki/index.md`
+- `wiki/log.md`
+- `MEMORY.md`
+- `wiki/live/indices/INDEX.md`
+- `wiki/live/indices/CONCEPTS.md`
+- `wiki/live/indices/SOURCES.md`
+- `wiki/live/indices/RECENT.md`
+- `wiki/live/indices/EDITORIAL-PRIORITIES.md`
+- at least one example briefing or a placeholder in `wiki/briefings/`
+- a review template example in `outputs/reviews/` when the user wants a demonstrable starter
+
+## Output to the user
+
+Report:
+
+1. what was created or migrated
+2. whether a legacy-layout was detected
+3. what existing content was preserved
+4. the next recommended command, usually `kb-compile` or `kb-review`
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ERROR: Reconnecting... 1/5
+codex
+I’ve loaded the `kb-init` instructions. Next I’m reading its required shared references and checking the vault lifecycle so I can apply the skill’s setup/repair logic against the current repository state.
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command 'rg --files -g AGENTS.md -g SKILL.md -g skill-contract-registry.json -g file-model.md -g lifecycle-matrix.md -g schema-template.md -g summary-template.md -g review-template.md -g briefing-template.md -g activity-log-template.md -g index-home-template.md -g detect_lifecycle.py' in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command 'Get-ChildItem -Name' in D:\Documents\Code\Agents\obsidian-notes-karpathy
+ succeeded in 3825ms:
+AGENTS.md
+skills\kb-init\SKILL.md
+skills\kb-review\SKILL.md
+skills\kb-health\SKILL.md
+skills\obsidian-notes-karpathy\SKILL.md
+skills\kb-query\SKILL.md
+skills\obsidian-notes-karpathy\references\file-model.md
+skills\obsidian-notes-karpathy\references\briefing-template.md
+skills\obsidian-notes-karpathy\references\activity-log-template.md
+skills\obsidian-notes-karpathy\references\review-template.md
+skills\obsidian-notes-karpathy\references\lifecycle-matrix.md
+skills\obsidian-notes-karpathy\references\index-home-template.md
+skills\obsidian-notes-karpathy\references\schema-template.md
+skills\obsidian-notes-karpathy\references\summary-template.md
+skills\kb-compile\SKILL.md
+skills\obsidian-notes-karpathy\scripts\detect_lifecycle.py
+skills\obsidian-notes-karpathy\scripts\skill-contract-registry.json
+skills\obsidian-notes-karpathy\evals\fixtures\companion-skill-homes\pdf-only\pdf\SKILL.md
+skills\obsidian-notes-karpathy\evals\fixtures\bootstrap-raw-intake\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-answer-drift\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\companion-skill-homes\both\pdf\SKILL.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\companion-skill-homes\both\paper-workbench\SKILL.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-maintenance\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-compilation\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-repair-live-only\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-with-handle\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-migration\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-missing-handle\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\AGENTS.md
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 4142ms:
+.omc
+.omx
+.pytest_cache
+.runtime-eval-smoke-3
+.runtime-eval-smoke-4
+docs
+ref
+skills
+tests
+.gitignore
+AGENTS.md
+CLAUDE.md
+justfile
+README_CN.md
+README.md
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\scripts\\skill-contract-registry.json'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\file-model.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\scripts\\detect_lifecycle.py'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\lifecycle-matrix.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+ succeeded in 4952ms:
+{
+  "contract_family": "review-gated",
+  "shared_references": [
+    "file-model.md",
+    "lifecycle-matrix.md",
+    "activity-log-template.md"
+  ],
+  "skills": {
+    "obsidian-notes-karpathy": {
+      "role": "router",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "search-upgrades.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "detect_lifecycle.py",
+      "writes": [],
+      "outputs": [],
+      "routes": [
+        "kb-init",
+        "kb-compile",
+        "kb-review",
+        "kb-query",
+        "kb-health"
+      ]
+    },
+    "kb-init": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "schema-template.md",
+        "summary-template.md",
+        "review-template.md",
+        "briefing-template.md",
+        "activity-log-template.md",
+        "index-home-template.md"
+      ],
+      "baseline_script": "detect_lifecycle.py",
+      "writes": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "MEMORY.md",
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/live/indices/EDITORIAL-PRIORITIES.md",
+        "wiki/live/indices/INDEX.md",
+        "wiki/live/indices/CONCEPTS.md",
+        "wiki/live/indices/SOURCES.md",
+        "wiki/live/indices/RECENT.md",
+        "wiki/briefings/",
+        "outputs/reviews/"
+      ],
+      "outputs": [
+        "MEMORY.md",
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/live/indices/",
+        "wiki/briefings/",
+        "outputs/reviews/"
+      ]
+    },
+    "kb-compile": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "schema-template.md",
+        "summary-template.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "scan_compile_delta.py",
+      "writes": [
+        "wiki/drafts/summaries/",
+        "wiki/drafts/concepts/",
+        "wiki/drafts/entities/",
+        "wiki/drafts/indices/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "wiki/drafts/",
+        "wiki/log.md"
+      ]
+    },
+    "kb-review": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "schema-template.md",
+        "review-template.md",
+        "briefing-template.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "scan_review_queue.py",
+      "writes": [
+        "outputs/reviews/",
+        "wiki/live/",
+        "wiki/briefings/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "outputs/reviews/",
+        "wiki/live/",
+        "wiki/briefings/",
+        "wiki/log.md"
+      ]
+    },
+    "kb-query": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "briefing-template.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "scan_query_scope.py",
+      "writes": [
+        "outputs/qa/",
+        "outputs/content/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "outputs/qa/",
+        "outputs/content/",
+        "wiki/log.md"
+      ]
+    },
+    "kb-health": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "activity-log-template.md",
+        "health-rubric.md",
+        "search-upgrades.md"
+      ],
+      "baseline_script": "lint_obsidian_mechanics.py",
+      "writes": [
+        "outputs/health/",
+        "outputs/qa/",
+        "wiki/briefings/",
+        "wiki/live/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "outputs/health/",
+        "wiki/log.md"
+      ]
+    }
+  }
+}
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 5001ms:
+# Lifecycle Matrix
+
+Use this table as the shared routing contract for the package entry skill and the operational skills.
+
+## Structural diagnosis first
+
+Prefer a structural diagnosis over user phrasing alone.
+
+If `../scripts/detect_lifecycle.py` is available, run it against the target vault before deciding how to route.
+
+The script is the deterministic baseline for:
+
+- setup-needed vault detection
+- repair-needed vault detection
+- legacy-layout migration detection
+- compile-delta detection
+- pending review queue detection
+- briefing refresh detection
+- maintenance-needed integrity flags over the approved layer
+
+## Routing table
+
+| Structural state | Default route | Why | Must inspect next | Typical writes |
+| --- | --- | --- | --- | --- |
+| `needs-setup` | `kb-init` | The support layer does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
+| `needs-repair` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
+| `legacy-layout` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before normal operation. | migration path, old compiled files, missing companions | migration guidance or repair |
+| `needs-compilation` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `scan_compile_delta.py`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
+| `needs-review` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `scan_review_queue.py`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
+| `needs-briefing-refresh` | `kb-review` | The approved brain changed after the last briefing build. | briefing sources, latest live timestamps | regenerated `wiki/briefings/`, `wiki/log.md` |
+| `ready-for-query` | `kb-query` | The live layer exists and there is no obvious source delta, review backlog, or stale briefing. | `wiki/live/index`, live indices, prior `outputs/qa/`, relevant briefings | `outputs/qa/`, `outputs/content/`, `wiki/log.md` |
+| `needs-maintenance` | `kb-health` | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, `wiki/log.md`, deterministic mechanical fixes in approved surfaces only |
+
+## Symptom overrides
+
+These symptoms should push routing toward `kb-health` even when the structure alone might allow `kb-query`:
+
+- the live notes feel contradictory or unreliable
+- briefings seem wrong even after a recent review pass
+- there are obvious duplicate live concepts or approved conflicts
+- the approved layer renders badly in Obsidian
+- archived answers have pending writeback work piling up
+- collaboration memory and approved knowledge appear to be mixing
+
+These symptoms should push routing toward `kb-init` even when `raw/` and `wiki/` both exist:
+
+- `AGENTS.md` is missing
+- `wiki/index.md` or `wiki/log.md` is missing
+- the review-gated directories `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, or `outputs/reviews/` are missing
+- a vault is still clearly legacy-layout and has not been migrated
+
+These symptoms should be surfaced as repair targets without blocking compile/query/review/health by themselves:
+
+- only `CLAUDE.md` is missing
+- a single noncanonical filename such as `agents.md` or `claude.md` exists but the contract is otherwise usable
+
+## Operational reminders
+
+- `kb-init` owns contract creation, migration, and repair.
+- `kb-compile` owns source-to-draft updates.
+- `kb-review` owns draft promotion, rejection, and briefing refresh.
+- `kb-query` owns synthesis, archival, and publish artifacts from the approved layer only.
+- `kb-health` owns deep maintenance passes over live knowledge, briefings, review backlog, and deterministic mechanical fixes in approved surfaces only.
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 5050ms:
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPT_DIR))
+
+from _vault_utils import (
+    audit_vault_mechanics,
+    briefing_staleness_issues,
+    detect_layout_family,
+    inspect_local_guidance,
+    json_dump,
+    scan_review_queue,
+    scan_compile_delta,
+)
+
+
+CORE_SUPPORT_FILES = ["wiki/index.md", "wiki/log.md"]
+REVIEW_GATED_SUPPORT_PATHS = [
+    "wiki/drafts",
+    "wiki/live",
+    "wiki/briefings",
+    "outputs/reviews",
+]
+
+
+def detect_lifecycle(vault_root: Path) -> dict:
+    signals: list[str] = []
+    layout_family = detect_layout_family(vault_root)
+    missing = [
+        rel_path
+        for rel_path in CORE_SUPPORT_FILES
+        if not (vault_root / rel_path).exists()
+    ]
+    missing_support_paths = [
+        rel_path
+        for rel_path in REVIEW_GATED_SUPPORT_PATHS
+        if layout_family == "review-gated" and not (vault_root / rel_path).exists()
+    ]
+    guidance = inspect_local_guidance(vault_root)
+    guidance_status = {
+        "agents": guidance["agents"],
+        "claude": guidance["claude"],
+    }
+    guidance_warnings = guidance["warnings"]
+    blocking_guidance_issues = guidance["blocking_issues"]
+
+    has_raw = (vault_root / "raw").exists()
+    has_wiki = (vault_root / "wiki").exists()
+    has_outputs = (vault_root / "outputs").exists()
+    def build_payload(
+        *,
+        state: str,
+        route: str,
+        missing_support_files: list[str],
+        compile_delta: dict,
+        health_flags: list[str],
+    ) -> dict:
+        return {
+            "vault_root": str(vault_root),
+            "layout_family": layout_family,
+            "state": state,
+            "route": route,
+            "signals": signals,
+            "missing_support_files": missing_support_files,
+            "compile_delta": compile_delta,
+            "health_flags": health_flags,
+            "guidance_status": guidance_status,
+            "guidance_warnings": guidance_warnings,
+        }
+
+    if (
+        not has_raw
+        and not has_wiki
+        and not has_outputs
+        and not guidance_status["agents"]["present"]
+        and not guidance_status["claude"]["present"]
+    ):
+        signals.append("missing_core_directories")
+        return build_payload(
+            state="needs-setup",
+            route="kb-init",
+            missing_support_files=missing,
+            compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
+            health_flags=[],
+        )
+
+    if layout_family == "legacy-layout" and not blocking_guidance_issues:
+        signals.append("legacy_layout_detected")
+        return build_payload(
+            state="needs-migration",
+            route="kb-init",
+            missing_support_files=sorted(set(missing)),
+            compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
+            health_flags=[],
+        )
+
+    structural_partial = bool(
+        not has_wiki
+        or missing
+        or not has_raw
+        or missing_support_paths
+    )
+
+    if blocking_guidance_issues or structural_partial:
+        signals.extend(blocking_guidance_issues)
+        if missing:
+            signals.append("missing_support_layer")
+        if missing_support_paths:
+            signals.append("missing_review_gate_support")
+        if not has_raw:
+            signals.append("missing_raw")
+        if not has_wiki:
+            signals.append("missing_wiki")
+        missing_support_files = list(missing) + list(missing_support_paths)
+        if "missing_agents_guidance" in blocking_guidance_issues:
+            missing_support_files.append("AGENTS.md")
+        return build_payload(
+            state="needs-repair",
+            route="kb-init",
+            missing_support_files=sorted(dict.fromkeys(missing_support_files)),
+            compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
+            health_flags=[],
+        )
+
+    compile_delta = scan_compile_delta(vault_root)
+    new_count = compile_delta["counts"]["new"]
+    changed_count = compile_delta["counts"]["changed"]
+    unchanged_count = compile_delta["counts"]["unchanged"]
+
+    if new_count or changed_count:
+        if new_count:
+            signals.append("new_raw_sources")
+        if changed_count:
+            signals.append("changed_raw_sources")
+        return build_payload(
+            state="needs-compilation",
+            route="kb-compile",
+            missing_support_files=[],
+            compile_delta={
+                "new_count": new_count,
+                "changed_count": changed_count,
+                "unchanged_count": unchanged_count,
+            },
+            health_flags=[],
+        )
+
+    review_queue = scan_review_queue(vault_root)
+    if review_queue["counts"]["pending"]:
+        signals.append("drafts_pending_review")
+        return build_payload(
+            state="needs-review",
+            route="kb-review",
+            missing_support_files=[],
+            compile_delta={
+                "new_count": 0,
+                "changed_count": 0,
+                "unchanged_count": unchanged_count,
+            },
+            health_flags=[],
+        )
+
+    stale_briefings = briefing_staleness_issues(vault_root)
+    if stale_briefings:
+        signals.append("briefing_refresh_required")
+        return build_payload(
+            state="needs-briefing-refresh",
+            route="kb-review",
+            missing_support_files=[],
+            compile_delta={
+                "new_count": 0,
+                "changed_count": 0,
+                "unchanged_count": unchanged_count,
+            },
+            health_flags=["stale_briefing"],
+        )
+
+    audit = audit_vault_mechanics(vault_root)
+    health_flags = [
+        issue["kind"]
+        for issue in audit["issues"]
+        if issue["kind"] in {
+            "duplicate_concept",
+            "duplicate_entity",
+            "stale_qa",
+            "alias_wikilink_in_table",
+            "unapproved_live_page",
+            "approved_conflict",
+            "review_backlog",
+            "memory_knowledge_mix",
+            "writeback_backlog",
+            "weak_live_sources",
+        }
+    ]
+
+    if health_flags:
+        signals.append("maintenance_needed")
+        return build_payload(
+            state="needs-maintenance",
+            route="kb-health",
+            missing_support_files=[],
+            compile_delta={
+                "new_count": 0,
+                "changed_count": 0,
+                "unchanged_count": unchanged_count,
+            },
+            health_flags=sorted(set(health_flags)),
+        )
+
+    signals.append("approved_knowledge_ready")
+    return build_payload(
+        state="ready-for-query",
+        route="kb-query",
+        missing_support_files=[],
+        compile_delta={
+            "new_count": 0,
+            "changed_count": 0,
+            "unchanged_count": unchanged_count,
+        },
+        health_flags=[],
+    )
+
+
+def main() -> None:
+    if len(sys.argv) != 2:
+        raise SystemExit("Usage: detect_lifecycle.py <vault-root>")
+
+    vault_root = Path(sys.argv[1]).resolve()
+    payload = detect_lifecycle(vault_root)
+    print(json_dump(payload))
+
+
+if __name__ == "__main__":
+    main()
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 5053ms:
+# File Model
+
+Canonical review-gated layering:
+
+```text
+raw/            -> immutable capture intake
+MEMORY.md       -> collaboration memory and editorial context
+wiki/drafts/    -> compiled but unapproved draft knowledge
+wiki/live/      -> approved long-term brain
+wiki/briefings/ -> role-specific context built from live only
+outputs/        -> reviews, Q&A, health reports, and publishable derivatives
+```
+
+Treat the vault like a codebase with a promotion gate:
+
+- `raw/` is source evidence.
+- `MEMORY.md` is the coordination surface for preferences, priorities, and collaboration rules.
+- `wiki/drafts/` is build output waiting for review.
+- `wiki/live/` is the deployed truth layer.
+- `wiki/briefings/` is generated runtime context for agents.
+- `outputs/reviews/` is the decision ledger for promotion.
+
+## Core rules
+
+1. `raw/` is read-only from the workflow's point of view.
+2. `kb-compile` writes only to `wiki/drafts/`, never directly to `wiki/live/`.
+3. `kb-review` is the only skill that can promote draft knowledge into `wiki/live/`.
+4. `kb-query` reads `wiki/live/`, `wiki/briefings/`, and prior `outputs/qa/`; it must not treat `raw/` or `wiki/drafts/` as retrieval truth.
+5. `kb-query` must not treat `MEMORY.md` as domain knowledge truth; it is only for collaboration or editorial context.
+6. `wiki/index.md` is the content-oriented landing page for the whole contract, including live, draft, and briefing state.
+7. `wiki/log.md` is the append-only activity ledger for `ingest`, `review`, `brief`, `query`, `publish`, and `health`.
+8. `outputs/qa/` stores durable research answers, not disposable chat residue.
+9. `outputs/reviews/` stores reviewer decisions and scoring details.
+10. Existing older vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-layout` and migrated before normal operation.
+
+## Required vs optional support
+
+The minimum support layer for `kb-init` is:
+
+- `raw/`
+- `wiki/drafts/`
+- `wiki/live/`
+- `wiki/briefings/`
+- `wiki/index.md`
+- `wiki/log.md`
+- `outputs/reviews/`
+- `AGENTS.md`
+- `CLAUDE.md`
+
+Downstream output surfaces such as `outputs/qa/`, `outputs/health/`, `outputs/reports/`, `outputs/slides/`, `outputs/charts/`, and `outputs/content/**` are valid parts of the full contract, but they are created on demand when later stages need them. `MEMORY.md` is recommended collaboration scaffolding rather than a blocking support-layer requirement.
+
+## Expected directories
+
+```text
+vault/
+念岸岸 raw/
+岫   念岸岸 human/
+岫   岫   念岸岸 articles/
+岫   岫   念岸岸 papers/
+岫   岫   念岸岸 podcasts/
+岫   岫   念岸岸 repos/
+岫   岫   弩岸岸 assets/
+岫   弩岸岸 agents/
+岫       弩岸岸 {role}/
+念岸岸 wiki/
+岫   念岸岸 drafts/
+岫   岫   念岸岸 summaries/
+岫   岫   念岸岸 concepts/
+岫   岫   念岸岸 entities/
+岫   岫   弩岸岸 indices/
+岫   念岸岸 live/
+岫   岫   念岸岸 summaries/
+岫   岫   念岸岸 concepts/
+岫   岫   念岸岸 entities/
+岫   岫   弩岸岸 indices/
+岫   念岸岸 briefings/
+岫   念岸岸 index.md
+岫   弩岸岸 log.md
+念岸岸 outputs/
+岫   念岸岸 reviews/
+岫   念岸岸 qa/
+岫   念岸岸 health/
+岫   念岸岸 reports/
+岫   念岸岸 slides/
+岫   念岸岸 charts/
+岫   弩岸岸 content/
+岫       念岸岸 articles/
+岫       念岸岸 threads/
+岫       弩岸岸 talks/
+念岸岸 AGENTS.md
+念岸岸 MEMORY.md
+弩岸岸 CLAUDE.md
+```
+
+## Raw capture classes
+
+### Human captures
+
+Live under `raw/human/**`.
+
+- treated as curated evidence
+- may be markdown notes or PDFs under a `papers/` subtree
+- should preserve source metadata only
+
+### Agent captures
+
+Live under `raw/agents/{role}/**`.
+
+- treated as untrusted until reviewed
+- should preserve provenance and role identity
+- must never be promoted directly into the live brain
+
+### Legacy captures
+
+Older vaults may still use legacy-layout paths such as `raw/articles/` or `raw/papers/`.
+
+- continue to detect them for migration
+- do not silently reinterpret them as fully valid review-gated support layers
+
+### Bootstrap root captures
+
+Some partially bootstrapped vaults may place markdown directly under `raw/`.
+
+- accept these files as valid compile inputs
+- preserve raw immutability exactly as with nested capture classes
+- surface any missing support-layer directories separately instead of rejecting the source format itself
+
+## Draft summaries
+
+Live under `wiki/drafts/summaries/**` and mirror raw captures.
+
+Expected properties:
+
+- `title`
+- `source_file`
+- `source_hash` or `source_mtime`
+- `compiled_at`
+- `draft_id`
+- `compiled_from`
+- `capture_sources`
+- `review_state`
+- `review_score`
+- `blocking_flags`
+
+## Live pages
+
+Live under `wiki/live/{summaries,concepts,entities}/`.
+
+Expected properties:
+
+- `title`
+- `approved_at`
+- `approved_from`
+- `review_record`
+- `trust_level: approved`
+- `updated_at`
+- `sources`
+- `related`
+
+## Briefings
+
+Live under `wiki/briefings/`.
+
+Expected properties:
+
+- `title`
+- `brief_for`
+- `built_from`
+- `updated_at`
+- `staleness_after`
+- `source_live_pages`
+
+## Collaboration memory
+
+`MEMORY.md` lives at the vault root.
+
+Expected content:
+
+- stable preferences
+- editorial priorities
+- collaboration rules
+- current focus areas
+
+It should not become a shadow knowledge base full of topic conclusions or source-grounded claims.
+
+## Review records
+
+Live under `outputs/reviews/`.
+
+Expected properties:
+
+- `title`
+- `decision`
+- `accuracy`
+- `provenance`
+- `conflict_risk`
+- `composability`
+- `reviewed_at`
+
+## Query outputs
+
+`outputs/qa/` remains the durable answer archive, but all cited knowledge should trace back to `wiki/live/`.
+
+## Naming and graph conventions
+
+- use stable lowercase kebab-case paths
+- keep `wiki/live/indices/` as the canonical derived navigation directory
+- allow a promoted draft to keep the same basename when moved into `wiki/live/`
+- keep alias-style wikilinks out of Markdown table cells
+- treat `review_record` and `approved_from` as first-class provenance edges
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+codex
+The contract is review-gated and `detect_lifecycle.py` is the required baseline. I’m loading the remaining init templates now, then I’ll run lifecycle detection against the repo root to determine whether this workspace needs setup, repair, or migration.
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\schema-template.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\summary-template.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\review-template.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\briefing-template.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\activity-log-template.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "Get-Content -Raw 'skills\\obsidian-notes-karpathy\\references\\index-home-template.md'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "python 'skills\\obsidian-notes-karpathy\\scripts\\detect_lifecycle.py' 'D:\\Documents\\Code\\Agents\\obsidian-notes-karpathy'" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+2026-04-08T07:25:21.273742Z ERROR codex_core::tools::router: error=`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "python 'skills\\obsidian-notes-karpathy\\scripts\\detect_lifecycle.py' 'D:\\Documents\\Code\\Agents\\obsidian-notes-karpathy'"` rejected: blocked by policy
+ declined in 0ms:
+`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command "python 'skills\\obsidian-notes-karpathy\\scripts\\detect_lifecycle.py' 'D:\\Documents\\Code\\Agents\\obsidian-notes-karpathy'"` rejected: blocked by policy
+ succeeded in 8899ms:
+# Briefing Template
+
+Use this structure for `wiki/briefings/{role}.md`.
+
+```markdown
+---
+title: "{Role} Briefing"
+brief_for: "{role}"
+built_from: "wiki/live/"
+updated_at: "{datetime}"
+staleness_after: "{datetime}"
+source_live_pages:
+  - "[[wiki/live/concepts/concept-a]]"
+  - "[[wiki/live/summaries/human/articles/source-b]]"
+---
+
+# {Role} Briefing
+
+## Mission Context
+
+- {what this role should keep in working memory}
+
+## Approved Facts to Reuse
+
+- [[wiki/live/concepts/concept-a]] - {why it matters}
+- [[wiki/live/summaries/human/articles/source-b]] - {why it matters}
+
+## Open Questions
+
+- {what still needs new evidence}
+
+## Guardrails
+
+- Never treat drafts as approved truth.
+- Never cite raw captures unless a human explicitly asks for source evidence.
+```
+
+Rules:
+
+- briefings must be generated only from live pages
+- briefings should be short, role-specific, and easy to regenerate
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 9017ms:
+# Schema Template Notes
+
+Keep `AGENTS.md` and `CLAUDE.md` aligned when both exist. `AGENTS.md` is the required contract surface; `CLAUDE.md` is the generated companion and should mirror it rather than introducing a second policy.
+
+When present, `MEMORY.md` is the coordination surface for preferences, editorial priorities, and long-running collaboration context. It is not part of the default knowledge retrieval truth layer.
+
+Use ISO dates whenever possible:
+
+- date only: `YYYY-MM-DD`
+- datetime: `YYYY-MM-DDTHH:mm:ssZ`
+
+Use one property vocabulary consistently across the vault. Global property consistency matters because routing, review, and briefing regeneration depend on it.
+
+## Raw capture frontmatter
+
+```yaml
+---
+title: "Source Title"
+source: "https://example.com"
+author: "Author Name"
+date: 2026-04-01
+type: article | paper | repo | dataset | tweet | video | book | podcast | other
+tags:
+  - topic/subtopic
+clipped_at: 2026-04-01T12:00:00Z
+---
+```
+
+Rules:
+
+- use `raw/human/**` for curated captures
+- use `raw/agents/{role}/**` for untrusted agent captures
+- do not add compile or review state to raw captures
+
+## Draft summary frontmatter
+
+```yaml
+---
+title: "Draft Summary: Source Title"
+source_file: "[[raw/human/articles/2026-04-01-source-title]]"
+source_hash: "stable-hash"
+source_mtime: "2026-04-01T12:00:00Z"
+compiled_at: "2026-04-02T08:00:00Z"
+draft_id: "draft-source-title"
+compiled_from:
+  - "[[raw/human/articles/2026-04-01-source-title]]"
+capture_sources:
+  - "[[raw/human/articles/2026-04-01-source-title]]"
+review_state: pending | promoted | rejected
+review_score: 0.88
+blocking_flags:
+  - "live_conflict"
+evidence_coverage: 0.85
+uncertainty_level: medium
+---
+```
+
+## Live page frontmatter
+
+```yaml
+---
+title: "Source Title"
+approved_at: "2026-04-02T10:00:00Z"
+approved_from: "[[wiki/drafts/summaries/human/articles/2026-04-01-source-title]]"
+review_record: "[[outputs/reviews/source-title]]"
+trust_level: approved
+updated_at: "2026-04-02T10:00:00Z"
+last_reviewed_at: "2026-04-02T10:00:00Z"
+status: active | conflicting
+sources:
+  - "[[wiki/live/summaries/human/articles/2026-04-01-source-title]]"
+related:
+  - "[[wiki/live/concepts/review-gate]]"
+---
+```
+
+## Briefing frontmatter
+
+```yaml
+---
+title: "Researcher Briefing"
+brief_for: "researcher"
+built_from: "wiki/live/"
+updated_at: "2026-04-02T11:00:00Z"
+staleness_after: "2026-04-02T11:00:00Z"
+source_live_pages:
+  - "[[wiki/live/concepts/review-gate]]"
+  - "[[wiki/live/summaries/human/articles/2026-04-01-source-title]]"
+---
+```
+
+## Review record frontmatter
+
+```yaml
+---
+title: "Review Record: Source Title"
+decision: approve | reject | needs-human
+accuracy: 0.92
+provenance: 0.95
+conflict_risk: 0.18
+composability: 0.90
+fact_inference_separation: 0.90
+promotion_reason: "The page cleanly separates direct evidence from synthesis and is worth reusing."
+reviewed_at: "2026-04-02T10:00:00Z"
+---
+```
+
+## Q&A frontmatter
+
+```yaml
+---
+question: "When should I rebuild briefings?"
+asked_at: "2026-04-05T11:15:00Z"
+sources:
+  - "[[wiki/live/concepts/review-gate]]"
+  - "[[wiki/live/summaries/human/articles/2026-04-01-source-title]]"
+tags:
+  - qa
+  - review
+writeback_candidates:
+  - "[[wiki/live/concepts/review-gate]]"
+writeback_status: pending
+---
+```
+
+## Health report frontmatter
+
+```yaml
+---
+title: "Health Check Report"
+date: "2026-04-05T12:00:00Z"
+scope: "wiki/live/, wiki/briefings/, outputs/qa/, outputs/reviews/"
+health_score: 84
+---
+```
+
+## Naming rules
+
+- keep raw capture filenames stable and lowercase kebab-case
+- preserve relative capture structure under `wiki/drafts/summaries/**`
+- keep promoted live slugs stable even when titles evolve
+- any generated tables must obey `obsidian-safe-markdown.md`; never emit alias-style wikilinks inside table cells
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 8964ms:
+# Draft Summary Template
+
+Use this structure for `wiki/drafts/summaries/**`.
+
+```markdown
+---
+title: "Draft Summary: {Source Title}"
+source_file: "[[{raw-link}]]"
+source_hash: "{optional-hash}"
+source_mtime: "{mtime}"
+compiled_at: "{datetime}"
+draft_id: "{stable-draft-id}"
+compiled_from:
+  - "[[{raw-link}]]"
+capture_sources:
+  - "[[{raw-link}]]"
+review_state: "pending"
+review_score: 0.88
+blocking_flags: []
+accuracy: 0.90
+provenance: 0.92
+composability: 0.84
+conflict_risk: 0.12
+evidence_coverage: 0.85
+uncertainty_level: low | medium | high
+---
+
+# Draft Summary: {Source Title}
+
+## Thesis
+
+{one-paragraph statement of what the source is really saying}
+
+## Source Claims
+
+- {claim the source directly supports}
+- {second claim the source directly supports}
+
+## Compiler Inferences
+
+- {synthesis, implication, or comparison added by the compiler}
+- {second inference that may need review}
+
+## Evidence
+
+- "{quote or concrete datapoint}" - {where it appears}
+- "{second datapoint}" - {why it matters}
+
+## Proposed Concepts
+
+- [[wiki/drafts/concepts/concept-a]] - {relationship}
+- [[wiki/drafts/concepts/concept-b]] - {relationship}
+
+## Proposed Entities
+
+- [[wiki/drafts/entities/entity-a]] - {relationship}
+
+## Open Questions
+
+- {what remains uncertain}
+- {what new source or review step would reduce uncertainty}
+
+## Tensions and Review Notes
+
+- {uncertainty, contradiction, or reason this may need human review}
+```
+
+Rules:
+
+- draft summaries are reviewable evidence packages, not polished prose
+- keep provenance explicit enough that a reviewer can judge the draft without agent-specific production context
+- keep direct source claims separate from compiler-added inferences
+- omit entity sections when the source does not introduce durable named entities
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 9176ms:
+# Index Home Template
+
+Use this structure for `wiki/index.md`.
+
+```markdown
+# {Vault Title}
+
+> [!summary] What this vault is
+> `raw/` stores immutable human and agent captures.
+> `wiki/drafts/` stores compiled knowledge waiting for review.
+> `wiki/live/` stores approved long-term knowledge.
+> `wiki/briefings/` stores per-role context built from live pages.
+> `outputs/` stores reviews, Q&A, health reports, and publishable derivatives.
+
+## Lifecycle
+
+1. Add captures into `raw/human/` or `raw/agents/{role}/`
+2. Compile into `wiki/drafts/`
+3. Review and promote into `wiki/live/`
+4. Rebuild affected briefings
+5. Query or publish from the live layer
+6. Run health checks to catch drift, stale briefings, and backlog
+
+## Current State
+
+- Raw captures: {count}
+- Draft summaries: {count}
+- Live summaries: {count}
+- Live concepts: {count}
+- Briefings: {count}
+- Review backlog: {count}
+- Archived Q&A: {count}
+
+## Entry Points
+
+- [[wiki/live/indices/INDEX]]
+- [[wiki/live/indices/CONCEPTS]]
+- [[wiki/live/indices/SOURCES]]
+- [[wiki/briefings/researcher]]
+
+## Draft Queue
+
+- {pending draft 1}
+- {pending draft 2}
+
+## Recent Activity
+
+- {recent event 1}
+- {recent event 2}
+```
+
+Rules:
+
+- keep `wiki/index.md` content-oriented rather than chronological
+- show live and draft state separately
+- do not imply drafts are queryable truth
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 9300ms:
+# Activity Log Template
+
+Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-base lifecycle.
+
+## Ingest / compile batch
+
+```markdown
+## [{date}] ingest | {batch-slug}
+
+- Raw captures scanned: {count}
+- Draft summaries created: {count}
+- Draft summaries updated: {count}
+- Draft concepts touched: {count}
+- Draft entities touched: {count}
+- Touched files:
+  - [[wiki/drafts/summaries/human/articles/source-a]]
+  - [[wiki/drafts/concepts/concept-b]]
+```
+
+## Review pass
+
+```markdown
+## [{date}] review | {batch-slug}
+
+- Review report:
+  - [[outputs/reviews/{file}]]
+- Decisions: approve={count} reject={count} needs-human={count}
+- Promoted to live:
+  - [[wiki/live/summaries/human/articles/source-a]]
+- Rejected drafts:
+  - [[wiki/drafts/summaries/agents/researcher/source-b]]
+```
+
+## Briefing refresh
+
+```markdown
+## [{date}] brief | {role}
+
+- Briefing: [[wiki/briefings/{role}]]
+- Rebuilt from:
+  - [[wiki/live/concepts/concept-a]]
+  - [[wiki/live/summaries/human/articles/source-b]]
+```
+
+## Query archive
+
+```markdown
+## [{date}] query | {question-slug}
+
+- Question: {human-readable question}
+- Consulted live pages:
+  - [[wiki/live/concepts/concept-a]]
+  - [[wiki/live/summaries/human/articles/source-b]]
+- Used briefing: [[wiki/briefings/{role}]]
+- Archived answer: [[outputs/qa/{file}]]
+```
+
+## Publish artifact
+
+```markdown
+## [{date}] publish | {artifact-slug}
+
+- Artifact: [[outputs/content/threads/{file}]]
+- Channel: thread | article | talk | report | slides | chart
+- Derived from:
+  - [[outputs/qa/{file}]]
+```
+
+## Health pass
+
+```markdown
+## [{date}] health | {run-slug}
+
+- Report: [[outputs/health/health-check-{date}]]
+- Overall score: {score}/100
+- Critical issues: {count}
+- Review backlog items: {count}
+- Stale briefings: {count}
+```
+
+Rules:
+
+- append only
+- log batch-level work, not every micro-edit
+- include enough paths that later diagnosis can trace a promotion chain
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+ succeeded in 9316ms:
+# Review Template
+
+Use this structure for `outputs/reviews/*.md`.
+
+```markdown
+---
+title: "Review Record: {Source Title}"
+decision: approve | reject | needs-human
+accuracy: 0.91
+provenance: 0.95
+conflict_risk: 0.18
+composability: 0.89
+fact_inference_separation: 0.90
+promotion_reason: "{why this should or should not persist in the long-term brain}"
+reviewed_at: "{datetime}"
+---
+
+# Review Record: {Source Title}
+
+## Inputs Reviewed
+
+- Draft: [[wiki/drafts/summaries/{file}]]
+- Raw captures:
+  - [[raw/human/articles/{file}]]
+- Overlapping live pages:
+  - [[wiki/live/concepts/{file}]]
+
+## Decision
+
+- Decision: {approve | reject | needs-human}
+- Why: {short reason}
+- Promotion reason: {why this deserves durable retention, or why it does not}
+
+## Blocking Flags
+
+- {flag or "none"}
+
+## Promotion Result
+
+- Promoted live pages:
+  - [[wiki/live/summaries/{file}]]
+- Rebuilt briefings:
+  - [[wiki/briefings/{role}]]
+```
+
+Rules:
+
+- reviewers judge the draft package, not the generating agent
+- include whether fact and inference are cleanly separated enough for safe reuse
+- include enough context to reproduce the decision later
+
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+codex
+The baseline detector hit a PowerShell policy issue, so I’m retrying without profile loading and, in parallel, checking the support-layer paths directly. That keeps the skill flow grounded even if the helper script can’t execute in this session.
+2026-04-08T07:25:50.445814Z ERROR codex_core::tools::router: error=`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command '$paths = @('"'wiki/live/indices/INDEX.md','wiki/live/indices/CONCEPTS.md','wiki/live/indices/SOURCES.md','wiki/live/indices/RECENT.md','wiki/live/indices/EDITORIAL-PRIORITIES.md'); foreach ("'$p in $paths) { $item = Get-Item -LiteralPath $p -ErrorAction SilentlyContinue; if ($null -eq $item) { [pscustomobject]@{Path=$p; Exists=$false} } else { [pscustomobject]@{Path=$p; Exists=$true} } } | ConvertTo-Json -Depth 3'` rejected: blocked by policy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command '$paths = @('"'wiki/live/indices/INDEX.md','wiki/live/indices/CONCEPTS.md','wiki/live/indices/SOURCES.md','wiki/live/indices/RECENT.md','wiki/live/indices/EDITORIAL-PRIORITIES.md'); foreach ("'$p in $paths) { $item = Get-Item -LiteralPath $p -ErrorAction SilentlyContinue; if ($null -eq $item) { [pscustomobject]@{Path=$p; Exists=$false} } else { [pscustomobject]@{Path=$p; Exists=$true} } } | ConvertTo-Json -Depth 3' in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command 'python --version' in D:\Documents\Code\Agents\obsidian-notes-karpathy
+ declined in 0ms:
+`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command '$paths = @('"'wiki/live/indices/INDEX.md','wiki/live/indices/CONCEPTS.md','wiki/live/indices/SOURCES.md','wiki/live/indices/RECENT.md','wiki/live/indices/EDITORIAL-PRIORITIES.md'); foreach ("'$p in $paths) { $item = Get-Item -LiteralPath $p -ErrorAction SilentlyContinue; if ($null -eq $item) { [pscustomobject]@{Path=$p; Exists=$false} } else { [pscustomobject]@{Path=$p; Exists=$true} } } | ConvertTo-Json -Depth 3'` rejected: blocked by policy
+2026-04-08T07:25:50.445938Z ERROR codex_core::tools::router: error=`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command 'python --version'` rejected: blocked by policy
+ declined in 0ms:
+`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command 'python --version'` rejected: blocked by policy
+2026-04-08T07:25:50.446836Z ERROR codex_core::tools::router: error=`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command '$paths = @('"'raw','raw/human','raw/agents','wiki','wiki/drafts','wiki/live','wiki/briefings','wiki/index.md','wiki/log.md','outputs','outputs/reviews','AGENTS.md','CLAUDE.md','MEMORY.md'); foreach ("'$p in $paths) { $item = Get-Item -LiteralPath $p -ErrorAction SilentlyContinue; if ($null -eq $item) { [pscustomobject]@{Path=$p; Exists=$false; Type='"'missing'} } else { [pscustomobject]@{Path="'$p; Exists=$true; Type=if ($item.PSIsContainer) {'"'dir'} else {'file'}} } } | ConvertTo-Json -Depth 3"` rejected: blocked by policy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command '$paths = @('"'raw','raw/human','raw/agents','wiki','wiki/drafts','wiki/live','wiki/briefings','wiki/index.md','wiki/log.md','outputs','outputs/reviews','AGENTS.md','CLAUDE.md','MEMORY.md'); foreach ("'$p in $paths) { $item = Get-Item -LiteralPath $p -ErrorAction SilentlyContinue; if ($null -eq $item) { [pscustomobject]@{Path=$p; Exists=$false; Type='"'missing'} } else { [pscustomobject]@{Path="'$p; Exists=$true; Type=if ($item.PSIsContainer) {'"'dir'} else {'file'}} } } | ConvertTo-Json -Depth 3" in D:\Documents\Code\Agents\obsidian-notes-karpathy
+ declined in 0ms:
+`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -NoProfile -Command '$paths = @('"'raw','raw/human','raw/agents','wiki','wiki/drafts','wiki/live','wiki/briefings','wiki/index.md','wiki/log.md','outputs','outputs/reviews','AGENTS.md','CLAUDE.md','MEMORY.md'); foreach ("'$p in $paths) { $item = Get-Item -LiteralPath $p -ErrorAction SilentlyContinue; if ($null -eq $item) { [pscustomobject]@{Path=$p; Exists=$false; Type='"'missing'} } else { [pscustomobject]@{Path="'$p; Exists=$true; Type=if ($item.PSIsContainer) {'"'dir'} else {'file'}} } } | ConvertTo-Json -Depth 3"` rejected: blocked by policy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command 'rg --files' in D:\Documents\Code\Agents\obsidian-notes-karpathy
+exec
+"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command 'Get-ChildItem raw,wiki,outputs -Recurse -Name' in D:\Documents\Code\Agents\obsidian-notes-karpathy
+2026-04-08T07:25:59.586394Z ERROR codex_core::tools::router: error=`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command 'Get-ChildItem raw,wiki,outputs -Recurse -Name'` rejected: blocked by policy
+ declined in 0ms:
+`"C:\\Program Files\\PowerShell\\7\\pwsh.exe" -Command 'Get-ChildItem raw,wiki,outputs -Recurse -Name'` rejected: blocked by policy
+ succeeded in 3365ms:
+justfile
+CLAUDE.md
+AGENTS.md
+README_CN.md
+README.md
+tests\test_docs_and_evals.py
+tests\test_contract_and_routing.py
+tests\test_compile_review.py
+tests\test_query_health.py
+tests\test_quality_commands.py
+tests\_bundle_test_support.py
+skills\kb-health\SKILL.md
+skills\kb-review\SKILL.md
+skills\kb-query\SKILL.md
+skills\kb-compile\SKILL.md
+skills\kb-init\SKILL.md
+docs\package.json
+docs\package-lock.json
+docs\index.md
+skills\obsidian-notes-karpathy\SKILL.md
+docs\README.md
+docs\workflow\query.md
+docs\workflow\overview.md
+docs\workflow\health-checks.md
+docs\workflow\compile.md
+docs\workflow\collect.md
+skills\obsidian-notes-karpathy\evals\README.md
+skills\obsidian-notes-karpathy\evals\trigger-evals.json
+skills\obsidian-notes-karpathy\evals\runtime-evals.json
+docs\architecture\overview.md
+docs\architecture\boundaries.md
+docs\architecture\writeback-search.md
+docs\public\logo-dark.svg
+docs\public\hero-image.svg
+docs\public\logo-light.svg
+docs\guide\installation.md
+docs\guide\directory-structure.md
+docs\guide\agents-schema.md
+docs\guide\karpathy-workflow.md
+docs\guide\introduction.md
+docs\guide\quick-start.md
+docs\skills\kb-review.md
+docs\skills\kb-query.md
+docs\skills\kb-init.md
+docs\skills\kb-health.md
+docs\skills\kb-compile.md
+docs\skills\obsidian-markdown.md
+docs\skills\obsidian-cli.md
+docs\skills\obsidian-canvas-creator.md
+docs\skills\obsidian-notes-karpathy.md
+docs\skills\overview.md
+docs\zh\index.md
+skills\obsidian-notes-karpathy\references\health-rubric.md
+skills\obsidian-notes-karpathy\references\file-model.md
+skills\obsidian-notes-karpathy\references\entity-template.md
+skills\obsidian-notes-karpathy\references\content-output-template.md
+skills\obsidian-notes-karpathy\references\concept-template.md
+skills\obsidian-notes-karpathy\references\compile-log-template.md
+skills\obsidian-notes-karpathy\references\clipper-template.md
+skills\obsidian-notes-karpathy\references\briefing-template.md
+skills\obsidian-notes-karpathy\references\activity-log-template.md
+skills\obsidian-notes-karpathy\references\review-template.md
+skills\obsidian-notes-karpathy\references\qa-template.md
+skills\obsidian-notes-karpathy\references\obsidian-safe-markdown.md
+skills\obsidian-notes-karpathy\references\lifecycle-matrix.md
+skills\obsidian-notes-karpathy\references\index-home-template.md
+skills\obsidian-notes-karpathy\references\search-upgrades.md
+skills\obsidian-notes-karpathy\references\schema-template.md
+skills\obsidian-notes-karpathy\references\source-registry-template.md
+skills\obsidian-notes-karpathy\references\summary-template.md
+skills\obsidian-notes-karpathy\scripts\validate_bundle_contract.py
+skills\obsidian-notes-karpathy\scripts\skill-contract-registry.json
+skills\obsidian-notes-karpathy\scripts\scan_review_queue.py
+skills\obsidian-notes-karpathy\scripts\scan_query_scope.py
+skills\obsidian-notes-karpathy\scripts\scan_compile_delta.py
+skills\obsidian-notes-karpathy\scripts\runtime_eval.py
+skills\obsidian-notes-karpathy\scripts\lint_obsidian_mechanics.py
+skills\obsidian-notes-karpathy\scripts\detect_lifecycle.py
+skills\obsidian-notes-karpathy\scripts\_vault_health.py
+skills\obsidian-notes-karpathy\scripts\_vault_guidance.py
+skills\obsidian-notes-karpathy\scripts\_vault_compile.py
+skills\obsidian-notes-karpathy\scripts\_vault_common.py
+skills\obsidian-notes-karpathy\scripts\_vault_query.py
+skills\obsidian-notes-karpathy\scripts\_vault_layout.py
+skills\obsidian-notes-karpathy\scripts\_vault_review.py
+skills\obsidian-notes-karpathy\evals\evals.json
+skills\obsidian-notes-karpathy\scripts\_vault_utils.py
+docs\zh\workflow\health-checks.md
+docs\zh\workflow\compile.md
+docs\zh\workflow\collect.md
+docs\zh\workflow\overview.md
+docs\zh\workflow\query.md
+docs\zh\guide\quick-start.md
+docs\zh\guide\karpathy-workflow.md
+docs\zh\guide\introduction.md
+docs\zh\guide\installation.md
+docs\zh\guide\directory-structure.md
+docs\zh\guide\agents-schema.md
+docs\zh\architecture\writeback-search.md
+docs\zh\architecture\overview.md
+docs\zh\architecture\boundaries.md
+docs\zh\skills\overview.md
+docs\zh\skills\obsidian-notes-karpathy.md
+docs\zh\skills\obsidian-markdown.md
+docs\zh\skills\obsidian-cli.md
+docs\zh\skills\obsidian-canvas-creator.md
+docs\zh\skills\kb-review.md
+docs\zh\skills\kb-query.md
+docs\zh\skills\kb-init.md
+docs\zh\skills\kb-health.md
+docs\zh\skills\kb-compile.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-setup\README.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\missing-contract-guidance\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\missing-contract-guidance\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-with-handle\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-with-handle\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-maintenance\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-compilation\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\wiki\indices\SOURCES.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-maintenance\outputs\qa\2026-04-01-rag-answer.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-compilation\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-maintenance\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-compilation\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\companion-skill-homes\pdf-only\pdf\SKILL.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-maintenance\wiki\live\concepts\retrieval-augmented-generation.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-maintenance\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\wiki\concepts\retrieval-augmented-generation.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-with-handle\raw\papers\2026-04-08-transformers.source.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-with-handle\raw\papers\2026-04-08-transformers.pdf
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-with-handle\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\companion-skill-homes\empty\README.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\wiki\briefings\researcher.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-maintenance\wiki\briefings\researcher.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\wiki\live\concepts\editorial-boundary.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-missing-handle\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-missing-handle\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\raw\articles\2026-04-01-rag-note.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\wiki\live\summaries\human\articles\editorial-boundary-source.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-compilation\raw\human\articles\2026-04-07-new-capture.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\wiki\live\summaries\human\articles\2026-04-04-briefing-lag.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\MEMORY.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-repair-live-only\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\wiki\briefings\researcher.md
+skills\obsidian-notes-karpathy\evals\fixtures\companion-skill-homes\both\pdf\SKILL.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\wiki\live\concepts\briefing-refresh-gap.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-repair-live-only\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\memory-boundary\outputs\reviews\editorial-boundary.md
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-missing-handle\raw\papers\2026-04-09-local-whitepaper.pdf
+skills\obsidian-notes-karpathy\evals\fixtures\paper-intake-missing-handle\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\outputs\reviews\briefing-lag.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-briefing-refresh\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-repair-live-only\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\companion-skill-homes\both\paper-workbench\SKILL.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\wiki\live\summaries\human\articles\review-gate-source.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\wiki\drafts\summaries\human\articles\2026-04-01-compiler-safety.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\outputs\qa\2026-04-02-rag-vs-index.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-render-breakage\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\wiki\live\concepts\review-gate.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-repair\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\raw\human\articles\2026-04-01-compiler-safety.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\wiki\drafts\summaries\agents\researcher\2026-04-02-review-gates.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-review\raw\agents\researcher\2026-04-02-review-gates.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-repair\raw\2026-04-01-partial-bootstrap.md
+skills\obsidian-notes-karpathy\evals\fixtures\bootstrap-raw-intake\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\bootstrap-raw-intake\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\bootstrap-raw-intake\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-migration\wiki\summaries\2026-03-20-old-pattern.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-migration\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-migration\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\wiki\briefings\researcher.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\outputs\qa\2026-04-08-writeback-gap.md
+skills\obsidian-notes-karpathy\evals\fixtures\writeback-backlog\outputs\reviews\review-gate.md
+skills\obsidian-notes-karpathy\evals\fixtures\bootstrap-raw-intake\raw\2026-04-06-markdown-first.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-repair-live-only\wiki\live\summaries\human\articles\2026-04-07-incomplete-live.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-migration\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\bootstrap-raw-intake\raw\2026-04-07-backlinks-before-rag.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\summaries\2026-04-01-rag-vs-markdown.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\concepts\retrieval-augmented-generation.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\concepts\markdown-index.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\wiki\log.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\indices\SOURCES.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\indices\INDEX.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\wiki\indices\CONCEPTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\needs-migration\raw\articles\2026-03-20-old-pattern.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\outputs\reviews\human-articles-approved-summary.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-answer-drift\outputs\qa\2026-03-01-rag-answer.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-answer-drift\AGENTS.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-answer-drift\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-answer-drift\wiki\summaries\2026-03-20-old-note.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\outputs\qa\2026-04-06-review-gate-benefits.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\outputs\qa\2026-04-04-rag-vs-markdown.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\raw\repos\2026-04-05-qmd-local-search.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-answer-drift\wiki\concepts\retrieval-augmented-generation.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-answer-drift\wiki\concepts\rag.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\wiki\briefings\researcher.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\raw\human\articles\2026-04-05-approved-summary.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\wiki\index.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\raw\articles\2026-04-03-knowledge-compilers.md
+skills\obsidian-notes-karpathy\evals\fixtures\legacy-compiled-layout\raw\articles\2026-04-01-rag-vs-markdown.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\wiki\live\concepts\review-gate.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\wiki\live\summaries\human\articles\2026-04-01-existing-consensus.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\wiki\drafts\summaries\human\articles\2026-04-05-approved-summary.md
+skills\obsidian-notes-karpathy\evals\fixtures\ready-for-query\wiki\live\summaries\human\articles\2026-04-05-approved-summary.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\wiki\drafts\summaries\agents\editor\2026-04-03-contradictory-summary.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\wiki\drafts\summaries\human\articles\2026-04-03-grounded-article.md
+skills\obsidian-notes-karpathy\evals\fixtures\review-conflict-mixed-gate\wiki\drafts\summaries\agents\scout\2026-04-03-hallucinated-bridge.md
+[31;1mprofile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mMicrosoft.PowerShell_profile.ps1: [31;1mCannot dot-source this command because it was defined in a different language mode. To invoke this command without importing its contents, omit the '.' operator.[0m
+[31;1mInvalidOperation: [31;1mCannot set property. Property setting is supported only on core types in this language mode.[0m
+
+codex
+I followed [`kb-init`](D:/Documents/Code/Agents/obsidian-notes-karpathy/skills/kb-init/SKILL.md): read its required contract files, checked the canonical write surfaces from [`skill-contract-registry.json`](D:/Documents/Code/Agents/obsidian-notes-karpathy/skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json), and evaluated the current repo root against the review-gated file model.
+
+Current repo root looks like `needs-setup` for a knowledge-base vault, by inspection. `raw/`, `wiki/`, `outputs/`, and `MEMORY.md` are absent at [`D:\Documents\Code\Agents\obsidian-notes-karpathy`](D:/Documents/Code/Agents/obsidian-notes-karpathy), while [`AGENTS.md`](D:/Documents/Code/Agents/obsidian-notes-karpathy/AGENTS.md) and [`CLAUDE.md`](D:/Documents/Code/Agents/obsidian-notes-karpathy/CLAUDE.md) already exist. Legacy layout was not detected in this root; this is the skill/package repository itself, not an initialized vault. Existing repo content is preserved because nothing was modified.
+
+No files were created because this session is read-only, so I could not execute the scaffold step from `kb-init`. The next recommended command, in a writable target vault, is `kb-init` to create the support layer and starter files; after that, the usual next step is `kb-compile`. If you want, point me at the actual vault root you want initialized or switch this session to writable and I’ll apply the scaffold plan directly.
+tokens used
+71,599
+
+Runtime eval attempt timed out after 60 seconds.

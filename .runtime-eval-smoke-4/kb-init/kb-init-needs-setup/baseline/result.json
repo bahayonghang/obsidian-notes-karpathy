@@ -1,0 +1,20 @@
+{
+  "requested_runner": "codex",
+  "runner": "codex",
+  "returncode": 0,
+  "duration_ms": 14927,
+  "output_path": "last_message.txt",
+  "output_captured": true,
+  "failure_kind": "ok",
+  "fallback_used": false,
+  "attempts": [
+    {
+      "runner": "codex",
+      "returncode": 0,
+      "duration_ms": 14927,
+      "output_path": "last_message.txt",
+      "output_captured": true,
+      "failure_kind": "ok"
+    }
+  ]
+}

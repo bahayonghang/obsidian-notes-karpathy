@@ -1,0 +1,8 @@
+{
+  "id": "kb-init-needs-setup",
+  "skill": "kb-init",
+  "files": [
+    "evals/fixtures/needs-setup/README.md"
+  ],
+  "prompt": "Inspect the fixture vault and tell me the first safe step to bring it onto the review-gated contract. Explain the missing support layer and the next command to run. Do not modify any files."
+}
