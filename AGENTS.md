@@ -1,33 +1,21 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-
-`skills/` is the core product. `skills/obsidian-notes-karpathy/` is the entry bundle and contains the package `SKILL.md`, shared `references/`, deterministic Python `scripts/`, and `evals/fixtures/`. Operation-specific skills live in sibling folders such as `skills/kb-init/`, `skills/kb-compile/`, `skills/kb-query/`, and `skills/kb-health/`.
-
-`docs/` is the bilingual VitePress site. Use `docs/guide/` for conceptual pages, `docs/skills/` for skill-specific pages, `docs/workflow/` for lifecycle docs, and `docs/zh/` for the Chinese mirror. `tests/test_skill_bundle.py` holds the regression suite. Treat `ref/` as read-only reference material.
+This repository ships review-gated Obsidian knowledge-base skills, not a standalone app. Core logic lives in `skills/obsidian-notes-karpathy/`: `scripts/` contains deterministic Python helpers and the skill contract registry, `references/` holds shared templates and rules, and `evals/fixtures/` stores fixture vaults for contract tests. Companion skills live in `skills/kb-init`, `skills/kb-compile`, `skills/kb-review`, `skills/kb-query`, and `skills/kb-health`. Public docs are under `docs/`, with static assets in `docs/public/`. Keep `README.md`, `README_CN.md`, and `CLAUDE.md` aligned when the contract changes.
 
 ## Build, Test, and Development Commands
-
-- `just docs-install` installs the VitePress dependencies in `docs/`.
-- `just docs` or `just docs-dev` starts the local docs server.
-- `just docs-build` builds the production site; `just docs-preview` serves the build locally.
-- `just test` runs `py -3 -m unittest tests/test_skill_bundle.py` on Windows and `python3 -m unittest tests/test_skill_bundle.py` elsewhere.
-- `just ci` runs the current local validation chain: tests, the lightweight `lint` recipe, and a docs build.
-
-For docs-only work, you can also run `cd docs && npm run dev`.
+- `just install`: install VitePress dependencies in `docs/`.
+- `just docs` or `just docs-dev`: start the local docs server.
+- `just docs-build`: build the production docs site.
+- `just test`: run deterministic `unittest` coverage from the `tests/test_*.py` suite.
+- `just ci`: run tests, the lightweight lint check, and the docs build together.
+- `just clean`: remove VitePress caches and `docs/node_modules`.
 
 ## Coding Style & Naming Conventions
-
-Keep edits contract-first: `SKILL.md` files and deterministic scripts are the source of truth, and docs should explain them without inventing parallel behavior. Use 4-space indentation in Python. Follow existing kebab-case naming for skill folders and doc files such as `kb-health` and `quick-start.md`.
-
-When editing skill content, preserve Obsidian-flavored Markdown conventions like YAML frontmatter, `[[wikilinks]]`, and callout blocks. Keep `README.md` and `README_CN.md` aligned whenever public behavior changes.
+Use Python 3 with 4-space indentation, type hints, `pathlib.Path`, and snake_case module and function names such as `detect_lifecycle.py` and `scan_query_scope.py`. Prefer deterministic, stdlib-first helpers over framework-heavy additions. Reuse shared utilities in `skills/obsidian-notes-karpathy/scripts/_vault_utils.py` before creating new helpers. Markdown docs should use short headings and keep repository terms exact: `raw/`, `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, and `outputs/reviews/`. Fixture note files follow date-prefixed slugs like `2026-04-05-approved-summary.md`.
 
 ## Testing Guidelines
-
-Add or update `unittest` coverage for every routing rule, helper script change, or contract-visible behavior. Place new fixtures under `skills/obsidian-notes-karpathy/evals/fixtures/` and keep them minimal and deterministic. Prefer assertions on concrete JSON fields, paths, and route decisions.
+Tests use Python `unittest`. When changing routing, vault mechanics, or contract wording, add or update fixture-driven cases under `skills/obsidian-notes-karpathy/evals/fixtures/` and assertions in the `tests/test_*.py` suite. Name test methods `test_<behavior>`. Keep script output machine-readable JSON so tests can assert exact fields. Run `just test` before every PR; run `just ci` when changes touch both code and docs.
 
 ## Commit & Pull Request Guidelines
-
-Recent history uses scoped Conventional Commits, for example `docs(技能): ...`, `test(知识库): ...`, `refactor(知识库): ...`, and `chore(仓库): ...`. Keep commits narrow and use imperative subjects.
-
-PRs should summarize the affected skill or docs path, list any added fixtures or tests, and include screenshots when `docs/` output changes visually. Link the related issue when one exists.
+Follow the existing Conventional Commit pattern from history: `feat(知识库): ...`, `fix(知识库): ...`, `docs(知识库): ...`, or `build(仓库): ...`. Keep each commit focused on one concern and write imperative subjects. `just commit msg="..." type="feat"` is available for simple commits. Pull requests should explain the affected skills or docs pages, list verification commands run, call out any new fixture coverage, and include screenshots when `docs/` output changes.

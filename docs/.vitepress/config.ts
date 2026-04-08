@@ -105,6 +105,7 @@ function navEn() {
     { text: 'Guide', link: '/guide/introduction', activeMatch: '/guide/' },
     { text: 'Skills', link: '/skills/overview', activeMatch: '/skills/' },
     { text: 'Workflow', link: '/workflow/overview', activeMatch: '/workflow/' },
+    { text: 'Architecture', link: '/architecture/overview', activeMatch: '/architecture/' },
   ]
 }
 
@@ -113,6 +114,7 @@ function navZh() {
     { text: '指南', link: '/zh/guide/introduction', activeMatch: '/zh/guide/' },
     { text: '技能', link: '/zh/skills/overview', activeMatch: '/zh/skills/' },
     { text: '工作流', link: '/zh/workflow/overview', activeMatch: '/zh/workflow/' },
+    { text: '架构', link: '/zh/architecture/overview', activeMatch: '/zh/architecture/' },
   ]
 }
 
@@ -144,6 +146,7 @@ function sidebarEn() {
           { text: 'obsidian-notes-karpathy', link: '/skills/obsidian-notes-karpathy' },
           { text: 'kb-init', link: '/skills/kb-init' },
           { text: 'kb-compile', link: '/skills/kb-compile' },
+          { text: 'kb-review', link: '/skills/kb-review' },
           { text: 'kb-query', link: '/skills/kb-query' },
           { text: 'kb-health', link: '/skills/kb-health' },
         ],
@@ -164,8 +167,19 @@ function sidebarEn() {
           { text: 'Overview', link: '/workflow/overview' },
           { text: 'Collect Sources', link: '/workflow/collect' },
           { text: 'Compile Wiki', link: '/workflow/compile' },
+          { text: 'Review Gate', link: '/skills/kb-review' },
           { text: 'Query & Output', link: '/workflow/query' },
           { text: 'Health Checks', link: '/workflow/health-checks' },
+        ],
+      },
+    ],
+    '/architecture/': [
+      {
+        text: 'Design Notes',
+        items: [
+          { text: 'Overview', link: '/architecture/overview' },
+          { text: 'Boundaries', link: '/architecture/boundaries' },
+          { text: 'Writeback & Search', link: '/architecture/writeback-search' },
         ],
       },
     ],
@@ -200,6 +214,7 @@ function sidebarZh() {
           { text: 'obsidian-notes-karpathy', link: '/zh/skills/obsidian-notes-karpathy' },
           { text: 'kb-init', link: '/zh/skills/kb-init' },
           { text: 'kb-compile', link: '/zh/skills/kb-compile' },
+          { text: 'kb-review', link: '/zh/skills/kb-review' },
           { text: 'kb-query', link: '/zh/skills/kb-query' },
           { text: 'kb-health', link: '/zh/skills/kb-health' },
         ],
@@ -220,8 +235,19 @@ function sidebarZh() {
           { text: '概览', link: '/zh/workflow/overview' },
           { text: '收集资料', link: '/zh/workflow/collect' },
           { text: '编译 Wiki', link: '/zh/workflow/compile' },
+          { text: '审校门', link: '/zh/skills/kb-review' },
           { text: '查询与输出', link: '/zh/workflow/query' },
           { text: '健康检查', link: '/zh/workflow/health-checks' },
+        ],
+      },
+    ],
+    '/zh/architecture/': [
+      {
+        text: '设计说明',
+        items: [
+          { text: '概览', link: '/zh/architecture/overview' },
+          { text: '边界', link: '/zh/architecture/boundaries' },
+          { text: '回写与搜索', link: '/zh/architecture/writeback-search' },
         ],
       },
     ],

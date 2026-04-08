@@ -1,13 +1,13 @@
 # Source Registry Template
 
-Use this structure for `wiki/indices/SOURCES.md`.
+Use this structure for `wiki/live/indices/SOURCES.md`.
 
 ```markdown
 # Sources Registry
 
 | Source | Type | Date | Compile State | Key Concepts / Entities | Notes |
 |--------|------|------|---------------|-------------------------|-------|
-| [[raw/articles/2026-04-01-source-title]] | article | 2026-04-01 | summarized | [[concept-a]], [[wiki/entities/entity-b]] | {optional note} |
+| [[raw/human/articles/2026-04-01-source-title]] | article | 2026-04-01 | summarized | [[wiki/live/concepts/concept-a]], [[wiki/live/entities/entity-b]] | {optional note} |
 ```
 
 Rules:

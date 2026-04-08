@@ -38,19 +38,21 @@ docs-preview:
 
 # Run all CI checks locally
 ci:
-  just test
   just lint
+  just test
   just docs-build
 
-# Lint / validate documentation
+# Lint / validate bundle contracts and docs
 lint:
-  @echo "Checking docs for issues..."
-  @just --dry-run ci
-  @echo "All checks passed!"
+  {{python_cmd}} skills/obsidian-notes-karpathy/scripts/validate_bundle_contract.py
 
 # Run deterministic skill-bundle regression tests
 test:
-  {{python_cmd}} -m unittest tests/test_skill_bundle.py
+  {{python_cmd}} -m unittest discover -s tests -p "test_*.py"
+
+# Run non-blocking runtime skill comparisons
+runtime-eval:
+  {{python_cmd}} skills/obsidian-notes-karpathy/scripts/runtime_eval.py
 
 # ==================== Git / Workflow ====================
 

@@ -9,11 +9,14 @@ created_at: "{datetime}"
 artifact_type: article | thread | newsletter | talk-outline
 channel: "{channel}"
 sources:
-  - "[[wiki/concepts/concept-a]]"
-  - "[[wiki/entities/entity-b]]"
+  - "[[wiki/live/concepts/concept-a]]"
+  - "[[wiki/live/entities/entity-b]]"
   - "[[outputs/qa/question-a]]"
 derived_from:
   - "[[outputs/qa/question-a]]"
+writeback_candidates:
+  - "[[wiki/live/concepts/concept-a]]"
+writeback_status: none | pending | compiled | rejected
 ---
 
 # {Artifact Title}
@@ -36,11 +39,11 @@ derived_from:
 
 ## Provenance
 
-- [[wiki/concepts/concept-a]] - {what it contributed}
-- [[wiki/entities/entity-b]] - {what it contributed}
+- [[wiki/live/concepts/concept-a]] - {what it contributed}
+- [[wiki/live/entities/entity-b]] - {what it contributed}
 - [[outputs/qa/question-a]] - {what it contributed}
 
-## Feed Back Into The Wiki
+## Writeback Candidates
 
 - {new concept, entity, or source gap discovered while drafting}
 ```
@@ -48,4 +51,4 @@ derived_from:
 Rules:
 
 - Publish artifacts should stay grounded in the wiki, not free-associate away from the evidence.
-- If the draft introduces a new synthesis worth preserving, consider also archiving a supporting Q&A note.
+- If the draft introduces a new synthesis worth preserving, pair the artifact with explicit `writeback_candidates` or a supporting Q&A note.

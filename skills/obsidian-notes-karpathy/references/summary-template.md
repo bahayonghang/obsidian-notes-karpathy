@@ -21,6 +21,8 @@ accuracy: 0.90
 provenance: 0.92
 composability: 0.84
 conflict_risk: 0.12
+evidence_coverage: 0.85
+uncertainty_level: low | medium | high
 ---
 
 # Draft Summary: {Source Title}
@@ -29,11 +31,15 @@ conflict_risk: 0.12
 
 {one-paragraph statement of what the source is really saying}
 
-## Key Takeaways
+## Source Claims
 
-- {takeaway 1}
-- {takeaway 2}
-- {takeaway 3}
+- {claim the source directly supports}
+- {second claim the source directly supports}
+
+## Compiler Inferences
+
+- {synthesis, implication, or comparison added by the compiler}
+- {second inference that may need review}
 
 ## Evidence
 
@@ -49,6 +55,11 @@ conflict_risk: 0.12
 
 - [[wiki/drafts/entities/entity-a]] - {relationship}
 
+## Open Questions
+
+- {what remains uncertain}
+- {what new source or review step would reduce uncertainty}
+
 ## Tensions and Review Notes
 
 - {uncertainty, contradiction, or reason this may need human review}
@@ -58,4 +69,5 @@ Rules:
 
 - draft summaries are reviewable evidence packages, not polished prose
 - keep provenance explicit enough that a reviewer can judge the draft without agent-specific production context
+- keep direct source claims separate from compiler-added inferences
 - omit entity sections when the source does not introduce durable named entities

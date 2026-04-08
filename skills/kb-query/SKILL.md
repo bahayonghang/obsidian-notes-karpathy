@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate outputs from the approved V2 live layer. Use this skill whenever the user asks what their approved notes say about something, wants a report or thread grounded in live knowledge, says "query kb", "search live wiki", "问知识库", "搜索批准层", "生成报告", or wants a substantive answer archived instead of disappearing into chat.
+description: Query, search, and generate outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a report, thread, talk, or slides grounded in live knowledge, says "query kb", "search live wiki", "问知识库", "搜索批准层", "生成报告", or wants a substantive answer archived back into the vault.
 ---
 
 # KB Query
@@ -13,10 +13,15 @@ Read these files first:
 
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
+- `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/briefing-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
+
+Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
+
+If `../obsidian-notes-karpathy/scripts/scan_query_scope.py` exists, run it first and treat its output as the deterministic baseline for live-layer retrieval boundaries.
 
 Then start with:
 
@@ -31,6 +36,8 @@ Then start with:
 
 `kb-query` must not treat `raw/` or `wiki/drafts/` as retrieval truth.
 
+`MEMORY.md` is also outside the default knowledge retrieval boundary. Read it only when the user is asking about preferences, editorial priorities, or collaboration behavior rather than topic knowledge.
+
 Those layers may be cited only as evidence if a human explicitly asks for source inspection. Default synthesis should stay on `wiki/live/`.
 
 ## Modes
@@ -38,6 +45,8 @@ Those layers may be cited only as evidence if a human explicitly asks for source
 1. search mode for quickly locating approved pages
 2. research mode for grounded answers archived into `outputs/qa/`
 3. publish mode for reports, threads, talks, and slides derived from approved knowledge
+
+When a substantive answer or artifact surfaces durable follow-up work, archive explicit `writeback_candidates` so the next compile/review pass can decide whether that output should feed back into the wiki.
 
 ## Output to the user
 

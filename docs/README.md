@@ -20,6 +20,7 @@ docs/
 ├── guide/                 # Mental model, quick start, installation, structure
 ├── skills/                # Skill-by-skill routing and behavior
 ├── workflow/              # End-to-end lifecycle flow
+├── architecture/          # Design rationale and planned evolution
 ├── zh/                    # Chinese mirror of the public docs
 └── .vitepress/            # Site configuration and theme
 ```
@@ -29,8 +30,10 @@ docs/
 1. Update the docs when a `SKILL.md` contract changes in a reader-visible way.
 2. Keep English and Chinese pages aligned in scope, even if the wording differs.
 3. Prefer summaries, routing matrices, and lifecycle explanations over duplicating full skill prose.
-4. Do not document behavior that is not grounded in the current skill bundle.
-5. When a page starts drifting from the skill contract, fix the page or delete the duplicated claim.
+4. `guide/`, `skills/`, and `workflow/` document shipped behavior only.
+5. `architecture/` may document design rationale and planned work, but must clearly label what is not yet shipped.
+6. Do not document future behavior in contract pages.
+7. When a page starts drifting from the skill contract, fix the page or delete the duplicated claim.
 
 ## Local development
 

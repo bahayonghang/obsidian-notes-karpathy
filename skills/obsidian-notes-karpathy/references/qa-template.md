@@ -7,12 +7,15 @@ Persist substantive research answers to `outputs/qa/`.
 question: "{original-question}"
 asked_at: "{datetime}"
 sources:
-  - "[[wiki/concepts/concept-a]]"
-  - "[[wiki/entities/entity-b]]"
-  - "[[wiki/summaries/source-b]]"
+  - "[[wiki/live/concepts/concept-a]]"
+  - "[[wiki/live/entities/entity-b]]"
+  - "[[wiki/live/summaries/source-b]]"
 tags:
   - qa
   - topic/subtopic
+writeback_candidates:
+  - "[[wiki/live/concepts/concept-a]]"
+writeback_status: none | pending | compiled | rejected
 ---
 
 # {title}
@@ -28,17 +31,17 @@ tags:
 ## Key Findings
 
 1. **{finding 1}** - {explanation}
-   - Sources: [[wiki/summaries/source-b]]
+   - Sources: [[wiki/live/summaries/source-b]]
 
 2. **{finding 2}** - {explanation}
-   - Sources: [[wiki/concepts/concept-a]], [[wiki/summaries/source-c]]
+   - Sources: [[wiki/live/concepts/concept-a]], [[wiki/live/summaries/source-c]]
 
 ## Evidence Trail
 
-- [[wiki/concepts/concept-a]] - {contribution}
-- [[wiki/entities/entity-b]] - {contribution}
-- [[wiki/summaries/source-b]] - {contribution}
-- [[raw/articles/source-file]] - {specific excerpt or locator}
+- [[wiki/live/concepts/concept-a]] - {contribution}
+- [[wiki/live/entities/entity-b]] - {contribution}
+- [[wiki/live/summaries/source-b]] - {contribution}
+- [[raw/human/articles/source-file]] - {specific excerpt or locator}
 
 ## Uncertainty
 
@@ -46,7 +49,7 @@ tags:
 - {where sources disagree}
 - {what new source would reduce uncertainty}
 
-## Feed Back Into The Wiki
+## Writeback Candidates
 
 - {concept page to update}
 - {entity page to create or update}
@@ -58,4 +61,4 @@ Rules:
 
 - Archive only substantive answers.
 - If the answer becomes the basis for a publishable artifact, link that artifact back here.
-- If the answer resolves a mechanical gap in the wiki, capture that in `Feed Back Into The Wiki` rather than leaving it implicit.
+- If the answer reveals durable knowledge work, express that as `writeback_candidates` plus a concrete writeback section instead of leaving it implicit.

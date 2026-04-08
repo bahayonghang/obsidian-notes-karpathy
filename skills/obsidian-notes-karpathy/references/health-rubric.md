@@ -6,7 +6,7 @@ Use this structure for `outputs/health/health-check-{date}.md`.
 ---
 title: "Health Check Report"
 date: "{datetime}"
-scope: "wiki/live/, wiki/briefings/, outputs/qa/, outputs/reviews/"
+scope: "wiki/live/, wiki/briefings/, outputs/qa/, outputs/content/, outputs/reviews/"
 health_score: {overall}
 ---
 
@@ -37,6 +37,10 @@ health_score: {overall}
 ## Briefing Staleness
 
 - {stale briefing}
+
+## Writeback Backlog
+
+- {qa or content artifact with pending writeback candidates}
 
 ## Suggested Follow-Up Questions
 
@@ -94,12 +98,14 @@ Suggested weighting:
 - stale briefings
 - approved pages that should have been rebuilt after new reviews
 - old Q&A that should be refreshed against newer approved knowledge
+- pending writeback candidates that have not re-entered the draft/review loop
 
 ### Provenance
 
 - live pages missing `review_record`
 - live pages missing `trust_level: approved`
 - answers or briefings that cite drafts or raw captures as truth
+- approved pages with empty or missing `sources`
 
 ## Mechanical integrity
 
@@ -108,3 +114,4 @@ Treat these as report-worthy mechanical issues even though they do not add a new
 - alias-style wikilinks inside Markdown table cells
 - unapproved pages under `wiki/live/`
 - pending review backlog that is aging without resolution
+- collaboration memory mixing with approved knowledge surfaces

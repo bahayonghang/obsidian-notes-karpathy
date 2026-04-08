@@ -1,0 +1,153 @@
+{
+  "contract_family": "review-gated",
+  "shared_references": [
+    "file-model.md",
+    "lifecycle-matrix.md",
+    "activity-log-template.md"
+  ],
+  "skills": {
+    "obsidian-notes-karpathy": {
+      "role": "router",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "search-upgrades.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "detect_lifecycle.py",
+      "writes": [],
+      "outputs": [],
+      "routes": [
+        "kb-init",
+        "kb-compile",
+        "kb-review",
+        "kb-query",
+        "kb-health"
+      ]
+    },
+    "kb-init": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "schema-template.md",
+        "summary-template.md",
+        "review-template.md",
+        "briefing-template.md",
+        "activity-log-template.md",
+        "index-home-template.md"
+      ],
+      "baseline_script": "detect_lifecycle.py",
+      "writes": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "MEMORY.md",
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/live/indices/EDITORIAL-PRIORITIES.md",
+        "wiki/live/indices/INDEX.md",
+        "wiki/live/indices/CONCEPTS.md",
+        "wiki/live/indices/SOURCES.md",
+        "wiki/live/indices/RECENT.md",
+        "wiki/briefings/",
+        "outputs/reviews/"
+      ],
+      "outputs": [
+        "MEMORY.md",
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/live/indices/",
+        "wiki/briefings/",
+        "outputs/reviews/"
+      ]
+    },
+    "kb-compile": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "schema-template.md",
+        "summary-template.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "scan_compile_delta.py",
+      "writes": [
+        "wiki/drafts/summaries/",
+        "wiki/drafts/concepts/",
+        "wiki/drafts/entities/",
+        "wiki/drafts/indices/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "wiki/drafts/",
+        "wiki/log.md"
+      ]
+    },
+    "kb-review": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "schema-template.md",
+        "review-template.md",
+        "briefing-template.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "scan_review_queue.py",
+      "writes": [
+        "outputs/reviews/",
+        "wiki/live/",
+        "wiki/briefings/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "outputs/reviews/",
+        "wiki/live/",
+        "wiki/briefings/",
+        "wiki/log.md"
+      ]
+    },
+    "kb-query": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "briefing-template.md",
+        "activity-log-template.md"
+      ],
+      "baseline_script": "scan_query_scope.py",
+      "writes": [
+        "outputs/qa/",
+        "outputs/content/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "outputs/qa/",
+        "outputs/content/",
+        "wiki/log.md"
+      ]
+    },
+    "kb-health": {
+      "role": "operation",
+      "reads": [
+        "file-model.md",
+        "lifecycle-matrix.md",
+        "activity-log-template.md",
+        "health-rubric.md",
+        "search-upgrades.md"
+      ],
+      "baseline_script": "lint_obsidian_mechanics.py",
+      "writes": [
+        "outputs/health/",
+        "outputs/qa/",
+        "wiki/briefings/",
+        "wiki/live/",
+        "wiki/log.md"
+      ],
+      "outputs": [
+        "outputs/health/",
+        "wiki/log.md"
+      ]
+    }
+  }
+}

@@ -9,7 +9,7 @@ Do not jump straight to RAG or a vector database just because the user mentions 
 Use this first for small to medium vaults.
 
 - read `wiki/index.md`
-- read `wiki/indices/INDEX.md`, `wiki/indices/CONCEPTS.md`, and `wiki/indices/SOURCES.md`
+- read `wiki/live/indices/INDEX.md`, `wiki/live/indices/CONCEPTS.md`, and `wiki/live/indices/SOURCES.md`
 - use ordinary file search over markdown
 - follow real wikilinks between summaries, concepts, entities, and prior Q&A
 

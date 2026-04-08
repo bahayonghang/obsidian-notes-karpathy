@@ -1,0 +1,3 @@
+# Index
+
+Compile-ready fixture.

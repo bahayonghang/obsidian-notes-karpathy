@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: Incrementally compile immutable raw captures into V2 draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants newly added raw material turned into reviewable summaries, concepts, entities, and draft indices.
+description: Incrementally compile immutable raw captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants newly added raw material under `raw/human/**`, `raw/agents/{role}/**`, `raw/*.md`, or `raw/**/papers/*.pdf` turned into reviewable summaries, concepts, entities, and draft indices.
 ---
 
 # KB Compile
@@ -13,11 +13,14 @@ Read these files first:
 
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
+- `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/summary-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
+
+Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and allowed write surfaces.
 
 If `../obsidian-notes-karpathy/scripts/scan_compile_delta.py` exists, run it first.
 
@@ -35,7 +38,8 @@ Accept:
 
 - markdown captures under `raw/human/**`
 - markdown captures under `raw/agents/{role}/**`
-- legacy markdown captures under V1 paths only during migration
+- markdown captures directly under `raw/` in bootstrap vaults
+- legacy-layout markdown captures under older paths only during migration
 - paper PDFs under any `papers/` subtree inside raw
 
 ## Main outputs
@@ -53,12 +57,15 @@ The compile pass exists to hand clean draft packages to `kb-review`, which then 
 Every draft should include:
 
 - explicit evidence
+- clear separation between source claims and compiler inferences
 - `draft_id`
 - `compiled_from`
 - `capture_sources`
 - `review_state`
 - `review_score`
 - `blocking_flags`
+- `evidence_coverage`
+- `uncertainty_level`
 
 Drafts should be shaped for review, not for final polish.
 

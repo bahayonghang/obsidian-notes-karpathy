@@ -10,26 +10,26 @@ If `../scripts/detect_lifecycle.py` is available, run it against the target vaul
 
 The script is the deterministic baseline for:
 
-- fresh V2 vault detection
-- partial support-layer repair detection
-- legacy V1 migration detection
+- setup-needed vault detection
+- repair-needed vault detection
+- legacy-layout migration detection
 - compile-delta detection
 - pending review queue detection
-- briefing staleness detection
-- health-first integrity flags over the approved layer
+- briefing refresh detection
+- maintenance-needed integrity flags over the approved layer
 
 ## Routing table
 
 | Structural state | Default route | Why | Must inspect next | Typical writes |
 | --- | --- | --- | --- | --- |
-| `fresh` | `kb-init` | The V2 support layer does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
-| `partial` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
-| `legacy-v1` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before V2 operation. | migration path, old compiled files, missing companions | migration guidance or repair |
-| `compile-ready` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `scan_compile_delta.py`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
-| `review-ready` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `scan_review_queue.py`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
-| `briefing-stale` | `kb-review` | The approved brain changed after the last briefing build. | briefing sources, latest live timestamps | regenerated `wiki/briefings/`, `wiki/log.md` |
-| `query-ready` | `kb-query` | The live layer exists and there is no obvious source delta, review backlog, or stale briefing. | `wiki/live/index`, live indices, prior `outputs/qa/`, relevant briefings | `outputs/`, sometimes follow-up draft recommendations, `wiki/log.md` |
-| `health-first` | `kb-health` | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, safe mechanical fixes, `wiki/log.md` |
+| `needs-setup` | `kb-init` | The support layer does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
+| `needs-repair` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
+| `legacy-layout` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before normal operation. | migration path, old compiled files, missing companions | migration guidance or repair |
+| `needs-compilation` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `scan_compile_delta.py`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
+| `needs-review` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `scan_review_queue.py`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
+| `needs-briefing-refresh` | `kb-review` | The approved brain changed after the last briefing build. | briefing sources, latest live timestamps | regenerated `wiki/briefings/`, `wiki/log.md` |
+| `ready-for-query` | `kb-query` | The live layer exists and there is no obvious source delta, review backlog, or stale briefing. | `wiki/live/index`, live indices, prior `outputs/qa/`, relevant briefings | `outputs/qa/`, `outputs/content/`, `wiki/log.md` |
+| `needs-maintenance` | `kb-health` | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, `wiki/log.md`, deterministic mechanical fixes in approved surfaces only |
 
 ## Symptom overrides
 
@@ -39,13 +39,15 @@ These symptoms should push routing toward `kb-health` even when the structure al
 - briefings seem wrong even after a recent review pass
 - there are obvious duplicate live concepts or approved conflicts
 - the approved layer renders badly in Obsidian
+- archived answers have pending writeback work piling up
+- collaboration memory and approved knowledge appear to be mixing
 
 These symptoms should push routing toward `kb-init` even when `raw/` and `wiki/` both exist:
 
 - `AGENTS.md` is missing
 - `wiki/index.md` or `wiki/log.md` is missing
-- the V2 directories `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, or `outputs/reviews/` are missing
-- a vault is still clearly V1 and has not been migrated
+- the review-gated directories `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, or `outputs/reviews/` are missing
+- a vault is still clearly legacy-layout and has not been migrated
 
 These symptoms should be surfaced as repair targets without blocking compile/query/review/health by themselves:
 
@@ -58,4 +60,4 @@ These symptoms should be surfaced as repair targets without blocking compile/que
 - `kb-compile` owns source-to-draft updates.
 - `kb-review` owns draft promotion, rejection, and briefing refresh.
 - `kb-query` owns synthesis, archival, and publish artifacts from the approved layer only.
-- `kb-health` owns deep maintenance passes over live knowledge, briefings, and review backlog.
+- `kb-health` owns deep maintenance passes over live knowledge, briefings, review backlog, and deterministic mechanical fixes in approved surfaces only.

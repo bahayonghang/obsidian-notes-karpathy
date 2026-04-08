@@ -16,9 +16,9 @@ Use it when you only need the compile-batch shape and do not need the full lifec
 - Updated entities: {count}
 - Notable tensions: {count}
 - Touched files:
-  - [[wiki/summaries/source-a]]
-  - [[wiki/concepts/concept-b]]
-  - [[wiki/entities/entity-c]]
+  - [[wiki/drafts/summaries/source-a]]
+  - [[wiki/drafts/concepts/concept-b]]
+  - [[wiki/drafts/entities/entity-c]]
 ```
 
 Rules:

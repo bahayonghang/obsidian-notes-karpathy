@@ -2,6 +2,8 @@
 
 Keep `AGENTS.md` and `CLAUDE.md` aligned when both exist. `AGENTS.md` is the required contract surface; `CLAUDE.md` is the generated companion and should mirror it rather than introducing a second policy.
 
+When present, `MEMORY.md` is the coordination surface for preferences, editorial priorities, and long-running collaboration context. It is not part of the default knowledge retrieval truth layer.
+
 Use ISO dates whenever possible:
 
 - date only: `YYYY-MM-DD`
@@ -48,6 +50,8 @@ review_state: pending | promoted | rejected
 review_score: 0.88
 blocking_flags:
   - "live_conflict"
+evidence_coverage: 0.85
+uncertainty_level: medium
 ---
 ```
 
@@ -61,6 +65,7 @@ approved_from: "[[wiki/drafts/summaries/human/articles/2026-04-01-source-title]]
 review_record: "[[outputs/reviews/source-title]]"
 trust_level: approved
 updated_at: "2026-04-02T10:00:00Z"
+last_reviewed_at: "2026-04-02T10:00:00Z"
 status: active | conflicting
 sources:
   - "[[wiki/live/summaries/human/articles/2026-04-01-source-title]]"
@@ -94,6 +99,8 @@ accuracy: 0.92
 provenance: 0.95
 conflict_risk: 0.18
 composability: 0.90
+fact_inference_separation: 0.90
+promotion_reason: "The page cleanly separates direct evidence from synthesis and is worth reusing."
 reviewed_at: "2026-04-02T10:00:00Z"
 ---
 ```
@@ -110,6 +117,9 @@ sources:
 tags:
   - qa
   - review
+writeback_candidates:
+  - "[[wiki/live/concepts/review-gate]]"
+writeback_status: pending
 ---
 ```
 

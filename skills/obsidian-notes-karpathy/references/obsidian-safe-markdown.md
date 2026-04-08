@@ -6,7 +6,7 @@ Use this reference whenever the KB workflow writes or repairs markdown that will
 
 1. Never place alias-style wikilinks such as `[[note|Alias]]` inside Markdown table cells.
 2. In tables, use one of these instead:
-   - plain wikilinks without an alias, such as `[[wiki/concepts/rag]]`
+   - plain wikilinks without an alias, such as `[[wiki/live/concepts/rag]]`
    - standard Markdown links, such as `[RAG](../concepts/rag.md)`
 3. Prefer lists over tables when several cells would otherwise need many note links or display aliases.
 4. Treat malformed table rendering as a mechanical correctness bug, not a cosmetic issue.
@@ -17,7 +17,7 @@ Markdown tables parse `|` before Obsidian resolves wikilink aliases. A cell like
 
 ## Where this rule applies
 
-- `wiki/indices/*.md`
+- `wiki/live/indices/*.md`
 - `wiki/index.md` when it contains tables
 - `outputs/qa/*.md`
 - `outputs/content/**/*`

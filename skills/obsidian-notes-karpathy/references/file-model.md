@@ -1,9 +1,10 @@
 # File Model
 
-Canonical V2 layering:
+Canonical review-gated layering:
 
 ```text
 raw/            -> immutable capture intake
+MEMORY.md       -> collaboration memory and editorial context
 wiki/drafts/    -> compiled but unapproved draft knowledge
 wiki/live/      -> approved long-term brain
 wiki/briefings/ -> role-specific context built from live only
@@ -13,6 +14,7 @@ outputs/        -> reviews, Q&A, health reports, and publishable derivatives
 Treat the vault like a codebase with a promotion gate:
 
 - `raw/` is source evidence.
+- `MEMORY.md` is the coordination surface for preferences, priorities, and collaboration rules.
 - `wiki/drafts/` is build output waiting for review.
 - `wiki/live/` is the deployed truth layer.
 - `wiki/briefings/` is generated runtime context for agents.
@@ -24,11 +26,28 @@ Treat the vault like a codebase with a promotion gate:
 2. `kb-compile` writes only to `wiki/drafts/`, never directly to `wiki/live/`.
 3. `kb-review` is the only skill that can promote draft knowledge into `wiki/live/`.
 4. `kb-query` reads `wiki/live/`, `wiki/briefings/`, and prior `outputs/qa/`; it must not treat `raw/` or `wiki/drafts/` as retrieval truth.
-5. `wiki/index.md` is the content-oriented landing page for the whole contract, including live, draft, and briefing state.
-6. `wiki/log.md` is the append-only activity ledger for `ingest`, `review`, `brief`, `query`, `publish`, and `health`.
-7. `outputs/qa/` stores durable research answers, not disposable chat residue.
-8. `outputs/reviews/` stores reviewer decisions and scoring details.
-9. Existing V1 vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-v1` and migrated before normal V2 operation.
+5. `kb-query` must not treat `MEMORY.md` as domain knowledge truth; it is only for collaboration or editorial context.
+6. `wiki/index.md` is the content-oriented landing page for the whole contract, including live, draft, and briefing state.
+7. `wiki/log.md` is the append-only activity ledger for `ingest`, `review`, `brief`, `query`, `publish`, and `health`.
+8. `outputs/qa/` stores durable research answers, not disposable chat residue.
+9. `outputs/reviews/` stores reviewer decisions and scoring details.
+10. Existing older vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-layout` and migrated before normal operation.
+
+## Required vs optional support
+
+The minimum support layer for `kb-init` is:
+
+- `raw/`
+- `wiki/drafts/`
+- `wiki/live/`
+- `wiki/briefings/`
+- `wiki/index.md`
+- `wiki/log.md`
+- `outputs/reviews/`
+- `AGENTS.md`
+- `CLAUDE.md`
+
+Downstream output surfaces such as `outputs/qa/`, `outputs/health/`, `outputs/reports/`, `outputs/slides/`, `outputs/charts/`, and `outputs/content/**` are valid parts of the full contract, but they are created on demand when later stages need them. `MEMORY.md` is recommended collaboration scaffolding rather than a blocking support-layer requirement.
 
 ## Expected directories
 
@@ -69,6 +88,7 @@ vault/
 │       ├── threads/
 │       └── talks/
 ├── AGENTS.md
+├── MEMORY.md
 └── CLAUDE.md
 ```
 
@@ -92,10 +112,18 @@ Live under `raw/agents/{role}/**`.
 
 ### Legacy captures
 
-Older vaults may still use V1 paths such as `raw/articles/` or `raw/papers/`.
+Older vaults may still use legacy-layout paths such as `raw/articles/` or `raw/papers/`.
 
 - continue to detect them for migration
-- do not silently reinterpret them as fully valid V2 support layers
+- do not silently reinterpret them as fully valid review-gated support layers
+
+### Bootstrap root captures
+
+Some partially bootstrapped vaults may place markdown directly under `raw/`.
+
+- accept these files as valid compile inputs
+- preserve raw immutability exactly as with nested capture classes
+- surface any missing support-layer directories separately instead of rejecting the source format itself
 
 ## Draft summaries
 
@@ -141,6 +169,19 @@ Expected properties:
 - `updated_at`
 - `staleness_after`
 - `source_live_pages`
+
+## Collaboration memory
+
+`MEMORY.md` lives at the vault root.
+
+Expected content:
+
+- stable preferences
+- editorial priorities
+- collaboration rules
+- current focus areas
+
+It should not become a shadow knowledge base full of topic conclusions or source-grounded claims.
 
 ## Review records
 

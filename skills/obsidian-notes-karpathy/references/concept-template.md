@@ -7,12 +7,13 @@ concept_id: "{concept-slug}"
 aliases:
   - "{common alias}"
 updated_at: "{datetime}"
+last_reviewed_at: "{datetime}"
 status: active | draft | conflicting
 sources:
-  - "[[wiki/summaries/source-a]]"
+  - "[[wiki/live/summaries/source-a]]"
 related:
-  - "[[wiki/concepts/related-concept]]"
-  - "[[wiki/entities/related-entity]]"
+  - "[[wiki/live/concepts/related-concept]]"
+  - "[[wiki/live/entities/related-entity]]"
 ---
 
 # {Concept Title}
@@ -25,18 +26,27 @@ related:
 
 {why this concept deserves its own page}
 
+## Established
+
+- {current statement you are willing to reuse}
+- {second stable statement grounded in the evidence}
+
+## Inference
+
+- {synthesis or framing added on top of the source material}
+
 ## Evidence
 
-- [[wiki/summaries/source-a]] - {claim or support}
-- [[wiki/summaries/source-b]] - {claim or contrast}
+- [[wiki/live/summaries/source-a]] - {claim or support}
+- [[wiki/live/summaries/source-b]] - {claim or contrast}
 
 ## Related Concepts
 
-- [[wiki/concepts/related-concept]] - {relationship}
+- [[wiki/live/concepts/related-concept]] - {relationship}
 
 ## Related Entities
 
-- [[wiki/entities/related-entity]] - {relationship}
+- [[wiki/live/entities/related-entity]] - {relationship}
 
 ## Tensions and Contradictions
 
@@ -50,6 +60,7 @@ related:
 Rules:
 
 - Merge evidence instead of duplicating concept pages.
+- When used under `wiki/drafts/**`, point `sources` and `related` at draft pages; when promoted under `wiki/live/**`, point them at approved live pages.
 - Use `aliases` aggressively so backlinks and unlinked mentions still work when terminology shifts.
 - Use `related` for real relationships to concepts or entities, not speculative link spam.
 - Set `status: conflicting` when unresolved disagreement remains.
