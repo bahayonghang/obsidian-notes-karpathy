@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +35,11 @@ HEALTH_FLAG_KINDS = {
     "memory_knowledge_mix",
     "writeback_backlog",
     "weak_live_sources",
+    "broken_wikilink",
+    "orphan_page",
+    "stale_briefing",
+    "duplicate_alias_set",
+    "volatile_page_stale",
 }
 
 
@@ -385,6 +390,53 @@ def review_backlog_issues(vault_root: Path) -> list[dict[str, Any]]:
     ]
 
 
+def duplicate_alias_set_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    alias_map: dict[tuple[str, ...], list[str]] = defaultdict(list)
+    for record in live_records(records):
+        if record.kind not in {"concept", "entity"}:
+            continue
+        aliases = sorted({slugify_identity(alias) for alias in list_field(record.frontmatter, "aliases") if slugify_identity(alias)})
+        if len(aliases) < 2:
+            continue
+        alias_map[tuple(aliases)].append(record.path)
+
+    issues: list[dict[str, Any]] = []
+    for alias_set, paths in sorted(alias_map.items()):
+        if len(paths) < 2:
+            continue
+        issues.append({
+            "kind": "duplicate_alias_set",
+            "aliases": list(alias_set),
+            "paths": sorted(paths),
+        })
+    return issues
+
+
+def volatile_page_stale_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    thresholds = {"high": 90, "medium": 180, "low": 365}
+    now = datetime.now(UTC)
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind not in {"summary", "concept", "entity"}:
+            continue
+        volatility = str(record.frontmatter.get("domain_volatility") or "").strip().lower()
+        if volatility not in thresholds:
+            continue
+        last_reviewed = parse_datetime(record.frontmatter.get("last_reviewed_at") or record.frontmatter.get("updated_at") or record.frontmatter.get("approved_at"))
+        if last_reviewed is None:
+            continue
+        age_days = int((now - last_reviewed).total_seconds() // 86400)
+        if age_days > thresholds[volatility]:
+            issues.append({
+                "kind": "volatile_page_stale",
+                "path": record.path,
+                "domain_volatility": volatility,
+                "age_days": age_days,
+                "threshold_days": thresholds[volatility],
+            })
+    return issues
+
+
 def audit_vault_mechanics(vault_root: Path) -> dict[str, Any]:
     records = collect_markdown_records(vault_root)
     issues: list[dict[str, Any]] = []
@@ -394,6 +446,8 @@ def audit_vault_mechanics(vault_root: Path) -> dict[str, Any]:
     issues.extend(writeback_backlog_issues(records))
     issues.extend(broken_wikilink_issues(records))
     issues.extend(orphan_page_issues(records))
+    issues.extend(duplicate_alias_set_issues(records))
+    issues.extend(volatile_page_stale_issues(records))
     issues.extend(memory_knowledge_mix_issues(records))
     issues.extend(unapproved_live_issues(records))
     issues.extend(weak_live_sources_issues(records))

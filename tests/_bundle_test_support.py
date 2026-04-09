@@ -12,6 +12,7 @@ SCRIPTS_DIR = ENTRY_SKILL_ROOT / "scripts"
 FIXTURES_DIR = ENTRY_SKILL_ROOT / "evals" / "fixtures"
 REGISTRY_PATH = SCRIPTS_DIR / "skill-contract-registry.json"
 RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals.json"
+WRITABLE_RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals-writable.json"
 SKILL_PATHS = {
     "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
     "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",

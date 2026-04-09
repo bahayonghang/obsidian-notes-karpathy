@@ -3,7 +3,8 @@ import json
 import unittest
 
 from _bundle_test_support import REPO_ROOT, SCRIPTS_DIR, run_repo_command
-from runtime_eval import build_prompt, classify_failure, fallback_runner_for
+from runtime_eval import build_prompt, classify_failure, detect_root_leakage, fallback_runner_for, validate_manifest
+from trigger_eval import load_skill_catalog, parse_selected_skill, summarize_trigger_results
 
 
 class QualityCommandTests(unittest.TestCase):
@@ -50,14 +51,78 @@ class QualityCommandTests(unittest.TestCase):
             skill="kb-init",
             prompt="Explain the next step.",
             files=["evals/fixtures/needs-setup/README.md"],
+            vault_root="evals/fixtures/needs-setup",
+            mode="read-only",
         )
         self.assertIn("On Windows, avoid shell globs", prompt)
         self.assertIn("Read and follow the skill", prompt)
+        self.assertIn("only target vault root", prompt)
+
+    def test_runtime_eval_prompt_respects_writable_copy_mode(self) -> None:
+        prompt = build_prompt(
+            use_skill=False,
+            skill="kb-init",
+            prompt="Repair the copied vault.",
+            files=[".runtime-evals/kb-init/README.md"],
+            vault_root=".runtime-evals/kb-init/target",
+            mode="writable-copy",
+        )
+        self.assertIn("modify files only under the declared vault root", prompt)
+        self.assertNotIn("Work in read-only mode", prompt)
 
     def test_runtime_eval_prefers_claude_fallback_for_codex(self) -> None:
         fallback = fallback_runner_for("codex")
         self.assertIn(fallback, {None, "claude"})
         self.assertIsNone(fallback_runner_for("claude"))
+
+    def test_runtime_eval_detects_repo_root_leakage(self) -> None:
+        leakage = detect_root_leakage(
+            f"The current workspace root is {REPO_ROOT.as_posix()} and AGENTS.md lives there.",
+            REPO_ROOT / "skills" / "obsidian-notes-karpathy" / "evals" / "fixtures" / "needs-setup",
+        )
+        self.assertTrue(leakage["detected"])
+        self.assertIn("repo_root_path_mentioned", leakage["reasons"])
+
+    def test_runtime_eval_manifest_validation_rejects_mixed_fixture_roots(self) -> None:
+        manifest = {
+            "evals": [
+                {
+                    "id": "mixed-roots",
+                    "skill": "kb-init",
+                    "prompt": "Inspect the fixture vault.",
+                    "vault_root": "evals/fixtures/needs-setup",
+                    "files": [
+                        "evals/fixtures/needs-setup/README.md",
+                        "evals/fixtures/needs-review/AGENTS.md",
+                    ],
+                }
+            ]
+        }
+        errors = validate_manifest(manifest)
+        self.assertTrue(errors)
+        self.assertTrue(any("files must belong to exactly one fixture root" in error for error in errors))
+
+    def test_trigger_eval_loads_catalog_and_parses_json_output(self) -> None:
+        catalog = load_skill_catalog()
+        self.assertIn("kb-init", catalog)
+        self.assertIsNone(parse_selected_skill('{"selected_skill":"none","reason":"outside scope"}'))
+        self.assertEqual(
+            parse_selected_skill('{"selected_skill":"kb-query","reason":"live-grounded request"}'),
+            "kb-query",
+        )
+
+    def test_trigger_eval_summary_reports_precision_and_recall(self) -> None:
+        summary = summarize_trigger_results(
+            [
+                {"expected_skill": "kb-init", "actual_skill": "kb-init", "matched": True},
+                {"expected_skill": "kb-init", "actual_skill": "kb-query", "matched": False},
+                {"expected_skill": None, "actual_skill": "kb-query", "matched": False},
+            ],
+            ["kb-init", "kb-query"],
+        )
+        self.assertEqual(summary["matched"], 1)
+        self.assertEqual(summary["per_skill"]["kb-init"]["true_positive"], 1)
+        self.assertEqual(summary["per_skill"]["kb-query"]["false_positive"], 2)
 
 
 if __name__ == "__main__":

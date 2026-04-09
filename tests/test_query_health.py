@@ -1,10 +1,25 @@
 # pyright: reportMissingImports=false
+import shutil
+import tempfile
 import unittest
+from pathlib import Path
 
 from _bundle_test_support import FIXTURES_DIR, run_json_script
 
 
 class QueryHealthTests(unittest.TestCase):
+    def test_governance_index_builder_can_write_indices(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "ready-for-query"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            payload = run_json_script("build_governance_indices.py", str(fixture_copy), "--write")
+
+            indices_root = fixture_copy / "wiki" / "live" / "indices"
+            self.assertTrue((indices_root / "QUESTIONS.md").exists())
+            self.assertTrue((indices_root / "GAPS.md").exists())
+            self.assertTrue((indices_root / "ALIASES.md").exists())
+            self.assertIn("Why does a review gate help multi-agent knowledge systems?", payload["questions"])
+
     def test_query_scope_ignores_raw_and_drafts_for_review_gated_layout(self) -> None:
         scope = run_json_script("scan_query_scope.py", str(FIXTURES_DIR / "ready-for-query"))
 
@@ -31,6 +46,32 @@ class QueryHealthTests(unittest.TestCase):
 
         self.assertIn("review_backlog", review_issue_kinds)
         self.assertIn("stale_briefing", stale_issue_kinds)
+
+    def test_governance_index_builder_surfaces_questions_gaps_and_aliases(self) -> None:
+        query_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "ready-for-query"))
+        maintenance_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "needs-maintenance"))
+        refresh_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "needs-governance-refresh"))
+
+        self.assertIn("Why does a review gate help multi-agent knowledge systems?", query_payload["questions"])
+        self.assertIn("When should governance indices be refreshed?", query_payload["questions"])
+        self.assertIn("review-gate", {row["canonical_slug"] for row in query_payload["alias_rows"]})
+        self.assertIn("approval-gate", set(query_payload["alias_rows"][0]["aliases"]))
+        self.assertIn("stale_qa", maintenance_payload["gap_issue_kinds"])
+        self.assertIn("broken_wikilink", maintenance_payload["gap_issue_kinds"])
+        self.assertIn("Which approval signals should trigger a governance refresh?", refresh_payload["questions"])
+        self.assertIn("How should archived Q&A feed governance refreshes?", refresh_payload["questions"])
+
+    def test_governance_index_builder_bootstrap_fixture_can_write_indices(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "governance-enabled-bootstrap"
+            shutil.copytree(FIXTURES_DIR / "governance-enabled-bootstrap", fixture_copy)
+            payload = run_json_script("build_governance_indices.py", str(fixture_copy), "--write")
+
+            indices_root = fixture_copy / "wiki" / "live" / "indices"
+            self.assertTrue((indices_root / "QUESTIONS.md").exists())
+            self.assertTrue((indices_root / "GAPS.md").exists())
+            self.assertTrue((indices_root / "ALIASES.md").exists())
+            self.assertIn("What governance scaffolding should kb-init generate?", payload["questions"])
 
     def test_detect_lifecycle_and_health_flag_memory_and_writeback_issues(self) -> None:
         writeback = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "writeback-backlog"))

@@ -194,6 +194,10 @@ def detect_lifecycle(vault_root: Path) -> dict:
             "memory_knowledge_mix",
             "writeback_backlog",
             "weak_live_sources",
+            "broken_wikilink",
+            "stale_briefing",
+            "duplicate_alias_set",
+            "volatile_page_stale",
         }
     ]
 

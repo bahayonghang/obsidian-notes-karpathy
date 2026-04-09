@@ -2,13 +2,13 @@
 
 Initialize, repair, or migrate a vault onto the review-gated contract.
 
-## Creates or repairs
+## Creates or repairs the support layer
 
-- `raw/human/**`
+- `raw/human/{articles,papers,podcasts,repos,assets}`
 - `raw/agents/{role}/**`
 - `MEMORY.md`
-- `wiki/drafts/**`
-- `wiki/live/**`
+- `wiki/drafts/{summaries,concepts,entities,indices}`
+- `wiki/live/{summaries,concepts,entities,indices}`
 - `wiki/briefings/**`
 - `wiki/index.md`
 - `wiki/log.md`
@@ -16,6 +16,22 @@ Initialize, repair, or migrate a vault onto the review-gated contract.
 - `AGENTS.md`
 - `CLAUDE.md`
 
-Optional downstream scaffolding such as `outputs/qa/**`, `outputs/health/**`, or `outputs/content/**` should be created only when the user wants full setup or the later stages need them.
+## Governance and starter files
 
-`kb-init` should also scaffold `wiki/live/indices/EDITORIAL-PRIORITIES.md` so the vault has an explicit editor-in-chief surface instead of relying on implicit preferences.
+`kb-init` should also scaffold the core live indices:
+
+- `wiki/live/indices/INDEX.md`
+- `wiki/live/indices/CONCEPTS.md`
+- `wiki/live/indices/SOURCES.md`
+- `wiki/live/indices/RECENT.md`
+- `wiki/live/indices/EDITORIAL-PRIORITIES.md`
+
+Optional governance views such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` should be created only when the user asks for richer maintenance scaffolding.
+
+`MEMORY.md` is recommended collaboration scaffolding rather than approved knowledge storage. It holds preferences, editorial priorities, and coordination context.
+
+Optional downstream scaffolding such as `outputs/qa/**`, `outputs/health/**`, `outputs/content/**`, `outputs/reports/**`, `outputs/slides/**`, or `outputs/charts/**` should be created only when the user wants full setup or later stages need them.
+
+## Migration posture
+
+For legacy-layout vaults, `kb-init` should scaffold the review-gated structure first, preserve existing material, and treat direct `wiki/summaries/` or `wiki/concepts/` content as migration work rather than normal compile output.

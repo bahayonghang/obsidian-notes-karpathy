@@ -5,11 +5,11 @@
 ## 标准顺序
 
 1. 读 `wiki/index.md`
-2. 读 `wiki/live/indices/INDEX.md` 和 `wiki/live/indices/CONCEPTS.md`
+2. 读 `wiki/live/indices/INDEX.md`、`CONCEPTS.md`，以及相关 source / question 视图
 3. 用 Backlinks、unlinked mentions 或 Properties 搜索补充线索
 4. 先查 `outputs/qa/`
 5. 再读概念页和摘要页
-6. 输出并在需要时归档
+6. 输出并在需要时归档到 `outputs/qa/` 或 `outputs/content/`
 
 ## 为什么 outputs/qa 很重要
 

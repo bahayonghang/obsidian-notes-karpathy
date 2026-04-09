@@ -52,9 +52,9 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 - `obsidian-cli`
 - `obsidian-canvas-creator`
 
-如果你准备把 PDF 论文直接放进 `raw/papers/`，还建议安装：
+如果你准备把 PDF 论文直接放进 `raw/**/papers/`，还建议安装：
 
-- `paper-workbench`：`raw/papers/*.pdf` 必需的论文 companion skill；`json` 用于编译前标准化，`interpret` 用于直接讲解论文，`xray` 用于深拆论文
-- `pdf`：严格 `raw/papers` 编译链之外的通用 PDF 处理 companion skill
+- `paper-workbench`：`raw/**/papers/*.pdf` 必需的论文 companion skill；`json` 用于论文标准化，`interpret` 用于直接讲解论文，`xray` 用于深拆论文
+- `pdf`：严格 `raw/**/papers` 编译链之外的通用 PDF 处理 companion skill
 
-这两个 companion skill 要装到当前运行时真正使用的 skill home 里；如果 `raw/papers` 下的 PDF 还是被跳过，先确认 `paper-workbench` 是否真的在 active skill home 里。
+这两个 companion skill 要装到当前运行时真正使用的 skill home 里；如果论文 PDF 仍然被当成待处理项跳过，先确认 `paper-workbench` 是否真的在 active skill home 里。

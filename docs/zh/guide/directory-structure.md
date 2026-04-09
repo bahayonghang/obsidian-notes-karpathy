@@ -5,12 +5,12 @@
 ```text
 vault/
 ├── raw/
-│   ├── human/
+│   ├── human/{articles,papers,podcasts,repos,assets}/
 │   └── agents/{role}/
 ├── MEMORY.md
 ├── wiki/
-│   ├── drafts/
-│   ├── live/
+│   ├── drafts/{summaries,concepts,entities,indices}/
+│   ├── live/{summaries,concepts,entities,indices}/
 │   ├── briefings/
 │   ├── index.md
 │   └── log.md
@@ -26,6 +26,8 @@ vault/
 `outputs/reviews/` 属于必需支撑层。其余 outputs 面是完整合同的一部分，但按阶段按需出现。
 
 `MEMORY.md` 是推荐的协作记忆层，用来承接偏好、编辑优先级和协作约束，不应该变成专题知识页。
+
+`wiki/live/indices/` 下的 `INDEX.md`、`CONCEPTS.md`、`SOURCES.md`、`RECENT.md`、`EDITORIAL-PRIORITIES.md` 属于核心 live 索引。`QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图只在 vault 需要时创建。
 
 ## 所有权模型
 

@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a report, thread, talk, or slides grounded in live knowledge, says "query kb", "search live wiki", "问知识库", "搜索批准层", "生成报告", or wants a substantive answer archived back into the vault.
+description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a report, thread, talk, or slides grounded in `wiki/live/`, says "query kb", "search live wiki", "问知识库", "搜索批准层", "生成报告", or wants a substantive answer reused from prior approved outputs and archived back into the vault. Do not use this skill for generic writing, open-ended web research, or maintenance/audit passes when the task is not anchored in approved live knowledge.
 ---
 
 # KB Query
@@ -19,6 +19,7 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/briefing-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/search-upgrades.md`
+- `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
@@ -30,6 +31,7 @@ Then start with:
 - `wiki/live/indices/INDEX.md`
 - `wiki/live/indices/CONCEPTS.md`
 - `wiki/live/indices/SOURCES.md`
+- `wiki/live/indices/QUESTIONS.md` when present
 - relevant `wiki/briefings/{role}.md` when the request maps to a role
 - prior `outputs/qa/`
 
@@ -41,13 +43,20 @@ Then start with:
 
 Those layers may be cited only as evidence if a human explicitly asks for source inspection. Default synthesis should stay on `wiki/live/`.
 
+## Source-backed answer discipline
+
+- prefer approved summaries when grounding key conclusions
+- use concept and entity pages as navigation and synthesis aids, not as a shortcut around approved evidence trails
+- when sources disagree, say so explicitly instead of flattening the disagreement
+
 ## Modes
 
 1. search mode for quickly locating approved pages
 2. research mode for grounded answers archived into `outputs/qa/`
 3. publish mode for reports, threads, talks, and slides derived from approved knowledge
+4. reflect-lite mode for question resolution, synthesis notes, or gap reports that should stay outside live until re-reviewed
 
-When a substantive answer or artifact surfaces durable follow-up work, archive explicit `writeback_candidates` so the next compile/review pass can decide whether that output should feed back into the wiki.
+When a substantive answer or artifact surfaces durable follow-up work, archive explicit `writeback_candidates` and `open_questions_touched` so the next compile/review pass can decide whether that output should feed back into the wiki.
 
 ## Output to the user
 

@@ -262,6 +262,46 @@
         "The answer identifies pending writeback candidates as the decisive maintenance signal.",
         "The response keeps writeback work inside the draft -> review -> live boundary."
       ]
+    },
+    {
+      "id": 17,
+      "prompt": "Use evals/fixtures/ready-for-query and explain how optional governance indices like QUESTIONS, GAPS, and ALIASES should be generated from the approved layer without bypassing the review gate.",
+      "expected_output": "Explains that governance indices can be generated from approved live pages and archived outputs, while durable knowledge still flows through draft -> review -> live.",
+      "files": [
+        "evals/fixtures/ready-for-query/AGENTS.md",
+        "evals/fixtures/ready-for-query/wiki/index.md",
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ],
+      "expectations": [
+        "The response treats governance indices as optional derived views rather than truth pages.",
+        "The answer keeps approved live pages as the default evidence layer.",
+        "The workflow does not suggest bypassing review when new durable knowledge is discovered."
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "Use evals/fixtures/needs-governance-refresh and explain why governance indices should be refreshed from current approved knowledge rather than treated as permanent truth pages.",
+      "expected_output": "Explains that governance indices are derived maintenance views that should be regenerated from approved live pages and archived outputs.",
+      "files": [
+        "evals/fixtures/needs-governance-refresh/README.md"
+      ],
+      "expectations": [
+        "The response treats QUESTIONS, GAPS, and ALIASES as derived views.",
+        "The answer preserves the review-gated truth boundary."
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "Use evals/fixtures/governance-enabled-bootstrap and explain when kb-init should generate optional governance scaffolding after the support layer exists.",
+      "expected_output": "Explains that kb-init may create governance scaffolding after the canonical support layer is established, without making those files part of the truth layer.",
+      "files": [
+        "evals/fixtures/governance-enabled-bootstrap/README.md"
+      ],
+      "expectations": [
+        "The response treats governance scaffolding as optional.",
+        "The answer does not confuse governance indices with approved live notes."
+      ]
     }
   ]
 }

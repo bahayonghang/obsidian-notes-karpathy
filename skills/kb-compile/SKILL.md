@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: Incrementally compile immutable raw captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants newly added raw material under `raw/human/**`, `raw/agents/{role}/**`, `raw/*.md`, or `raw/**/papers/*.pdf` turned into reviewable summaries, concepts, entities, and draft indices.
+description: Incrementally compile immutable markdown captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants newly added markdown material under `raw/human/**`, `raw/agents/{role}/**`, or bootstrap `raw/*.md` turned into reviewable summaries, concepts, entities, and draft indices. Do not treat `raw/**/papers/*.pdf` as a normal compile trigger: those paper ingests still belong to `paper-workbench`, and `kb-compile` should only surface or defer them.
 ---
 
 # KB Compile
@@ -19,6 +19,7 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/summary-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and allowed write surfaces.
 
@@ -41,6 +42,14 @@ Accept:
 - markdown captures directly under `raw/` in bootstrap vaults
 - legacy-layout markdown captures under older paths only during migration
 - paper PDFs under any `papers/` subtree inside raw
+
+## Compile posture
+
+Before shaping drafts:
+
+- normalize source metadata such as `source_hash`, `source_mtime`, `last_verified_at`, and `possibly_outdated`
+- surface alias and duplicate candidates rather than silently creating competing concept/entity drafts
+- preserve cross-language or terminology overlap as review input, not as automatic merges
 
 ## Main outputs
 
@@ -66,6 +75,8 @@ Every draft should include:
 - `blocking_flags`
 - `evidence_coverage`
 - `uncertainty_level`
+- `alias_candidates` when terminology overlap is visible
+- `duplicate_candidates` when draft/live pages may already cover the concept
 
 Drafts should be shaped for review, not for final polish.
 
@@ -77,4 +88,5 @@ Always report:
 2. how many draft summaries were created or updated
 3. how many draft concepts or entities were touched
 4. whether any PDFs were skipped because `paper-workbench` was unavailable
-5. whether the next step is `kb-review`
+5. whether alias or duplicate candidates were surfaced for review
+6. whether the next step is `kb-review`

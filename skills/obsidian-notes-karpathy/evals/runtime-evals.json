@@ -1,10 +1,12 @@
 {
   "skill_family": "obsidian-notes-karpathy",
-  "description": "Read-only runtime comparisons for operational skills. Each prompt should stay analysis-only and must not mutate fixture files.",
+  "description": "Read-only runtime comparisons for operational skills. Each prompt must stay analysis-only and must not mutate fixture files.",
   "evals": [
     {
       "id": "kb-init-needs-setup",
       "skill": "kb-init",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-setup",
       "prompt": "Inspect the fixture vault and tell me the first safe step to bring it onto the review-gated contract. Explain the missing support layer and the next command to run. Do not modify any files.",
       "files": [
         "evals/fixtures/needs-setup/README.md"
@@ -13,6 +15,8 @@
     {
       "id": "kb-init-needs-repair-live-only",
       "skill": "kb-init",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-repair-live-only",
       "prompt": "Inspect the fixture vault and explain why this is still a repair case even though a live page already exists. Do not modify any files.",
       "files": [
         "evals/fixtures/needs-repair-live-only/AGENTS.md",
@@ -21,8 +25,22 @@
       ]
     },
     {
+      "id": "kb-init-governance-scaffolding",
+      "skill": "kb-init",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/ready-for-query",
+      "prompt": "Inspect the fixture vault and explain how optional governance indices like QUESTIONS, GAPS, and ALIASES should be scaffolded after the support layer exists. Do not modify any files.",
+      "files": [
+        "evals/fixtures/ready-for-query/AGENTS.md",
+        "evals/fixtures/ready-for-query/wiki/index.md",
+        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ]
+    },
+    {
       "id": "kb-compile-needs-compilation",
       "skill": "kb-compile",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-compilation",
       "prompt": "Inspect the fixture vault and describe the compile delta: what is new or changed, what can be written, and what the next lifecycle step should be. Do not modify any files.",
       "files": [
         "evals/fixtures/needs-compilation/AGENTS.md",
@@ -33,6 +51,8 @@
     {
       "id": "kb-compile-bootstrap-root-raw",
       "skill": "kb-compile",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/bootstrap-raw-intake",
       "prompt": "Inspect the fixture vault and explain how root-level raw markdown should be handled, including any non-blocking local guidance warnings. Do not modify any files.",
       "files": [
         "evals/fixtures/bootstrap-raw-intake/AGENTS.md",
@@ -43,6 +63,8 @@
     {
       "id": "kb-review-needs-review",
       "skill": "kb-review",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-review",
       "prompt": "Inspect the fixture vault and summarize the review-gate outcome: what should be approved, rejected, or escalated, and why. Do not modify any files.",
       "files": [
         "evals/fixtures/needs-review/AGENTS.md",
@@ -53,6 +75,8 @@
     {
       "id": "kb-review-briefing-refresh",
       "skill": "kb-review",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-briefing-refresh",
       "prompt": "Inspect the fixture vault and explain why the next step is a briefing refresh through the review gate rather than a normal query. Do not modify any files.",
       "files": [
         "evals/fixtures/needs-briefing-refresh/AGENTS.md",
@@ -63,6 +87,8 @@
     {
       "id": "kb-query-ready-for-query",
       "skill": "kb-query",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/ready-for-query",
       "prompt": "Inspect the fixture vault and answer what the approved notes say about review gates. Reuse prior archived answers when possible and do not modify any files.",
       "files": [
         "evals/fixtures/ready-for-query/AGENTS.md",
@@ -73,6 +99,8 @@
     {
       "id": "kb-query-memory-boundary",
       "skill": "kb-query",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/memory-boundary",
       "prompt": "Inspect the fixture vault and explain which files remain topic-retrieval truth and why MEMORY.md should stay outside that boundary. Do not modify any files.",
       "files": [
         "evals/fixtures/memory-boundary/AGENTS.md",
@@ -83,6 +111,8 @@
     {
       "id": "kb-health-needs-maintenance",
       "skill": "kb-health",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-maintenance",
       "prompt": "Inspect the fixture vault and summarize the maintenance risks across stale Q&A, provenance, and drift. Do not modify any files.",
       "files": [
         "evals/fixtures/needs-maintenance/AGENTS.md",
@@ -93,11 +123,35 @@
     {
       "id": "kb-health-writeback-backlog",
       "skill": "kb-health",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/writeback-backlog",
       "prompt": "Inspect the fixture vault and explain why writeback backlog is a maintenance concern instead of a normal query step. Do not modify any files.",
       "files": [
         "evals/fixtures/writeback-backlog/AGENTS.md",
         "evals/fixtures/writeback-backlog/outputs/qa/2026-04-08-writeback-gap.md",
         "evals/fixtures/writeback-backlog/wiki/live/concepts/review-gate.md"
+      ]
+    },
+    {
+      "id": "kb-health-governance-indices",
+      "skill": "kb-health",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-maintenance",
+      "prompt": "Inspect the fixture vault and explain what QUESTIONS, GAPS, and ALIASES governance views should surface from the approved layer. Do not modify any files.",
+      "files": [
+        "evals/fixtures/needs-maintenance/AGENTS.md",
+        "evals/fixtures/needs-maintenance/wiki/live/concepts/retrieval-augmented-generation.md",
+        "evals/fixtures/needs-maintenance/outputs/qa/2026-04-01-rag-answer.md"
+      ]
+    },
+    {
+      "id": "kb-health-governance-refresh-readme",
+      "skill": "kb-health",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-governance-refresh",
+      "prompt": "Inspect the governance refresh fixture and explain why derived indices should be refreshed from current approved knowledge instead of treated as permanent truth pages. Do not modify any files.",
+      "files": [
+        "evals/fixtures/needs-governance-refresh/README.md"
       ]
     }
   ]

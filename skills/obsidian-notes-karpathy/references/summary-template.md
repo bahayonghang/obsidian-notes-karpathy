@@ -9,6 +9,8 @@ source_file: "[[{raw-link}]]"
 source_hash: "{optional-hash}"
 source_mtime: "{mtime}"
 compiled_at: "{datetime}"
+last_verified_at: "{datetime}"
+possibly_outdated: false
 draft_id: "{stable-draft-id}"
 compiled_from:
   - "[[{raw-link}]]"
@@ -17,6 +19,10 @@ capture_sources:
 review_state: "pending"
 review_score: 0.88
 blocking_flags: []
+alias_candidates:
+  - "value-investing"
+duplicate_candidates:
+  - "wiki/live/concepts/value-investing"
 accuracy: 0.90
 provenance: 0.92
 composability: 0.84
@@ -55,6 +61,11 @@ uncertainty_level: low | medium | high
 
 - [[wiki/drafts/entities/entity-a]] - {relationship}
 
+## Alias and Duplicate Signals
+
+- Alias candidates: {candidate slugs or names}
+- Duplicate candidates: {existing draft/live pages that may overlap}
+
 ## Open Questions
 
 - {what remains uncertain}
@@ -70,4 +81,5 @@ Rules:
 - draft summaries are reviewable evidence packages, not polished prose
 - keep provenance explicit enough that a reviewer can judge the draft without agent-specific production context
 - keep direct source claims separate from compiler-added inferences
+- surface alias or duplicate risk rather than silently creating competing long-term notes
 - omit entity sections when the source does not introduce durable named entities

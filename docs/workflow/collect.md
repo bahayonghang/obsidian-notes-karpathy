@@ -28,11 +28,11 @@ Use the same metadata shape, but keep raw notes free of compilation-state fields
 
 ### Paper PDFs
 
-If the source artifact is a paper PDF, place it under `raw/papers/`.
+If the source artifact is a paper PDF, place it under a `papers/` subtree inside `raw/`, usually `raw/human/papers/`.
 
 - if you already know the paper handle, optionally add `paper-name.source.md` next to the PDF with frontmatter such as `paper_id` or `source`
-- compilation treats the directory as the routing signal, so any `raw/papers/*.pdf` must go through `paper-workbench`
-- the compile path should normalize the paper through `paper-workbench` in `json` mode before generating summary content
+- routing treats the `papers/` subtree as the signal, so any `raw/**/papers/*.pdf` must go through `paper-workbench`
+- `kb-compile` should surface or defer those PDFs rather than compiling them as ordinary markdown captures
 - the sidecar or filename handle is metadata for provenance and debugging, not the routing gate
 - if `paper-workbench` is not installed, report the missing install step instead of pretending the paper was compiled
 
@@ -48,7 +48,8 @@ That means:
 
 ## Suggested directories
 
-- `raw/articles/`
-- `raw/papers/`
-- `raw/podcasts/`
-- `raw/assets/`
+- `raw/human/articles/`
+- `raw/human/papers/`
+- `raw/human/podcasts/`
+- `raw/human/repos/`
+- `raw/human/assets/`

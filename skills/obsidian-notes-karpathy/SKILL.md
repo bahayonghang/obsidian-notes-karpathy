@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, mentions review gates, draft/live separation, briefings, or a markdown-first "living book" / "second brain" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, compile, review, query, or health, and only route through this package entry skill when the workflow step is genuinely ambiguous.
+description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, mentions review gates, draft/live separation, briefings, governance checks, source integrity, alias drift, open questions, or a markdown-first "living book" / "second brain" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, compile, review, query, or health, and only route through this package entry skill when the workflow step is genuinely ambiguous.
 ---
 
 # Obsidian Notes Karpathy
@@ -18,6 +18,8 @@ Read these shared references first:
 - `./references/lifecycle-matrix.md`
 - `./references/search-upgrades.md`
 - `./references/activity-log-template.md`
+- `./references/provenance-and-alias-policy.md`
+- `./references/questions-and-reflection-policy.md`
 
 Treat `skill-contract-registry.json` as the canonical list of package roles, required shared references, baseline scripts, and output surfaces.
 
@@ -40,7 +42,8 @@ Route to `kb-init` when:
 - `AGENTS.md` is missing
 - `wiki/index.md` or `wiki/log.md` is missing
 - `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, or `outputs/reviews/` is missing
-- the vault is a `legacy-layout` that must be migrated first
+- the vault is a `needs-migration` / legacy-layout case that must be migrated first
+- optional governance scaffolding such as `QUESTIONS.md` or `ALIASES.md` is explicitly requested
 
 ### Compile signals
 
@@ -48,6 +51,7 @@ Route to `kb-compile` when:
 
 - new or changed raw captures exist under `raw/human/**`, `raw/agents/{role}/**`, or directly under `raw/` in a bootstrap vault
 - the draft summary matching a raw capture is missing or outdated
+- alias candidates, duplicate candidates, or source-integrity drift need to be surfaced before review
 - a legacy-layout raw source still needs to be converted into the draft layer during migration
 
 ### Review signals
@@ -57,6 +61,7 @@ Route to `kb-review` when:
 - draft knowledge exists under `wiki/drafts/**` and still has `review_state: pending`
 - the user explicitly asks to run the quality gate, approve drafts, reject drafts, or rebuild briefings
 - briefings are stale relative to the live layer and the next immediate step is to rebuild them through the gate
+- a draft has unresolved contradiction, alias-alignment, or duplication-risk questions that require approval judgment
 
 `kb-review` owns the immediate gate: pending draft decisions, promotion into `wiki/live/`, and briefing rebuilds that should happen as part of the current review pass.
 
@@ -66,6 +71,7 @@ Route to `kb-query` when:
 
 - `wiki/live/**` is trustworthy and current
 - the user wants an answer, report, thread, slides, or other artifact grounded in the approved brain
+- the user wants question-resolution candidates or reflection outputs that should stay outside live until re-reviewed
 
 ### Health signals
 
@@ -76,9 +82,9 @@ Route to `kb-health` when:
 - review backlog, stale briefings, or writeback pressure have become longer-horizon maintenance issues rather than the next immediate gate
 - archived answers have pending writeback work
 - collaboration memory and approved knowledge appear to be mixing
-- the user wants a maintenance baseline, drift audit, or report-first cleanup pass across approved surfaces
+- the user wants a maintenance baseline, drift audit, duplicate pass, alias audit, or report-first cleanup pass across approved surfaces
 
-`kb-health` owns the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, and safe mechanical fixes after the immediate review gate has passed.
+`kb-health` owns the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, and safe mechanical fixes after the immediate review gate has passed.
 
 ## Package doctrine
 
@@ -88,6 +94,7 @@ Route to `kb-health` when:
 - Treat `wiki/briefings/` as per-role context generated from live only.
 - Treat `outputs/reviews/` as the durable decision ledger.
 - Keep `wiki/index.md` and `wiki/log.md` as complementary navigation surfaces.
+- Absorb stronger governance signals such as source integrity, alias alignment, stale-page checks, and question tracking without collapsing the review gate.
 
 ## Output requirements
 

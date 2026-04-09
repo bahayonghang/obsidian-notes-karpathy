@@ -20,6 +20,7 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/review-template.md`
 - `../obsidian-notes-karpathy/references/briefing-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
@@ -36,11 +37,20 @@ Do not preserve a draft merely because the producing agent seems competent or be
 
 ## Mixed gate policy
 
-- auto-approve when the draft has no blocking flags, no unresolved live conflict, and the review score clears the threshold
+- auto-approve when the draft has no blocking flags, no unresolved live conflict, no unresolved alias/duplicate concern, and the review score clears the threshold
 - auto-reject when evidence is weak, blocking flags remain, or the draft is clearly unsafe to compound
-- send to human review when the draft conflicts with live knowledge or the score band is ambiguous
+- send to human review when the draft conflicts with live knowledge, source integrity is suspect, or the score band is ambiguous
 
-When the draft is borderline, weigh both accuracy and whether the page deserves promotion into the long-term brain. A technically correct draft can still stay out of `wiki/live/` if it is noisy, redundant, or not durable enough to merit reuse.
+When the draft is borderline, weigh both accuracy and whether the page deserves promotion into the long-term brain. A technically correct draft can still stay out of `wiki/live/` if it is noisy, redundant, weakly provenanced, or not durable enough to merit reuse.
+
+## What reviewers must judge explicitly
+
+- are source claims and compiler inferences cleanly separated?
+- is source integrity still credible?
+- are aliases aligned with the existing approved vocabulary?
+- does this draft duplicate an existing approved page?
+- are contradictions recorded rather than silently overwritten?
+- does the page deserve durable retention in the long-term brain?
 
 ## Outputs
 

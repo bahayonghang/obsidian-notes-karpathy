@@ -1,0 +1,80 @@
+{
+  "skill_family": "obsidian-notes-karpathy",
+  "description": "Writable-copy runtime evals. Each run operates on a copied fixture vault under the workspace so repository-tracked fixtures stay unchanged.",
+  "evals": [
+    {
+      "id": "kb-init-needs-setup-write",
+      "skill": "kb-init",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/needs-setup",
+      "prompt": "Bring this copied fixture vault onto the review-gated contract. Create the minimum required support layer plus starter files, keep optional downstream outputs minimal, and preserve any existing content.",
+      "files": [
+        "evals/fixtures/needs-setup/README.md"
+      ],
+      "checks": [
+        {"name": "raw-created", "kind": "exists", "path": "raw"},
+        {"name": "drafts-created", "kind": "exists", "path": "wiki/drafts"},
+        {"name": "live-created", "kind": "exists", "path": "wiki/live"},
+        {"name": "briefings-created", "kind": "exists", "path": "wiki/briefings"},
+        {"name": "reviews-created", "kind": "exists", "path": "outputs/reviews"},
+        {"name": "agents-guidance-created", "kind": "exists", "path": "AGENTS.md"},
+        {"name": "claude-guidance-created", "kind": "exists", "path": "CLAUDE.md"},
+        {"name": "memory-created", "kind": "exists", "path": "MEMORY.md"}
+      ]
+    },
+    {
+      "id": "kb-init-repair-live-only-write",
+      "skill": "kb-init",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/needs-repair-live-only",
+      "prompt": "Repair the copied fixture vault without discarding the existing live page. Restore the minimum support layer needed for normal review-gated operation.",
+      "files": [
+        "evals/fixtures/needs-repair-live-only/AGENTS.md",
+        "evals/fixtures/needs-repair-live-only/wiki/index.md",
+        "evals/fixtures/needs-repair-live-only/wiki/live/summaries/human/articles/2026-04-07-incomplete-live.md"
+      ],
+      "checks": [
+        {"name": "drafts-created", "kind": "exists", "path": "wiki/drafts"},
+        {"name": "briefings-created", "kind": "exists", "path": "wiki/briefings"},
+        {"name": "reviews-created", "kind": "exists", "path": "outputs/reviews"},
+        {"name": "existing-live-page-preserved", "kind": "exists", "path": "wiki/live/summaries/human/articles/2026-04-07-incomplete-live.md"}
+      ]
+    },
+    {
+      "id": "kb-compile-needs-compilation-write",
+      "skill": "kb-compile",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/needs-compilation",
+      "prompt": "Compile the copied vault so new or changed raw captures become reviewable drafts. Do not rewrite raw files and do not promote anything into live.",
+      "files": [
+        "evals/fixtures/needs-compilation/AGENTS.md",
+        "evals/fixtures/needs-compilation/raw/human/articles/2026-04-07-new-capture.md",
+        "evals/fixtures/needs-compilation/wiki/log.md"
+      ],
+      "checks": [
+        {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"},
+        {"name": "draft-summaries-present", "kind": "glob_count_gte", "pattern": "wiki/drafts/summaries/**/*.md", "min_count": 1},
+        {"name": "draft-indices-present", "kind": "exists", "path": "wiki/drafts/indices"},
+        {"name": "log-still-present", "kind": "exists", "path": "wiki/log.md"}
+      ]
+    },
+    {
+      "id": "kb-review-needs-review-write",
+      "skill": "kb-review",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/needs-review",
+      "prompt": "Run the review gate on the copied vault. Resolve ready drafts, emit review records, and update the approved layer or briefing outputs only where the review outcome allows it.",
+      "files": [
+        "evals/fixtures/needs-review/AGENTS.md",
+        "evals/fixtures/needs-review/raw/human/articles/2026-04-01-compiler-safety.md",
+        "evals/fixtures/needs-review/wiki/drafts/summaries/human/articles/2026-04-01-compiler-safety.md"
+      ],
+      "checks": [
+        {"name": "review-record-emitted", "kind": "dir_non_empty", "path": "outputs/reviews"},
+        {"name": "live-layer-still-present", "kind": "exists", "path": "wiki/live"},
+        {"name": "briefings-still-present", "kind": "exists", "path": "wiki/briefings"},
+        {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"}
+      ]
+    }
+  ]
+}

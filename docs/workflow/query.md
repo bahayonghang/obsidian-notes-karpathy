@@ -5,11 +5,11 @@
 ## Standard sequence
 
 1. read `wiki/index.md`
-2. inspect `wiki/live/indices/INDEX.md` and `wiki/live/indices/CONCEPTS.md`
+2. inspect `wiki/live/indices/INDEX.md`, `CONCEPTS.md`, and relevant source or question views
 3. use Backlinks, unlinked mentions, or Properties search when they are the fastest route
 4. search `outputs/qa/` for relevant prior work
 5. read supporting concept pages and summaries
-6. answer and save the result when substantive
+6. answer and save the result to `outputs/qa/` or `outputs/content/` when substantive
 
 ## Why outputs matter
 

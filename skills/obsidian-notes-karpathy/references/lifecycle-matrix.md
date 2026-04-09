@@ -24,7 +24,7 @@ The script is the deterministic baseline for:
 | --- | --- | --- | --- | --- |
 | `needs-setup` | `kb-init` | The support layer does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
 | `needs-repair` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
-| `legacy-layout` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before normal operation. | migration path, old compiled files, missing companions | migration guidance or repair |
+| `needs-migration` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before normal operation. | migration path, old compiled files, missing companions | migration guidance or repair |
 | `needs-compilation` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `scan_compile_delta.py`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
 | `needs-review` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `scan_review_queue.py`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
 | `needs-briefing-refresh` | `kb-review` | The approved brain changed after the last briefing build. | briefing sources, latest live timestamps | regenerated `wiki/briefings/`, `wiki/log.md` |
@@ -38,9 +38,12 @@ These symptoms should push routing toward `kb-health` even when the structure al
 - the live notes feel contradictory or unreliable
 - briefings seem wrong even after a recent review pass
 - there are obvious duplicate live concepts or approved conflicts
+- aliases appear split across multiple live notes
+- source hashes or verification timestamps suggest provenance drift
 - the approved layer renders badly in Obsidian
 - archived answers have pending writeback work piling up
 - collaboration memory and approved knowledge appear to be mixing
+- open questions and gap reports are accumulating without clear ownership
 
 These symptoms should push routing toward `kb-init` even when `raw/` and `wiki/` both exist:
 
@@ -53,11 +56,12 @@ These symptoms should be surfaced as repair targets without blocking compile/que
 
 - only `CLAUDE.md` is missing
 - a single noncanonical filename such as `agents.md` or `claude.md` exists but the contract is otherwise usable
+- optional governance indices like `QUESTIONS.md` or `ALIASES.md` are absent
 
 ## Operational reminders
 
-- `kb-init` owns contract creation, migration, and repair.
-- `kb-compile` owns source-to-draft updates.
-- `kb-review` owns draft promotion, rejection, and briefing refresh.
-- `kb-query` owns synthesis, archival, and publish artifacts from the approved layer only.
-- `kb-health` owns deep maintenance passes over live knowledge, briefings, review backlog, and deterministic mechanical fixes in approved surfaces only.
+- `kb-init` owns contract creation, migration, repair, and optional governance scaffolding.
+- `kb-compile` owns source-to-draft updates, source metadata normalization, and alias-candidate surfacing.
+- `kb-review` owns draft promotion, rejection, contradiction handling, and briefing refresh.
+- `kb-query` owns synthesis, archival, publish artifacts, and question-resolution candidates from the approved layer only.
+- `kb-health` owns deep maintenance passes over live knowledge, briefings, review backlog, duplicate detection, stale-page heuristics, and deterministic mechanical fixes in approved surfaces only.

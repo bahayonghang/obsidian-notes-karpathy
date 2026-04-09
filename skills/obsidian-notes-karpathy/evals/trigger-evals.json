@@ -85,6 +85,11 @@
     "reason": "Writeback backlog is a maintenance signal, not a normal query."
   },
   {
+    "query": "I know the live wiki exists, but before I ask another question I want you to audit stale Q&A, unresolved writeback backlog, and briefing drift across the approved layer.",
+    "expected_skill": "kb-health",
+    "reason": "Maintenance-first near-miss against query wording."
+  },
+  {
     "query": "This vault has a MEMORY.md with preferences and editorial priorities. Keep that outside the topic retrieval boundary and tell me what layer is still query truth.",
     "expected_skill": "kb-query",
     "reason": "Query-time boundary clarification for approved live knowledge versus collaboration memory."
@@ -98,6 +103,21 @@
     "query": "My approved layer is structurally present, but the archived Q&A notes are older than the newer live concepts they cite. Audit drift first, not query.",
     "expected_skill": "kb-health",
     "reason": "Maintenance-first due stale Q&A drift."
+  },
+  {
+    "query": "Lifecycle detection says needs-review, and after that I want a short publishable summary. Handle the immediate safe next step first.",
+    "expected_skill": "kb-review",
+    "reason": "Immediate gate should win over downstream publish intent."
+  },
+  {
+    "query": "I dropped a new PDF into raw/papers/ and want it ingested into the Obsidian workflow. Do not assume it is already markdown.",
+    "expected_skill": null,
+    "reason": "Paper PDFs are a companion-skill routing exception, not a normal shipped-skill trigger."
+  },
+  {
+    "query": "I am not asking you to compile or query yet. I want you to inspect this Obsidian vault workflow and tell me which lifecycle step should happen next because the structure and backlog signals look mixed.",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Router near-miss against overlapping operation keywords."
   },
   {
     "query": "Help me design a vector retrieval service for SaaS documentation with embeddings, reranking, and a retrieval API. This is not an Obsidian vault.",

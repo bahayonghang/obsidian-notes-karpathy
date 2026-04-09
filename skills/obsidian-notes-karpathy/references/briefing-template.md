@@ -12,6 +12,8 @@ staleness_after: "{datetime}"
 source_live_pages:
   - "[[wiki/live/concepts/concept-a]]"
   - "[[wiki/live/summaries/human/articles/source-b]]"
+open_questions_touched:
+  - "{question this role should keep in mind}"
 ---
 
 # {Role} Briefing
@@ -32,6 +34,7 @@ source_live_pages:
 ## Guardrails
 
 - Never treat drafts as approved truth.
+- Prefer approved summaries when citing evidence trails.
 - Never cite raw captures unless a human explicitly asks for source evidence.
 ```
 
@@ -39,3 +42,4 @@ Rules:
 
 - briefings must be generated only from live pages
 - briefings should be short, role-specific, and easy to regenerate
+- use `open_questions_touched` when the role should track unresolved decisions or evidence gaps

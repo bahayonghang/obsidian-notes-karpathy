@@ -16,11 +16,13 @@
 ## 共享合同
 
 - `raw/` 永远不可变。
+- `raw/**/papers/*.pdf` 下的论文 PDF 仍然是 `paper-workbench` 路由例外，不属于普通 `kb-compile` 入口。
 - `MEMORY.md` 是协作记忆层，不是专题真相层。
 - `wiki/drafts/` 可审校，但不是真相层。
 - `wiki/live/` 是批准后的长期知识层。
 - `wiki/briefings/` 只能从 live 构建。
 - `outputs/reviews/` 存 promotion 决策。
+- `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图按需维护，不是每个 vault 都强制存在。
 - legacy-layout vault 先经 `kb-init` 迁移，再进入正常流程。
 
 设计理由与后续演化请看 [架构说明](/zh/architecture/overview)。

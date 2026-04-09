@@ -24,7 +24,7 @@ Canonical workflow:
 - `skills/kb-review/SKILL.md` - draft review gate, promotion, and briefing rebuild
 - `skills/kb-query/SKILL.md` - approved-layer search, answers, and publishing
 - `skills/kb-health/SKILL.md` - live-layer maintenance, backlog, and briefing audit
-- `skills/obsidian-notes-karpathy/references/` - shared review-gated file model, lifecycle matrix, templates, and rubric
+- `skills/obsidian-notes-karpathy/references/` - shared review-gated file model, lifecycle matrix, templates, governance policy, and rubric
 - `skills/obsidian-notes-karpathy/scripts/` - deterministic helpers including the skill contract registry, lifecycle detection, compile delta, review queue, query scope, and mechanical linting
 - `skills/obsidian-notes-karpathy/evals/fixtures/` - legacy and review-gated fixture vaults
 - `README.md` and `README_CN.md` - public docs that must stay aligned
@@ -40,6 +40,7 @@ Canonical workflow:
 - `kb-query` must not treat drafts or raw captures as truth.
 - `AGENTS.md` is the required local contract; `CLAUDE.md` is the generated companion.
 - legacy-layout vaults must route through `kb-init` migration before normal operation.
+- source integrity, alias alignment, stale-page checks, and question / gap tracking are governance enhancements layered on top of the review gate rather than replacements for it.
 
 ## Support Layer Notes
 
@@ -47,7 +48,8 @@ Canonical workflow:
 - `outputs/qa/`, `outputs/content/`, and `outputs/health/` are downstream output surfaces created when later stages need them.
 - `MEMORY.md` is recommended collaboration scaffolding rather than a blocking support-layer requirement.
 - `outputs/qa/` and `outputs/content/` may carry structured writeback candidates that must still re-enter the system through draft -> review -> live.
-- Bootstrap root captures under `raw/*.md` are valid compile inputs, but missing support directories still make the vault a repair case.
+- bootstrap root captures under `raw/*.md` are valid compile inputs, but missing support directories still make the vault a repair case.
+- optional governance indices like `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when richer maintenance surfaces are useful.
 - `kb-health` is report-first and may apply deterministic mechanical fixes in approved surfaces only; it must never mutate `raw/` or promote drafts.
 
 ## Installation

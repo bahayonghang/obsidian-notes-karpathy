@@ -58,9 +58,9 @@ Then confirm the bundled resources live inside the shared package home:
 - `obsidian-cli`
 - `obsidian-canvas-creator`
 
-For paper/PDF ingestion under `raw/papers/`, also install:
+For paper/PDF ingestion under `raw/**/papers/`, also install:
 
-- `paper-workbench` as the required paper companion for `raw/papers/*.pdf`; use `json` for compile-time normalization, `interpret` for direct paper explanation, and `xray` for deeper critique
-- `pdf` for non-paper PDF handling outside the strict `raw/papers` compile path
+- `paper-workbench` as the required paper companion for `raw/**/papers/*.pdf`; use `json` for paper normalization, `interpret` for direct paper explanation, and `xray` for deeper critique
+- `pdf` for non-paper PDF handling outside the strict `raw/**/papers` compile path
 
-Install those companion skills into the same skill home your runtime is actually using. If `raw/papers` PDFs are still skipped, verify that `paper-workbench` is available in the active home before changing the vault.
+Install those companion skills into the same skill home your runtime is actually using. If paper PDFs are still being surfaced as skipped work, verify that `paper-workbench` is available in the active home before changing the vault.

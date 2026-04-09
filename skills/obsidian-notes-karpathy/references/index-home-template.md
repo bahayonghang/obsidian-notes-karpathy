@@ -19,7 +19,7 @@ Use this structure for `wiki/index.md`.
 3. Review and promote into `wiki/live/`
 4. Rebuild affected briefings
 5. Query or publish from the live layer
-6. Run health checks to catch drift, stale briefings, and backlog
+6. Run health checks to catch drift, stale briefings, duplicate concepts, and backlog
 
 ## Current State
 
@@ -30,6 +30,7 @@ Use this structure for `wiki/index.md`.
 - Briefings: {count}
 - Review backlog: {count}
 - Archived Q&A: {count}
+- Open questions: {count}
 
 ## Entry Points
 
@@ -43,6 +44,11 @@ Use this structure for `wiki/index.md`.
 - {pending draft 1}
 - {pending draft 2}
 
+## Open Questions
+
+- {question 1}
+- {question 2}
+
 ## Recent Activity
 
 - {recent event 1}
@@ -54,3 +60,4 @@ Rules:
 - keep `wiki/index.md` content-oriented rather than chronological
 - show live and draft state separately
 - do not imply drafts are queryable truth
+- optional governance sections such as Open Questions or Health Highlights should summarize, not replace, the canonical live indices

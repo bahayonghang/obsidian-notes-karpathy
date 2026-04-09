@@ -30,6 +30,10 @@ health_score: {overall}
 
 - {warning}
 
+## Duplicate and Alias Drift
+
+- {duplicate concept/entity or alias split}
+
 ## Review Backlog
 
 - {pending draft or human review queue item}
@@ -42,7 +46,7 @@ health_score: {overall}
 
 - {qa or content artifact with pending writeback candidates}
 
-## Suggested Follow-Up Questions
+## Open Questions and Gaps
 
 - {source gap or ambiguity}
 
@@ -80,12 +84,14 @@ Suggested weighting:
 - live concept or entity gaps relative to approved summaries
 - missing briefings for active roles
 - review outputs that never generated the corresponding live page or briefing
+- open questions or writeback candidates that recur without an owner
 
 ### Consistency
 
 - conflicting approved concepts or entities
 - duplicate approved concepts or entities
 - approved claims contradicted by newer approved sources
+- aliases split across multiple live notes that should converge
 
 ### Connectivity
 
@@ -99,6 +105,7 @@ Suggested weighting:
 - approved pages that should have been rebuilt after new reviews
 - old Q&A that should be refreshed against newer approved knowledge
 - pending writeback candidates that have not re-entered the draft/review loop
+- pages whose `domain_volatility` suggests they should be reviewed sooner
 
 ### Provenance
 
@@ -106,6 +113,7 @@ Suggested weighting:
 - live pages missing `trust_level: approved`
 - answers or briefings that cite drafts or raw captures as truth
 - approved pages with empty or missing `sources`
+- source hash drift or outdated verification metadata
 
 ## Mechanical integrity
 
@@ -115,3 +123,4 @@ Treat these as report-worthy mechanical issues even though they do not add a new
 - unapproved pages under `wiki/live/`
 - pending review backlog that is aging without resolution
 - collaboration memory mixing with approved knowledge surfaces
+- broken wikilinks in approved surfaces

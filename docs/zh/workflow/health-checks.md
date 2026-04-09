@@ -10,6 +10,9 @@
 - 旧结论可能被新资料推翻
 - 概念页定义不一致
 - 需要每周或每月做一次质量基线
+- `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图需要刷新
+- 归档 Q&A 或 publish 产物可能已经积累 writeback backlog
+- 需要检查协作记忆是否渗入 approved knowledge
 
 ## 报告位置
 
@@ -29,7 +32,9 @@
 
 - 修复明显的交叉链接问题
 - 标记 alias drift 或重复概念
+- 标记过期的归档 Q&A 或 publish 产物
 - 找出缺失概念页
 - 找出 writeback backlog
 - 找出协作记忆渗入 approved knowledge 的地方
+- 在目标明确时刷新治理视图
 - 提醒哪些旧 Q&A 该重写或补注释

@@ -20,10 +20,14 @@ Read these shared references first:
 - `../obsidian-notes-karpathy/references/briefing-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/index-home-template.md`
+- `../obsidian-notes-karpathy/references/questions-template.md`
+- `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 
 Treat `skill-contract-registry.json` as the canonical source for role, baseline script, required references, and expected write surfaces.
 
-If `../obsidian-notes-karpathy/scripts/detect_lifecycle.py` exists, run it first to distinguish setup, repair, and `legacy-layout` migration.
+If `../obsidian-notes-karpathy/scripts/detect_lifecycle.py` exists, run it first to distinguish setup, repair, and `needs-migration` / legacy-layout migration.
+
+If `../obsidian-notes-karpathy/scripts/build_governance_indices.py` exists and the user wants optional governance scaffolding, use it to generate starter `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` content after the support layer exists.
 
 ## Create or repair the canonical structure
 
@@ -45,6 +49,12 @@ CLAUDE.md
 Create downstream output directories such as `outputs/qa/`, `outputs/health/`, `outputs/reports/`, `outputs/slides/`, `outputs/charts/`, and `outputs/content/**` only when the user wants full scaffolding or the later stages need them.
 
 Treat `MEMORY.md` as recommended collaboration scaffolding. It should hold preferences, editorial priorities, and coordination context, not source-grounded topic knowledge.
+
+Optional governance scaffolding may include:
+
+- `wiki/live/indices/QUESTIONS.md`
+- `wiki/live/indices/GAPS.md`
+- `wiki/live/indices/ALIASES.md`
 
 ## Migration posture
 
@@ -76,6 +86,7 @@ Create:
 - `wiki/live/indices/SOURCES.md`
 - `wiki/live/indices/RECENT.md`
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md`
+- optional `wiki/live/indices/QUESTIONS.md` when the user wants governance scaffolding
 - at least one example briefing or a placeholder in `wiki/briefings/`
 - a review template example in `outputs/reviews/` when the user wants a demonstrable starter
 
@@ -84,6 +95,6 @@ Create:
 Report:
 
 1. what was created or migrated
-2. whether a legacy-layout was detected
+2. whether a legacy-layout / `needs-migration` state was detected
 3. what existing content was preserved
 4. the next recommended command, usually `kb-compile` or `kb-review`

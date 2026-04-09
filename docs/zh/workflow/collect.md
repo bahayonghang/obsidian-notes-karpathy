@@ -28,11 +28,11 @@
 
 ### PDF 论文
 
-如果原始资料本身就是论文 PDF，就把它放到 `raw/papers/`。
+如果原始资料本身就是论文 PDF，就把它放到 `raw/` 里的 `papers/` 子目录，通常是 `raw/human/papers/`。
 
 - 如果你已经知道 paper handle，可以在旁边加一个 `paper-name.source.md` sidecar，写 `paper_id` 或 `source`
-- 编译时会把目录本身当作路由信号，所以任何 `raw/papers/*.pdf` 都必须走 `paper-workbench`
-- 编译链会先通过 `paper-workbench` 的 `json` 模式把论文标准化，再生成摘要内容
+- 路由会把 `papers/` 子目录本身当作信号，所以任何 `raw/**/papers/*.pdf` 都必须走 `paper-workbench`
+- `kb-compile` 只能把这些 PDF 标出来、延后处理，不能把它们当普通 markdown capture 直接编译
 - sidecar 或文件名里的 handle 只作为溯源和调试元数据，不再决定路由
 - 如果 `paper-workbench` 没装，就明确提示安装，而不是假装编译成功
 
@@ -44,4 +44,12 @@
 
 - 来源元数据放在 raw
 - 编译元数据放在摘要页
-- 让 `kb-compile` 维护 wiki，而不是回写源文件
+- 让 `kb-compile` 维护 drafts，而不是回写源文件
+
+## 建议目录
+
+- `raw/human/articles/`
+- `raw/human/papers/`
+- `raw/human/podcasts/`
+- `raw/human/repos/`
+- `raw/human/assets/`

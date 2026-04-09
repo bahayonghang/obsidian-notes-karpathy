@@ -68,6 +68,8 @@ def scan_review_queue(vault_root: Path) -> dict[str, Any]:
         live_path = live_record_for_draft(vault_root, record)
         live_exists = (vault_root / live_path).exists()
 
+        alias_candidates: list[str] = []
+        duplicate_candidates: list[str] = []
         if state in TERMINAL_REVIEW_STATES:
             pending = False
             decision = "approve" if state == "promoted" else "reject"
@@ -75,6 +77,8 @@ def scan_review_queue(vault_root: Path) -> dict[str, Any]:
         else:
             pending = True
             pending_count += 1
+            alias_candidates = list_field(frontmatter, "alias_candidates")
+            duplicate_candidates = list_field(frontmatter, "duplicate_candidates")
             if hard_flags:
                 decision = "reject"
                 reason = "blocking_flags"
@@ -84,6 +88,12 @@ def scan_review_queue(vault_root: Path) -> dict[str, Any]:
             elif live_conflict:
                 decision = "needs-human"
                 reason = "live_conflict"
+            elif duplicate_candidates:
+                decision = "needs-human"
+                reason = "duplicate_candidates"
+            elif alias_candidates and score < 0.90:
+                decision = "needs-human"
+                reason = "alias_alignment_requires_judgment"
             elif score >= 0.85:
                 decision = "approve"
                 reason = "threshold_met"
@@ -103,6 +113,8 @@ def scan_review_queue(vault_root: Path) -> dict[str, Any]:
                 "review_state": state,
                 "review_score": score,
                 "blocking_flags": blocking_flags,
+                "alias_candidates": alias_candidates,
+                "duplicate_candidates": duplicate_candidates,
                 "decision": decision,
                 "reason": reason,
                 "pending": pending,

@@ -3,7 +3,9 @@
   "shared_references": [
     "file-model.md",
     "lifecycle-matrix.md",
-    "activity-log-template.md"
+    "activity-log-template.md",
+    "provenance-and-alias-policy.md",
+    "questions-and-reflection-policy.md"
   ],
   "skills": {
     "obsidian-notes-karpathy": {
@@ -12,7 +14,9 @@
         "file-model.md",
         "lifecycle-matrix.md",
         "search-upgrades.md",
-        "activity-log-template.md"
+        "activity-log-template.md",
+        "provenance-and-alias-policy.md",
+        "questions-and-reflection-policy.md"
       ],
       "baseline_script": "detect_lifecycle.py",
       "writes": [],
@@ -35,7 +39,9 @@
         "review-template.md",
         "briefing-template.md",
         "activity-log-template.md",
-        "index-home-template.md"
+        "index-home-template.md",
+        "questions-template.md",
+        "provenance-and-alias-policy.md"
       ],
       "baseline_script": "detect_lifecycle.py",
       "writes": [
@@ -49,6 +55,9 @@
         "wiki/live/indices/CONCEPTS.md",
         "wiki/live/indices/SOURCES.md",
         "wiki/live/indices/RECENT.md",
+        "wiki/live/indices/QUESTIONS.md",
+        "wiki/live/indices/GAPS.md",
+        "wiki/live/indices/ALIASES.md",
         "wiki/briefings/",
         "outputs/reviews/"
       ],
@@ -68,7 +77,8 @@
         "lifecycle-matrix.md",
         "schema-template.md",
         "summary-template.md",
-        "activity-log-template.md"
+        "activity-log-template.md",
+        "provenance-and-alias-policy.md"
       ],
       "baseline_script": "scan_compile_delta.py",
       "writes": [
@@ -91,7 +101,8 @@
         "schema-template.md",
         "review-template.md",
         "briefing-template.md",
-        "activity-log-template.md"
+        "activity-log-template.md",
+        "provenance-and-alias-policy.md"
       ],
       "baseline_script": "scan_review_queue.py",
       "writes": [
@@ -113,7 +124,9 @@
         "file-model.md",
         "lifecycle-matrix.md",
         "briefing-template.md",
-        "activity-log-template.md"
+        "activity-log-template.md",
+        "questions-and-reflection-policy.md",
+        "search-upgrades.md"
       ],
       "baseline_script": "scan_query_scope.py",
       "writes": [
@@ -134,7 +147,9 @@
         "lifecycle-matrix.md",
         "activity-log-template.md",
         "health-rubric.md",
-        "search-upgrades.md"
+        "search-upgrades.md",
+        "provenance-and-alias-policy.md",
+        "questions-and-reflection-policy.md"
       ],
       "baseline_script": "lint_obsidian_mechanics.py",
       "writes": [
@@ -142,10 +157,14 @@
         "outputs/qa/",
         "wiki/briefings/",
         "wiki/live/",
+        "wiki/live/indices/QUESTIONS.md",
+        "wiki/live/indices/GAPS.md",
+        "wiki/live/indices/ALIASES.md",
         "wiki/log.md"
       ],
       "outputs": [
         "outputs/health/",
+        "wiki/live/indices/",
         "wiki/log.md"
       ]
     }

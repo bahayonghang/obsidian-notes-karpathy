@@ -93,9 +93,10 @@ class ContractAndRoutingTests(unittest.TestCase):
         self.assertEqual(sorted(registry["skills"].keys()), sorted(SKILL_PATHS.keys()))
         self.assertIn("MEMORY.md", registry["skills"]["kb-init"]["writes"])
         self.assertIn(
-            "wiki/live/indices/EDITORIAL-PRIORITIES.md",
-            registry["skills"]["kb-init"]["writes"],
+            "wiki/live/indices/ALIASES.md",
+            registry["skills"]["kb-health"]["writes"],
         )
+        self.assertIn("wiki/live/indices/", registry["skills"]["kb-health"]["outputs"])
 
         shared_refs = set(registry["shared_references"])
         for reference in shared_refs:

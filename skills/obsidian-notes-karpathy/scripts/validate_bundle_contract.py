@@ -7,6 +7,7 @@ import json
 import py_compile
 import re
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,7 @@ ENTRY_SKILL_ROOT = SCRIPT_DIR.parent
 REPO_ROOT = ENTRY_SKILL_ROOT.parents[1]
 TESTS_DIR = REPO_ROOT / "tests"
 RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals.json"
+WRITABLE_RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals-writable.json"
 REGISTRY_PATH = SCRIPT_DIR / "skill-contract-registry.json"
 SKILL_PATHS = {
     "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
@@ -44,15 +46,21 @@ def extract_reference_bullets(skill_text: str) -> list[str]:
 def compile_python_files() -> tuple[int, list[str]]:
     checked = 0
     errors: list[str] = []
-    for root in (SCRIPT_DIR, TESTS_DIR):
-        for path in sorted(root.rglob("*.py")):
-            if "__pycache__" in path.parts:
-                continue
-            checked += 1
-            try:
-                py_compile.compile(str(path), doraise=True)
-            except py_compile.PyCompileError as exc:
-                errors.append(f"{path.relative_to(REPO_ROOT).as_posix()}: {exc.msg}")
+    original_prefix = sys.pycache_prefix
+    with tempfile.TemporaryDirectory() as tmp:
+        sys.pycache_prefix = tmp
+        try:
+            for root in (SCRIPT_DIR, TESTS_DIR):
+                for path in sorted(root.rglob("*.py")):
+                    if "__pycache__" in path.parts:
+                        continue
+                    checked += 1
+                    try:
+                        py_compile.compile(str(path), doraise=True)
+                    except py_compile.PyCompileError as exc:
+                        errors.append(f"{path.relative_to(REPO_ROOT).as_posix()}: {exc.msg}")
+        finally:
+            sys.pycache_prefix = original_prefix
     return checked, errors
 
 
@@ -107,6 +115,7 @@ def check_docs_and_evals() -> list[str]:
     docs_overview_zh = (REPO_ROOT / "docs" / "zh" / "skills" / "overview.md").read_text(encoding="utf-8")
     trigger_evals = load_json(ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json")
     runtime_evals = load_json(RUNTIME_EVALS_PATH)
+    writable_runtime_evals = load_json(WRITABLE_RUNTIME_EVALS_PATH)
 
     for text_name, text in {
         "README.md": readme,
@@ -138,9 +147,26 @@ def check_docs_and_evals() -> list[str]:
     runtime_counts: dict[str, int] = {}
     for item in runtime_evals["evals"]:
         runtime_counts[item["skill"]] = runtime_counts.get(item["skill"], 0) + 1
+        if "vault_root" not in item:
+            errors.append(f"runtime-evals.json item {item.get('id')} is missing vault_root.")
+        if item.get("mode", "read-only") != "read-only":
+            errors.append(f"runtime-evals.json item {item.get('id')} must stay read-only.")
     for skill_name in ("kb-init", "kb-compile", "kb-review", "kb-query", "kb-health"):
         if runtime_counts.get(skill_name, 0) < 2:
             errors.append(f"runtime-evals.json must include at least two evals for {skill_name}.")
+
+    writable_counts: dict[str, int] = {}
+    for item in writable_runtime_evals["evals"]:
+        writable_counts[item["skill"]] = writable_counts.get(item["skill"], 0) + 1
+        if "vault_root" not in item:
+            errors.append(f"runtime-evals-writable.json item {item.get('id')} is missing vault_root.")
+        if item.get("mode") != "writable-copy":
+            errors.append(f"runtime-evals-writable.json item {item.get('id')} must use writable-copy mode.")
+        if not item.get("checks"):
+            errors.append(f"runtime-evals-writable.json item {item.get('id')} must define checks.")
+    for skill_name in ("kb-init", "kb-compile", "kb-review"):
+        if writable_counts.get(skill_name, 0) < 1:
+            errors.append(f"runtime-evals-writable.json must include at least one eval for {skill_name}.")
 
     return errors
 

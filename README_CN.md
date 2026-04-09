@@ -17,7 +17,7 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 
 - `obsidian-notes-karpathy`：生命周期路由
 - `kb-init`：初始化、修复或迁移到 review-gated 布局
-- `kb-compile`：把 raw 编译到 `wiki/drafts/`
+- `kb-compile`：把 raw Markdown 捕获编译到 `wiki/drafts/`
 - `kb-review`：批准 / 拒绝 / 升级人工复核，并重建 `wiki/briefings/`
 - `kb-query`：只从 `wiki/live/` 检索和产出
 - `kb-health`：审计 `wiki/live/`、`wiki/briefings/`、`outputs/qa/`、`outputs/reviews/`
@@ -27,10 +27,25 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 - `raw/` 永远不可变。
 - `MEMORY.md` 是协作记忆层，不是检索真相层。
 - `kb-compile` 只能写 `wiki/drafts/`。
+- `raw/**/papers/*.pdf` 下的论文 PDF 仍然是 `paper-workbench` 的路由例外，不属于普通 `kb-compile` 入口。
 - 只有 `kb-review` 可以把草稿提升到 `wiki/live/`。
 - `wiki/briefings/` 只能从 approved live 生成。
 - `kb-query` 读取 live、briefings 和历史 Q&A，不把 drafts 当真相层。
 - 旧的 legacy-layout vault 会被识别出来，并应先迁移再进入正常工作流。
+- alias 对齐、source integrity、stale 页面检查、开放问题跟踪都会被纳入治理规则，但不会绕过 review gate。
+
+## 为什么不是单层 source/concept/synthesis wiki
+
+这个包**故意不**把新生成的 `wiki/` 页面直接当作长期真相。
+
+而是：
+
+- raw 捕获先变成可审校 drafts
+- drafts 只有经过 `kb-review` 才进入 `wiki/live/`
+- query 和 publish 默认只建立在 approved summaries 与 live pages 上
+- health / reflect 类输出可以发现治理问题，但若要进入长期知识层，仍需走 draft -> review -> live
+
+这样可以保持 provenance 清晰，避免快速摄入直接固化成长期真相。
 
 ## 必需支撑层与可选输出
 
@@ -43,7 +58,9 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 - `outputs/health/`：`kb-health` 输出的体检报告
 - `MEMORY.md`：推荐的协作记忆与编辑上下文
 
-高价值回答和对外内容也可以携带结构化 writeback 候选，供后续 compile / review 决定是否回流进 wiki。
+可选治理索引如 `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 可按需创建，用于跟踪开放问题、知识空白和别名映射。
+
+高价值回答和对外内容也可以携带结构化 writeback candidates，供后续 compile / review 决定是否回流进 wiki。
 
 ## 路由职责
 
@@ -51,7 +68,7 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 - `kb-compile` 负责 raw 到 draft 的更新，也接受 bootstrap 阶段的 `raw/*.md`。
 - `kb-review` 是即时处理 pending drafts 与 briefing 重建的草稿提升门。
 - `kb-query` 只读取 approved live 层。
-- `kb-health` 是更长期的维护入口：默认先出报告，处理 drift、backlog pressure、provenance 审计，以及 approved surfaces 上的安全机械修复。
+- `kb-health` 是更长期的维护入口：默认先出报告，处理 drift、backlog pressure、provenance 审计、alias 漂移、开放问题堆积，以及 approved surfaces 上的安全机械修复。
 
 ## 确定性脚本
 
@@ -61,6 +78,8 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 - `scripts/scan_review_queue.py`
 - `scripts/scan_query_scope.py`
 - `scripts/lint_obsidian_mechanics.py`
+- `scripts/runtime_eval.py`
+- `scripts/trigger_eval.py`
 
 ## 安装
 

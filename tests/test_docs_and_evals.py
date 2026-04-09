@@ -3,7 +3,14 @@ import json
 import unittest
 from pathlib import Path
 
-from _bundle_test_support import ENTRY_SKILL_ROOT, REGISTRY_PATH, REPO_ROOT, RUNTIME_EVALS_PATH, SKILL_PATHS
+from _bundle_test_support import (
+    ENTRY_SKILL_ROOT,
+    REGISTRY_PATH,
+    REPO_ROOT,
+    RUNTIME_EVALS_PATH,
+    SKILL_PATHS,
+    WRITABLE_RUNTIME_EVALS_PATH,
+)
 
 
 class DocsAndEvalsTests(unittest.TestCase):
@@ -24,23 +31,16 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("MEMORY.md", file_model)
 
     def test_bundle_docs_and_trigger_evals_stay_consistent(self) -> None:
-        claude_md = (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8")
         readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
         readme_cn = (REPO_ROOT / "README_CN.md").read_text(encoding="utf-8")
         docs_readme = (REPO_ROOT / "docs" / "README.md").read_text(encoding="utf-8")
         docs_config = (REPO_ROOT / "docs" / ".vitepress" / "config.ts").read_text(encoding="utf-8")
         entry_skill = (ENTRY_SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-        compile_skill = SKILL_PATHS["kb-compile"].read_text(encoding="utf-8")
-        review_skill = SKILL_PATHS["kb-review"].read_text(encoding="utf-8")
         registry_text = REGISTRY_PATH.read_text(encoding="utf-8")
-        evals_text = (ENTRY_SKILL_ROOT / "evals" / "evals.json").read_text(encoding="utf-8")
         trigger_eval_path = ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json"
 
-        for text in (claude_md, readme, readme_cn, entry_skill, compile_skill, review_skill, registry_text, evals_text):
-            self.assertIn("wiki/drafts", text)
-            self.assertIn("wiki/live", text)
-            self.assertIn("wiki/briefings", text)
-            self.assertIn("outputs/reviews", text)
+        self.assertIn("provenance-and-alias-policy.md", registry_text)
+        self.assertIn("questions-and-reflection-policy.md", registry_text)
 
         self.assertIn("kb-review", readme)
         self.assertIn("kb-review", readme_cn)
@@ -87,6 +87,8 @@ class DocsAndEvalsTests(unittest.TestCase):
             "ready-for-query",
             "needs-review",
             "writeback-backlog",
+            "needs-governance-refresh",
+            "governance-enabled-bootstrap",
         }:
             self.assertIn(fixture_name, fixture_names)
 
@@ -98,9 +100,23 @@ class DocsAndEvalsTests(unittest.TestCase):
         counts: dict[str, int] = {}
         for item in manifest["evals"]:
             counts[item["skill"]] = counts.get(item["skill"], 0) + 1
+            self.assertIn("vault_root", item)
+            self.assertEqual(item.get("mode", "read-only"), "read-only")
 
         for skill_name in ("kb-init", "kb-compile", "kb-review", "kb-query", "kb-health"):
             self.assertGreaterEqual(counts.get(skill_name, 0), 2)
+
+    def test_writable_runtime_eval_manifest_covers_mutating_operational_skills(self) -> None:
+        manifest = json.loads(WRITABLE_RUNTIME_EVALS_PATH.read_text(encoding="utf-8"))
+        counts: dict[str, int] = {}
+        for item in manifest["evals"]:
+            counts[item["skill"]] = counts.get(item["skill"], 0) + 1
+            self.assertEqual(item.get("mode"), "writable-copy")
+            self.assertIn("vault_root", item)
+            self.assertTrue(item.get("checks"))
+
+        for skill_name in ("kb-init", "kb-compile", "kb-review"):
+            self.assertGreaterEqual(counts.get(skill_name, 0), 1)
 
 
 if __name__ == "__main__":

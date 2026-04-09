@@ -5,12 +5,12 @@ The vault is intentionally split into evidence, drafts, approved knowledge, and 
 ```text
 vault/
 ├── raw/
-│   ├── human/
+│   ├── human/{articles,papers,podcasts,repos,assets}/
 │   └── agents/{role}/
 ├── MEMORY.md
 ├── wiki/
-│   ├── drafts/
-│   ├── live/
+│   ├── drafts/{summaries,concepts,entities,indices}/
+│   ├── live/{summaries,concepts,entities,indices}/
 │   ├── briefings/
 │   ├── index.md
 │   └── log.md
@@ -26,6 +26,8 @@ vault/
 `outputs/reviews/` is part of the required support layer. The other output surfaces are valid parts of the full contract, but they come online when later stages need them.
 
 `MEMORY.md` is recommended collaboration scaffolding. It should hold preferences, editorial priorities, and coordination context, not approved topic knowledge.
+
+Core live indices such as `INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `RECENT.md`, and `EDITORIAL-PRIORITIES.md` belong under `wiki/live/indices/`. Optional governance views such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` are created only when the vault needs them.
 
 ## Ownership model
 

@@ -12,8 +12,9 @@ Use this first for small to medium vaults.
 
 - read `wiki/index.md`
 - read `wiki/live/indices/INDEX.md`, `wiki/live/indices/CONCEPTS.md`, and `wiki/live/indices/SOURCES.md`
+- check optional governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` when they exist
 - use ordinary file search over markdown, preferring `rg` when CLI search is needed
-- follow real wikilinks between summaries, concepts, entities, and prior Q&A
+- follow real wikilinks between summaries, concepts, entities, prior Q&A, and approved question pages
 
 This stage is enough for many vaults with hundreds of high-signal notes.
 
@@ -22,11 +23,11 @@ This stage is enough for many vaults with hundreds of high-signal notes.
 Use this before introducing extra infrastructure.
 
 - use Backlinks to inspect linked mentions and unlinked mentions
-- use Properties view and property search to find notes by `type`, `tags`, `author`, or other standardized metadata
+- use Properties view and property search to find notes by `type`, `tags`, `author`, `aliases`, `domain_volatility`, or other standardized metadata
 - use alias coverage on concept and entity pages to improve linkability and discoverability
-- use derived indices such as `RECENT.md` and alias maps to surface drift
+- use derived indices such as `RECENT.md`, alias maps, and question registries to surface drift
 
-Recommend this stage when the problem is disconnected notes, weak links, or metadata inconsistency rather than raw search scale.
+Recommend this stage when the problem is disconnected notes, weak links, metadata inconsistency, or unresolved question clusters rather than raw search scale.
 
 ## Stage 3: Local structured search
 
@@ -42,7 +43,7 @@ Suggested upgrades:
 Recommend this stage when:
 
 - the vault has grown large enough that manual indices lag behind
-- the user wants structured audits, metadata reports, or section-level retrieval
+- the user wants structured audits, metadata reports, section-level retrieval, or question-gap analysis
 - full-text retrieval is needed but auditability still matters
 - the user wants better local retrieval without jumping straight to a hosted vector stack
 
@@ -67,4 +68,4 @@ Prefer the cheapest stage that solves the user's problem while preserving tracea
 - search-scale problem -> Stage 3
 - semantic-recall-at-scale problem -> Stage 4
 
-If the user's problem is malformed indices, broken table rendering, or syntactically wrong markdown, do not treat it as a search-upgrade problem first. Route that work through health or repair before adding more retrieval infrastructure.
+If the user's problem is malformed indices, broken table rendering, syntactically wrong markdown, provenance drift, or duplicate approved notes, do not treat it as a search-upgrade problem first. Route that work through health or repair before adding more retrieval infrastructure.
