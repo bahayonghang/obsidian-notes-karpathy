@@ -5,7 +5,10 @@
     "lifecycle-matrix.md",
     "activity-log-template.md",
     "provenance-and-alias-policy.md",
-    "questions-and-reflection-policy.md"
+    "questions-and-reflection-policy.md",
+    "query-writeback-lifecycle.md",
+    "taxonomy-and-hubs.md",
+    "paper-ingestion-lifecycle.md"
   ],
   "skills": {
     "obsidian-notes-karpathy": {
@@ -41,7 +44,9 @@
         "activity-log-template.md",
         "index-home-template.md",
         "questions-template.md",
-        "provenance-and-alias-policy.md"
+        "provenance-and-alias-policy.md",
+        "query-writeback-lifecycle.md",
+        "taxonomy-and-hubs.md"
       ],
       "baseline_script": "detect_lifecycle.py",
       "writes": [
@@ -78,7 +83,8 @@
         "schema-template.md",
         "summary-template.md",
         "activity-log-template.md",
-        "provenance-and-alias-policy.md"
+        "provenance-and-alias-policy.md",
+        "paper-ingestion-lifecycle.md"
       ],
       "baseline_script": "scan_compile_delta.py",
       "writes": [
@@ -126,6 +132,7 @@
         "briefing-template.md",
         "activity-log-template.md",
         "questions-and-reflection-policy.md",
+        "query-writeback-lifecycle.md",
         "search-upgrades.md"
       ],
       "baseline_script": "scan_query_scope.py",
@@ -149,7 +156,8 @@
         "health-rubric.md",
         "search-upgrades.md",
         "provenance-and-alias-policy.md",
-        "questions-and-reflection-policy.md"
+        "questions-and-reflection-policy.md",
+        "query-writeback-lifecycle.md"
       ],
       "baseline_script": "lint_obsidian_mechanics.py",
       "writes": [

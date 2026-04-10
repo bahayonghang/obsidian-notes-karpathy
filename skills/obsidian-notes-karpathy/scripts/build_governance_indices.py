@@ -57,6 +57,8 @@ def build_governance_indices(vault_root: Path) -> dict:
     questions: list[str] = []
     seen_questions: set[str] = set()
     alias_rows: list[dict[str, object]] = []
+    writeback_backlog: list[dict[str, object]] = []
+    followup_routes: list[dict[str, object]] = []
 
     for record in live:
         for question in _body_open_questions(record):
@@ -83,22 +85,31 @@ def build_governance_indices(vault_root: Path) -> dict:
             )
 
     for record in records:
-        if not (record.path.startswith("outputs/qa/") or record.kind == "briefing"):
+        is_archived_output = record.path.startswith("outputs/qa/") or record.path.startswith("outputs/content/")
+        if not is_archived_output:
             continue
-        for question in _body_open_questions(record):
-            if question not in seen_questions:
-                seen_questions.add(question)
-                questions.append(question)
-        frontmatter_question = record.frontmatter.get("question")
-        if isinstance(frontmatter_question, str) and frontmatter_question.strip():
-            question = frontmatter_question.strip()
-            if question not in seen_questions:
-                seen_questions.add(question)
-                questions.append(question)
-        for touched in list_field(record.frontmatter, "open_questions_touched"):
-            if touched not in seen_questions:
-                seen_questions.add(touched)
-                questions.append(touched)
+
+        candidates = list_field(record.frontmatter, "writeback_candidates")
+        if candidates:
+            status = str(record.frontmatter.get("writeback_status") or "").strip().lower() or None
+            if status in {None, "pending"}:
+                writeback_backlog.append(
+                    {
+                        "path": record.path,
+                        "candidate_count": len(candidates),
+                        "writeback_status": status,
+                        "followup_route": str(record.frontmatter.get("followup_route") or "").strip().lower() or None,
+                    }
+                )
+
+        followup_route = str(record.frontmatter.get("followup_route") or "").strip().lower()
+        if followup_route:
+            followup_routes.append(
+                {
+                    "path": record.path,
+                    "followup_route": followup_route,
+                }
+            )
 
     gap_issues = [issue for issue in audit["issues"] if issue["kind"] in GAP_KINDS]
 
@@ -116,6 +127,18 @@ def build_governance_indices(vault_root: Path) -> dict:
     else:
         gaps_md += "- No governance gaps detected.\n"
 
+    if writeback_backlog:
+        gaps_md += "\n## Writeback Backlog Signals\n\n"
+        for item in writeback_backlog:
+            status = item["writeback_status"] or "open"
+            route = item["followup_route"] or "unspecified"
+            gaps_md += f"- {item['path']} | candidates: {item['candidate_count']} | status: {status} | route: {route}\n"
+
+    if followup_routes:
+        gaps_md += "\n## Follow-up Routes Seen In Archived Outputs\n\n"
+        for item in followup_routes:
+            gaps_md += f"- {item['followup_route']}: {item['path']}\n"
+
     aliases_md = "# Alias Registry\n\n"
     if alias_rows:
         for row in alias_rows:
@@ -131,6 +154,8 @@ def build_governance_indices(vault_root: Path) -> dict:
         "questions": questions,
         "gap_issue_kinds": sorted({issue["kind"] for issue in gap_issues}),
         "alias_rows": alias_rows,
+        "writeback_backlog": writeback_backlog,
+        "followup_routes": followup_routes,
         "files": {
             "QUESTIONS.md": questions_md,
             "GAPS.md": gaps_md,

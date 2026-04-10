@@ -49,19 +49,22 @@ def load_skill_catalog() -> dict[str, str]:
 def build_trigger_prompt(query: str, catalog: dict[str, str]) -> str:
     skill_lines = "\n".join(f"- {name}: {description}" for name, description in catalog.items())
     return (
-        "You are choosing whether a skill should be consulted first for a user request.\n"
+        "You are running an offline trigger-classification benchmark.\n"
+        "Do not answer the user request. Do not give policy advice. Do not explain how skills usually work.\n"
+        "Classify which single skill should be consulted first for the request below.\n"
         "Available skills:\n"
         f"{skill_lines}\n\n"
         "Choose exactly one skill from the list above, or `none` if none should be consulted first.\n"
         "Prefer operation-specific skills over the router when the operation is already clear.\n"
         "Do not invent companion skills that are not in the list.\n"
-        "Return JSON only in this shape:\n"
-        '{"selected_skill": "<skill-name-or-none>", "reason": "<short reason>"}\n\n'
+        "Return exactly one minified JSON object and nothing else.\n"
+        'Required schema: {"selected_skill":"<skill-name-or-none>","reason":"<short reason>"}\n'
+        "If you output anything before or after the JSON object, the benchmark run is invalid.\n\n"
         f"User request:\n{query}\n"
     )
 
 
-def codex_command(prompt: str, output_path: Path) -> list[str]:
+def codex_command(output_path: Path) -> list[str]:
     return [
         *resolve_runner_invocation("codex"),
         "exec",
@@ -72,7 +75,7 @@ def codex_command(prompt: str, output_path: Path) -> list[str]:
         str(REPO_ROOT),
         "--output-last-message",
         str(output_path),
-        prompt,
+        "-",
     ]
 
 
@@ -144,7 +147,7 @@ def execute_attempt(runner: str, prompt: str, run_dir: Path, timeout_sec: int) -
     output_path = run_dir / "last_message.txt"
     started = time.monotonic()
     if runner == "codex":
-        command = codex_command(prompt, output_path)
+        command = codex_command(output_path)
     elif runner == "claude":
         command = claude_command(prompt)
     else:
@@ -158,6 +161,8 @@ def execute_attempt(runner: str, prompt: str, run_dir: Path, timeout_sec: int) -
             text=True,
             encoding="utf-8",
             errors="replace",
+            input=prompt if runner == "codex" else None,
+            stdin=None if runner == "codex" else subprocess.DEVNULL,
             timeout=timeout_sec,
         )
         returncode = result.returncode

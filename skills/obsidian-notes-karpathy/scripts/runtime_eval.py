@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -21,6 +22,7 @@ MANIFEST_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals.json"
 WRITABLE_MANIFEST_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals-writable.json"
 DEFAULT_WORKSPACE_ROOT = REPO_ROOT / ".runtime-evals"
 SKILL_PATHS = {
+    "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
     "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",
     "kb-compile": REPO_ROOT / "skills" / "kb-compile" / "SKILL.md",
     "kb-review": REPO_ROOT / "skills" / "kb-review" / "SKILL.md",
@@ -38,6 +40,7 @@ INFRA_FAILURE_PATTERNS = (
     "cannot set property",
     "os error 123",
 )
+MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
 
 def utc_stamp() -> str:
@@ -178,7 +181,7 @@ def build_prompt(*, use_skill: bool, skill: str, prompt: str, files: list[str], 
     )
 
 
-def codex_command(prompt: str, output_path: Path, sandbox_mode: str) -> list[str]:
+def codex_command(output_path: Path, sandbox_mode: str) -> list[str]:
     return [
         *resolve_runner_invocation("codex"),
         "exec",
@@ -189,7 +192,7 @@ def codex_command(prompt: str, output_path: Path, sandbox_mode: str) -> list[str
         str(REPO_ROOT),
         "--output-last-message",
         str(output_path),
-        prompt,
+        "-",
     ]
 
 
@@ -223,7 +226,7 @@ def execute_attempt(runner: str, prompt: str, run_dir: Path, timeout_sec: int, s
     output_path = run_dir / "last_message.txt"
     started = time.monotonic()
     if runner == "codex":
-        command = codex_command(prompt, output_path, sandbox_mode)
+        command = codex_command(output_path, sandbox_mode)
     elif runner == "claude":
         command = claude_command(prompt)
     else:
@@ -237,6 +240,8 @@ def execute_attempt(runner: str, prompt: str, run_dir: Path, timeout_sec: int, s
             text=True,
             encoding="utf-8",
             errors="replace",
+            input=prompt if runner == "codex" else None,
+            stdin=None if runner == "codex" else subprocess.DEVNULL,
             timeout=timeout_sec,
         )
         returncode = result.returncode
@@ -353,7 +358,8 @@ def materialize_files(source_vault_root: Path, target_vault_root: Path, file_pat
 
 
 def detect_root_leakage(text: str, vault_root: Path) -> dict[str, Any]:
-    normalized = text.replace("\\", "/").lower()
+    scrubbed = MARKDOWN_LINK_RE.sub(r"\1", text)
+    normalized = scrubbed.replace("\\", "/").lower()
     repo_root = REPO_ROOT.resolve().as_posix().lower()
     declared_root = vault_root.resolve().as_posix().lower()
     reasons: list[str] = []
