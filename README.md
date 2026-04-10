@@ -25,6 +25,7 @@ The core idea is no longer just "compile notes into a wiki". It is "separate pro
 ## Contract highlights
 
 - `raw/` is immutable.
+- treat `raw/` as the durable source library; editorial notes, Q&A, and publish artifacts belong in downstream surfaces rather than mutating source captures.
 - `MEMORY.md` is collaboration memory, not retrieval truth.
 - `kb-compile` writes only to `wiki/drafts/`.
 - raw paper PDFs under `raw/**/papers/*.pdf` remain a `paper-workbench` routing exception, not a normal `kb-compile` ingest.
@@ -33,6 +34,7 @@ The core idea is no longer just "compile notes into a wiki". It is "separate pro
 - `kb-query` reads `wiki/live/`, briefings, and prior Q&A, not drafts.
 - legacy-layout vaults are detected and should be migrated before normal operation.
 - alias alignment, source integrity, stale-page checks, and question tracking are absorbed as governance rules without collapsing the review gate.
+- curated hubs and creator-planning surfaces may exist, but they remain navigation/maintenance layers rather than truth-boundary shortcuts.
 
 ## Why this is not a single-layer source/concept/synthesis wiki
 
@@ -61,6 +63,15 @@ Downstream output surfaces are created when the later stages need them:
 Optional governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when the user wants richer maintenance surfaces.
 
 Substantive answers and publish artifacts may also carry structured writeback candidates so later compile/review passes can decide whether they should feed back into the wiki.
+
+For creator-style workflows, a practical mapping is:
+
+- source library / clipped research -> `raw/`
+- editorial memory -> `MEMORY.md`
+- reusable research answers or drafting notes -> `outputs/qa/`
+- outward-facing publish artifacts -> `outputs/content/`
+- durable approved knowledge -> `wiki/live/`
+- curated topic maps / planning surfaces -> `wiki/live/indices/` or approved hub pages
 
 ## Route ownership
 

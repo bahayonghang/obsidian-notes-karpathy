@@ -54,6 +54,10 @@ test:
 runtime-eval:
   {{python_cmd}} skills/obsidian-notes-karpathy/scripts/runtime_eval.py
 
+# Audit shipped skill quality and evaluation coverage
+skill-audit:
+  {{python_cmd}} skills/obsidian-notes-karpathy/scripts/audit_skills.py
+
 # ==================== Git / Workflow ====================
 
 # Quick status check

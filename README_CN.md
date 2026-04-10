@@ -25,6 +25,7 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 ## 关键契约
 
 - `raw/` 永远不可变。
+- 应把 `raw/` 视为长期素材库；编辑笔记、Q&A 和对外内容应落在下游 surfaces，而不是回写 source captures。
 - `MEMORY.md` 是协作记忆层，不是检索真相层。
 - `kb-compile` 只能写 `wiki/drafts/`。
 - `raw/**/papers/*.pdf` 下的论文 PDF 仍然是 `paper-workbench` 的路由例外，不属于普通 `kb-compile` 入口。
@@ -33,6 +34,7 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 - `kb-query` 读取 live、briefings 和历史 Q&A，不把 drafts 当真相层。
 - 旧的 legacy-layout vault 会被识别出来，并应先迁移再进入正常工作流。
 - alias 对齐、source integrity、stale 页面检查、开放问题跟踪都会被纳入治理规则，但不会绕过 review gate。
+- curated hub 和创作者规划面可以存在，但它们仍然是导航 / 维护层，不是绕过真相边界的捷径。
 
 ## 为什么不是单层 source/concept/synthesis wiki
 
@@ -61,6 +63,15 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 可选治理索引如 `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 可按需创建，用于跟踪开放问题、知识空白和别名映射。
 
 高价值回答和对外内容也可以携带结构化 writeback candidates，供后续 compile / review 决定是否回流进 wiki。
+
+面向创作者的常见工作面可这样映射：
+
+- 素材库 / 网页摘录 -> `raw/`
+- 编辑协作记忆 -> `MEMORY.md`
+- 可复用的研究问答或写作笔记 -> `outputs/qa/`
+- 对外交付物 -> `outputs/content/`
+- 长期批准知识 -> `wiki/live/`
+- 选题地图 / 规划面 -> `wiki/live/indices/` 或经 review 批准的 hub 页面
 
 ## 路由职责
 
