@@ -20,4 +20,31 @@
 - publish：保存到 `outputs/content/**` 的报告、线程、演讲稿或幻灯片
 - reflect-lite：先停在 live 外的综合、问题分解或 gap 记录
 
-如果 Q&A 或 publish artifact 暴露出值得长期保留的结论，应该显式记录 `writeback_candidates` 和 `open_questions_touched`，而不是把下一步埋在聊天里。
+如果 Q&A 或 publish artifact 产生了值得长期处理的后续工作，应该显式记录 `writeback_candidates`、`open_questions_touched`、`source_live_pages` 和 `followup_route`，而不是把下一步埋在聊天里。
+
+在起草新的对外交付物之前，优先检查是否已有 approved live 覆盖或 archived Q&A 可以直接复用，避免把同一段背景解释反复重写。
+
+## 检索梯度
+
+默认检索顺序：
+
+1. `wiki/index.md`
+2. `wiki/live/indices/*`
+3. `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 等治理视图（如果存在）
+4. 相关 `wiki/briefings/{role}.md`
+5. 历史 `outputs/qa/`
+6. 本地结构化或 metadata 驱动检索
+7. 只在必要时使用语义检索做 candidate surfacing
+
+整个梯度里，approved live pages 始终是真相来源。
+
+## 回写合同
+
+实质性的 Q&A 或 publish 输出应该记录：
+
+- `source_live_pages`：哪些批准页真正支撑了输出
+- `open_questions_touched`：输出推进了哪些长期问题
+- `writeback_candidates`：哪些长期知识应重新进入 wiki
+- `followup_route`：`none | draft | review | health`
+
+其中 `draft` 表示要重新走 draft -> review -> live，`review` 表示下一步是明确的人类裁决，`health` 表示这是治理、漂移、backlog 一类维护工作，而不是直接改真相层。

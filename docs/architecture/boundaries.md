@@ -9,6 +9,7 @@ This bundle works only if the surfaces stay separate.
 - `wiki/live/` is the approved long-term brain.
 - `wiki/briefings/` is generated from live only.
 - `outputs/reviews/` is the promotion ledger.
+- governance indices under `wiki/live/indices/` belong to the approved layer and must stay grounded in approved live pages.
 
 ## Coordination vs knowledge
 
@@ -20,6 +21,19 @@ This bundle works only if the surfaces stay separate.
 - current focus areas
 
 It is not the place for source-grounded topic conclusions. Those belong in `wiki/drafts/` or `wiki/live/`.
+
+## Archived outputs vs approved truth
+
+`outputs/qa/` and `outputs/content/` can store durable work products, but they do not become approved truth automatically.
+
+They may:
+
+- provide maintenance signals
+- surface `writeback_candidates`
+- record `followup_route`
+- inform health and backlog views
+
+But long-term knowledge still re-enters through draft -> review -> live.
 
 ## Why this matters
 
@@ -36,3 +50,4 @@ The health pass is moving toward explicit checks for:
 - collaboration memory leaking into approved knowledge
 - approved knowledge leaking into coordination memory
 - writeback backlog piling up without review
+- archived outputs being mistaken for approved live governance truth

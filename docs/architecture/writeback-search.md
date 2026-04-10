@@ -8,12 +8,16 @@ Current direction:
 
 - `kb-query` archives durable answers into `outputs/qa/`
 - publish artifacts live under `outputs/content/`
-- high-value outputs can produce structured writeback candidates
+- high-value outputs can produce structured `writeback_candidates`, `source_live_pages`, and `followup_route`
+- prior approved coverage and archived Q&A should be reused explicitly before a new publish artifact re-explains the same background
 - writeback should re-enter the system through draft -> review -> live, not directly into live
+- archived outputs can feed backlog and maintenance signals without becoming approved truth
 
 ## Why not direct mutation
 
 Directly writing query outputs into `wiki/live/` would collapse the production/judgment split that the bundle depends on.
+
+The same rule applies to governance indices: approved-layer views such as `QUESTIONS.md` should stay grounded in approved live pages instead of silently ingesting unresolved archived outputs.
 
 ## Search posture
 
@@ -21,13 +25,19 @@ The default search order stays:
 
 1. `wiki/index.md`
 2. `wiki/live/indices/*`
-3. backlinks, aliases, and metadata affordances
-4. local structured search only when needed
+3. governance views such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md`
+4. relevant briefings
+5. prior `outputs/qa/`
+6. local structured or metadata-driven search only when needed
+7. semantic retrieval only as candidate surfacing when earlier layers stop being sufficient
+
+Approved live pages remain the truth source throughout that ladder.
 
 ## Planned / evolving search upgrades
 
 - stronger alias maps
 - richer derived indices such as `RECENT.md`
+- clearer follow-up routing across query and health outputs
 - optional local tools such as qmd or DuckDB
 
 Hosted vector infrastructure is intentionally not the default path. The bundle prefers the cheapest retrieval layer that preserves traceability.

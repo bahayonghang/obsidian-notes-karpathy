@@ -9,6 +9,7 @@
 - `wiki/live/` 是批准后的长期知识脑。
 - `wiki/briefings/` 只能从 live 构建。
 - `outputs/reviews/` 是 promotion 决策账本。
+- `wiki/live/indices/` 下的治理索引属于批准层，必须以 approved live pages 为基础。
 
 ## 协作层与知识层
 
@@ -20,6 +21,19 @@
 - 当前关注主题
 
 它不是放专题结论的地方。带来源的知识判断应该进入 `wiki/drafts/` 或 `wiki/live/`。
+
+## Archived outputs 与 approved truth
+
+`outputs/qa/` 与 `outputs/content/` 可以保存高价值产物，但它们不会自动变成 approved truth。
+
+它们可以：
+
+- 提供维护信号
+- 暴露 `writeback_candidates`
+- 记录 `followup_route`
+- 为 health 与 backlog 视图提供输入
+
+但长期知识仍然必须重新走 draft -> review -> live。
 
 ## 为什么这条线重要
 
@@ -36,3 +50,4 @@ health 会继续增强这几类检查：
 - 协作记忆混进 approved knowledge
 - approved knowledge 倒灌进协作记忆
 - 回写 backlog 长期堆积不处理
+- 把 archived outputs 误当成 approved live 治理真相

@@ -12,9 +12,10 @@
 - `wiki/briefings/` 是从 live 重建的运行时上下文
 - `outputs/reviews/` 是必需的决策账本
 - `outputs/qa/`、`outputs/content/`、`outputs/health/` 是按阶段出现的下游产物
+- `raw/` 同时也是长期素材库面，创作者的整理、复用和发布编排则发生在下游 surfaces
 - `MEMORY.md` 是协作记忆层，默认不进入专题检索面
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md` 是总编层 surface
-- `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类可选治理视图位于 `wiki/live/indices/`
+- `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图适合成熟 vault，但必须以 approved live pages 为基础
 
 路由与职责归属主要由 `skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json` 和 `skills/obsidian-notes-karpathy/references/lifecycle-matrix.md` 共同定义。需要确认生命周期状态、owner skill 或 allowed write surfaces 时，优先读这两个文件。
 
@@ -24,6 +25,7 @@
 - 保持 local-first、可审计的检索姿态。
 - 把高价值回答当成可回流资产，而不是聊天残留。
 - 把协作记忆与专题知识分层，而不是混成一个桶。
+- 让 archived outputs 参与维护与 writeback 闭环，但不把它们静默提升成 approved truth。
 
 ## 当前演进压力点
 
@@ -32,5 +34,7 @@
 - 更强的 weak evidence 与知识漂移反腐检查
 - 更顺滑的开放问题、alias drift 治理刷新流程
 - 把 durable outputs 更稳地回写回 drafts 的闭环
+- 更强的面向创作者的 prior-coverage reuse、curated hubs 与 planning views，但仍保持在真相边界之外
+- 更明确的 retrieval ladder 与 follow-up routing 说明
 
 Guide、Skills、Workflow 页面描述当前合同；Architecture 页面解释设计理由和前进方向。

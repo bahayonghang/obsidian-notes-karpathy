@@ -16,13 +16,16 @@ This bundle has one package entry skill and five operational skills.
 ## Shared contract across all skills
 
 - `raw/` is immutable evidence intake.
+- `raw/` also acts as the durable source-library surface; creator-facing drafting and publish work should happen downstream rather than rewriting captures.
 - raw paper PDFs under `raw/**/papers/*.pdf` remain a `paper-workbench` routing exception, not a normal `kb-compile` ingest.
 - `MEMORY.md` is collaboration memory, not topic truth.
 - `wiki/drafts/` is reviewable, not queryable truth.
 - `wiki/live/` is the approved long-term brain.
 - `wiki/briefings/` is generated from live only.
 - `outputs/reviews/` stores promotion decisions.
-- optional governance views such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` are maintained only when the vault needs them.
+- optional governance views such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` are recommended for mature vaults, but they must stay grounded in approved live pages rather than archived outputs.
+- archived `outputs/qa/` and `outputs/content/` can feed maintenance signals, writeback backlog, and follow-up routing, but they do not become approved truth automatically.
+- curated hubs or editorial planning surfaces may exist, but they stay navigation/maintenance layers rather than truth-boundary shortcuts.
 - `wiki/index.md` is the content-first entry surface.
 - `wiki/log.md` is the time-first entry surface.
 - legacy-layout vaults migrate through `kb-init` before normal operation.
