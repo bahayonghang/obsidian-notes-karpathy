@@ -1,10 +1,24 @@
 # Search Upgrades
 
-Default posture: stay local-first, markdown-first, and auditable.
+Default posture: stay local-first, markdown-first, metadata-aware, and auditable.
 
 Do not jump straight to RAG or a vector database just because the user mentions AI search.
 
 For repository or vault text search, prefer `rg` (ripgrep) over `grep` because it is faster and scales better across large markdown trees. On Windows, avoid using `rg` against wildcarded absolute paths; prefer exact file paths or platform-native alternatives when needed.
+
+## Retrieval ladder
+
+Use the cheapest layer that solves the problem while preserving traceability.
+
+1. `wiki/index.md`
+2. `wiki/live/indices/*`
+3. governance indices such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md`
+4. role-specific `wiki/briefings/*`
+5. prior `outputs/qa/`
+6. local structured / metadata-driven search
+7. optional semantic retrieval only as candidate surfacing
+
+Approved live pages remain the truth source throughout the ladder.
 
 ## Stage 1: Native markdown navigation
 
@@ -12,7 +26,9 @@ Use this first for small to medium vaults.
 
 - read `wiki/index.md`
 - read `wiki/live/indices/INDEX.md`, `wiki/live/indices/CONCEPTS.md`, and `wiki/live/indices/SOURCES.md`
-- check optional governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` when they exist
+- check governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` when they exist
+- check role briefings when the request maps to a stable audience or workflow
+- reuse prior `outputs/qa/` when a substantive grounded answer already exists
 - use ordinary file search over markdown, preferring `rg` when CLI search is needed
 - follow real wikilinks between summaries, concepts, entities, prior Q&A, and approved question pages
 
@@ -23,9 +39,9 @@ This stage is enough for many vaults with hundreds of high-signal notes.
 Use this before introducing extra infrastructure.
 
 - use Backlinks to inspect linked mentions and unlinked mentions
-- use Properties view and property search to find notes by `type`, `tags`, `author`, `aliases`, `domain_volatility`, or other standardized metadata
+- use Properties view and property search to find notes by `type`, `tags`, `author`, `aliases`, `domain_volatility`, `question_links`, `topic_hub`, or other standardized metadata
 - use alias coverage on concept and entity pages to improve linkability and discoverability
-- use derived indices such as `RECENT.md`, alias maps, and question registries to surface drift
+- use derived indices such as `RECENT.md`, alias maps, question registries, and gap views to surface drift
 
 Recommend this stage when the problem is disconnected notes, weak links, metadata inconsistency, or unresolved question clusters rather than raw search scale.
 
@@ -57,7 +73,9 @@ Use this stage when:
 - semantic recall is the main bottleneck
 - the user explicitly wants embeddings, reranking, or RAG infrastructure
 
-If you suggest this stage, explain why the earlier markdown-first stages are no longer enough.
+If you suggest this stage, explain why the earlier markdown-first and metadata-first stages are no longer enough.
+
+Semantic retrieval can help surface candidate notes, but it should not silently widen the truth boundary beyond `wiki/live/`.
 
 ## Decision rule
 
@@ -68,4 +86,4 @@ Prefer the cheapest stage that solves the user's problem while preserving tracea
 - search-scale problem -> Stage 3
 - semantic-recall-at-scale problem -> Stage 4
 
-If the user's problem is malformed indices, broken table rendering, syntactically wrong markdown, provenance drift, or duplicate approved notes, do not treat it as a search-upgrade problem first. Route that work through health or repair before adding more retrieval infrastructure.
+If the user's problem is malformed indices, broken table rendering, syntactically wrong markdown, provenance drift, writeback backlog, or duplicate approved notes, do not treat it as a search-upgrade problem first. Route that work through health or repair before adding more retrieval infrastructure.

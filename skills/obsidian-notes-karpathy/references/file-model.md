@@ -13,13 +13,13 @@ outputs/        -> reviews, Q&A, health reports, and publishable derivatives
 
 Treat the vault like a codebase with a promotion gate:
 
-- `raw/` is source evidence.
+- `raw/` is source evidence and the durable source library.
 - `MEMORY.md` is the coordination surface for preferences, priorities, and collaboration rules.
 - `wiki/drafts/` is build output waiting for review.
 - `wiki/live/` is the deployed truth layer.
 - `wiki/briefings/` is generated runtime context for agents.
 - `outputs/reviews/` is the decision ledger for promotion.
-- `outputs/qa/` and `outputs/content/` can surface writeback candidates and unresolved questions, but they still re-enter the system through draft -> review -> live.
+- `outputs/qa/` and `outputs/content/` can surface writeback candidates, unresolved questions, and creator-facing derivatives, but they still re-enter the system through draft -> review -> live.
 
 ## Core rules
 
@@ -34,6 +34,19 @@ Treat the vault like a codebase with a promotion gate:
 9. `outputs/reviews/` stores reviewer decisions and scoring details.
 10. Existing older vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-layout` and migrated before normal operation.
 11. Alias alignment, source integrity, stale-page checks, and duplicate detection are part of governance, but they must respect the review gate rather than bypass it.
+
+## Creator workflow mapping
+
+For creator-style vaults, map common working surfaces onto the contract like this:
+
+- source library / clipped research -> `raw/`
+- editorial memory / collaboration preferences -> `MEMORY.md`
+- temporary research answers or drafting notes worth preserving -> `outputs/qa/`
+- publish-ready outward artifacts -> `outputs/content/`
+- reusable approved concepts, entities, and summaries -> `wiki/live/`
+- curated topic maps, hubs, or editorial navigation surfaces -> `wiki/live/indices/` or approved hub-style live pages when review says they are durable enough
+
+The key boundary is that creator convenience must not widen the truth boundary. Reusable planning or publish surfaces can exist, but durable topic knowledge is still approved only through `draft -> review -> live`.
 
 ## Required vs optional support
 
@@ -51,7 +64,7 @@ The minimum support layer for `kb-init` is:
 
 Downstream output surfaces such as `outputs/qa/`, `outputs/health/`, `outputs/reports/`, `outputs/slides/`, `outputs/charts/`, and `outputs/content/**` are valid parts of the full contract, but they are created on demand when later stages need them. `MEMORY.md` is recommended collaboration scaffolding rather than a blocking support-layer requirement.
 
-Optional governance scaffolding may also be created when the user wants richer maintenance surfaces:
+Optional governance scaffolding should be treated as the recommended default for mature vaults that want recurring maintenance surfaces:
 
 - `wiki/live/indices/QUESTIONS.md`
 - `wiki/live/indices/GAPS.md`
@@ -171,8 +184,12 @@ Expected properties:
 - `trust_level: approved`
 - `updated_at`
 - `last_reviewed_at`
+- `last_source_check_at` when freshness needs to be audited explicitly
 - `sources`
 - `related`
+- optional `evidence_strength` or `source_density` when the vault tracks thin-support risk
+- optional `question_links` or `open_questions` when the page participates in a standing governance thread
+- optional `topic_hub` when the page belongs to a curated hub / MOC-like surface
 
 ## Briefings
 
@@ -187,6 +204,7 @@ Expected properties:
 - `staleness_after`
 - `source_live_pages`
 - `open_questions_touched`
+- optional `brief_scope` or `brief_focus` when the same role has multiple stable briefing lenses
 
 ## Collaboration memory
 
@@ -222,6 +240,17 @@ Expected properties:
 ## Query outputs
 
 `outputs/qa/` remains the durable answer archive, but all cited knowledge should trace back to `wiki/live/` and the relevant approved summaries whenever possible.
+
+Expected operational fields for substantive Q&A and publish outputs:
+
+- `source_live_pages` when specific approved pages grounded the output
+- `open_questions_touched` when the output materially advances standing questions
+- `writeback_candidates` when the output discovers durable follow-up worth re-entering the wiki
+- `writeback_status` to show whether that follow-up is still pending
+- `followup_route` as `none | draft | review | health`
+- optional `confidence_posture` when the answer should advertise uncertainty explicitly
+
+These outputs can inform governance and maintenance surfaces, but they never become approved truth automatically.
 
 ## Naming and graph conventions
 

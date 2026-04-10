@@ -139,9 +139,13 @@ tags:
   - review
 open_questions_touched:
   - "When is a stale briefing worth rebuilding immediately?"
+source_live_pages:
+  - "[[wiki/live/concepts/review-gate]]"
 writeback_candidates:
   - "[[wiki/live/concepts/review-gate]]"
 writeback_status: pending
+followup_route: draft
+confidence_posture: mixed-evidence
 ---
 ```
 

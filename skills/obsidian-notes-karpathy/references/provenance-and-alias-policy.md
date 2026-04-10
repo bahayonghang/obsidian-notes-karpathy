@@ -15,6 +15,7 @@ Use this policy whenever compile, review, query, or health logic must decide whe
 - `source_mtime` is a fallback when a hash is unavailable.
 - `last_verified_at` records the most recent time the workflow checked the raw source against the current draft or live representation.
 - `possibly_outdated` is a hint that the source may need freshness review; it is not an automatic rejection.
+- keep source captures immutable; editorial summaries, drafting notes, and publish artifacts should live in downstream surfaces rather than being written back into `raw/`.
 - if a hash mismatch appears after promotion, the note should re-enter draft -> review rather than being silently rewritten in place.
 
 ## Alias rules
@@ -34,3 +35,11 @@ Use this policy whenever compile, review, query, or health logic must decide whe
 
 - answers should prefer approved summaries and review-backed live pages for evidence trails
 - aliases improve retrieval and backlink coverage, but they do not widen the truth boundary beyond `wiki/live/`
+- `source_live_pages` should be recorded on substantive Q&A or publish artifacts when specific approved pages grounded the output
+- `writeback_candidates` and `followup_route` should be used when archived outputs expose durable follow-up work or governance drift
+
+## Curated hubs and taxonomy posture
+
+- use one canonical live page as the durable identity anchor for a concept or entity
+- use aliases and curated hubs / topic maps to improve navigation rather than creating parallel truth pages for every wording variant
+- if a cross-cutting topic needs a hub, treat that hub as a navigation surface backed by approved live pages rather than as a shortcut around provenance

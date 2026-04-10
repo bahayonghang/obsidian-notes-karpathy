@@ -10,12 +10,19 @@ sources:
   - "[[wiki/live/concepts/concept-a]]"
   - "[[wiki/live/entities/entity-b]]"
   - "[[wiki/live/summaries/source-b]]"
+source_live_pages:
+  - "[[wiki/live/concepts/concept-a]]"
+  - "[[wiki/live/summaries/source-b]]"
 tags:
   - qa
   - topic/subtopic
+open_questions_touched:
+  - "Which findings should be promoted into permanent notes?"
 writeback_candidates:
   - "[[wiki/live/concepts/concept-a]]"
 writeback_status: none | pending | compiled | rejected
+followup_route: none | draft | review | health
+confidence_posture: grounded | mixed-evidence | exploratory
 ---
 
 # {title}
