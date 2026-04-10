@@ -1,7 +1,33 @@
 {
   "skill_family": "obsidian-notes-karpathy",
-  "description": "Read-only runtime comparisons for operational skills. Each prompt must stay analysis-only and must not mutate fixture files.",
+  "description": "Read-only runtime comparisons for the shipped skill bundle. Each prompt must stay analysis-only and must not mutate fixture files.",
   "evals": [
+    {
+      "id": "router-needs-migration",
+      "skill": "obsidian-notes-karpathy",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-migration",
+      "prompt": "Inspect the fixture vault and tell me which lifecycle step should run first before normal compile or query work. Keep this at the workflow-routing level and do not modify any files.",
+      "files": [
+        "evals/fixtures/needs-migration/AGENTS.md",
+        "evals/fixtures/needs-migration/wiki/index.md",
+        "evals/fixtures/needs-migration/wiki/log.md",
+        "evals/fixtures/needs-migration/wiki/summaries/2026-03-20-old-pattern.md"
+      ]
+    },
+    {
+      "id": "router-writeback-backlog",
+      "skill": "obsidian-notes-karpathy",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/writeback-backlog",
+      "prompt": "Inspect the fixture vault and tell me the next workflow stage. The signals look mixed between approved knowledge and archived answer backlog, so keep this as lifecycle routing rather than direct maintenance work. Do not modify any files.",
+      "files": [
+        "evals/fixtures/writeback-backlog/AGENTS.md",
+        "evals/fixtures/writeback-backlog/wiki/index.md",
+        "evals/fixtures/writeback-backlog/outputs/qa/2026-04-08-writeback-gap.md",
+        "evals/fixtures/writeback-backlog/wiki/live/concepts/review-gate.md"
+      ]
+    },
     {
       "id": "kb-init-needs-setup",
       "skill": "kb-init",

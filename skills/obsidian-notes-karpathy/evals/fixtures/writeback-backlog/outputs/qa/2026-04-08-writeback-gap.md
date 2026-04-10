@@ -6,10 +6,14 @@ sources:
 tags:
   - qa
   - review
+source_live_pages:
+  - "[[wiki/live/concepts/review-gate]]"
 writeback_candidates:
   - "[[wiki/live/concepts/writeback-loop]]"
   - "[[wiki/live/concepts/editorial-boundary]]"
 writeback_status: pending
+followup_route: draft
+confidence_posture: grounded
 ---
 
 # Writeback Gap

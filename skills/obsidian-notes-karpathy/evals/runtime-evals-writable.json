@@ -75,6 +75,46 @@
         {"name": "briefings-still-present", "kind": "exists", "path": "wiki/briefings"},
         {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"}
       ]
+    },
+    {
+      "id": "kb-query-ready-for-query-write",
+      "skill": "kb-query",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/ready-for-query",
+      "prompt": "Answer what the approved notes say about review gates, save the substantive answer to outputs/qa/2026-04-10-review-gate-runtime.md, and append a query log entry if you archive it. Stay grounded in the approved live layer.",
+      "files": [
+        "evals/fixtures/ready-for-query/AGENTS.md",
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/wiki/live/summaries/human/articles/2026-04-05-approved-summary.md",
+        "evals/fixtures/ready-for-query/wiki/log.md"
+      ],
+      "checks": [
+        {"name": "qa-output-written", "kind": "exists", "path": "outputs/qa/2026-04-10-review-gate-runtime.md"},
+        {"name": "qa-output-has-followup-route", "kind": "file_contains", "path": "outputs/qa/2026-04-10-review-gate-runtime.md", "needle": "followup_route"},
+        {"name": "qa-output-has-source-pages", "kind": "file_contains", "path": "outputs/qa/2026-04-10-review-gate-runtime.md", "needle": "source_live_pages"},
+        {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"}
+      ]
+    },
+    {
+      "id": "kb-health-needs-maintenance-write",
+      "skill": "kb-health",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/needs-maintenance",
+      "prompt": "Run a maintenance pass on the copied vault, write the report to outputs/health/health-check-2026-04-10.md, and refresh the governance indices at wiki/live/indices/QUESTIONS.md, wiki/live/indices/GAPS.md, and wiki/live/indices/ALIASES.md if that is a safe deterministic fix.",
+      "files": [
+        "evals/fixtures/needs-maintenance/AGENTS.md",
+        "evals/fixtures/needs-maintenance/wiki/live/concepts/retrieval-augmented-generation.md",
+        "evals/fixtures/needs-maintenance/wiki/briefings/researcher.md",
+        "evals/fixtures/needs-maintenance/outputs/qa/2026-04-01-rag-answer.md"
+      ],
+      "checks": [
+        {"name": "health-report-written", "kind": "exists", "path": "outputs/health/health-check-2026-04-10.md"},
+        {"name": "governance-questions-written", "kind": "exists", "path": "wiki/live/indices/QUESTIONS.md"},
+        {"name": "governance-gaps-written", "kind": "exists", "path": "wiki/live/indices/GAPS.md"},
+        {"name": "governance-aliases-written", "kind": "exists", "path": "wiki/live/indices/ALIASES.md"},
+        {"name": "briefings-still-present", "kind": "exists", "path": "wiki/briefings/researcher.md"},
+        {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"}
+      ]
     }
   ]
 }

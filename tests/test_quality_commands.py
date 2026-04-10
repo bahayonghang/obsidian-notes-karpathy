@@ -83,6 +83,13 @@ class QualityCommandTests(unittest.TestCase):
         self.assertTrue(leakage["detected"])
         self.assertIn("repo_root_path_mentioned", leakage["reasons"])
 
+    def test_runtime_eval_ignores_repo_root_inside_markdown_link_targets(self) -> None:
+        leakage = detect_root_leakage(
+            f"Used [report]({REPO_ROOT.as_posix()}/outputs/health/report.md) to summarize the result.",
+            REPO_ROOT / "skills" / "obsidian-notes-karpathy" / "evals" / "fixtures" / "needs-setup",
+        )
+        self.assertFalse(leakage["detected"])
+
     def test_runtime_eval_manifest_validation_rejects_mixed_fixture_roots(self) -> None:
         manifest = {
             "evals": [

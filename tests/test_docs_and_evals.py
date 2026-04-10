@@ -27,8 +27,16 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("fact_inference_separation", review_template)
         self.assertIn("writeback_candidates", qa_template)
         self.assertIn("writeback_status", qa_template)
+        self.assertIn("followup_route", qa_template)
+        self.assertIn("source_live_pages", qa_template)
+        self.assertIn("confidence_posture", qa_template)
         self.assertIn("writeback_candidates", content_template)
+        self.assertIn("followup_route", content_template)
+        self.assertIn("source_live_pages", content_template)
         self.assertIn("MEMORY.md", file_model)
+        self.assertIn("followup_route", file_model)
+        self.assertIn("Creator workflow mapping", file_model)
+        self.assertIn("Prior coverage reused", content_template)
 
     def test_bundle_docs_and_trigger_evals_stay_consistent(self) -> None:
         readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
@@ -41,11 +49,16 @@ class DocsAndEvalsTests(unittest.TestCase):
 
         self.assertIn("provenance-and-alias-policy.md", registry_text)
         self.assertIn("questions-and-reflection-policy.md", registry_text)
+        self.assertIn("query-writeback-lifecycle.md", registry_text)
+        self.assertIn("taxonomy-and-hubs.md", registry_text)
+        self.assertIn("paper-ingestion-lifecycle.md", registry_text)
 
         self.assertIn("kb-review", readme)
         self.assertIn("kb-review", readme_cn)
         self.assertIn("kb-review", entry_skill)
         self.assertIn("MEMORY.md", readme)
+        self.assertIn("source library / clipped research", readme)
+        self.assertIn("素材库 / 网页摘录", readme_cn)
         self.assertIn("architecture/", docs_readme)
         self.assertIn("/architecture/overview", docs_config)
         self.assertTrue((REPO_ROOT / "docs" / "architecture" / "overview.md").exists())
@@ -115,7 +128,7 @@ class DocsAndEvalsTests(unittest.TestCase):
             self.assertIn("vault_root", item)
             self.assertTrue(item.get("checks"))
 
-        for skill_name in ("kb-init", "kb-compile", "kb-review"):
+        for skill_name in ("kb-init", "kb-compile", "kb-review", "kb-query", "kb-health"):
             self.assertGreaterEqual(counts.get(skill_name, 0), 1)
 
 
