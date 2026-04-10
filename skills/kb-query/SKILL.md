@@ -20,6 +20,7 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/search-upgrades.md`
 - `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
+- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
@@ -56,7 +57,39 @@ Those layers may be cited only as evidence if a human explicitly asks for source
 3. publish mode for reports, threads, talks, and slides derived from approved knowledge
 4. reflect-lite mode for question resolution, synthesis notes, or gap reports that should stay outside live until re-reviewed
 
-When a substantive answer or artifact surfaces durable follow-up work, archive explicit `writeback_candidates` and `open_questions_touched` so the next compile/review pass can decide whether that output should feed back into the wiki.
+When a substantive answer or artifact surfaces durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, and a `followup_route` so the next compile/review or health pass can decide what should happen next.
+
+## Retrieval ladder
+
+Default retrieval order:
+
+1. `wiki/index.md`
+2. `wiki/live/indices/*`
+3. governance indices such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` when present
+4. relevant `wiki/briefings/{role}.md`
+5. prior `outputs/qa/`
+6. local structured or metadata-driven search
+7. optional semantic retrieval only as candidate surfacing
+
+Semantic retrieval may help discover candidate pages, but approved live pages remain the truth source.
+
+## Writeback contract
+
+Use `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md` as the detailed contract.
+
+At minimum, substantive Q&A or publish outputs should:
+
+- record `source_live_pages` when specific approved pages grounded the answer
+- record `open_questions_touched` when the answer materially advances or reframes a standing question
+- record `writeback_candidates` when the output discovers durable follow-up worth re-entering the wiki
+- set `followup_route` to `none`, `draft`, `review`, or `health`
+
+Use:
+
+- `none` when the output is grounded and does not create durable follow-up work
+- `draft` when the output suggests new or updated long-term knowledge that must re-enter draft -> review -> live
+- `review` when the next action is an immediate human decision about an already-prepared candidate
+- `health` when the output mainly exposes governance, drift, alias, backlog, or stale-archive maintenance work
 
 ## Output to the user
 

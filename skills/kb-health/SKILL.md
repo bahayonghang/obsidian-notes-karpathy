@@ -21,12 +21,13 @@ Before checking the vault, read these files first:
 - `../obsidian-notes-karpathy/references/search-upgrades.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 - `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
+- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
 If `../obsidian-notes-karpathy/scripts/lint_obsidian_mechanics.py` exists, run it first and treat its output as the deterministic baseline.
 
-If `../obsidian-notes-karpathy/scripts/build_governance_indices.py` exists, use it when the user wants refreshed `QUESTIONS.md`, `GAPS.md`, or `ALIASES.md` views from the current approved layer.
+If `../obsidian-notes-karpathy/scripts/build_governance_indices.py` exists, use it to refresh `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` as recommended governance surfaces for mature vaults, not just as optional extras.
 
 Inspect primarily:
 
@@ -43,8 +44,10 @@ Reference `raw/` only when provenance requires a spot check.
 
 - conflicting approved concepts or entities
 - duplicate approved concepts or entities
+- archived publish or Q&A outputs that should be feeding curated hubs, planning surfaces, or prior-coverage reuse but are still stuck as backlog
 - stale Q&A relative to newer live pages
 - writeback backlog in archived Q&A or publish artifacts
+- follow-up routes in archived outputs that imply health work or unresolved governance drift
 - stale briefings
 - unapproved pages that somehow landed in `wiki/live/`
 - review backlog piling up in drafts
@@ -80,4 +83,4 @@ Do not:
 
 `kb-review` handles the immediate gate for pending drafts and the briefing rebuild that belongs to that same review pass.
 
-`kb-health` handles longer-horizon maintenance: drift, integrity, backlog pressure, stale archived outputs, repeated briefing drift, alias splits, and source-integrity drift that has become an approved-layer maintenance problem.
+`kb-health` handles longer-horizon maintenance: drift, integrity, backlog pressure, stale archived outputs, repeated briefing drift, alias splits, source-integrity drift that has become an approved-layer maintenance problem, and governance-index refreshes driven by approved live pages plus archived outputs.

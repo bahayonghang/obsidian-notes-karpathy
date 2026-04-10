@@ -20,6 +20,7 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/summary-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
+- `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and allowed write surfaces.
 
@@ -49,6 +50,7 @@ Before shaping drafts:
 
 - normalize source metadata such as `source_hash`, `source_mtime`, `last_verified_at`, and `possibly_outdated`
 - surface alias and duplicate candidates rather than silently creating competing concept/entity drafts
+- treat duplicate/alias surfacing as both governance input and authoring leverage, so later query/publish work can reuse prior approved coverage instead of restating the same concept from scratch
 - preserve cross-language or terminology overlap as review input, not as automatic merges
 
 ## Main outputs

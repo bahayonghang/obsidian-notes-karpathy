@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, mentions review gates, draft/live separation, briefings, governance checks, source integrity, alias drift, open questions, or a markdown-first "living book" / "second brain" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, compile, review, query, or health, and only route through this package entry skill when the workflow step is genuinely ambiguous.
+description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "这个知识库下一步该做什么", "现在应该初始化/编译/审校/查询/体检哪个步骤", mentions review gates, draft/live separation, briefings, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" / "second brain" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, compile, review, query, or health, and only route through this package entry skill when the workflow step is genuinely ambiguous.
 ---
 
 # Obsidian Notes Karpathy
@@ -71,6 +71,7 @@ Route to `kb-query` when:
 
 - `wiki/live/**` is trustworthy and current
 - the user wants an answer, report, thread, slides, or other artifact grounded in the approved brain
+- the user wants to reuse prior approved coverage or archived outputs before drafting a new outward-facing artifact
 - the user wants question-resolution candidates or reflection outputs that should stay outside live until re-reviewed
 
 ### Health signals
@@ -82,7 +83,8 @@ Route to `kb-health` when:
 - review backlog, stale briefings, or writeback pressure have become longer-horizon maintenance issues rather than the next immediate gate
 - archived answers have pending writeback work
 - collaboration memory and approved knowledge appear to be mixing
-- the user wants a maintenance baseline, drift audit, duplicate pass, alias audit, or report-first cleanup pass across approved surfaces
+- the user wants a maintenance baseline, drift audit, duplicate pass, alias audit, coverage-gap review, or report-first cleanup pass across approved surfaces
+- the user wants planning surfaces such as curated hubs or editorial-gap views refreshed without widening the truth boundary
 
 `kb-health` owns the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, and safe mechanical fixes after the immediate review gate has passed.
 

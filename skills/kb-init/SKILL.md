@@ -1,6 +1,6 @@
 ---
 name: kb-init
-description: Initialize, migrate, or repair a review-gated Obsidian knowledge base. Use this skill whenever the user says "kb init", "initialize knowledge base", "repair vault", "migrate an old layout", "add draft/live review gate", "set up briefings", "初始化知识库", "迁移知识库", "修复知识库结构", or wants a fresh vault or legacy-layout vault brought onto the review-gated contract.
+description: Initialize, migrate, or repair a review-gated Obsidian knowledge base. Use this skill whenever the user says "kb init", "initialize knowledge base", "repair vault", "migrate an old layout", "add draft/live review gate", "set up briefings", "初始化知识库", "迁移知识库", "修复知识库结构", or wants a fresh vault or legacy-layout vault brought onto the review-gated contract. Do not use it for normal compile, review, query, or maintenance work once the support layer is already healthy.
 ---
 
 # KB Init
@@ -22,6 +22,8 @@ Read these shared references first:
 - `../obsidian-notes-karpathy/references/index-home-template.md`
 - `../obsidian-notes-karpathy/references/questions-template.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
+- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
+- `../obsidian-notes-karpathy/references/taxonomy-and-hubs.md`
 
 Treat `skill-contract-registry.json` as the canonical source for role, baseline script, required references, and expected write surfaces.
 

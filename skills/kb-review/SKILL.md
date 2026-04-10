@@ -1,6 +1,6 @@
 ---
 name: kb-review
-description: Run the independent review gate for a Obsidian knowledge base. Use this skill whenever the user says "kb review", "review gate", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "审校草稿", "批准草稿", "质量门", or whenever lifecycle detection reports `needs-review` or `needs-briefing-refresh`. Treat this as the immediate gate for pending drafts and briefing refresh work, not the longer-horizon maintenance lane.
+description: Run the independent review gate for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "review gate", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "审校草稿", "批准草稿", "质量门", or whenever lifecycle detection reports `needs-review` or `needs-briefing-refresh`. Treat this as the immediate gate for pending drafts and briefing refresh work, not the longer-horizon maintenance lane.
 ---
 
 # KB Review
