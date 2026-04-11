@@ -60,6 +60,10 @@ def classify_markdown_path(rel_path: str) -> str:
         return "concept"
     if normalized.startswith("wiki/live/entities/") or normalized.startswith("wiki/drafts/entities/"):
         return "entity"
+    if normalized.startswith("wiki/live/overviews/") or normalized.startswith("wiki/drafts/overviews/"):
+        return "overview"
+    if normalized.startswith("wiki/live/comparisons/") or normalized.startswith("wiki/drafts/comparisons/"):
+        return "comparison"
     if normalized.startswith("wiki/live/summaries/") or normalized.startswith("wiki/drafts/summaries/"):
         return "summary"
     if (
@@ -86,6 +90,14 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
 
 
 def parse_simple_yaml(raw_text: str) -> dict[str, Any]:
+    """Parse flat YAML frontmatter into a dict.
+
+    Known limitations (intentional YAGNI trade-off):
+    - Only supports flat key: value pairs and single-level lists (  - item).
+    - Does not handle nested objects, multi-line values, or block scalars (| / >).
+    - Assumes 2-space indented list items under the parent key.
+    - Sufficient for current Obsidian frontmatter; revisit if schemas grow nested.
+    """
     data: dict[str, Any] = {}
     current_key: str | None = None
 

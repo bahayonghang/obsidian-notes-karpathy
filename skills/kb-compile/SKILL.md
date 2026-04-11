@@ -7,6 +7,21 @@ description: Incrementally compile immutable markdown captures into reviewable d
 
 Incrementally turn immutable raw captures into reviewable draft knowledge.
 
+## Minimal loop
+
+1. detect new or changed captures
+2. compile them into reviewable summaries, concepts, entities, and indices
+3. surface conflicts, alias overlap, duplicate risk, and hub candidates
+4. hand the package to `kb-review`
+
+## When this compounds the wiki
+
+`kb-compile` is where raw evidence first becomes reusable structure. Good compile work should reduce future rediscovery by turning captures into durable draft packages and by surfacing where the graph needs better links, syntheses, or hubs.
+
+## When not to promote
+
+Compile shapes candidates. It does not approve truth and it should not bypass review just because a draft looks strong.
+
 ## Read before compiling
 
 Read these files first:
@@ -18,6 +33,8 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/summary-template.md`
+- `../obsidian-notes-karpathy/references/concept-template.md`
+- `../obsidian-notes-karpathy/references/entity-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 - `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md`
@@ -52,6 +69,8 @@ Before shaping drafts:
 - surface alias and duplicate candidates rather than silently creating competing concept/entity drafts
 - treat duplicate/alias surfacing as both governance input and authoring leverage, so later query/publish work can reuse prior approved coverage instead of restating the same concept from scratch
 - preserve cross-language or terminology overlap as review input, not as automatic merges
+- surface repeated concept clusters, repeated question clusters, and likely hub candidates when the durable improvement is navigational rather than just another standalone page
+- prefer strengthening relationships between likely draft/live neighbors when the knowledge exists but the graph is weak
 
 ## Main outputs
 

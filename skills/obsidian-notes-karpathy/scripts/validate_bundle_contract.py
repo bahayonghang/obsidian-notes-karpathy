@@ -30,6 +30,11 @@ SKILL_PATHS = {
 REFERENCE_BULLETS_RE = re.compile(r"- `([^`]+)`")
 READ_BEFORE_RE = re.compile(r"## Read before .*?(?=\n## |\Z)", re.DOTALL)
 SCOPE_READ_RE = re.compile(r"## Scope\n\nBefore checking the vault, read these files first:.*?(?=\n## |\Z)", re.DOTALL)
+# Fallback: any section whose body contains a bullet referencing the registry or shared references
+GENERIC_REF_SECTION_RE = re.compile(
+    r"## [^\n]*\n\n(?:[^\n]*\n)*?(?=- `\.\./|.*skill-contract-registry).*?(?=\n## |\Z)",
+    re.DOTALL,
+)
 
 
 def load_json(path: Path) -> Any:
@@ -37,7 +42,11 @@ def load_json(path: Path) -> Any:
 
 
 def extract_reference_bullets(skill_text: str) -> list[str]:
-    section_match = READ_BEFORE_RE.search(skill_text) or SCOPE_READ_RE.search(skill_text)
+    section_match = (
+        READ_BEFORE_RE.search(skill_text)
+        or SCOPE_READ_RE.search(skill_text)
+        or GENERIC_REF_SECTION_RE.search(skill_text)
+    )
     if not section_match:
         return []
     return REFERENCE_BULLETS_RE.findall(section_match.group(0))

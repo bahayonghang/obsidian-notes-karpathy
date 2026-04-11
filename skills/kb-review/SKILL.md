@@ -7,6 +7,21 @@ description: Run the independent review gate for an Obsidian knowledge base. Use
 
 Run the explicit gate between draft knowledge and the approved live brain. This is the immediate gate lane: resolve pending draft decisions, decide promotion or rejection, and rebuild briefings when that refresh belongs to the current review pass.
 
+## Minimal loop
+
+1. inspect the draft package, cited captures, and overlapping live pages
+2. decide approve, reject, or escalate for human judgment
+3. promote only durable, well-supported knowledge into live
+4. rebuild briefings when the approved change should alter downstream context
+
+## When this compounds the wiki
+
+`kb-review` is where candidate structure becomes durable truth. Good review keeps the brain dense and reusable without letting noisy, redundant, or weakly-linked material accumulate in `wiki/live/`.
+
+## When not to promote
+
+A draft can be technically correct and still fail the promotion bar if it is redundant, weakly provenanced, poorly linked, or better expressed as a relationship or hub update instead of a new live page.
+
 ## Read before reviewing
 
 Read these files first:
@@ -51,6 +66,8 @@ When the draft is borderline, weigh both accuracy and whether the page deserves 
 - does this draft duplicate an existing approved page?
 - are contradictions recorded rather than silently overwritten?
 - does the page deserve durable retention in the long-term brain?
+- should the durable improvement be a promoted page, a stronger relationship edge, or inclusion in a curated hub?
+- does this draft improve the browseable graph of the wiki, or does it just add more prose?
 
 ## Outputs
 

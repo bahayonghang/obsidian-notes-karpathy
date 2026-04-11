@@ -4,6 +4,8 @@ Use this reference when `kb-query`, publish outputs, or health maintenance needs
 
 ## Core rule
 
+Every substantive query should either improve the wiki or explicitly record why it does not need to. This is the Karpathy compounding principle: the wiki grows richer with every source added and every question answered.
+
 Archived Q&A and publish outputs may surface durable follow-up work, but they never mutate `wiki/live/` directly.
 
 If an output discovers reusable long-term knowledge, the change must still re-enter through:
@@ -12,6 +14,8 @@ If an output discovers reusable long-term knowledge, the change must still re-en
 
 If an output mainly reveals governance drift, alias problems, stale archives, or maintenance backlog, route that work to `kb-health` instead of pretending it is already approved knowledge.
 
+Compounding doctrine: treat archived outputs as reusable working memory for the system rather than as dead-end deliverables. A good output should either stand on its own for reuse or leave behind clear next actions that help the vault become denser, better linked, and easier to query later.
+
 ## Required writeback signals for substantive outputs
 
 Substantive Q&A or publish artifacts should record these fields when relevant:
@@ -19,9 +23,10 @@ Substantive Q&A or publish artifacts should record these fields when relevant:
 - `source_live_pages` — the approved live pages that grounded the output
 - `open_questions_touched` — standing questions materially advanced or reframed by the output
 - `writeback_candidates` — concrete long-term follow-up worth re-entering the wiki
-- `writeback_status` — `none | pending | compiled | rejected`
+- `writeback_status` — `none | pending | triaged | drafted | reviewed | rejected`
 - `followup_route` — `none | draft | review | health`
 - optional `confidence_posture` — when the answer should advertise uncertainty or source disagreement explicitly
+- optional `compounding_value` — `low | medium | high` to indicate how strongly the artifact is expected to pay off for future reuse, navigation, or follow-up drafting
 
 ## How to choose `followup_route`
 
@@ -49,6 +54,20 @@ Use when the output mainly surfaces:
 - stale briefings
 - recurring unresolved question clusters
 - provenance drift or thin-source maintenance work
+- relationship gaps where approved pages should be linked, grouped, or surfaced through a curated hub before more new prose is written
+
+## Writeback status semantics
+
+Use these statuses as a lightweight lifecycle for durable follow-up:
+
+- `none` — no durable follow-up was created
+- `pending` — follow-up exists but nobody has triaged it yet
+- `triaged` — next route and target are clear, but no draft or maintenance action has started
+- `drafted` — the candidate has re-entered the draft lane or has been converted into an explicit maintenance target
+- `reviewed` — the resulting draft or maintenance action has completed review or explicit disposition
+- `rejected` — the follow-up was examined and deliberately not carried forward
+
+Prefer advancing status explicitly instead of leaving old artifacts forever at `pending`.
 
 ## Writeback candidate posture
 
@@ -60,8 +79,23 @@ Prefer candidates such as:
 - a missing concept/entity page to draft
 - a new durable link or relationship to capture
 - a standing question worth promoting into a governed note or index
+- a curated hub or coverage map that should be refreshed because repeated outputs keep touching the same topic
 
 Avoid vague placeholders like "update the wiki later".
+
+When substantive outputs create durable follow-up work, surface that work somewhere operators can triage repeatedly rather than leaving it stranded inside a single archived artifact. Valid surfaces include governance indices, health reports, or another maintained backlog note that points back to the archived output.
+
+## Relationship-first compounding
+
+Before proposing a brand-new page, check whether the durable value is actually one of these lighter-weight moves:
+
+- add `related` edges between existing live pages
+- add a page to an existing `topic_hub`
+- strengthen alias coverage for a page that is already the right canonical identity
+- promote a recurring question into `QUESTIONS.md`
+- record a missing bridge between prior approved coverage and the new artifact
+
+Prefer the smallest durable writeback that improves future retrieval and synthesis without creating redundant pages.
 
 ## Governance relationship
 
@@ -78,4 +112,18 @@ But those surfaces remain maintenance/navigation views. They do not widen the tr
 - grounded answer with no new follow-up -> archive with `followup_route: none`
 - answer discovers a missing long-term concept -> archive with `writeback_candidates` and `followup_route: draft`
 - answer reveals duplicate aliases across approved pages -> archive with `followup_route: health`
+- answer mainly shows that three approved pages need stronger `related` links and a shared hub -> archive with `writeback_candidates`, `followup_route: health`, and `compounding_value: high`
 - answer reframes an unresolved governance question -> archive with `open_questions_touched` and either `review` or `health`, depending on the next action
+
+## Simple writeback for personal vaults
+
+The full 6-status lifecycle (`none → pending → triaged → drafted → reviewed → rejected`) is valuable for team or enterprise vaults with formal review cadence. For personal vaults where the same person sources, queries, and reviews, a lighter path is usually enough:
+
+1. **Query** produces an answer grounded in live pages
+2. **Writeback signal** — the output records `followup_route` and `writeback_candidates`
+3. **Draft** — the candidate re-enters through `wiki/drafts/` (or a relationship / hub upgrade)
+4. **Approve** — the owner reviews and promotes to `wiki/live/`
+
+In this mode, `pending → drafted` is the common happy path. Use `triaged` and `rejected` only when the backlog grows large enough to need triage.
+
+The key Karpathy principle still applies: every substantive query should leave the wiki at least slightly better — whether through a new page, a stronger link, an updated hub, or even just a promoted question in `QUESTIONS.md`.

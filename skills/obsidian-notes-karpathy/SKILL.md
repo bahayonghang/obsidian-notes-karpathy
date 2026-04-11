@@ -9,6 +9,17 @@ Package-level entry point for the review-gated knowledge workflow.
 
 Use this skill when the user talks about the workflow as a whole, not just one operation. Diagnose the lifecycle stage first, then route to the correct operational skill. If the operation is already obvious, skip the router and go straight to the matching `kb-*` skill.
 
+## Minimal loop
+
+- `kb-compile` builds reviewable candidates from immutable captures
+- `kb-review` decides what deserves durable truth
+- `kb-query` reuses approved knowledge and proposes the next durable deltas
+- `kb-health` audits drift and identifies where the wiki should grow next
+
+## When this compounds the wiki
+
+The package should behave like a persistent markdown wiki operator, not just a staged pipeline. Each step should either improve approved knowledge directly through the gate or leave behind clearer navigation, better reuse surfaces, and explicit next actions.
+
 ## Read before routing
 
 Read these shared references first:
@@ -85,10 +96,11 @@ Route to `kb-health` when:
 - collaboration memory and approved knowledge appear to be mixing
 - the user wants a maintenance baseline, drift audit, duplicate pass, alias audit, coverage-gap review, or report-first cleanup pass across approved surfaces
 - the user wants planning surfaces such as curated hubs or editorial-gap views refreshed without widening the truth boundary
+- the user wants to know which repeated outputs, question clusters, or weakly connected topics should become syntheses or hubs next
 
-`kb-health` owns the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, and safe mechanical fixes after the immediate review gate has passed.
+`kb-health` owns the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, graph weakness, hub backlog, and safe mechanical fixes after the immediate review gate has passed.
 
-## Package doctrine
+## Read before routing
 
 - Treat `raw/` as immutable evidence intake.
 - Treat `wiki/drafts/` as reviewable knowledge, not query truth.

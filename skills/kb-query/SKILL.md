@@ -7,6 +7,21 @@ description: Query, search, and generate grounded outputs from the approved live
 
 Search, answer, and generate outputs from the approved live layer.
 
+## Minimal loop
+
+1. locate the best approved live pages and briefings
+2. answer or draft the artifact from `wiki/live/`
+3. archive the result when it is substantive
+4. record the smallest durable delta that would improve the wiki next
+
+## When this compounds the wiki
+
+`kb-query` should not behave like disposable chat over live notes. Strong outputs should either become reusable archived artifacts or leave behind explicit candidates for a better concept page, synthesis page, relationship edge, governed question, or curated hub.
+
+## When not to promote
+
+Do not treat a polished answer as approved truth by itself. If the result discovers durable knowledge, it must still re-enter through `draft -> review -> live`.
+
 ## Read before querying
 
 Read these files first:
@@ -17,6 +32,8 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/briefing-template.md`
+- `../obsidian-notes-karpathy/references/qa-template.md`
+- `../obsidian-notes-karpathy/references/content-output-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/search-upgrades.md`
 - `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
@@ -57,7 +74,14 @@ Those layers may be cited only as evidence if a human explicitly asks for source
 3. publish mode for reports, threads, talks, and slides derived from approved knowledge
 4. reflect-lite mode for question resolution, synthesis notes, or gap reports that should stay outside live until re-reviewed
 
-When a substantive answer or artifact surfaces durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, and a `followup_route` so the next compile/review or health pass can decide what should happen next.
+When a substantive answer or artifact creates durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, `writeback_status`, and a `followup_route` so the next compile/review or health pass can decide what should happen next.
+
+Prefer the smallest durable delta that improves future reuse:
+
+- update an existing live concept or entity when the identity is already right
+- draft a missing concept, entity, or synthesis when the knowledge is durable but absent
+- strengthen `related` links or question tracking when the problem is graph quality rather than page absence
+- create or expand a curated hub when repeated outputs keep traversing the same approved cluster
 
 ## Retrieval ladder
 
@@ -75,6 +99,8 @@ Semantic retrieval may help discover candidate pages, but approved live pages re
 
 ## Writeback contract
 
+Compounding principle: every substantive query should leave the wiki at least slightly better — whether through a new draft page, a stronger relationship, an updated hub, or a promoted question. Writeback is the default posture, not an opt-in extra.
+
 Use `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md` as the detailed contract.
 
 At minimum, substantive Q&A or publish outputs should:
@@ -82,6 +108,8 @@ At minimum, substantive Q&A or publish outputs should:
 - record `source_live_pages` when specific approved pages grounded the answer
 - record `open_questions_touched` when the answer materially advances or reframes a standing question
 - record `writeback_candidates` when the output discovers durable follow-up worth re-entering the wiki
+- record `writeback_status` so later passes can see whether the work is still pending
+- record `compounding_value` when future reuse, navigation value, or synthesis payoff should be explicit
 - set `followup_route` to `none`, `draft`, `review`, or `health`
 
 Use:

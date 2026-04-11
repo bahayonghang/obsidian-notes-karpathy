@@ -8,7 +8,8 @@
     "questions-and-reflection-policy.md",
     "query-writeback-lifecycle.md",
     "taxonomy-and-hubs.md",
-    "paper-ingestion-lifecycle.md"
+    "paper-ingestion-lifecycle.md",
+    "obsidian-safe-markdown.md"
   ],
   "skills": {
     "obsidian-notes-karpathy": {
@@ -82,6 +83,8 @@
         "lifecycle-matrix.md",
         "schema-template.md",
         "summary-template.md",
+        "concept-template.md",
+        "entity-template.md",
         "activity-log-template.md",
         "provenance-and-alias-policy.md",
         "paper-ingestion-lifecycle.md"
@@ -130,6 +133,8 @@
         "file-model.md",
         "lifecycle-matrix.md",
         "briefing-template.md",
+        "qa-template.md",
+        "content-output-template.md",
         "activity-log-template.md",
         "questions-and-reflection-policy.md",
         "query-writeback-lifecycle.md",

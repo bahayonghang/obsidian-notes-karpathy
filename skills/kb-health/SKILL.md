@@ -7,6 +7,21 @@ description: Run a deep health check on the approved knowledge base. Use this sk
 
 Deep lint and maintenance workflow for the approved live brain and its review ecosystem. This is the longer-horizon maintenance lane: inspect drift, integrity, backlog pressure, stale outputs, and only apply safe mechanical fixes when the target is unambiguous.
 
+## Minimal loop
+
+1. inspect approved live surfaces and archived outputs
+2. identify drift, backlog, stale knowledge, or graph weakness
+3. refresh governance indices and write a health report
+4. surface the next best growth moves without widening the truth boundary
+
+## When this compounds the wiki
+
+`kb-health` should not only find errors. It should show where the wiki wants to grow next: repeated question clusters, missing syntheses, weak relationship coverage, hub backlog, and stale archived outputs that deserve re-entry.
+
+## When not to promote
+
+Do not use health findings to silently mint approved truth. If health discovers durable knowledge changes, route them into draft, review, or explicit maintenance work.
+
 ## Scope
 
 Before checking the vault, read these files first:
@@ -56,7 +71,10 @@ Reference `raw/` only when provenance requires a spot check.
 - collaboration memory leaking into approved knowledge, or vice versa
 - source hash drift or outdated verification signals
 - alias drift or cross-language splits that should be surfaced for merge review
-- open questions and gap reports that keep reappearing without resolution
+- open questions and gap reports that keep recurring without resolution
+- repeated archived outputs on the same approved topic that likely deserve a synthesis or curated hub
+- weakly connected live pages that should gain stronger `related` links or hub membership
+- curated hubs that are stale, orphaned, or badly imbalanced
 
 ## Report output
 

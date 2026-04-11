@@ -8,6 +8,7 @@ Use this policy whenever compile, review, query, or health logic must decide whe
 - reduce duplicate concept and entity pages
 - surface cross-language overlap without inventing silent merges
 - make provenance drift visible before it pollutes the approved layer
+- improve relationship quality so the wiki behaves like an explorable graph instead of a pile of isolated pages
 
 ## Provenance rules
 
@@ -31,6 +32,20 @@ Use this policy whenever compile, review, query, or health logic must decide whe
 - merge candidates should preserve provenance edges and reviewer visibility
 - cross-language overlap is a governance issue, not a reason to bypass review
 
+## Relationship posture
+
+Prefer a small number of durable, explainable relationship types over ad hoc backlinks.
+
+Common relationship intents include:
+
+- `supports` — one page strengthens or evidences another claim
+- `contrasts` — pages disagree or frame the issue differently
+- `extends` — one page deepens or broadens another
+- `supersedes` — a newer approved page should be preferred over an older framing
+- `related-question` — a page materially participates in an unresolved or governed question thread
+
+These relationship cues should improve navigation and synthesis quality, not become a hidden ontology project.
+
 ## Query posture
 
 - answers should prefer approved summaries and review-backed live pages for evidence trails
@@ -43,3 +58,4 @@ Use this policy whenever compile, review, query, or health logic must decide whe
 - use one canonical live page as the durable identity anchor for a concept or entity
 - use aliases and curated hubs / topic maps to improve navigation rather than creating parallel truth pages for every wording variant
 - if a cross-cutting topic needs a hub, treat that hub as a navigation surface backed by approved live pages rather than as a shortcut around provenance
+- when relation edges are weak or missing, prefer strengthening links between approved pages before creating new parallel notes

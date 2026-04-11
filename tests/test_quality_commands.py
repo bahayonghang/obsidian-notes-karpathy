@@ -3,6 +3,7 @@ import json
 import unittest
 
 from _bundle_test_support import REPO_ROOT, SCRIPTS_DIR, run_repo_command
+from _vault_common import parse_simple_yaml
 from runtime_eval import build_prompt, classify_failure, detect_root_leakage, fallback_runner_for, validate_manifest
 from trigger_eval import load_skill_catalog, parse_selected_skill, summarize_trigger_results
 
@@ -130,6 +131,30 @@ class QualityCommandTests(unittest.TestCase):
         self.assertEqual(summary["matched"], 1)
         self.assertEqual(summary["per_skill"]["kb-init"]["true_positive"], 1)
         self.assertEqual(summary["per_skill"]["kb-query"]["false_positive"], 2)
+
+    def test_parse_simple_yaml_handles_empty_values_and_lists(self) -> None:
+        parsed = parse_simple_yaml(
+            """title: Test Note\naliases:\n  - alpha\n  - beta\nempty_list: []\nowner:\n"""
+        )
+        self.assertEqual(parsed["title"], "Test Note")
+        self.assertEqual(parsed["aliases"], ["alpha", "beta"])
+        self.assertEqual(parsed["empty_list"], [])
+        self.assertEqual(parsed["owner"], [])
+
+    def test_parse_simple_yaml_preserves_colons_and_quoted_special_characters(self) -> None:
+        parsed = parse_simple_yaml(
+            """note: keep:the:rest\nurl: \"https://example.com/a:b\"\nlabel: 'RAG vs. wiki: tradeoffs'\nitems: [one, two, three]\n"""
+        )
+        self.assertEqual(parsed["note"], "keep:the:rest")
+        self.assertEqual(parsed["url"], "https://example.com/a:b")
+        self.assertEqual(parsed["label"], "RAG vs. wiki: tradeoffs")
+        self.assertEqual(parsed["items"], ["one", "two", "three"])
+
+    def test_parse_simple_yaml_ignores_comments_and_invalid_lines(self) -> None:
+        parsed = parse_simple_yaml(
+            """# comment\ntitle: Valid\nthis line has no separator\ncount: 3\n"""
+        )
+        self.assertEqual(parsed, {"title": "Valid", "count": "3"})
 
 
 if __name__ == "__main__":

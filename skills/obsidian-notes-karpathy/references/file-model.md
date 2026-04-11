@@ -1,5 +1,20 @@
 # File Model
 
+## Table of Contents
+
+- [Core rules](#core-rules)
+- [Creator workflow mapping](#creator-workflow-mapping)
+- [Required vs optional support](#required-vs-optional-support)
+- [Expected directories](#expected-directories)
+- [Raw capture classes](#raw-capture-classes)
+- [Draft summaries](#draft-summaries)
+- [Live pages](#live-pages)
+- [Briefings](#briefings)
+- [Collaboration memory](#collaboration-memory)
+- [Review records](#review-records)
+- [Query outputs](#query-outputs)
+- [Naming and graph conventions](#naming-and-graph-conventions)
+
 Canonical review-gated layering:
 
 ```text
@@ -45,8 +60,14 @@ For creator-style vaults, map common working surfaces onto the contract like thi
 - publish-ready outward artifacts -> `outputs/content/`
 - reusable approved concepts, entities, and summaries -> `wiki/live/`
 - curated topic maps, hubs, or editorial navigation surfaces -> `wiki/live/indices/` or approved hub-style live pages when review says they are durable enough
+- actionable writeback backlog and editorial triage surfaces -> governance indices, health reports, or a maintained backlog note derived from archived outputs rather than hidden inside one-off artifacts
 
 The key boundary is that creator convenience must not widen the truth boundary. Reusable planning or publish surfaces can exist, but durable topic knowledge is still approved only through `draft -> review -> live`.
+
+A compounding wiki should therefore keep both:
+
+- a truth layer in `wiki/live/`
+- a visible follow-up layer where archived outputs, open questions, and maintenance signals can be triaged into the next draft, review, or health pass
 
 ## Required vs optional support
 
@@ -88,11 +109,15 @@ vault/
 │   │   ├── summaries/
 │   │   ├── concepts/
 │   │   ├── entities/
+│   │   ├── overviews/
+│   │   ├── comparisons/
 │   │   └── indices/
 │   ├── live/
 │   │   ├── summaries/
 │   │   ├── concepts/
 │   │   ├── entities/
+│   │   ├── overviews/
+│   │   ├── comparisons/
 │   │   └── indices/
 │   ├── briefings/
 │   ├── index.md
@@ -147,6 +172,31 @@ Some partially bootstrapped vaults may place markdown directly under `raw/`.
 - preserve raw immutability exactly as with nested capture classes
 - surface any missing support-layer directories separately instead of rejecting the source format itself
 
+## TODO: Image and data raw source expansion
+
+Future intake support should expand beyond markdown and PDF while preserving the same review-gated contract.
+
+Planned next steps:
+
+1. **Image captures under `raw/**/assets/`**
+   - add deterministic metadata-sidecar handling for screenshots, diagrams, and clipped images
+   - distinguish binary assets from image-derived markdown summaries
+   - keep raw binaries immutable and route extracted insights through draft -> review -> live
+
+2. **Structured data captures under `raw/**/data/`**
+   - support CSV / JSON / tabular datasets as immutable evidence inputs
+   - define a metadata contract for schema summary, source hash, and last verification timestamps
+   - compile only derived markdown interpretations, never mutate the original dataset
+
+3. **Routing and lifecycle updates**
+   - extend `accepted_raw_sources()` and compile-delta scanning to classify image/data sources explicitly
+   - add fixture vaults for image intake and data intake edge cases
+   - document when a companion skill is required versus when the core bundle can ingest directly
+
+4. **Query and provenance expectations**
+   - ensure query outputs cite the derived approved markdown page, not the binary/data asset directly as truth
+   - preserve traceability back to the underlying asset or dataset through metadata and review records
+
 ## Draft summaries
 
 Live under `wiki/drafts/summaries/**` and mirror raw captures.
@@ -170,7 +220,7 @@ Expected properties:
 
 ## Live pages
 
-Live under `wiki/live/{summaries,concepts,entities}/`.
+Live under `wiki/live/{summaries,concepts,entities,overviews,comparisons}/`.
 
 Expected properties:
 
@@ -187,6 +237,7 @@ Expected properties:
 - `last_source_check_at` when freshness needs to be audited explicitly
 - `sources`
 - `related`
+- optional `relationship_notes` when the vault wants lightweight semantics such as `supports`, `contrasts`, `extends`, `supersedes`, or `related-question`
 - optional `evidence_strength` or `source_density` when the vault tracks thin-support risk
 - optional `question_links` or `open_questions` when the page participates in a standing governance thread
 - optional `topic_hub` when the page belongs to a curated hub / MOC-like surface
@@ -249,8 +300,11 @@ Expected operational fields for substantive Q&A and publish outputs:
 - `writeback_status` to show whether that follow-up is still pending
 - `followup_route` as `none | draft | review | health`
 - optional `confidence_posture` when the answer should advertise uncertainty explicitly
+- optional `compounding_value` when the artifact should advertise expected long-term reuse value
 
 These outputs can inform governance and maintenance surfaces, but they never become approved truth automatically.
+
+Prefer concrete operational values over placeholders. For example, `writeback_candidates` should describe the exact durable delta proposed, and `compounding_value` should reflect whether the artifact meaningfully improves future reuse, navigation, or synthesis.
 
 ## Naming and graph conventions
 

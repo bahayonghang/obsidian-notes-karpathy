@@ -7,6 +7,18 @@ description: Initialize, migrate, or repair a review-gated Obsidian knowledge ba
 
 One-time setup, migration, and repair for the review-gated workflow.
 
+## Quick Start
+
+For a fresh vault, the happy path is three steps:
+
+1. **Init** — run `kb-init` to create the support layer (`raw/`, `wiki/`, `outputs/`, `AGENTS.md`)
+2. **Compile** — drop source files into `raw/`, then run `kb-compile` to build reviewable drafts
+3. **Review** — run `kb-review` to approve drafts into the permanent wiki under `wiki/live/`
+
+After that, use `kb-query` to ask questions (each answer compounds the wiki) and `kb-health` to audit drift.
+
+This mirrors Karpathy's LLM Wiki pattern: raw sources are immutable evidence, the LLM compiles and maintains the wiki, and you curate by sourcing documents and asking the right questions.
+
 ## Read before writing
 
 Read these shared references first:
@@ -38,8 +50,8 @@ Create the required support layer:
 ```text
 raw/human/{articles,papers,podcasts,repos,assets}
 raw/agents/{role}/
-wiki/drafts/{summaries,concepts,entities,indices}
-wiki/live/{summaries,concepts,entities,indices}
+wiki/drafts/{summaries,concepts,entities,overviews,comparisons,indices}
+wiki/live/{summaries,concepts,entities,overviews,comparisons,indices}
 wiki/briefings/
 wiki/index.md
 wiki/log.md

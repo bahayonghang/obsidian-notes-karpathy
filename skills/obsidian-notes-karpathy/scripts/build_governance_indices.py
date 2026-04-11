@@ -23,6 +23,8 @@ GAP_KINDS = {
     "duplicate_alias_set",
     "volatile_page_stale",
     "stale_briefing",
+    "weakly_connected_live_page",
+    "hub_candidate_backlog",
 }
 
 
@@ -49,6 +51,18 @@ def _body_open_questions(record) -> list[str]:
     return questions
 
 
+def _append_question(questions: list[str], seen_questions: set[str], value: object) -> None:
+    if not isinstance(value, str):
+        return
+
+    question = value.strip()
+    if not question or question in seen_questions:
+        return
+
+    seen_questions.add(question)
+    questions.append(question)
+
+
 def build_governance_indices(vault_root: Path) -> dict:
     records = collect_markdown_records(vault_root)
     live = live_records(records)
@@ -59,18 +73,13 @@ def build_governance_indices(vault_root: Path) -> dict:
     alias_rows: list[dict[str, object]] = []
     writeback_backlog: list[dict[str, object]] = []
     followup_routes: list[dict[str, object]] = []
+    route_counts: dict[str, int] = {}
+    hub_candidates: list[dict[str, object]] = []
 
     for record in live:
         for question in _body_open_questions(record):
-            if question not in seen_questions:
-                seen_questions.add(question)
-                questions.append(question)
-        frontmatter_question = record.frontmatter.get("question")
-        if isinstance(frontmatter_question, str) and frontmatter_question.strip():
-            question = frontmatter_question.strip()
-            if question not in seen_questions:
-                seen_questions.add(question)
-                questions.append(question)
+            _append_question(questions, seen_questions, question)
+        _append_question(questions, seen_questions, record.frontmatter.get("question"))
 
         canonical = str(record.frontmatter.get("canonical_name") or record.frontmatter.get("concept_id") or record.frontmatter.get("entity_id") or record.basename).strip()
         aliases = sorted({alias for alias in list_field(record.frontmatter, "aliases") if alias.strip()})
@@ -110,6 +119,20 @@ def build_governance_indices(vault_root: Path) -> dict:
                     "followup_route": followup_route,
                 }
             )
+            route_counts[followup_route] = route_counts.get(followup_route, 0) + 1
+
+    for record in live:
+        related = list_field(record.frontmatter, "related")
+        topic_hub = str(record.frontmatter.get("topic_hub") or "").strip()
+        question_links = list_field(record.frontmatter, "question_links")
+        open_questions = list_field(record.frontmatter, "open_questions")
+        if len(related) <= 1 and not topic_hub and not question_links and not open_questions:
+            hub_candidates.append(
+                {
+                    "path": record.path,
+                    "reason": "weakly connected live page",
+                }
+            )
 
     gap_issues = [issue for issue in audit["issues"] if issue["kind"] in GAP_KINDS]
 
@@ -139,6 +162,16 @@ def build_governance_indices(vault_root: Path) -> dict:
         for item in followup_routes:
             gaps_md += f"- {item['followup_route']}: {item['path']}\n"
 
+    if route_counts:
+        gaps_md += "\n## Follow-up Route Clusters\n\n"
+        for route, count in sorted(route_counts.items()):
+            gaps_md += f"- {route}: {count} archived outputs\n"
+
+    if hub_candidates:
+        gaps_md += "\n## Hub And Relationship Hints\n\n"
+        for item in hub_candidates:
+            gaps_md += f"- {item['reason']}: {item['path']}\n"
+
     aliases_md = "# Alias Registry\n\n"
     if alias_rows:
         for row in alias_rows:
@@ -156,6 +189,8 @@ def build_governance_indices(vault_root: Path) -> dict:
         "alias_rows": alias_rows,
         "writeback_backlog": writeback_backlog,
         "followup_routes": followup_routes,
+        "route_counts": route_counts,
+        "hub_candidates": hub_candidates,
         "files": {
             "QUESTIONS.md": questions_md,
             "GAPS.md": gaps_md,

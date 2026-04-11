@@ -50,6 +50,24 @@ health_score: {overall}
 
 - {source gap or ambiguity}
 
+## Growth Opportunities
+
+### Compile Next
+
+- {capture or question cluster that should re-enter draft creation}
+
+### Review Next
+
+- {draft, promotion boundary, or disputed interpretation needing review}
+
+### Hub Build Next
+
+- {topic / program / question cluster that now deserves a curated hub}
+
+### Source Acquisition Next
+
+- {missing source that would reduce uncertainty or fill a recurring gap}
+
 ## Search Upgrade Recommendation
 
 - Current stage: {1 | 2 | 3 | 4}
@@ -85,6 +103,7 @@ Suggested weighting:
 - missing briefings for active roles
 - review outputs that never generated the corresponding live page or briefing
 - open questions or writeback candidates that recur without an owner
+- repeated archived outputs that imply a missing synthesis or curated hub
 
 ### Consistency
 
@@ -98,6 +117,7 @@ Suggested weighting:
 - orphan live summaries, concepts, entities, or Q&A
 - weak cross-linking between live pages and briefings
 - missing `approved_from` / `review_record` provenance edges
+- weakly connected live pages that should likely participate in a synthesis, relationship edge, or curated hub
 
 ### Freshness
 
@@ -106,6 +126,7 @@ Suggested weighting:
 - old Q&A that should be refreshed against newer approved knowledge
 - pending writeback candidates that have not re-entered the draft/review loop
 - pages whose `domain_volatility` suggests they should be reviewed sooner
+- repeated question clusters that remain unresolved without visible progress
 
 ### Provenance
 
@@ -124,3 +145,4 @@ Treat these as report-worthy mechanical issues even though they do not add a new
 - pending review backlog that is aging without resolution
 - collaboration memory mixing with approved knowledge surfaces
 - broken wikilinks in approved surfaces
+- curated hubs that are stale, orphaned, or badly imbalanced toward a small portion of the approved graph
