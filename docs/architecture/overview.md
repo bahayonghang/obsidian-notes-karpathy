@@ -9,9 +9,12 @@ The shipped workflow is review-gated:
 - `raw/` is immutable evidence
 - `wiki/drafts/` is reviewable build output
 - `wiki/live/` is approved retrieval truth
+- `wiki/live/procedures/` is approved procedural memory
 - `wiki/briefings/` is regenerated runtime context
 - `outputs/reviews/` is the required decision ledger
 - `outputs/qa/`, `outputs/content/`, and `outputs/health/` are downstream artifacts that appear when later stages need them
+- `outputs/episodes/` is episodic memory for crystallized work arcs
+- `outputs/audit/operations.jsonl` is the machine-readable audit trail
 - `raw/` doubles as the durable source-library surface, while creator-facing drafting, reuse, and publish shaping happen downstream
 - `MEMORY.md` is the collaboration-memory surface, outside default topic retrieval
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md` is the editor-in-chief surface
@@ -24,6 +27,7 @@ The routing and ownership contract lives primarily in `skills/obsidian-notes-kar
 - Separate production from judgment so draft errors do not compound.
 - Keep retrieval local-first and auditable.
 - Treat good answers as assets that can re-enter the wiki through review.
+- Treat completed chains of work as episodic assets that can later promote semantic or procedural memory.
 - Keep collaboration memory separate from source-grounded topic knowledge.
 - Let archived outputs feed maintenance and writeback loops without silently promoting them into approved truth.
 

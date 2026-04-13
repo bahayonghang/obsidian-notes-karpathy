@@ -7,8 +7,11 @@ This bundle works only if the surfaces stay separate.
 - `raw/` is evidence intake and should not be mutated by later stages.
 - `wiki/drafts/` is reviewable knowledge, not retrieval truth.
 - `wiki/live/` is the approved long-term brain.
+- `wiki/live/procedures/` is approved procedural memory.
 - `wiki/briefings/` is generated from live only.
 - `outputs/reviews/` is the promotion ledger.
+- `outputs/episodes/` is episodic memory, not approved semantic truth.
+- `outputs/audit/operations.jsonl` is the machine-readable audit surface.
 - governance indices under `wiki/live/indices/` belong to the approved layer and must stay grounded in approved live pages.
 
 ## Coordination vs knowledge
@@ -31,6 +34,7 @@ They may:
 - provide maintenance signals
 - surface `writeback_candidates`
 - record `followup_route`
+- carry `crystallized_from_episode`
 - inform health and backlog views
 
 But long-term knowledge still re-enters through draft -> review -> live.

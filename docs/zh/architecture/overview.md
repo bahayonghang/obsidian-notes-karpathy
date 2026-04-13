@@ -9,9 +9,12 @@
 - `raw/` 是不可变证据层
 - `wiki/drafts/` 是可审校的编译产物
 - `wiki/live/` 是批准后的检索真相层
+- `wiki/live/procedures/` 是批准后的 procedural memory
 - `wiki/briefings/` 是从 live 重建的运行时上下文
 - `outputs/reviews/` 是必需的决策账本
 - `outputs/qa/`、`outputs/content/`、`outputs/health/` 是按阶段出现的下游产物
+- `outputs/episodes/` 是工作链路结晶后的 episodic memory
+- `outputs/audit/operations.jsonl` 是机器可读的审计轨
 - `raw/` 同时也是长期素材库面，创作者的整理、复用和发布编排则发生在下游 surfaces
 - `MEMORY.md` 是协作记忆层，默认不进入专题检索面
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md` 是总编层 surface
@@ -24,6 +27,7 @@
 - 把生产和裁决拆开，避免草稿错误持续复利。
 - 保持 local-first、可审计的检索姿态。
 - 把高价值回答当成可回流资产，而不是聊天残留。
+- 把完整工作链当作 episodic 资产，后续再提炼成 semantic / procedural memory。
 - 把协作记忆与专题知识分层，而不是混成一个桶。
 - 让 archived outputs 参与维护与 writeback 闭环，但不把它们静默提升成 approved truth。
 

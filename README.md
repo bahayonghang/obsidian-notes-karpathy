@@ -5,10 +5,12 @@ Review-gated, multi-agent-friendly Obsidian knowledge-base skills inspired by Ka
 ```text
 raw/            -> immutable human + agent captures
 MEMORY.md       -> collaboration memory and editorial context
+outputs/episodes/ -> episodic memory / crystallized work arcs
 wiki/drafts/    -> compiled draft knowledge
 wiki/live/      -> approved long-term brain
+wiki/live/procedures/ -> approved procedural memory
 wiki/briefings/ -> role-specific context generated from live
-outputs/        -> reviews, Q&A, health reports, and publishable artifacts
+outputs/        -> reviews, Q&A, health reports, audit logs, and publishable artifacts
 ```
 
 The core idea is no longer just "compile notes into a wiki". It is "separate production from judgment so unreviewed drafts never become compound retrieval truth."
@@ -27,11 +29,14 @@ The core idea is no longer just "compile notes into a wiki". It is "separate pro
 - `raw/` is immutable.
 - treat `raw/` as the durable source library; editorial notes, Q&A, and publish artifacts belong in downstream surfaces rather than mutating source captures.
 - `MEMORY.md` is collaboration memory, not retrieval truth.
+- `outputs/episodes/` stores episodic memory, not approved topic truth.
 - `kb-compile` writes only to `wiki/drafts/`.
 - raw paper PDFs under `raw/**/papers/*.pdf` remain a `paper-workbench` routing exception, not a normal `kb-compile` ingest.
 - `kb-review` is the only promotion gate into `wiki/live/`.
+- `wiki/live/procedures/` is the procedural-memory lane for approved workflows and playbooks.
 - `wiki/briefings/` is generated from approved live pages only.
 - `kb-query` reads `wiki/live/`, briefings, and prior Q&A, not drafts.
+- `outputs/audit/operations.jsonl` is the machine-readable audit trail for automation and derived exports.
 - legacy-layout vaults are detected and should be migrated before normal operation.
 - alias alignment, source integrity, stale-page checks, and question tracking are absorbed as governance rules without collapsing the review gate.
 - curated hubs and creator-planning surfaces may exist, but they remain navigation/maintenance layers rather than truth-boundary shortcuts.
@@ -68,9 +73,11 @@ For creator-style workflows, a practical mapping is:
 
 - source library / clipped research -> `raw/`
 - editorial memory -> `MEMORY.md`
+- session crystallization -> `outputs/episodes/`
 - reusable research answers or drafting notes -> `outputs/qa/`
 - outward-facing publish artifacts -> `outputs/content/`
 - durable approved knowledge -> `wiki/live/`
+- durable approved workflows -> `wiki/live/procedures/`
 - curated topic maps / planning surfaces -> `wiki/live/indices/` or approved hub pages
 
 ## Route ownership
@@ -89,6 +96,8 @@ For creator-style workflows, a practical mapping is:
 - `scripts/scan_review_queue.py`
 - `scripts/scan_query_scope.py`
 - `scripts/lint_obsidian_mechanics.py`
+- `scripts/build_memory_episodes.py`
+- `scripts/build_graph_snapshot.py`
 - `scripts/runtime_eval.py`
 - `scripts/trigger_eval.py`
 

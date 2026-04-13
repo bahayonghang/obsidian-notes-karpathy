@@ -14,7 +14,7 @@ This is a skills-only project. The deliverables are:
 
 Canonical workflow:
 
-`raw/` -> `kb-compile` -> `wiki/drafts/` -> `kb-review` -> `wiki/live/` + `wiki/briefings/` -> `kb-query` / `kb-health` -> `outputs/`
+`raw/` -> `kb-compile` -> `wiki/drafts/` -> `kb-review` -> `wiki/live/` + `wiki/live/procedures/` + `wiki/briefings/` -> `kb-query` / `kb-health` -> `outputs/`
 
 ## Repository Structure
 
@@ -33,10 +33,13 @@ Canonical workflow:
 
 - `raw/` is immutable evidence intake.
 - `MEMORY.md` is collaboration memory and editorial context, not topic retrieval truth.
+- `outputs/episodes/` is episodic memory and stays outside the default topic-truth boundary.
 - `wiki/drafts/` is reviewable knowledge, not retrieval truth.
 - `wiki/live/` is the only approved long-term brain.
+- `wiki/live/procedures/` is approved procedural memory for durable workflows and playbooks.
 - `wiki/briefings/` must be generated from `wiki/live/` only.
 - `outputs/reviews/` stores the decision ledger for promotion.
+- `outputs/audit/operations.jsonl` is the machine-readable audit surface for automation.
 - `kb-query` must not treat drafts or raw captures as truth.
 - `AGENTS.md` is the required local contract; `CLAUDE.md` is the generated companion.
 - legacy-layout vaults must route through `kb-init` migration before normal operation.

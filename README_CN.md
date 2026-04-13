@@ -5,10 +5,12 @@
 ```text
 raw/            -> 不可变的人类/Agent 捕获层
 MEMORY.md       -> 协作记忆与编辑上下文
+outputs/episodes/ -> 情节化记忆 / 工作链路结晶
 wiki/drafts/    -> 编译出的草稿知识层
 wiki/live/      -> 已批准的长期知识层
+wiki/live/procedures/ -> 已批准的流程 / playbook 记忆
 wiki/briefings/ -> 只从 live 生成的角色 briefing
-outputs/        -> reviews、Q&A、health 报告和对外交付物
+outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 ```
 
 核心思想不再只是“把笔记编译成 wiki”，而是“把生产和裁决分开，避免未审草稿进入可复用真相层并持续复利。”
@@ -27,11 +29,14 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 - `raw/` 永远不可变。
 - 应把 `raw/` 视为长期素材库；编辑笔记、Q&A 和对外内容应落在下游 surfaces，而不是回写 source captures。
 - `MEMORY.md` 是协作记忆层，不是检索真相层。
+- `outputs/episodes/` 是 episodic memory，不是批准知识。
 - `kb-compile` 只能写 `wiki/drafts/`。
 - `raw/**/papers/*.pdf` 下的论文 PDF 仍然是 `paper-workbench` 的路由例外，不属于普通 `kb-compile` 入口。
 - 只有 `kb-review` 可以把草稿提升到 `wiki/live/`。
+- `wiki/live/procedures/` 承载被批准的流程 / 工作法，而不是再塞进概念页。
 - `wiki/briefings/` 只能从 approved live 生成。
 - `kb-query` 读取 live、briefings 和历史 Q&A，不把 drafts 当真相层。
+- `outputs/audit/operations.jsonl` 是自动化与派生操作的机器可读审计轨。
 - 旧的 legacy-layout vault 会被识别出来，并应先迁移再进入正常工作流。
 - alias 对齐、source integrity、stale 页面检查、开放问题跟踪都会被纳入治理规则，但不会绕过 review gate。
 - curated hub 和创作者规划面可以存在，但它们仍然是导航 / 维护层，不是绕过真相边界的捷径。
@@ -68,9 +73,11 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 
 - 素材库 / 网页摘录 -> `raw/`
 - 编辑协作记忆 -> `MEMORY.md`
+- 工作链路结晶 -> `outputs/episodes/`
 - 可复用的研究问答或写作笔记 -> `outputs/qa/`
 - 对外交付物 -> `outputs/content/`
 - 长期批准知识 -> `wiki/live/`
+- 批准后的流程 / playbook -> `wiki/live/procedures/`
 - 选题地图 / 规划面 -> `wiki/live/indices/` 或经 review 批准的 hub 页面
 
 ## 路由职责
@@ -89,6 +96,8 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 - `scripts/scan_review_queue.py`
 - `scripts/scan_query_scope.py`
 - `scripts/lint_obsidian_mechanics.py`
+- `scripts/build_memory_episodes.py`
+- `scripts/build_graph_snapshot.py`
 - `scripts/runtime_eval.py`
 - `scripts/trigger_eval.py`
 

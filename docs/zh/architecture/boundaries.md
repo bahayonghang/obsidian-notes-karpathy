@@ -7,8 +7,11 @@
 - `raw/` 是证据 intake，后续阶段不应改写。
 - `wiki/drafts/` 是可审校知识，不是真相层。
 - `wiki/live/` 是批准后的长期知识脑。
+- `wiki/live/procedures/` 是批准后的流程记忆。
 - `wiki/briefings/` 只能从 live 构建。
 - `outputs/reviews/` 是 promotion 决策账本。
+- `outputs/episodes/` 是 episodic memory，不是批准真相。
+- `outputs/audit/operations.jsonl` 是机器可读审计面。
 - `wiki/live/indices/` 下的治理索引属于批准层，必须以 approved live pages 为基础。
 
 ## 协作层与知识层
@@ -31,6 +34,7 @@
 - 提供维护信号
 - 暴露 `writeback_candidates`
 - 记录 `followup_route`
+- 携带 `crystallized_from_episode`
 - 为 health 与 backlog 视图提供输入
 
 但长期知识仍然必须重新走 draft -> review -> live。
