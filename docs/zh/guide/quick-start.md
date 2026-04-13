@@ -1,6 +1,6 @@
 # 快速开始
 
-## 0. 先迁移 legacy-layout
+## 0. 先迁移旧版目录结构
 
 如果 vault 还在直接使用 `wiki/summaries/` 或 `wiki/concepts/`，先用 `kb-init` 做迁移，再进入正常的 compile / query / health 流程。
 
@@ -38,13 +38,13 @@
 
 运行 `kb-compile`，输出应该落在 `wiki/drafts/`。
 
-## 5. 通过审校门
+## 5. 通过审校与批准
 
 运行 `kb-review`，把合格草稿提升到 `wiki/live/`，并重建 `wiki/briefings/`。
 
 ## 6. 基于批准层提问
 
-运行 `kb-query`，只从 `wiki/live/` 和相关 briefing 做检索与生成，不把 `MEMORY.md` 当专题知识来源。
+运行 `kb-query`，只从 `wiki/live/` 和相关角色简报做检索与生成，不把 `MEMORY.md` 当专题知识来源。
 
 如果一个回答暴露出值得长期保留的结论，应该把它记录成明确的 writeback 候选，重新走 compile / review 闭环。
 
@@ -52,4 +52,5 @@
 
 ## 7. 做一次 health baseline
 
-运行 `kb-review` 的 maintenance mode，报告默认写入 `outputs/health/health-check-{date}.md`。maintenance 流程默认先出报告，只在目标明确时做确定性的机械修复。
+运行 `kb-review` 的 `维护模式`，报告默认写入 `outputs/health/health-check-{date}.md`。维护流程默认先出报告，只在目标明确时做确定性的机械修复。
+

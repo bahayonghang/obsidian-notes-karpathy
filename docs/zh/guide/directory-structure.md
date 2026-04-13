@@ -25,7 +25,7 @@ vault/
 └── CLAUDE.md
 ```
 
-`outputs/reviews/` 属于必需支撑层。其余 outputs 面是完整合同的一部分，但按阶段按需出现。
+`outputs/reviews/` 属于必需支撑层。其余 `outputs/` 目录是完整合同的一部分，但按阶段按需出现。
 
 `MEMORY.md` 是推荐的协作记忆层，用来承接偏好、编辑优先级和协作约束，不应该变成专题知识页。
 
@@ -37,15 +37,17 @@ vault/
 | --- | --- | --- |
 | `raw/human/**` | Human | 人工整理后的证据输入 |
 | `raw/agents/{role}/**` | Agents | 仍需审校的不可信捕获 |
-| `raw/_manifest.yaml` | `kb-ingest` | 跟踪 raw 输入的 canonical source registry |
+| `raw/_manifest.yaml` | `kb-ingest` | 跟踪 raw 输入的来源登记表 |
 | `MEMORY.md` | Human + agent 协作 | 偏好、编辑优先级与协作上下文 |
 | `raw/*.md` | `kb-compile` bootstrap input | bootstrap 阶段可接受的输入，但不能替代完整支撑层 |
 | `wiki/drafts/**` | `kb-compile` | 可审校的 summaries / topics / concepts / entities / indices |
 | `wiki/live/**` | `kb-review` promotion target | 已批准的长期知识层 |
-| `wiki/briefings/**` | `kb-review` | 只从 live 构建的角色 briefing |
+| `wiki/briefings/**` | `kb-review` | 只从 live 构建的角色简报 |
 | `outputs/reviews/**` | `kb-review` | 审校决策记录 |
 | `outputs/qa/**` | `kb-query` | 持久问答归档 |
 | `outputs/content/**` | `kb-query` | 从批准层生成的对外内容 |
 | `outputs/slides/**`、`outputs/reports/**`、`outputs/charts/**` | `kb-render` | 确定性派生产物 |
-| `outputs/web/**` | `kb-query` | 基于 approved knowledge 的静态浏览站导出 |
-| `outputs/health/**` | `kb-review`（`maintenance` mode） | 维护与体检报告 |
+| `outputs/web/**` | `kb-query` | 基于已批准知识的静态浏览站导出 |
+| `outputs/health/**` | `kb-review`（`维护模式`） | 维护与体检报告 |
+
+

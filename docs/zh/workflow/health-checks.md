@@ -1,8 +1,8 @@
 # 健康检查
 
-`kb-review` 的 maintenance mode 是 approved live brain 及其 review 生态的、默认先出报告的长期维护流程。
+`kb-review` 的 `维护模式` 是围绕已批准知识层及其审校生态的长期维护流程，默认先出报告。
 
-适用场景不是“马上给当前 drafts 过门”或“顺手重建这一次 stale briefing”，而是批准层已经出现更持续的维护信号。
+适用场景不是“立刻给当前草稿过审”或“顺手重建这一次过期的角色简报”，而是已批准知识层已经出现持续的维护信号。
 
 ## 适用时机
 
@@ -11,8 +11,8 @@
 - 概念页定义不一致
 - 需要每周或每月做一次质量基线
 - `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图需要刷新
-- 归档 Q&A 或 publish 产物可能已经积累 writeback backlog
-- 需要检查协作记忆是否渗入 approved knowledge
+- 归档 Q&A 或发布产物可能已经积累 writeback backlog
+- 需要检查协作记忆是否渗入已批准知识
 
 ## 报告位置
 
@@ -22,11 +22,11 @@
 
 ## 评分维度
 
-- Completeness
-- Consistency
-- Connectivity
-- Freshness
-- Provenance
+- 完整性（Completeness）
+- 一致性（Consistency）
+- 连通性（Connectivity）
+- 时效性（Freshness）
+- 溯源性（Provenance）
 
 ## 常见结果
 
@@ -35,6 +35,8 @@
 - 标记过期的归档 Q&A 或 publish 产物
 - 找出缺失概念页
 - 找出 writeback backlog
-- 找出协作记忆渗入 approved knowledge 的地方
+- 找出协作记忆渗入已批准知识的地方
 - 在目标明确时刷新治理视图
 - 提醒哪些旧 Q&A 该重写或补注释
+
+

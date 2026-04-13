@@ -1,6 +1,6 @@
 # kb-init
 
-初始化、修复或迁移到 review-gated 契约。用户即使只说“LLM Wiki”“Karpathy 风格知识库”“把 Obsidian 当 IDE”“做个知识编译器”“做个人知识库 / second brain”，也应该优先落到这个技能，而不是要求他们先知道 `kb-init` 的名字。
+初始化、修复或迁移到带审校与批准流程的契约。用户即使只说“LLM Wiki”“Karpathy 风格知识库”“把 Obsidian 当 IDE”“做个知识编译器”“做个人知识库 / second brain”，也应该优先落到这个技能，而不是要求他们先知道 `kb-init` 的名字。
 
 ## 创建或修复的支撑层
 
@@ -51,4 +51,6 @@
 
 ## 迁移姿态
 
-遇到 legacy-layout 时，先搭好 review-gated 结构，再保留并迁移旧内容。直接落在 `wiki/summaries/` 或 `wiki/concepts/` 的旧页面要视作迁移任务，而不是普通编译输出。
+遇到旧版目录结构时，先搭好带审校与批准流程的结构，再保留并迁移旧内容。直接落在 `wiki/summaries/` 或 `wiki/concepts/` 的旧页面要视作迁移任务，而不是普通编译输出。
+
+

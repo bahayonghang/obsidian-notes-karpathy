@@ -7,7 +7,7 @@
 | 软件工程 | 知识库 |
 |----------|--------|
 | source code | `raw/` |
-| source registry | `raw/_manifest.yaml` |
+| 来源登记表 | `raw/_manifest.yaml` |
 | compiler | `kb-compile` |
 | build artifacts | `wiki/` |
 | logs and reports | `outputs/` |
@@ -28,9 +28,11 @@
 
 1. 读 `wiki/index.md`
 2. 读派生索引
-3. 把 topic pages 当默认 browse layer
+3. 把 topic pages 当默认 浏览层
 4. 用 Backlinks、unlinked mentions 和 Properties 搜索
 5. 跟 wikilink
 6. 必要时做文件搜索
 
 只有当 vault 规模明显超出这个模型时，再考虑更重的搜索基础设施。下一步通常应先是 DuckDB markdown 解析和全文检索，而不是立刻上向量检索。
+
+

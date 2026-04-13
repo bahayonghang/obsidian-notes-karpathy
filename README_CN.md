@@ -1,19 +1,19 @@
 # Obsidian Notes Karpathy
 
-面向多 Agent 的、带显式审校门的 Obsidian 知识库技能包。
+面向多 Agent 的、带显式审校与批准流程的 Obsidian 知识库技能包。
 
 这个 bundle 也面向那些不会先说 `kb-init`、`kb-compile` 的用户。他们可能会说“帮我做个 LLM Wiki”“做个 Karpathy 风格知识库”“把 Obsidian 当 IDE”“做个知识编译器”“搭个个人知识库 / second brain”，这些都应该自然落到正确技能。
 
 ```text
 raw/            -> 不可变的人类/Agent 捕获层
-raw/_manifest.yaml -> canonical source registry
+raw/_manifest.yaml -> 来源登记表
 MEMORY.md       -> 协作记忆与编辑上下文
 outputs/episodes/ -> 情节化记忆 / 工作链路结晶
 wiki/drafts/    -> 编译出的草稿知识层
 wiki/live/      -> 已批准的长期知识层
-wiki/live/topics/ -> 已批准的 browse-layer topic map
+wiki/live/topics/ -> 已批准知识的浏览层主题图
 wiki/live/procedures/ -> 已批准的流程 / playbook 记忆
-wiki/briefings/ -> 只从 live 生成的角色 briefing
+wiki/briefings/ -> 只从 live 生成的角色简报
 outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 ```
 
@@ -22,45 +22,45 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 ## 技能列表
 
 - `obsidian-notes-karpathy`：生命周期路由
-- `kb-init`：初始化、修复或迁移到 review-gated 布局
+- `kb-init`：初始化、修复或迁移到带审校与批准流程的布局
 - `kb-ingest`：把 raw 来源登记到 `raw/_manifest.yaml`
 - `kb-compile`：把 raw Markdown 捕获编译到 `wiki/drafts/`
 - `kb-review`：批准 / 拒绝 / 升级人工复核，并重建 `wiki/briefings/`
-- `kb-query`：统一读侧入口，负责检索、排序、grounded 回答、归档复用和静态 web 导出
-- `kb-render`：把 approved knowledge 渲染成 slides / reports / charts / canvas
+- `kb-query`：统一读侧入口，负责检索、排序、有依据的回答、归档复用和静态网站导出
+- `kb-render`：把已批准知识渲染成 slides / reports / charts / canvas
 
 ## 搭配技能矩阵
 
 | 需求 | 核心路由 | 搭配技能 |
 | --- | --- | --- |
-| 新建、修复或迁移 review-gated vault | `kb-init` | 无 |
+| 新建、修复或迁移带审校与批准流程的 vault | `kb-init` | 无 |
 | 把 raw Markdown、asset、data 登记进 manifest | `kb-ingest` | 无 |
 | 把 raw Markdown 编译成 drafts | `kb-compile` | 无 |
 | 审校并提升 draft knowledge | `kb-review` | 无 |
-| 只从 approved live 层检索 / 排序 / 归档 / 导出静态知识站 | `kb-query` | 无 |
-| 把 approved knowledge 渲染成 slides / reports / charts / canvas | `kb-render` | 无 |
-| 旧的 `kb-search` 说法 | `kb-query` | 直接吸收到 canonical query skill |
-| 旧的 `kb-health` 说法，或 approved 层 drift / backlog 维护 | `kb-review` | 走 canonical governance skill 的 maintenance mode |
+| 只从已批准知识层检索 / 排序 / 归档 / 导出静态知识站 | `kb-query` | 无 |
+| 把已批准知识渲染成 slides / reports / charts / canvas | `kb-render` | 无 |
+| 旧的 `kb-search` 说法 | `kb-query` | 直接吸收到统一查询技能 |
+| 旧的 `kb-health` 说法，或已批准知识层的 drift / backlog 维护 | `kb-review` | 走统一治理技能的 `维护模式` |
 | 处理 `raw/**/papers/*.pdf` | 不属于核心路由 | `paper-workbench` |
 
-核心 bundle 负责 review-gated 生命周期本身。只有在明显超出核心边界的场景，例如论文 PDF 或 canvas 专项生产时，才切到 companion skill。
+核心 bundle 负责带审校与批准流程的生命周期本身。只有在明显超出核心边界的场景，例如论文 PDF 或 canvas 专项生产时，才切到搭配技能。
 
 ## 关键契约
 
 - `raw/` 永远不可变。
-- 应把 `raw/` 视为长期素材库；编辑笔记、Q&A 和对外内容应落在下游 surfaces，而不是回写 source captures。
-- `raw/_manifest.yaml` 是跟踪输入来源的 canonical registry。
+- 应把 `raw/` 视为长期素材库；编辑笔记、Q&A 和对外内容应落在下游工作面，而不是回写 source captures。
+- `raw/_manifest.yaml` 是跟踪输入来源的来源登记表。
 - `MEMORY.md` 是协作记忆层，不是检索真相层。
-- `outputs/episodes/` 是 episodic memory，不是批准知识。
+- `outputs/episodes/` 是情节记忆，不是批准知识。
 - `kb-compile` 只能写 `wiki/drafts/`。
 - `raw/**/papers/*.pdf` 下的论文 PDF 仍然是 `paper-workbench` 的路由例外，不属于普通 `kb-compile` 入口。
 - 只有 `kb-review` 可以把草稿提升到 `wiki/live/`。
-- `wiki/live/topics/` 是批准知识的默认 browse layer。
+- `wiki/live/topics/` 是批准知识的默认浏览层。
 - `wiki/live/procedures/` 承载被批准的流程 / 工作法，而不是再塞进概念页。
-- `wiki/briefings/` 只能从 approved live 生成。
-- `kb-query` 读取 live、briefings 和历史 Q&A，不把 drafts 当真相层。
+- `wiki/briefings/` 只能从已批准的 live 页面生成。
+- `kb-query` 读取 live、角色简报和历史 Q&A，不把 drafts 当真相层。
 - `outputs/audit/operations.jsonl` 是自动化与派生操作的机器可读审计轨。
-- 旧的 legacy-layout vault 会被识别出来，并应先迁移再进入正常工作流。
+- 旧版目录结构 vault 会被识别出来，并应先迁移再进入正常工作流。
 - alias 对齐、source integrity、stale 页面检查、开放问题跟踪都会被纳入治理规则，但不会绕过 review gate。
 - curated hub 和创作者规划面可以存在，但它们仍然是导航 / 维护层，不是绕过真相边界的捷径。
 
@@ -73,7 +73,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 - raw 捕获会先进入 `raw/_manifest.yaml`
 - raw 捕获先变成可审校 drafts
 - drafts 只有经过 `kb-review` 才进入 `wiki/live/`
-- query 和 publish 默认只建立在 approved summaries 与 live pages 上
+- query 和 publish 默认只建立在已批准摘要与 live 页面上
 - health / reflect 类输出可以发现治理问题，但若要进入长期知识层，仍需走 draft -> review -> live
 
 这样可以保持 provenance 清晰，避免快速摄入直接固化成长期真相。
@@ -88,7 +88,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 - `outputs/content/`：`kb-query` 生成的对外交付物
 - `outputs/slides/`、`outputs/reports/`、`outputs/charts/`：`kb-render` 产出的确定性派生物
 - `outputs/web/`：`kb-query` 导出的静态浏览站
-- `outputs/health/`：`kb-review` maintenance mode 输出的体检报告
+- `outputs/health/`：`kb-review` `维护模式` 输出的体检报告
 - `MEMORY.md`：推荐的协作记忆与编辑上下文
 
 可选治理索引如 `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 可按需创建，用于跟踪开放问题、知识空白和别名映射。
@@ -108,11 +108,11 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 
 ## 路由职责
 
-- `kb-init` 负责初始化、修复和 legacy-layout 迁移。
-- `kb-ingest` 负责 source registry、manifest 刷新与 deferred intake 说明。
+- `kb-init` 负责初始化、修复和旧版目录结构迁移。
+- `kb-ingest` 负责来源登记表、manifest 刷新与 deferred intake 说明。
 - `kb-compile` 负责 raw 到 draft 的更新，也接受 bootstrap 阶段的 `raw/*.md`。
-- `kb-review` 统一负责 governance lane：既处理 pending drafts 与 briefing 重建，也负责 maintenance mode 下的 drift、backlog、provenance、alias 和 approved surfaces 安全机械修复。
-- `kb-query` 只读取 approved live 层，并负责 search / grounded Q&A / archived Q&A reuse / static web export。
+- `kb-review` 统一负责治理路径：既处理 pending drafts 与角色简报重建，也负责 `维护模式` 下的 drift、backlog、provenance、alias 和已批准层面的安全机械修复。
+- `kb-query` 只读取已批准知识层，并负责 search / 有依据的 Q&A / archived Q&A reuse / static web export。
 - `kb-render` 负责确定性派生产物。
 
 ## 确定性脚本
@@ -143,3 +143,5 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 cp -r skills/* ~/.claude/skills/
 cp -r skills/* ~/.codex/skills/
 ```
+
+

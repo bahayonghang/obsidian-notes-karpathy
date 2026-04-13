@@ -199,11 +199,11 @@ function sidebarZh() {
         ],
       },
       {
-        text: '运行模型',
+        text: '工作方式',
         items: [
           { text: 'Karpathy 工作流', link: '/zh/guide/karpathy-workflow' },
           { text: '目录结构', link: '/zh/guide/directory-structure' },
-          { text: 'AGENTS.md 模式', link: '/zh/guide/agents-schema' },
+          { text: 'AGENTS.md 规范', link: '/zh/guide/agents-schema' },
         ],
       },
     ],
@@ -237,7 +237,7 @@ function sidebarZh() {
           { text: '概览', link: '/zh/workflow/overview' },
           { text: '收集资料', link: '/zh/workflow/collect' },
           { text: '编译 Wiki', link: '/zh/workflow/compile' },
-          { text: '审校门', link: '/zh/skills/kb-review' },
+          { text: '审校与批准', link: '/zh/skills/kb-review' },
           { text: '查询与输出', link: '/zh/workflow/query' },
           { text: '健康检查', link: '/zh/workflow/health-checks' },
         ],
@@ -255,3 +255,4 @@ function sidebarZh() {
     ],
   }
 }
+
