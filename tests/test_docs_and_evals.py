@@ -128,6 +128,34 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("backward compatibility rule", lifecycle_matrix)
         self.assertIn("Old vaults can adopt this gradually", memory_lifecycle)
 
+    def test_docs_use_native_workflow_diagram_and_retire_old_chinese_labels(self) -> None:
+        banned_phrases = ("按症状进入", "运行模型", "审校门")
+        core_docs = [
+            REPO_ROOT / "README_CN.md",
+            REPO_ROOT / "docs" / ".vitepress" / "config.ts",
+            REPO_ROOT / "docs" / "zh" / "index.md",
+            REPO_ROOT / "docs" / "zh" / "guide" / "introduction.md",
+            REPO_ROOT / "docs" / "zh" / "skills" / "overview.md",
+            REPO_ROOT / "docs" / "zh" / "workflow" / "overview.md",
+        ]
+
+        for path in core_docs:
+            text = path.read_text(encoding="utf-8")
+            for phrase in banned_phrases:
+                self.assertNotIn(phrase, text, msg=f"{path.relative_to(REPO_ROOT)} still contains retired phrase {phrase!r}")
+
+        workflow_pages = [
+            REPO_ROOT / "docs" / "workflow" / "overview.md",
+            REPO_ROOT / "docs" / "zh" / "workflow" / "overview.md",
+        ]
+        for path in workflow_pages:
+            text = path.read_text(encoding="utf-8")
+            self.assertNotIn("```mermaid", text, msg=f"{path.relative_to(REPO_ROOT)} should not use Mermaid fences anymore.")
+            self.assertIn("<WorkflowLifecycleDiagram", text, msg=f"{path.relative_to(REPO_ROOT)} should use the native workflow diagram component.")
+
+        component_path = REPO_ROOT / "docs" / ".vitepress" / "theme" / "components" / "WorkflowLifecycleDiagram.vue"
+        self.assertTrue(component_path.exists())
+
     def test_trigger_evals_cover_all_skill_routes_and_negative_controls(self) -> None:
         trigger_evals = json.loads((ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json").read_text(encoding="utf-8"))
         expected_skill_counts: dict[str, int] = {}

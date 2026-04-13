@@ -144,8 +144,11 @@ def check_docs_and_evals() -> list[str]:
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     readme_cn = (REPO_ROOT / "README_CN.md").read_text(encoding="utf-8")
     claude_md = (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8")
+    docs_config = (REPO_ROOT / "docs" / ".vitepress" / "config.ts").read_text(encoding="utf-8")
     docs_overview = (REPO_ROOT / "docs" / "skills" / "overview.md").read_text(encoding="utf-8")
     docs_overview_zh = (REPO_ROOT / "docs" / "zh" / "skills" / "overview.md").read_text(encoding="utf-8")
+    workflow_overview = (REPO_ROOT / "docs" / "workflow" / "overview.md").read_text(encoding="utf-8")
+    workflow_overview_zh = (REPO_ROOT / "docs" / "zh" / "workflow" / "overview.md").read_text(encoding="utf-8")
     trigger_evals = load_json(ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json")
     runtime_evals = load_json(RUNTIME_EVALS_PATH)
     writable_runtime_evals = load_json(WRITABLE_RUNTIME_EVALS_PATH)
@@ -172,6 +175,18 @@ def check_docs_and_evals() -> list[str]:
             errors.append(f"README.md must mention helper script {helper_name}.")
         if helper_name not in readme_cn:
             errors.append(f"README_CN.md must mention helper script {helper_name}.")
+
+    for phrase in ("按症状进入", "运行模型", "审校门"):
+        if phrase in readme_cn or phrase in docs_config or phrase in docs_overview_zh or phrase in workflow_overview_zh:
+            errors.append(f"Retired Chinese docs phrase still present: {phrase}.")
+
+    component_path = REPO_ROOT / "docs" / ".vitepress" / "theme" / "components" / "WorkflowLifecycleDiagram.vue"
+    if not component_path.exists():
+        errors.append("WorkflowLifecycleDiagram.vue must exist under docs/.vitepress/theme/components/.")
+    if "```mermaid" in workflow_overview or "```mermaid" in workflow_overview_zh:
+        errors.append("Workflow overview pages must not use Mermaid fences anymore.")
+    if "<WorkflowLifecycleDiagram" not in workflow_overview or "<WorkflowLifecycleDiagram" not in workflow_overview_zh:
+        errors.append("Workflow overview pages must render the native WorkflowLifecycleDiagram component.")
 
     if len(trigger_evals) < 20:
         errors.append("trigger-evals.json must contain at least 20 cases.")
