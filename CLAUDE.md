@@ -14,16 +14,17 @@ This is a skills-only project. The deliverables are:
 
 Canonical workflow:
 
-`raw/` -> `kb-compile` -> `wiki/drafts/` -> `kb-review` -> `wiki/live/` + `wiki/live/procedures/` + `wiki/briefings/` -> `kb-query` / `kb-health` -> `outputs/`
+`raw/` -> `kb-ingest` -> `kb-compile` -> `wiki/drafts/` -> `kb-review` (`gate` / `maintenance`) -> `wiki/live/` + `wiki/live/topics/` + `wiki/live/procedures/` + `wiki/briefings/` -> `kb-query` / `kb-render` -> `outputs/`
 
 ## Repository Structure
 
 - `skills/obsidian-notes-karpathy/SKILL.md` - package-level lifecycle router
 - `skills/kb-init/SKILL.md` - setup, repair, and legacy-layout migration
+- `skills/kb-ingest/SKILL.md` - source registration and manifest refresh
 - `skills/kb-compile/SKILL.md` - raw-to-draft compilation
-- `skills/kb-review/SKILL.md` - draft review gate, promotion, and briefing rebuild
-- `skills/kb-query/SKILL.md` - approved-layer search, answers, and publishing
-- `skills/kb-health/SKILL.md` - live-layer maintenance, backlog, and briefing audit
+- `skills/kb-review/SKILL.md` - draft review gate plus approved-layer maintenance and governance refresh
+- `skills/kb-query/SKILL.md` - approved-layer search, answers, archived Q&A reuse, and static web export
+- `skills/kb-render/SKILL.md` - deterministic slides/report/chart/canvas generation
 - `skills/obsidian-notes-karpathy/references/` - shared review-gated file model, lifecycle matrix, templates, governance policy, and rubric
 - `skills/obsidian-notes-karpathy/scripts/` - deterministic helpers including the skill contract registry, lifecycle detection, compile delta, review queue, query scope, and mechanical linting
 - `skills/obsidian-notes-karpathy/evals/fixtures/` - legacy and review-gated fixture vaults
@@ -32,10 +33,12 @@ Canonical workflow:
 ## Contract Rules
 
 - `raw/` is immutable evidence intake.
+- `raw/_manifest.yaml` is the canonical source registry.
 - `MEMORY.md` is collaboration memory and editorial context, not topic retrieval truth.
 - `outputs/episodes/` is episodic memory and stays outside the default topic-truth boundary.
 - `wiki/drafts/` is reviewable knowledge, not retrieval truth.
 - `wiki/live/` is the only approved long-term brain.
+- `wiki/live/topics/` is the default browse layer over approved knowledge.
 - `wiki/live/procedures/` is approved procedural memory for durable workflows and playbooks.
 - `wiki/briefings/` must be generated from `wiki/live/` only.
 - `outputs/reviews/` stores the decision ledger for promotion.
@@ -53,7 +56,7 @@ Canonical workflow:
 - `outputs/qa/` and `outputs/content/` may carry structured writeback candidates that must still re-enter the system through draft -> review -> live.
 - bootstrap root captures under `raw/*.md` are valid compile inputs, but missing support directories still make the vault a repair case.
 - optional governance indices like `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when richer maintenance surfaces are useful.
-- `kb-health` is report-first and may apply deterministic mechanical fixes in approved surfaces only; it must never mutate `raw/` or promote drafts.
+- `kb-review` maintenance mode is report-first and may apply deterministic mechanical fixes in approved surfaces only; it must never mutate `raw/` or promote drafts without the review gate.
 
 ## Installation
 

@@ -1,11 +1,12 @@
 # kb-query
 
-只从 approved live brain 做检索、回答、归档和发布。
+统一的读侧入口：只从 approved live brain 做检索、回答、归档、派生产物和静态 web 导出。
 
 默认读取：
 
 - `wiki/live/**`
 - `wiki/live/indices/**`
+- `wiki/live/topics/**`
 - 相关 `wiki/briefings/**`
 - 历史 `outputs/qa/**`
 
@@ -15,10 +16,13 @@
 
 ## 主要模式
 
-- search：快速定位批准页
+- search：先做 local-first 候选排序
 - research：生成并归档到 `outputs/qa/**` 的 grounded answer
-- publish：保存到 `outputs/content/**` 的报告、线程、演讲稿或幻灯片
+- publish：保存到 `outputs/content/**` 或 `outputs/{slides,reports,charts}/**` 的确定性派生产物
+- web：导出静态知识站到 `outputs/web/**`
 - reflect-lite：先停在 live 外的综合、问题分解或 gap 记录
+
+如果用户还在说 `kb-search`，直接把它路由到这里的 search mode。
 
 如果 Q&A 或 publish artifact 产生了值得长期处理的后续工作，应该显式记录 `writeback_candidates`、`open_questions_touched`、`source_live_pages` 和 `followup_route`，而不是把下一步埋在聊天里。
 
@@ -30,11 +34,12 @@
 
 1. `wiki/index.md`
 2. `wiki/live/indices/*`
-3. `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 等治理视图（如果存在）
-4. 相关 `wiki/briefings/{role}.md`
-5. 历史 `outputs/qa/`
-6. 本地结构化或 metadata 驱动检索
-7. 只在必要时使用语义检索做 candidate surfacing
+3. `wiki/live/topics/*`
+4. `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 等治理视图（如果存在）
+5. 相关 `wiki/briefings/{role}.md`
+6. 历史 `outputs/qa/`
+7. 本地结构化或 metadata 驱动检索
+8. 只在必要时使用语义检索做 candidate surfacing
 
 整个梯度里，approved live pages 始终是真相来源。
 

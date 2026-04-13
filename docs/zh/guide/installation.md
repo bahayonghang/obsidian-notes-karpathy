@@ -35,10 +35,11 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 
 - `obsidian-notes-karpathy/`
 - `kb-init/`
+- `kb-ingest/`
 - `kb-compile/`
 - `kb-review/`
 - `kb-query/`
-- `kb-health/`
+- `kb-render/`
 
 然后确认内置资源位于 shared package home 内部：
 

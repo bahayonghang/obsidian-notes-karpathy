@@ -6,9 +6,11 @@ Obsidian Notes Karpathy is a bundle of Obsidian-oriented skills for running a re
 
 ```text
 raw/            -> immutable capture intake
+raw/_manifest.yaml -> canonical source registry
 MEMORY.md       -> collaboration memory and editorial context
 wiki/drafts/    -> compiled draft knowledge
 wiki/live/      -> approved long-term brain
+wiki/live/topics/ -> approved browse-layer topics
 wiki/briefings/ -> role-specific context generated from live
 outputs/        -> reviews, Q&A, health reports, and publishable derivatives
 ```
@@ -19,13 +21,15 @@ The workflow is not "retrieve from whatever the agents last said." It is "compil
 
 ## Core skills
 
-This bundle is organized as one shared package home plus five operation skills. `skills/obsidian-notes-karpathy/` holds the shared package home for `references/`, `scripts/`, `evals/`, and the routing contract, while the top-level `skills/kb-*` directories are the operation skills that carry out each lifecycle step.
+This bundle is organized as one shared package home plus six operation skills. `skills/obsidian-notes-karpathy/` holds the shared package home for `references/`, `scripts/`, `evals/`, and the routing contract, while the top-level `skills/kb-*` directories are the operation skills that carry out each lifecycle step.
 
 | Skill | Responsibility | Reach for it when |
 | --- | --- | --- |
 | `obsidian-notes-karpathy` | Package entry and lifecycle router | The user talks about the workflow as a whole or asks what to do next |
 | `kb-init` | Create, repair, or migrate the vault contract | The support layer is missing, partial, or still in a legacy-layout |
+| `kb-ingest` | Register raw sources into the canonical manifest | The support layer exists but the source registry is stale |
 | `kb-compile` | Turn raw captures into reviewable draft pages | New or changed evidence is waiting |
 | `kb-review` | Decide what deserves to persist and rebuild briefings | Drafts are pending or briefings are stale |
-| `kb-query` | Search, answer, archive, and publish from the approved layer | The vault already knows enough and the user wants an answer or artifact |
-| `kb-health` | Audit drift, backlog, briefings, and provenance | The approved layer feels unreliable or disconnected |
+| `kb-query` | Search, answer, archive, reuse prior Q&A, and export static web packages from the approved layer | The vault already knows enough and the user wants an answer, ranked candidates, archived answer reuse, or a static site |
+| `kb-render` | Render deterministic slides, reports, charts, or canvas artifacts | The user already has approved knowledge and now wants a derivative |
+| `kb-review` (`maintenance`) | Audit drift, backlog, briefings, and provenance | The approved layer feels unreliable or disconnected |

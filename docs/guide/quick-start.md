@@ -12,9 +12,11 @@ Expected minimum support layer:
 
 ```text
 raw/human/{articles,papers,podcasts,repos,assets}
+raw/human/data
 raw/agents/{role}/
-wiki/drafts/{summaries,concepts,entities,indices}
-wiki/live/{summaries,concepts,entities,indices}
+raw/_manifest.yaml
+wiki/drafts/{summaries,topics,concepts,entities,indices}
+wiki/live/{summaries,topics,concepts,entities,indices}
 wiki/briefings/
 wiki/index.md
 wiki/log.md
@@ -35,13 +37,19 @@ Place agent-produced captures under `raw/agents/{role}/**`.
 
 Bootstrap vaults may also place markdown directly under `raw/`. That is a valid compile input, but it does not replace the required support layer.
 
-## 3. Compile to drafts
+## 3. Register sources
+
+Run `kb-ingest`.
+
+You should see `raw/_manifest.yaml` become the canonical source registry for tracked raw captures.
+
+## 4. Compile to drafts
 
 Run `kb-compile`.
 
 You should see reviewable pages in `wiki/drafts/`, not directly in `wiki/live/`.
 
-## 4. Review and promote
+## 5. Review and promote
 
 Run `kb-review`.
 
@@ -51,7 +59,7 @@ You should see:
 - approved pages in `wiki/live/`
 - rebuilt role briefings in `wiki/briefings/`
 
-## 5. Ask a real question
+## 6. Ask a real question
 
 Run `kb-query` after approval.
 
@@ -59,8 +67,10 @@ The query pass should read `wiki/live/`, optionally load the relevant briefing, 
 
 When a strong answer reveals durable follow-up work, capture explicit writeback candidates so the next compile/review loop can decide whether that answer should feed back into the wiki.
 
-## 6. Run a health baseline
+If the user wants ranked candidates before synthesis or a static web export from approved knowledge, stay in `kb-query`. If the user wants deterministic slides, reports, charts, or canvas output, switch to `kb-render`. Literal `kb-search` wording should still route to `kb-query`.
 
-Use `kb-health` once the first round-trip is complete.
+## 7. Run a health baseline
+
+Use `kb-review` maintenance mode once the first round-trip is complete.
 
 The report should land in `outputs/health/health-check-{date}.md` and cover live integrity, backlog, briefings, and provenance. Health work is report-first and should only apply deterministic mechanical fixes when the target is unambiguous.

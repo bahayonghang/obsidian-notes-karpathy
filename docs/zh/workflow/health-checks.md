@@ -1,6 +1,6 @@
 # 健康检查
 
-`kb-health` 是 approved live brain 及其 review 生态的、默认先出报告的长期维护流程。
+`kb-review` 的 maintenance mode 是 approved live brain 及其 review 生态的、默认先出报告的长期维护流程。
 
 适用场景不是“马上给当前 drafts 过门”或“顺手重建这一次 stale briefing”，而是批准层已经出现更持续的维护信号。
 

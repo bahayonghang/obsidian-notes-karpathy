@@ -1,6 +1,6 @@
 # Health Checks
 
-`kb-health` is the report-first maintenance pass for the approved live brain and its downstream review ecosystem.
+`kb-review` maintenance mode is the report-first maintenance pass for the approved live brain and its downstream review ecosystem.
 
 ## Run it when
 
@@ -12,7 +12,7 @@
 - governance views such as `QUESTIONS.md`, `GAPS.md`, or `ALIASES.md` need a refresh
 - you need to check whether collaboration memory is leaking into approved knowledge
 
-If the immediate job is to approve pending drafts or rebuild stale briefings, use `kb-review` first. `kb-health` is for broader maintenance across approved surfaces.
+If the immediate job is to approve pending drafts or rebuild stale briefings, use `kb-review` in `gate` mode. The same public skill switches to `maintenance` mode for broader upkeep across approved surfaces.
 
 ## Report destination
 

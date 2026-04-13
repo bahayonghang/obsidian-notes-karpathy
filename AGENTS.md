@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-This repository ships review-gated Obsidian knowledge-base skills, not a standalone app. Core logic lives in `skills/obsidian-notes-karpathy/`: `scripts/` contains deterministic Python helpers and the skill contract registry, `references/` holds shared templates and rules, and `evals/fixtures/` stores fixture vaults for contract tests. Companion skills live in `skills/kb-init`, `skills/kb-compile`, `skills/kb-review`, `skills/kb-query`, and `skills/kb-health`. Public docs are under `docs/`, with static assets in `docs/public/`. Keep `README.md`, `README_CN.md`, and `CLAUDE.md` aligned when the contract changes.
+This repository ships review-gated Obsidian knowledge-base skills, not a standalone app. Core logic lives in `skills/obsidian-notes-karpathy/`: `scripts/` contains deterministic Python helpers and the skill contract registry, `references/` holds shared templates and rules, and `evals/fixtures/` stores fixture vaults for contract tests. Companion skills live in `skills/kb-init`, `skills/kb-compile`, `skills/kb-review`, `skills/kb-query`, and `skills/kb-render`. Public docs are under `docs/`, with static assets in `docs/public/`. Keep `README.md`, `README_CN.md`, and `CLAUDE.md` aligned when the contract changes.
 
 ## Build, Test, and Development Commands
 - `just install`: install VitePress dependencies in `docs/`.

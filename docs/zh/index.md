@@ -24,8 +24,11 @@ hero:
 
 features:
   - title: 按生命周期自动路由
-    details: 包级入口技能会先判断当前应该初始化、编译、审校、查询，还是做健康检查。
+    details: 包级入口技能会先判断当前应该初始化、登记来源、编译、审校、查询、渲染，还是做健康检查。
     link: /zh/skills/obsidian-notes-karpathy
+  - title: Canonical Source Registry
+    details: "`kb-ingest` 会在 compile 开始前把 `raw/_manifest.yaml` 与 raw captures 对齐。"
+    link: /zh/skills/kb-ingest
   - title: 先落草稿，再进 live
     details: "`kb-compile` 只把 raw 编译到 `wiki/drafts/`，只有 `kb-review` 才能提升到 `wiki/live/`。"
     link: /zh/skills/kb-compile
@@ -38,15 +41,18 @@ features:
   - title: 从已落地笔记产出内容
     details: "报告、文章草稿、推文串和分享提纲都从 `wiki/live/` 证据层出发，而不是凭空生成。"
     link: /zh/workflow/overview
+  - title: 统一读侧入口
+    details: "`kb-query` 现在负责 local-first 检索、grounded 综合、历史答案复用和静态 web 导出。"
+    link: /zh/skills/kb-query
   - title: Immutable Raw
     details: "`raw/human/**` 和 `raw/agents/{role}/**` 只是证据 intake，不是最终真相层。"
     link: /zh/guide/directory-structure
   - title: Live Brain + Briefings
     details: "`wiki/live/` 是批准后的知识脑，`wiki/briefings/` 把它变成各角色可直接读取的上下文。"
     link: /zh/workflow/overview
-  - title: 深度健康检查
-    details: "`kb-health` 会审计 approved knowledge、stale briefings、review backlog、渲染完整性和溯源质量。"
-    link: /zh/skills/kb-health
+  - title: 治理入口
+    details: "`kb-review` 现在统一负责即时 gate 与 maintenance mode 下的 approved 层治理、backlog 和 provenance 审计。"
+    link: /zh/skills/kb-review
   - title: 先 markdown 后搜索升级
     details: 先用 approved live 索引、Backlinks 和 briefings，规模真的上来后再升级检索基础设施。
     link: /zh/workflow/query

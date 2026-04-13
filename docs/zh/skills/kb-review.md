@@ -27,4 +27,4 @@
 - 证据弱、blocking flags 未解除时自动拒绝
 - 与 live 冲突、别名/重复风险未解，或分数落在模糊带时升级人工复核
 
-`kb-review` 还应该显式判断 fact / inference 分离、alias 对齐、duplicate 风险、矛盾是否被记录，以及页面是否值得长期保留。更大范围的批准层维护应交给 `kb-health`。
+`kb-review` 还应该显式判断 fact / inference 分离、alias 对齐、duplicate 风险、矛盾是否被记录，以及页面是否值得长期保留。切到 `maintenance` mode 时，它还要审计 drift、backlog pressure、provenance、过期 archived outputs，以及 approved surfaces 上的图结构薄弱点。

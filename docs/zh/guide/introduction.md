@@ -6,9 +6,11 @@ Obsidian Notes Karpathy 是一组面向 Obsidian 的技能，用来在 Vault 里
 
 ```text
 raw/            -> 不可变证据 intake
+raw/_manifest.yaml -> canonical source registry
 MEMORY.md       -> 协作记忆与编辑上下文
 wiki/drafts/    -> 编译出的草稿知识层
 wiki/live/      -> 已批准的长期知识脑
+wiki/live/topics/ -> 已批准的 browse-layer topics
 wiki/briefings/ -> 只从 live 生成的角色上下文
 outputs/        -> reviews、Q&A、health 报告和对外交付物
 ```
@@ -19,13 +21,15 @@ outputs/        -> reviews、Q&A、health 报告和对外交付物
 
 ## 核心技能
 
-这个 bundle 由一个 shared package home 加 5 个操作技能组成。`skills/obsidian-notes-karpathy/` 负责承载共享的 `references/`、`scripts/`、`evals/` 和路由契约，而顶层的 `skills/kb-*` 目录才是执行各生命周期步骤的操作技能。
+这个 bundle 由一个 shared package home 加 6 个操作技能组成。`skills/obsidian-notes-karpathy/` 负责承载共享的 `references/`、`scripts/`、`evals/` 和路由契约，而顶层的 `skills/kb-*` 目录才是执行各生命周期步骤的操作技能。
 
 | 技能 | 职责 | 何时使用 |
 | --- | --- | --- |
 | `obsidian-notes-karpathy` | 包级入口与生命周期路由 | 用户在聊整个工作流，或在问下一步该做什么 |
 | `kb-init` | 创建、修复或迁移 vault 契约 | 支撑层缺失、半成品，或仍是 legacy-layout |
+| `kb-ingest` | 把 raw 来源登记到 canonical manifest | 支撑层存在，但 source registry 已经过期 |
 | `kb-compile` | 把 raw 捕获编译成可审校草稿 | 新证据或更新过的证据还没进入草稿层 |
 | `kb-review` | 决定哪些内容值得持久化并重建 briefings | 草稿待审，或 briefing 需要在当前 review pass 里立刻刷新 |
-| `kb-query` | 从 approved layer 搜索、回答、归档与发布 | vault 已有足够知识，用户要答案或交付物 |
-| `kb-health` | 审计 drift、backlog、briefings 和 provenance | approved layer 开始失真、积压或断链 |
+| `kb-query` | 从 approved layer 检索、回答、归档复用并导出静态站点 | vault 已有足够知识，用户要答案、候选排序、历史答案复用或静态站点 |
+| `kb-render` | 生成确定性的 slides、reports、charts 与 canvas | approved knowledge 已经就绪，现在要做派生产物 |
+| `kb-review`（`maintenance`） | 审计 drift、backlog、briefings 和 provenance | approved layer 开始失真、积压或断链 |

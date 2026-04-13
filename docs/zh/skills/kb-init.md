@@ -1,14 +1,16 @@
 # kb-init
 
-初始化、修复或迁移到 review-gated 契约。
+初始化、修复或迁移到 review-gated 契约。用户即使只说“LLM Wiki”“Karpathy 风格知识库”“把 Obsidian 当 IDE”“做个知识编译器”“做个人知识库 / second brain”，也应该优先落到这个技能，而不是要求他们先知道 `kb-init` 的名字。
 
 ## 创建或修复的支撑层
 
 - `raw/human/{articles,papers,podcasts,repos,assets}`
+- `raw/human/data`
 - `raw/agents/{role}/**`
+- `raw/_manifest.yaml`
 - `MEMORY.md`
-- `wiki/drafts/{summaries,concepts,entities,indices}`
-- `wiki/live/{summaries,concepts,entities,indices}`
+- `wiki/drafts/{summaries,topics,concepts,entities,indices}`
+- `wiki/live/{summaries,topics,concepts,entities,indices}`
 - `wiki/briefings/**`
 - `outputs/reviews/**`
 - `wiki/index.md`
@@ -23,6 +25,7 @@
 - `wiki/live/indices/INDEX.md`
 - `wiki/live/indices/CONCEPTS.md`
 - `wiki/live/indices/SOURCES.md`
+- `wiki/live/indices/TOPICS.md`
 - `wiki/live/indices/RECENT.md`
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md`
 
@@ -30,7 +33,21 @@
 
 `MEMORY.md` 是推荐的协作脚手架，用来承接偏好、编辑优先级和协作上下文，不是批准知识存储层。
 
+## 确定性 helper
+
+- `bootstrap_review_gated_vault.py`：新建与非破坏式修复支撑层
+- `migrate_legacy_vault.py`：迁移 legacy 单层 vault，并保留来源与迁移报告
+- `vault_status.py`：初始化或修复后快速查看当前阶段与下一步
+
 `outputs/qa/**`、`outputs/health/**`、`outputs/content/**`、`outputs/reports/**`、`outputs/slides/**`、`outputs/charts/**` 等下游目录按需创建，不是最小初始化要求。
+
+## Profile 选择
+
+`kb-init` 应在 starter files 里显式保留以下三种 profile 之一：
+
+- `governed-team`
+- `standard`
+- `fast-personal`
 
 ## 迁移姿态
 

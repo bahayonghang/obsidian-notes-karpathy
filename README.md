@@ -2,12 +2,16 @@
 
 Review-gated, multi-agent-friendly Obsidian knowledge-base skills inspired by Karpathy-style markdown wikis.
 
+This bundle is aimed at users who may ask for an `LLM Wiki`, a `Karpathy wiki`, an `Obsidian IDE` for notes, a `knowledge compiler`, a personal knowledge base, or a markdown-first `second brain` without knowing the internal `kb-*` command names yet.
+
 ```text
 raw/            -> immutable human + agent captures
+raw/_manifest.yaml -> canonical source registry
 MEMORY.md       -> collaboration memory and editorial context
 outputs/episodes/ -> episodic memory / crystallized work arcs
 wiki/drafts/    -> compiled draft knowledge
 wiki/live/      -> approved long-term brain
+wiki/live/topics/ -> approved browse-layer topic maps
 wiki/live/procedures/ -> approved procedural memory
 wiki/briefings/ -> role-specific context generated from live
 outputs/        -> reviews, Q&A, health reports, audit logs, and publishable artifacts
@@ -19,21 +23,40 @@ The core idea is no longer just "compile notes into a wiki". It is "separate pro
 
 - `obsidian-notes-karpathy` - lifecycle router
 - `kb-init` - initialize, repair, or migrate a vault into the review-gated layout
+- `kb-ingest` - register raw sources into `raw/_manifest.yaml`
 - `kb-compile` - compile raw markdown captures into `wiki/drafts/`
 - `kb-review` - approve, reject, or escalate drafts; rebuild `wiki/briefings/`
-- `kb-query` - search and publish from `wiki/live/`
-- `kb-health` - audit `wiki/live/`, `wiki/briefings/`, `outputs/qa/`, and `outputs/reviews/`
+- `kb-query` - canonical read-side lane for search, grounded answers, archived Q&A reuse, and static web export from `wiki/live/`
+- `kb-render` - deterministic slides, reports, charts, and canvas derivatives from approved knowledge
+
+## Companion skill matrix
+
+| Need | Core route | Companion route |
+| --- | --- | --- |
+| Fresh setup, repair, or legacy migration | `kb-init` | none |
+| Register raw markdown, assets, or data into the manifest | `kb-ingest` | none |
+| Compile raw markdown into drafts | `kb-compile` | none |
+| Review and promote draft knowledge | `kb-review` | none |
+| Query, rank approved candidates, reuse archived answers, or export a static knowledge site from approved live knowledge | `kb-query` | none |
+| Render deterministic slides, reports, charts, or canvas artifacts from approved knowledge | `kb-render` | none |
+| Legacy `kb-search` wording | `kb-query` | literal wording is absorbed by the canonical query skill |
+| Legacy `kb-health` wording, approved-layer drift, or backlog maintenance | `kb-review` | use maintenance mode under the canonical governance skill |
+| Ingest `raw/**/papers/*.pdf` | not a core route | `paper-workbench` |
+
+The core bundle should own the review-gated lifecycle. Companion skills take over only for clearly external lanes such as paper PDFs or canvas-specific authoring.
 
 ## Contract highlights
 
 - `raw/` is immutable.
 - treat `raw/` as the durable source library; editorial notes, Q&A, and publish artifacts belong in downstream surfaces rather than mutating source captures.
+- `raw/_manifest.yaml` is the canonical source registry for tracked inputs.
 - `MEMORY.md` is collaboration memory, not retrieval truth.
 - `outputs/episodes/` stores episodic memory, not approved topic truth.
 - `kb-compile` writes only to `wiki/drafts/`.
 - raw paper PDFs under `raw/**/papers/*.pdf` remain a `paper-workbench` routing exception, not a normal `kb-compile` ingest.
 - `kb-review` is the only promotion gate into `wiki/live/`.
 - `wiki/live/procedures/` is the procedural-memory lane for approved workflows and playbooks.
+- `wiki/live/topics/` is the browse-layer entry surface over approved knowledge clusters.
 - `wiki/briefings/` is generated from approved live pages only.
 - `kb-query` reads `wiki/live/`, briefings, and prior Q&A, not drafts.
 - `outputs/audit/operations.jsonl` is the machine-readable audit trail for automation and derived exports.
@@ -47,6 +70,7 @@ This package deliberately does **not** treat a freshly generated `wiki/` page as
 
 Instead:
 
+- raw captures are first registered into `raw/_manifest.yaml`
 - raw captures become reviewable drafts
 - drafts become approved live notes only after `kb-review`
 - query and publish work stay grounded in approved summaries and live pages
@@ -62,7 +86,9 @@ Downstream output surfaces are created when the later stages need them:
 
 - `outputs/qa/` - durable research answers from `kb-query`
 - `outputs/content/` - publish artifacts from `kb-query`
-- `outputs/health/` - maintenance reports from `kb-health`
+- `outputs/slides/`, `outputs/reports/`, and `outputs/charts/` - deterministic derivative artifacts from `kb-render`
+- `outputs/web/` - static browseable exports from `kb-query`
+- `outputs/health/` - maintenance reports from `kb-review` maintenance mode
 - `MEMORY.md` - recommended collaboration memory and editorial context
 
 Optional governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when the user wants richer maintenance surfaces.
@@ -83,18 +109,28 @@ For creator-style workflows, a practical mapping is:
 ## Route ownership
 
 - `kb-init` owns setup, repair, and legacy-layout migration.
+- `kb-ingest` owns source registration, manifest refresh, and deferred intake surfacing.
 - `kb-compile` owns raw-to-draft updates, including bootstrap `raw/*.md` captures.
-- `kb-review` is the immediate draft-promotion gate and briefing rebuild lane.
-- `kb-query` reads approved live knowledge only.
-- `kb-health` is the longer-horizon maintenance lane: report-first drift checks, backlog pressure, provenance audits, alias drift, question/gap resurfacing, and safe mechanical fixes in approved surfaces only.
+- `kb-review` owns the governance lane: immediate draft promotion plus maintenance-mode drift checks, backlog pressure, provenance audits, alias drift, question/gap resurfacing, and safe mechanical fixes in approved surfaces only.
+- `kb-query` reads approved live knowledge only and owns search, grounded answers, archived Q&A reuse, and static web export.
+- `kb-render` owns deterministic derivatives from approved knowledge.
 
 ## Deterministic helpers
 
 - `skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json`
 - `scripts/detect_lifecycle.py`
+- `scripts/scan_ingest_delta.py`
+- `scripts/sync_source_manifest.py`
 - `scripts/scan_compile_delta.py`
+- `scripts/build_draft_packages.py`
+- `scripts/bootstrap_review_gated_vault.py`
+- `scripts/migrate_legacy_vault.py`
 - `scripts/scan_review_queue.py`
 - `scripts/scan_query_scope.py`
+- `scripts/rank_query_candidates.py`
+- `scripts/render_live_artifact.py`
+- `scripts/vault_status.py`
+- `scripts/render_reference_block.py`
 - `scripts/lint_obsidian_mechanics.py`
 - `scripts/build_memory_episodes.py`
 - `scripts/build_graph_snapshot.py`

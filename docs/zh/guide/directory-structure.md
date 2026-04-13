@@ -5,12 +5,13 @@
 ```text
 vault/
 ├── raw/
-│   ├── human/{articles,papers,podcasts,repos,assets}/
-│   └── agents/{role}/
+│   ├── human/{articles,papers,podcasts,repos,assets,data}/
+│   ├── agents/{role}/
+│   └── _manifest.yaml
 ├── MEMORY.md
 ├── wiki/
-│   ├── drafts/{summaries,concepts,entities,indices}/
-│   ├── live/{summaries,concepts,entities,indices}/
+│   ├── drafts/{summaries,topics,concepts,entities,indices}/
+│   ├── live/{summaries,topics,concepts,entities,indices}/
 │   ├── briefings/
 │   ├── index.md
 │   └── log.md
@@ -18,6 +19,7 @@ vault/
 │   ├── reviews/
 │   ├── qa/      (query 开始归档后创建)
 │   ├── health/  (health 报告开始产出后创建)
+│   ├── web/     (静态 web 导出启用后创建)
 │   └── content/ (publish 流程启动后创建)
 ├── AGENTS.md
 └── CLAUDE.md
@@ -35,12 +37,15 @@ vault/
 | --- | --- | --- |
 | `raw/human/**` | Human | 人工整理后的证据输入 |
 | `raw/agents/{role}/**` | Agents | 仍需审校的不可信捕获 |
+| `raw/_manifest.yaml` | `kb-ingest` | 跟踪 raw 输入的 canonical source registry |
 | `MEMORY.md` | Human + agent 协作 | 偏好、编辑优先级与协作上下文 |
 | `raw/*.md` | `kb-compile` bootstrap input | bootstrap 阶段可接受的输入，但不能替代完整支撑层 |
-| `wiki/drafts/**` | `kb-compile` | 可审校的 summaries / concepts / entities / indices |
+| `wiki/drafts/**` | `kb-compile` | 可审校的 summaries / topics / concepts / entities / indices |
 | `wiki/live/**` | `kb-review` promotion target | 已批准的长期知识层 |
 | `wiki/briefings/**` | `kb-review` | 只从 live 构建的角色 briefing |
 | `outputs/reviews/**` | `kb-review` | 审校决策记录 |
 | `outputs/qa/**` | `kb-query` | 持久问答归档 |
 | `outputs/content/**` | `kb-query` | 从批准层生成的对外内容 |
-| `outputs/health/**` | `kb-health` | 维护与体检报告 |
+| `outputs/slides/**`、`outputs/reports/**`、`outputs/charts/**` | `kb-render` | 确定性派生产物 |
+| `outputs/web/**` | `kb-query` | 基于 approved knowledge 的静态浏览站导出 |
+| `outputs/health/**` | `kb-review`（`maintenance` mode） | 维护与体检报告 |
