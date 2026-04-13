@@ -17,6 +17,8 @@ duplication_risk: 0.12
 staleness_risk: 0.20
 promotion_reason: "{why this should or should not persist in the long-term brain}"
 reviewed_at: "{datetime}"
+confidence_outcome: promote-confidence | keep-confidence | reduce-confidence
+supersession_decision: none | supersede-existing | superseded-by-existing | needs-human
 ---
 
 # Review Record: {Source Title}
@@ -61,3 +63,4 @@ Rules:
 - include whether fact and inference are cleanly separated enough for safe reuse
 - include enough context to reproduce the decision later
 - call out alias, contradiction, and duplicate concerns explicitly instead of silently merging or overwriting
+- when the reviewed page participates in the latest lifecycle contract, record whether confidence increased, decayed, or caused supersession

@@ -18,9 +18,21 @@ entity_id: "{entity-slug}"
 entity_type: person | organization | product | tool | project | repo | other
 aliases:
   - "{common alias}"
+visibility_scope: private | shared
+confidence_score: 0.82
+confidence_band: strong | moderate | weak
+support_count: 2
+contradiction_count: 0
 updated_at: "{datetime}"
 last_reviewed_at: "{datetime}"
+last_confirmed_at: "{datetime}"
+next_review_due_at: "{datetime}"
+decay_class: architecture | workflow | transient
 status: active | draft | conflicting
+supersedes: []
+superseded_by: []
+superseded_at: "{datetime}"
+supersession_reason: "{why this entity record superseded an older representation}"
 sources:
   - "[[wiki/live/summaries/source-a]]"
 related:
@@ -74,4 +86,5 @@ Rules:
 - Prefer entity pages only for named things that recur, anchor multiple notes, or clearly deserve stable provenance.
 - When used under `wiki/drafts/**`, point `sources` and `related` at draft pages; when promoted under `wiki/live/**`, point them at approved live pages.
 - If the evidence is thin, keep the item in summaries or concept aliases rather than creating a weak entity page.
+- Carry `visibility_scope` and confidence metadata explicitly once the entity participates in the latest lifecycle contract.
 - Set `status: conflicting` when unresolved disagreement remains.

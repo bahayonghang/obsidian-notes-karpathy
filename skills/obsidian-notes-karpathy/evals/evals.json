@@ -302,6 +302,118 @@
         "The response treats governance scaffolding as optional.",
         "The answer does not confuse governance indices with approved live notes."
       ]
+    },
+    {
+      "id": 20,
+      "prompt": "Use evals/fixtures/confidence-decay. Explain why this vault is a maintenance case, which current confidence fields are incomplete, and why overdue review windows should not be treated as structural repair.",
+      "expected_output": "Routes to kb-health, calls out missing confidence metadata plus an overdue review window, and keeps this as a maintenance problem rather than a setup failure.",
+      "files": [
+        "evals/fixtures/confidence-decay/AGENTS.md",
+        "evals/fixtures/confidence-decay/wiki/index.md",
+        "evals/fixtures/confidence-decay/wiki/live/concepts/confidence-lifecycle.md"
+      ],
+      "expectations": [
+        "The response frames this as a latest lifecycle maintenance issue.",
+        "The answer mentions missing confidence metadata and an overdue review window.",
+        "The workflow does not route to kb-init."
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "Use evals/fixtures/supersession-chain. Explain why the next step is maintenance and what is broken in the supersession chain between the old and new review gate pages.",
+      "expected_output": "Routes to kb-health and calls out the broken supersession bookkeeping rather than silently choosing one page as truth.",
+      "files": [
+        "evals/fixtures/supersession-chain/AGENTS.md",
+        "evals/fixtures/supersession-chain/wiki/live/concepts/old-review-gate.md",
+        "evals/fixtures/supersession-chain/wiki/live/concepts/new-review-gate.md"
+      ],
+      "expectations": [
+        "The response identifies supersession as the key maintenance concern.",
+        "The answer does not silently overwrite the older page."
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "Use evals/fixtures/episodic-consolidation. Explain why the archived Q&A should crystallize into episodic memory and how that still stays outside approved truth until review.",
+      "expected_output": "Explains the episodic layer, keeps it outside approved truth, and points durable follow-up back into draft/review.",
+      "files": [
+        "evals/fixtures/episodic-consolidation/AGENTS.md",
+        "evals/fixtures/episodic-consolidation/outputs/qa/2026-04-10-review-gate-runtime.md",
+        "evals/fixtures/episodic-consolidation/outputs/episodes/2026-04-10-review-gate-runtime.md"
+      ],
+      "expectations": [
+        "The response treats outputs/episodes as episodic memory rather than approved truth.",
+        "The answer preserves draft -> review -> live for durable knowledge."
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "Use evals/fixtures/procedural-promotion. Explain why this should become a procedure rather than only another concept page, and what maintenance or review signal is currently missing.",
+      "expected_output": "Explains the procedural promotion gap and points to wiki/drafts/procedures or wiki/live/procedures as the right landing zone.",
+      "files": [
+        "evals/fixtures/procedural-promotion/AGENTS.md",
+        "evals/fixtures/procedural-promotion/wiki/drafts/summaries/human/articles/deployment-playbook.md",
+        "evals/fixtures/procedural-promotion/wiki/live/concepts/procedural-memory.md"
+      ],
+      "expectations": [
+        "The response names procedural memory explicitly.",
+        "The answer does not flatten workflow knowledge back into generic semantic notes."
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "Use evals/fixtures/graph-relationship-gap. Explain how governance indices and graph export should surface the weak relationship structure without widening the truth boundary.",
+      "expected_output": "Explains that entities and relationships can be derived into indices and graph JSON, while approved live pages remain the truth surface.",
+      "files": [
+        "evals/fixtures/graph-relationship-gap/AGENTS.md",
+        "evals/fixtures/graph-relationship-gap/wiki/live/concepts/relationship-gap.md",
+        "evals/fixtures/graph-relationship-gap/wiki/live/entities/review-bot.md"
+      ],
+      "expectations": [
+        "The response treats the graph as an augmentation layer.",
+        "The answer does not let graph export replace approved markdown pages."
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "Use evals/fixtures/private-shared-boundary. Explain what visibility_scope is for and why private/shared scoping should not be confused with the semantic truth boundary.",
+      "expected_output": "Explains that visibility_scope is a governance/access signal, not a replacement for the live-vs-episode truth boundary.",
+      "files": [
+        "evals/fixtures/private-shared-boundary/README.md"
+      ],
+      "expectations": [
+        "The response distinguishes privacy scope from truth scope."
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "Use evals/fixtures/hybrid-candidate-routing. Explain which files are approved truth, which ones are only candidate surfaces, and why hybrid retrieval should fuse them without citing them as primary truth.",
+      "expected_output": "Explains that live pages remain truth while episodes and graph snapshots are candidate-only surfaces for local hybrid retrieval.",
+      "files": [
+        "evals/fixtures/hybrid-candidate-routing/AGENTS.md",
+        "evals/fixtures/hybrid-candidate-routing/MEMORY.md",
+        "evals/fixtures/hybrid-candidate-routing/wiki/live/concepts/hybrid-routing.md",
+        "evals/fixtures/hybrid-candidate-routing/outputs/episodes/2026-04-10-hybrid-routing.md",
+        "evals/fixtures/hybrid-candidate-routing/outputs/health/graph-snapshot.json"
+      ],
+      "expectations": [
+        "The response keeps candidate surfaces outside the approved truth boundary.",
+        "The answer distinguishes MEMORY.md from both truth and candidate retrieval surfaces."
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "Use evals/fixtures/audit-trail. Explain why a missing operations.jsonl is a maintenance issue once audit scaffolding exists, and what kind of automation should write to it.",
+      "expected_output": "Routes to kb-health, flags the audit gap, and explains that automation should append machine-readable events instead of silently mutating derived surfaces.",
+      "files": [
+        "evals/fixtures/audit-trail/AGENTS.md",
+        "evals/fixtures/audit-trail/wiki/live/concepts/audit-trail.md",
+        "evals/fixtures/audit-trail/wiki/index.md"
+      ],
+      "expectations": [
+        "The response treats missing audit output as maintenance debt.",
+        "The answer mentions machine-readable automation events."
+      ]
     }
   ]
 }

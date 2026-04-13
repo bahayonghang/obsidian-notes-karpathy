@@ -17,6 +17,7 @@ The script is the deterministic baseline for:
 - pending review queue detection
 - briefing refresh detection
 - maintenance-needed integrity flags over the approved layer
+- latest lifecycle health flags such as confidence gaps, supersession gaps, episodic backlog, graph gaps, procedural promotion gaps, and audit trail gaps
 
 ## Routing table
 
@@ -44,6 +45,8 @@ These symptoms should push routing toward `kb-health` even when the structure al
 - archived answers have pending writeback work piling up
 - collaboration memory and approved knowledge appear to be mixing
 - open questions and gap reports are accumulating without clear ownership
+- pages using the latest lifecycle metadata are missing confidence metadata, supersession bookkeeping, or due-date refreshes
+- episodic or audit scaffolding exists but is falling behind
 
 These symptoms should push routing toward `kb-init` even when `raw/` and `wiki/` both exist:
 
@@ -65,3 +68,4 @@ These symptoms should be surfaced as repair targets without blocking compile/que
 - `kb-review` owns draft promotion, rejection, contradiction handling, and briefing refresh.
 - `kb-query` owns synthesis, archival, publish artifacts, and question-resolution candidates from the approved layer only.
 - `kb-health` owns deep maintenance passes over live knowledge, briefings, review backlog, duplicate detection, stale-page heuristics, and deterministic mechanical fixes in approved surfaces only.
+- backward compatibility rule: old vaults do not become `needs-repair` just because they lack the latest lifecycle fields; this drift is surfaced through `kb-health` flags instead.

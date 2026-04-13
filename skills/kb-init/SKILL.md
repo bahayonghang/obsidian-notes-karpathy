@@ -36,6 +36,11 @@ Read these shared references first:
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 - `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
 - `../obsidian-notes-karpathy/references/taxonomy-and-hubs.md`
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
+- `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/automation-hooks.md`
+- `../obsidian-notes-karpathy/references/procedure-template.md`
+- `../obsidian-notes-karpathy/references/episode-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for role, baseline script, required references, and expected write surfaces.
 
@@ -50,8 +55,8 @@ Create the required support layer:
 ```text
 raw/human/{articles,papers,podcasts,repos,assets}
 raw/agents/{role}/
-wiki/drafts/{summaries,concepts,entities,overviews,comparisons,indices}
-wiki/live/{summaries,concepts,entities,overviews,comparisons,indices}
+wiki/drafts/{summaries,concepts,entities,procedures,overviews,comparisons,indices}
+wiki/live/{summaries,concepts,entities,procedures,overviews,comparisons,indices}
 wiki/briefings/
 wiki/index.md
 wiki/log.md
@@ -69,6 +74,14 @@ Optional governance scaffolding may include:
 - `wiki/live/indices/QUESTIONS.md`
 - `wiki/live/indices/GAPS.md`
 - `wiki/live/indices/ALIASES.md`
+- `wiki/live/indices/ENTITIES.md`
+- `wiki/live/indices/RELATIONSHIPS.md`
+
+Optional latest-capability scaffolding may include:
+
+- `outputs/episodes/`
+- `outputs/audit/operations.jsonl`
+- `outputs/health/graph-snapshot.json`
 
 ## Migration posture
 
@@ -101,6 +114,7 @@ Create:
 - `wiki/live/indices/RECENT.md`
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md`
 - optional `wiki/live/indices/QUESTIONS.md` when the user wants governance scaffolding
+- optional `wiki/live/indices/ENTITIES.md` and `RELATIONSHIPS.md` when the user wants graph-friendly navigation
 - at least one example briefing or a placeholder in `wiki/briefings/`
 - a review template example in `outputs/reviews/` when the user wants a demonstrable starter
 

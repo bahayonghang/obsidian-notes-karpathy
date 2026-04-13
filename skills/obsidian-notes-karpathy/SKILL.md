@@ -31,6 +31,9 @@ Read these shared references first:
 - `./references/activity-log-template.md`
 - `./references/provenance-and-alias-policy.md`
 - `./references/questions-and-reflection-policy.md`
+- `./references/memory-lifecycle.md`
+- `./references/graph-contract.md`
+- `./references/automation-hooks.md`
 
 Treat `skill-contract-registry.json` as the canonical list of package roles, required shared references, baseline scripts, and output surfaces.
 
@@ -105,7 +108,9 @@ Route to `kb-health` when:
 - Treat `raw/` as immutable evidence intake.
 - Treat `wiki/drafts/` as reviewable knowledge, not query truth.
 - Treat `wiki/live/` as the only approved long-term brain.
+- Treat `wiki/live/procedures/` as approved procedural memory, not just another concept bucket.
 - Treat `wiki/briefings/` as per-role context generated from live only.
+- Treat `outputs/episodes/` as episodic memory and `outputs/audit/operations.jsonl` as the machine-readable audit trail.
 - Treat `outputs/reviews/` as the durable decision ledger.
 - Keep `wiki/index.md` and `wiki/log.md` as complementary navigation surfaces.
 - Absorb stronger governance signals such as source integrity, alias alignment, stale-page checks, and question tracking without collapsing the review gate.

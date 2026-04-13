@@ -6,9 +6,22 @@ title: "{Concept Title}"
 concept_id: "{concept-slug}"
 aliases:
   - "{common alias}"
+visibility_scope: private | shared
+confidence_score: 0.84
+confidence_band: strong | moderate | weak
+support_count: 3
+contradiction_count: 0
 updated_at: "{datetime}"
 last_reviewed_at: "{datetime}"
+last_confirmed_at: "{datetime}"
+next_review_due_at: "{datetime}"
+decay_class: architecture | workflow | transient
 status: active | draft | conflicting
+supersedes:
+  - "[[wiki/live/concepts/older-concept]]"
+superseded_by: []
+superseded_at: "{datetime}"
+supersession_reason: "{why this concept replaced or narrowed an older one}"
 sources:
   - "[[wiki/live/summaries/source-a]]"
 related:
@@ -63,4 +76,5 @@ Rules:
 - When used under `wiki/drafts/**`, point `sources` and `related` at draft pages; when promoted under `wiki/live/**`, point them at approved live pages.
 - Use `aliases` aggressively so backlinks and unlinked mentions still work when terminology shifts.
 - Use `related` for real relationships to concepts or entities, not speculative link spam.
+- Keep `confidence_*`, support counts, and supersession metadata explicit once a page has moved onto the latest lifecycle contract.
 - Set `status: conflicting` when unresolved disagreement remains.

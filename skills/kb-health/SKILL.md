@@ -37,12 +37,18 @@ Before checking the vault, read these files first:
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 - `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
 - `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
+- `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/automation-hooks.md`
+- `../obsidian-notes-karpathy/references/episode-template.md`
+- `../obsidian-notes-karpathy/references/procedure-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
 If `../obsidian-notes-karpathy/scripts/lint_obsidian_mechanics.py` exists, run it first and treat its output as the deterministic baseline.
 
 If `../obsidian-notes-karpathy/scripts/build_governance_indices.py` exists, use it to refresh `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` as recommended governance surfaces for mature vaults, not just as optional extras.
+If `../obsidian-notes-karpathy/scripts/build_graph_snapshot.py` exists, use it to refresh `outputs/health/graph-snapshot.json` when the user wants machine-readable graph export.
 
 Inspect primarily:
 
@@ -75,6 +81,9 @@ Reference `raw/` only when provenance requires a spot check.
 - repeated archived outputs on the same approved topic that likely deserve a synthesis or curated hub
 - weakly connected live pages that should gain stronger `related` links or hub membership
 - curated hubs that are stale, orphaned, or badly imbalanced
+- partially migrated latest-lifecycle pages missing confidence metadata
+- due confidence refresh windows and broken supersession chains
+- episodic backlog, procedural promotion gaps, and missing audit trails when those surfaces exist
 
 ## Report output
 

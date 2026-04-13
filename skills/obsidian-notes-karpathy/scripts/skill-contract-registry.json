@@ -9,7 +9,12 @@
     "query-writeback-lifecycle.md",
     "taxonomy-and-hubs.md",
     "paper-ingestion-lifecycle.md",
-    "obsidian-safe-markdown.md"
+    "obsidian-safe-markdown.md",
+    "memory-lifecycle.md",
+    "graph-contract.md",
+    "automation-hooks.md",
+    "procedure-template.md",
+    "episode-template.md"
   ],
   "skills": {
     "obsidian-notes-karpathy": {
@@ -20,7 +25,10 @@
         "search-upgrades.md",
         "activity-log-template.md",
         "provenance-and-alias-policy.md",
-        "questions-and-reflection-policy.md"
+        "questions-and-reflection-policy.md",
+        "memory-lifecycle.md",
+        "graph-contract.md",
+        "automation-hooks.md"
       ],
       "baseline_script": "detect_lifecycle.py",
       "writes": [],
@@ -47,7 +55,12 @@
         "questions-template.md",
         "provenance-and-alias-policy.md",
         "query-writeback-lifecycle.md",
-        "taxonomy-and-hubs.md"
+        "taxonomy-and-hubs.md",
+        "memory-lifecycle.md",
+        "graph-contract.md",
+        "automation-hooks.md",
+        "procedure-template.md",
+        "episode-template.md"
       ],
       "baseline_script": "detect_lifecycle.py",
       "writes": [
@@ -56,6 +69,8 @@
         "MEMORY.md",
         "wiki/index.md",
         "wiki/log.md",
+        "wiki/drafts/procedures/",
+        "wiki/live/procedures/",
         "wiki/live/indices/EDITORIAL-PRIORITIES.md",
         "wiki/live/indices/INDEX.md",
         "wiki/live/indices/CONCEPTS.md",
@@ -64,16 +79,23 @@
         "wiki/live/indices/QUESTIONS.md",
         "wiki/live/indices/GAPS.md",
         "wiki/live/indices/ALIASES.md",
+        "wiki/live/indices/ENTITIES.md",
+        "wiki/live/indices/RELATIONSHIPS.md",
         "wiki/briefings/",
-        "outputs/reviews/"
+        "outputs/reviews/",
+        "outputs/episodes/",
+        "outputs/audit/operations.jsonl"
       ],
       "outputs": [
         "MEMORY.md",
         "wiki/index.md",
         "wiki/log.md",
         "wiki/live/indices/",
+        "wiki/live/procedures/",
         "wiki/briefings/",
-        "outputs/reviews/"
+        "outputs/reviews/",
+        "outputs/episodes/",
+        "outputs/audit/operations.jsonl"
       ]
     },
     "kb-compile": {
@@ -87,13 +109,17 @@
         "entity-template.md",
         "activity-log-template.md",
         "provenance-and-alias-policy.md",
-        "paper-ingestion-lifecycle.md"
+        "paper-ingestion-lifecycle.md",
+        "memory-lifecycle.md",
+        "graph-contract.md",
+        "procedure-template.md"
       ],
       "baseline_script": "scan_compile_delta.py",
       "writes": [
         "wiki/drafts/summaries/",
         "wiki/drafts/concepts/",
         "wiki/drafts/entities/",
+        "wiki/drafts/procedures/",
         "wiki/drafts/indices/",
         "wiki/log.md"
       ],
@@ -111,18 +137,23 @@
         "review-template.md",
         "briefing-template.md",
         "activity-log-template.md",
-        "provenance-and-alias-policy.md"
+        "provenance-and-alias-policy.md",
+        "memory-lifecycle.md",
+        "graph-contract.md",
+        "procedure-template.md"
       ],
       "baseline_script": "scan_review_queue.py",
       "writes": [
         "outputs/reviews/",
         "wiki/live/",
+        "wiki/live/procedures/",
         "wiki/briefings/",
         "wiki/log.md"
       ],
       "outputs": [
         "outputs/reviews/",
         "wiki/live/",
+        "wiki/live/procedures/",
         "wiki/briefings/",
         "wiki/log.md"
       ]
@@ -138,7 +169,10 @@
         "activity-log-template.md",
         "questions-and-reflection-policy.md",
         "query-writeback-lifecycle.md",
-        "search-upgrades.md"
+        "search-upgrades.md",
+        "memory-lifecycle.md",
+        "graph-contract.md",
+        "episode-template.md"
       ],
       "baseline_script": "scan_query_scope.py",
       "writes": [
@@ -162,7 +196,12 @@
         "search-upgrades.md",
         "provenance-and-alias-policy.md",
         "questions-and-reflection-policy.md",
-        "query-writeback-lifecycle.md"
+        "query-writeback-lifecycle.md",
+        "memory-lifecycle.md",
+        "graph-contract.md",
+        "automation-hooks.md",
+        "episode-template.md",
+        "procedure-template.md"
       ],
       "baseline_script": "lint_obsidian_mechanics.py",
       "writes": [
@@ -173,11 +212,15 @@
         "wiki/live/indices/QUESTIONS.md",
         "wiki/live/indices/GAPS.md",
         "wiki/live/indices/ALIASES.md",
+        "wiki/live/indices/ENTITIES.md",
+        "wiki/live/indices/RELATIONSHIPS.md",
+        "outputs/health/graph-snapshot.json",
         "wiki/log.md"
       ],
       "outputs": [
         "outputs/health/",
         "wiki/live/indices/",
+        "outputs/health/graph-snapshot.json",
         "wiki/log.md"
       ]
     }

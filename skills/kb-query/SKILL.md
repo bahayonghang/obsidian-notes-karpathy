@@ -38,6 +38,9 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/search-upgrades.md`
 - `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
 - `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
+- `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/episode-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
@@ -60,6 +63,7 @@ Then start with:
 `MEMORY.md` is also outside the default knowledge retrieval boundary. Read it only when the user is asking about preferences, editorial priorities, or collaboration behavior rather than topic knowledge.
 
 Those layers may be cited only as evidence if a human explicitly asks for source inspection. Default synthesis should stay on `wiki/live/`.
+`outputs/episodes/` and `outputs/health/graph-snapshot.json` may help surface candidates, but they are not default truth surfaces.
 
 ## Source-backed answer discipline
 
@@ -110,6 +114,7 @@ At minimum, substantive Q&A or publish outputs should:
 - record `writeback_candidates` when the output discovers durable follow-up worth re-entering the wiki
 - record `writeback_status` so later passes can see whether the work is still pending
 - record `compounding_value` when future reuse, navigation value, or synthesis payoff should be explicit
+- record `crystallized_from_episode` when the output came out of a broader episodic chain
 - set `followup_route` to `none`, `draft`, `review`, or `health`
 
 Use:

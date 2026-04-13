@@ -56,10 +56,14 @@ def classify_markdown_path(rel_path: str) -> str:
         return "review"
     if normalized.startswith("outputs/content/"):
         return "content_output"
+    if normalized.startswith("outputs/episodes/"):
+        return "episode"
     if normalized.startswith("wiki/live/concepts/") or normalized.startswith("wiki/drafts/concepts/"):
         return "concept"
     if normalized.startswith("wiki/live/entities/") or normalized.startswith("wiki/drafts/entities/"):
         return "entity"
+    if normalized.startswith("wiki/live/procedures/") or normalized.startswith("wiki/drafts/procedures/"):
+        return "procedure"
     if normalized.startswith("wiki/live/overviews/") or normalized.startswith("wiki/drafts/overviews/"):
         return "overview"
     if normalized.startswith("wiki/live/comparisons/") or normalized.startswith("wiki/drafts/comparisons/"):

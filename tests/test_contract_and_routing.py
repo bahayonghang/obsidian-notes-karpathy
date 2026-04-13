@@ -24,6 +24,8 @@ class ContractAndRoutingTests(unittest.TestCase):
         live_ready = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "ready-for-query"))
         briefing_refresh = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "needs-briefing-refresh"))
         migration = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "needs-migration"))
+        confidence_decay = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "confidence-decay"))
+        supersession_chain = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "supersession-chain"))
 
         self.assertEqual(compile_ready["state"], "needs-compilation")
         self.assertEqual(compile_ready["route"], "kb-compile")
@@ -70,6 +72,15 @@ class ContractAndRoutingTests(unittest.TestCase):
         self.assertEqual(briefing_refresh["route"], "kb-review")
         self.assertIn("briefing_refresh_required", briefing_refresh["signals"])
 
+        self.assertEqual(confidence_decay["state"], "needs-maintenance")
+        self.assertEqual(confidence_decay["route"], "kb-health")
+        self.assertIn("missing_confidence_metadata", confidence_decay["health_flags"])
+        self.assertIn("confidence_decay_due", confidence_decay["health_flags"])
+
+        self.assertEqual(supersession_chain["state"], "needs-maintenance")
+        self.assertEqual(supersession_chain["route"], "kb-health")
+        self.assertIn("supersession_gap", supersession_chain["health_flags"])
+
         self.assertEqual(migration["layout_family"], "legacy-layout")
         self.assertEqual(migration["state"], "needs-migration")
         self.assertEqual(migration["route"], "kb-init")
@@ -92,10 +103,14 @@ class ContractAndRoutingTests(unittest.TestCase):
         self.assertEqual(registry["contract_family"], "review-gated")
         self.assertEqual(sorted(registry["skills"].keys()), sorted(SKILL_PATHS.keys()))
         self.assertIn("MEMORY.md", registry["skills"]["kb-init"]["writes"])
+        self.assertIn("outputs/episodes/", registry["skills"]["kb-init"]["writes"])
+        self.assertIn("wiki/live/procedures/", registry["skills"]["kb-review"]["writes"])
         self.assertIn(
             "wiki/live/indices/ALIASES.md",
             registry["skills"]["kb-health"]["writes"],
         )
+        self.assertIn("wiki/live/indices/RELATIONSHIPS.md", registry["skills"]["kb-health"]["writes"])
+        self.assertIn("outputs/health/graph-snapshot.json", registry["skills"]["kb-health"]["outputs"])
         self.assertIn("wiki/live/indices/", registry["skills"]["kb-health"]["outputs"])
 
         shared_refs = set(registry["shared_references"])

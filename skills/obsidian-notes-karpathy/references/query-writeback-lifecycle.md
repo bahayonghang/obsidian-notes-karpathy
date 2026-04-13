@@ -27,6 +27,7 @@ Substantive Q&A or publish artifacts should record these fields when relevant:
 - `followup_route` — `none | draft | review | health`
 - optional `confidence_posture` — when the answer should advertise uncertainty or source disagreement explicitly
 - optional `compounding_value` — `low | medium | high` to indicate how strongly the artifact is expected to pay off for future reuse, navigation, or follow-up drafting
+- optional `crystallized_from_episode` — when the answer or artifact came out of an explicit episodic note
 
 ## How to choose `followup_route`
 
@@ -106,6 +107,16 @@ Archived outputs can feed governance indices and health reports, especially:
 - `ALIASES.md`
 
 But those surfaces remain maintenance/navigation views. They do not widen the truth boundary beyond approved live pages.
+
+## Episode relationship
+
+When an answer or publish artifact came from a broader chain of work, keep the breadcrumb:
+
+- the episode captures the work arc
+- the Q&A or content artifact captures the reusable answer
+- durable knowledge still re-enters through draft -> review -> live
+
+The episode is not the truth source. It is the reusable memory wrapper around the work that produced the artifact.
 
 ## Example posture
 

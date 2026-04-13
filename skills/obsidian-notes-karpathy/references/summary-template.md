@@ -29,6 +29,15 @@ composability: 0.84
 conflict_risk: 0.12
 evidence_coverage: 0.85
 uncertainty_level: low | medium | high
+promotion_target: semantic | procedural
+candidate_entities:
+  - "entity-a"
+candidate_relationships:
+  - "concept-a --supports--> concept-b"
+confidence_inputs:
+  - "support_count=2"
+  - "contradiction_count=0"
+  - "last_confirmed_at={datetime}"
 ---
 
 # Draft Summary: {Source Title}
@@ -82,4 +91,5 @@ Rules:
 - keep provenance explicit enough that a reviewer can judge the draft without agent-specific production context
 - keep direct source claims separate from compiler-added inferences
 - surface alias or duplicate risk rather than silently creating competing long-term notes
+- use `promotion_target: procedural` when the durable delta should become a reusable workflow instead of another semantic page
 - omit entity sections when the source does not introduce durable named entities

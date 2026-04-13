@@ -11,6 +11,7 @@ REVIEWABLE_DRAFT_ROOTS = (
     "wiki/drafts/summaries",
     "wiki/drafts/concepts",
     "wiki/drafts/entities",
+    "wiki/drafts/procedures",
 )
 TERMINAL_REVIEW_STATES = {"promoted", "rejected", "archived"}
 

@@ -1,5 +1,6 @@
 # pyright: reportMissingImports=false
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -20,23 +21,35 @@ class DocsAndEvalsTests(unittest.TestCase):
         qa_template = (ENTRY_SKILL_ROOT / "references" / "qa-template.md").read_text(encoding="utf-8")
         content_template = (ENTRY_SKILL_ROOT / "references" / "content-output-template.md").read_text(encoding="utf-8")
         file_model = (ENTRY_SKILL_ROOT / "references" / "file-model.md").read_text(encoding="utf-8")
+        procedure_template = (ENTRY_SKILL_ROOT / "references" / "procedure-template.md").read_text(encoding="utf-8")
+        episode_template = (ENTRY_SKILL_ROOT / "references" / "episode-template.md").read_text(encoding="utf-8")
 
         self.assertIn("evidence_coverage", summary_template)
         self.assertIn("uncertainty_level", summary_template)
+        self.assertIn("promotion_target", summary_template)
+        self.assertIn("candidate_relationships", summary_template)
         self.assertIn("promotion_reason", review_template)
         self.assertIn("fact_inference_separation", review_template)
+        self.assertIn("supersession_decision", review_template)
         self.assertIn("writeback_candidates", qa_template)
         self.assertIn("writeback_status", qa_template)
         self.assertIn("followup_route", qa_template)
         self.assertIn("source_live_pages", qa_template)
         self.assertIn("confidence_posture", qa_template)
+        self.assertIn("crystallized_from_episode", qa_template)
         self.assertIn("writeback_candidates", content_template)
         self.assertIn("followup_route", content_template)
         self.assertIn("source_live_pages", content_template)
+        self.assertIn("crystallized_from_episode", content_template)
         self.assertIn("MEMORY.md", file_model)
         self.assertIn("followup_route", file_model)
+        self.assertIn("outputs/episodes/", file_model)
+        self.assertIn("wiki/live/procedures/", file_model)
+        self.assertIn("outputs/audit/operations.jsonl", file_model)
         self.assertIn("Creator workflow mapping", file_model)
         self.assertIn("Prior coverage reused", content_template)
+        self.assertIn("procedure_id", procedure_template)
+        self.assertIn("memory_tier: episodic", episode_template)
 
     def test_bundle_docs_and_trigger_evals_stay_consistent(self) -> None:
         readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
@@ -52,11 +65,18 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("query-writeback-lifecycle.md", registry_text)
         self.assertIn("taxonomy-and-hubs.md", registry_text)
         self.assertIn("paper-ingestion-lifecycle.md", registry_text)
+        self.assertIn("memory-lifecycle.md", registry_text)
+        self.assertIn("graph-contract.md", registry_text)
+        self.assertIn("automation-hooks.md", registry_text)
 
         self.assertIn("kb-review", readme)
         self.assertIn("kb-review", readme_cn)
         self.assertIn("kb-review", entry_skill)
         self.assertIn("MEMORY.md", readme)
+        self.assertIn("outputs/episodes/", readme)
+        self.assertIn("wiki/live/procedures/", readme)
+        self.assertIn("outputs/episodes/", readme_cn)
+        self.assertIn("wiki/live/procedures/", (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8"))
         self.assertIn("source library / clipped research", readme)
         self.assertIn("素材库 / 网页摘录", readme_cn)
         self.assertIn("architecture/", docs_readme)
@@ -66,6 +86,26 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertTrue(trigger_eval_path.exists())
         trigger_evals = json.loads(trigger_eval_path.read_text(encoding="utf-8"))
         self.assertGreaterEqual(len(trigger_evals), 20)
+
+    def test_skill_facing_docs_use_latest_lifecycle_wording_instead_of_generation_labels(self) -> None:
+        explicit_generation_label = re.compile(r"\bv2\b", re.IGNORECASE)
+        skill_facing_paths = [
+            *SKILL_PATHS.values(),
+            *sorted((ENTRY_SKILL_ROOT / "references").glob("*.md")),
+        ]
+
+        offenders: list[str] = []
+        for path in skill_facing_paths:
+            text = path.read_text(encoding="utf-8")
+            if explicit_generation_label.search(text):
+                offenders.append(path.relative_to(REPO_ROOT).as_posix())
+
+        self.assertEqual(offenders, [])
+
+        lifecycle_matrix = (ENTRY_SKILL_ROOT / "references" / "lifecycle-matrix.md").read_text(encoding="utf-8")
+        memory_lifecycle = (ENTRY_SKILL_ROOT / "references" / "memory-lifecycle.md").read_text(encoding="utf-8")
+        self.assertIn("backward compatibility rule", lifecycle_matrix)
+        self.assertIn("Old vaults can adopt this gradually", memory_lifecycle)
 
     def test_trigger_evals_cover_all_skill_routes_and_negative_controls(self) -> None:
         trigger_evals = json.loads((ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json").read_text(encoding="utf-8"))
@@ -102,6 +142,14 @@ class DocsAndEvalsTests(unittest.TestCase):
             "writeback-backlog",
             "needs-governance-refresh",
             "governance-enabled-bootstrap",
+            "confidence-decay",
+            "supersession-chain",
+            "episodic-consolidation",
+            "procedural-promotion",
+            "graph-relationship-gap",
+            "private-shared-boundary",
+            "hybrid-candidate-routing",
+            "audit-trail",
         }:
             self.assertIn(fixture_name, fixture_names)
 

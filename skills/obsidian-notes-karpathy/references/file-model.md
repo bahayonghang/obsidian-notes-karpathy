@@ -241,6 +241,30 @@ Expected properties:
 - optional `evidence_strength` or `source_density` when the vault tracks thin-support risk
 - optional `question_links` or `open_questions` when the page participates in a standing governance thread
 - optional `topic_hub` when the page belongs to a curated hub / MOC-like surface
+- optional latest lifecycle fields such as `confidence_score`, `confidence_band`, `support_count`, `contradiction_count`, `last_confirmed_at`, `next_review_due_at`, `decay_class`, `supersedes`, `superseded_by`, `superseded_at`, `supersession_reason`, and `visibility_scope`
+
+`wiki/live/procedures/` is the procedural memory surface. Use it for durable workflows, playbooks, and repeated decision patterns that should remain distinct from semantic concept pages.
+
+Expected procedure properties:
+
+- `title`
+- `procedure_id`
+- `visibility_scope`
+- `confidence_score`
+- `confidence_band`
+- `support_count`
+- `contradiction_count`
+- `updated_at`
+- `last_reviewed_at`
+- `last_confirmed_at`
+- `next_review_due_at`
+- `decay_class`
+- `approved_at`
+- `approved_from`
+- `review_record`
+- `trust_level: approved`
+- `sources`
+- `related`
 
 ## Briefings
 
@@ -301,6 +325,8 @@ Expected operational fields for substantive Q&A and publish outputs:
 - `followup_route` as `none | draft | review | health`
 - optional `confidence_posture` when the answer should advertise uncertainty explicitly
 - optional `compounding_value` when the artifact should advertise expected long-term reuse value
+- optional `crystallized_from_episode` when the answer or artifact came out of a broader episodic thread
+- optional `visibility_scope` when the artifact is intentionally private or shared
 
 These outputs can inform governance and maintenance surfaces, but they never become approved truth automatically.
 
@@ -314,3 +340,60 @@ Prefer concrete operational values over placeholders. For example, `writeback_ca
 - keep alias-style wikilinks out of Markdown table cells
 - treat `review_record` and `approved_from` as first-class provenance edges
 - use aliases and canonical names to support cross-language linking without creating parallel truth pages
+
+## Episodic and audit surfaces
+
+`outputs/episodes/` is the episodic memory surface.
+
+Use it for:
+
+- session-level crystallizations
+- compacted debugging/research arcs
+- reusable context that is stronger than raw evidence but not yet approved semantic truth
+
+Expected episode properties:
+
+- `title`
+- `episode_id`
+- `memory_tier: episodic`
+- `captured_at`
+- `episode_scope`
+- `source_artifacts`
+- `source_live_pages`
+- `open_questions_touched`
+- `writeback_candidates`
+- `followup_route`
+- `consolidation_status`
+- `visibility_scope`
+
+`outputs/audit/operations.jsonl` is the machine-readable audit trail.
+
+Each line should record:
+
+- `timestamp`
+- `action`
+- `payload`
+
+## Tier mapping
+
+The latest lifecycle contract keeps tiers explicit:
+
+- `raw/**` = working evidence
+- `outputs/episodes/**` = episodic memory
+- `wiki/live/**` = semantic memory
+- `wiki/live/procedures/**` = procedural memory
+- `MEMORY.md` = collaboration/editorial context only
+
+## Creator workflow mapping
+
+For creator-style workflows, a practical mapping is:
+
+- source library / clipped research -> `raw/`
+- editorial memory -> `MEMORY.md`
+- session crystallization -> `outputs/episodes/`
+- reusable research answers or drafting notes -> `outputs/qa/`
+- outward-facing publish artifacts -> `outputs/content/`
+- durable approved knowledge -> `wiki/live/`
+- durable workflows / playbooks -> `wiki/live/procedures/`
+- machine-readable audit -> `outputs/audit/operations.jsonl`
+- graph export for local candidate retrieval -> `outputs/health/graph-snapshot.json`

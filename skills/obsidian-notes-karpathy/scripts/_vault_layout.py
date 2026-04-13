@@ -279,7 +279,7 @@ def collect_markdown_records(vault_root: Path):
     if layout_family == "review-gated":
         records = iter_markdown_records(
             vault_root,
-            ("raw", "wiki/live", "wiki/briefings", "outputs/qa", "outputs/content", "outputs/reviews"),
+            ("raw", "wiki/live", "wiki/briefings", "outputs/qa", "outputs/content", "outputs/episodes", "outputs/reviews"),
         )
         memory_path = vault_root / "MEMORY.md"
         if memory_path.exists():

@@ -24,6 +24,8 @@ writeback_status: none | pending | triaged | drafted | reviewed | rejected
 followup_route: none | draft | review | health
 confidence_posture: grounded | mixed-evidence | exploratory
 compounding_value: low | medium | high
+crystallized_from_episode: "[[outputs/episodes/example-episode]]"
+visibility_scope: private | shared
 ---
 
 # {title}
@@ -77,4 +79,5 @@ Rules:
 - Archive only substantive answers.
 - If the answer becomes the basis for a publishable artifact, link that artifact back here.
 - If the answer reveals durable knowledge work, express that as `writeback_candidates` plus a concrete writeback section instead of leaving it implicit.
+- If the answer is part of a longer chain of work, point it at the supporting episodic note through `crystallized_from_episode`.
 - Prefer the smallest durable delta that improves future retrieval: sometimes the right move is a new page, but often it is a stronger `related` edge, a hub update, or a promoted governed question.

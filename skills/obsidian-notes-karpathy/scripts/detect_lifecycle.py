@@ -198,6 +198,13 @@ def detect_lifecycle(vault_root: Path) -> dict:
             "stale_briefing",
             "duplicate_alias_set",
             "volatile_page_stale",
+            "missing_confidence_metadata",
+            "confidence_decay_due",
+            "supersession_gap",
+            "episodic_backlog",
+            "procedural_promotion_gap",
+            "graph_gap",
+            "audit_trail_gap",
         }
     ]
 

@@ -31,6 +31,8 @@ writeback_status: none | pending | triaged | drafted | reviewed | rejected
 followup_route: none | draft | review | health
 confidence_posture: grounded | mixed-evidence | exploratory
 compounding_value: low | medium | high
+crystallized_from_episode: "[[outputs/episodes/example-episode]]"
+visibility_scope: private | shared
 ---
 
 # {Artifact Title}
@@ -81,6 +83,7 @@ Rules:
 - Publish artifacts should stay grounded in the wiki instead of drifting away from the evidence.
 - Prefer reusing prior approved coverage or archived outputs explicitly before restating the same background explanation in a new artifact.
 - If the draft introduces a new synthesis worth preserving, pair the artifact with explicit `writeback_candidates` or a supporting Q&A note.
+- When the artifact came out of a larger research/debugging thread, keep the episodic breadcrumb through `crystallized_from_episode`.
 - Writeback candidates may be relationship or hub upgrades, not only new pages.
 - Keep raw source captures immutable; editorial shaping belongs in the artifact, Q&A archive, or the later draft/review lane.
 - Prefer the smallest durable delta that improves the wiki after publication: sometimes this is a new synthesis page, but often it is a hub update, relationship upgrade, or governed question.

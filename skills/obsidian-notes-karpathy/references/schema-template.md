@@ -160,6 +160,57 @@ health_score: 84
 ---
 ```
 
+## Episode frontmatter
+
+```yaml
+---
+title: "Episode: review-gate-refresh"
+episode_id: "review-gate-refresh"
+memory_tier: episodic
+captured_at: "2026-04-05T12:15:00Z"
+episode_scope: "qa"
+source_artifacts:
+  - "[[outputs/qa/2026-04-05-review-gate-runtime]]"
+source_live_pages:
+  - "[[wiki/live/concepts/review-gate]]"
+open_questions_touched:
+  - "When should governance refresh happen automatically?"
+writeback_candidates:
+  - "expand [[wiki/live/procedures/review-gate-refresh]]"
+followup_route: draft
+consolidation_status: pending
+visibility_scope: shared
+---
+```
+
+## Procedure frontmatter
+
+```yaml
+---
+title: "Review Gate Refresh Procedure"
+procedure_id: "review-gate-refresh"
+visibility_scope: shared
+confidence_score: 0.83
+confidence_band: moderate
+support_count: 2
+contradiction_count: 0
+updated_at: "2026-04-05T12:30:00Z"
+last_reviewed_at: "2026-04-05T12:30:00Z"
+last_confirmed_at: "2026-04-05T12:30:00Z"
+next_review_due_at: "2026-07-05T00:00:00Z"
+decay_class: workflow
+approved_at: "2026-04-05T12:30:00Z"
+approved_from:
+  - "[[wiki/drafts/procedures/review-gate-refresh]]"
+review_record: "[[outputs/reviews/procedures--review-gate-refresh]]"
+trust_level: approved
+sources:
+  - "[[wiki/live/summaries/human/articles/2026-04-05-approved-summary]]"
+related:
+  - "[[wiki/live/concepts/review-gate]]"
+---
+```
+
 ## Naming rules
 
 - keep raw capture filenames stable and lowercase kebab-case
@@ -168,3 +219,4 @@ health_score: 84
 - use `aliases` to capture cross-language and terminology drift without creating duplicate pages
 - any generated tables must obey `obsidian-safe-markdown.md`; never emit alias-style wikilinks inside table cells
 - keep concept/entity canonical names in lowercase kebab-case when possible so duplicate detection stays deterministic
+- keep procedural ids in lowercase kebab-case and align episode basenames with their archived output when possible

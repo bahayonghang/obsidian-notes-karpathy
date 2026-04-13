@@ -19,6 +19,7 @@ Use the cheapest layer that solves the problem while preserving traceability.
 7. optional semantic retrieval only as candidate surfacing
 
 Approved live pages remain the truth source throughout the ladder.
+`outputs/episodes/**` and `outputs/health/graph-snapshot.json` are candidate-retrieval surfaces only. They can improve discovery, but they never override `wiki/live/**` as approved truth.
 
 ## Stage 1: Native markdown navigation
 
@@ -76,6 +77,15 @@ Use this stage when:
 If you suggest this stage, explain why the earlier markdown-first and metadata-first stages are no longer enough.
 
 Semantic retrieval can help surface candidate notes, but it should not silently widen the truth boundary beyond `wiki/live/`.
+
+When a local hybrid layer exists, prefer this posture:
+
+- BM25 / local text search for lexical recall
+- optional vector search for semantic candidate surfacing
+- graph traversal over explicit `related`, `supersedes`, and hub membership edges
+- reciprocal-rank-fusion style merge only for candidate ordering
+
+Episodes and graph snapshots may participate in candidate surfacing, but any final synthesis should still cite approved live pages.
 
 ## Decision rule
 

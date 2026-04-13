@@ -20,6 +20,7 @@ Use `query-writeback-lifecycle.md` for the detailed field-level contract when a 
 - reflection should start from approved live pages, not drafts or raw captures by default
 - when reflection finds a new durable synthesis, capture it as a writeback candidate and set a `followup_route`
 - when reflection finds contradiction or missing evidence, route the follow-up to health or review instead of silently rewriting live notes
+- when reflection grew out of a larger chain of work, prefer pairing the archived output with an episode page instead of leaving that context stranded in chat
 
 ## Follow-up routing
 

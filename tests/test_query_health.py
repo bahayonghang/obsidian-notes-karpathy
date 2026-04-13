@@ -18,6 +18,8 @@ class QueryHealthTests(unittest.TestCase):
             self.assertTrue((indices_root / "QUESTIONS.md").exists())
             self.assertTrue((indices_root / "GAPS.md").exists())
             self.assertTrue((indices_root / "ALIASES.md").exists())
+            self.assertTrue((indices_root / "ENTITIES.md").exists())
+            self.assertTrue((indices_root / "RELATIONSHIPS.md").exists())
             self.assertIn("When should governance indices be refreshed?", payload["questions"])
             self.assertNotIn("## Follow-up Routes Seen In Archived Outputs", (indices_root / "GAPS.md").read_text(encoding="utf-8"))
 
@@ -30,6 +32,7 @@ class QueryHealthTests(unittest.TestCase):
         self.assertIn("outputs/qa/2026-04-06-review-gate-benefits.md", scope["included_paths"])
         self.assertIn("raw/human/articles/2026-04-05-approved-summary.md", scope["excluded_paths"])
         self.assertIn("wiki/drafts/summaries/human/articles/2026-04-05-approved-summary.md", scope["excluded_paths"])
+        self.assertEqual(scope["candidate_paths"], [])
 
     def test_query_scope_excludes_memory_from_topic_retrieval(self) -> None:
         scope = run_json_script("scan_query_scope.py", str(FIXTURES_DIR / "memory-boundary"))
@@ -37,6 +40,42 @@ class QueryHealthTests(unittest.TestCase):
         self.assertEqual(scope["layout_family"], "review-gated")
         self.assertIn("wiki/live/concepts/editorial-boundary.md", scope["included_paths"])
         self.assertIn("MEMORY.md", scope["excluded_paths"])
+
+    def test_query_scope_surfaces_candidate_paths_without_widening_truth(self) -> None:
+        scope = run_json_script("scan_query_scope.py", str(FIXTURES_DIR / "hybrid-candidate-routing"))
+
+        self.assertEqual(scope["layout_family"], "review-gated")
+        self.assertIn("wiki/live/concepts/hybrid-routing.md", scope["included_paths"])
+        self.assertIn("outputs/episodes/2026-04-10-hybrid-routing.md", scope["candidate_paths"])
+        self.assertIn("outputs/health/graph-snapshot.json", scope["candidate_paths"])
+        self.assertNotIn("outputs/episodes/2026-04-10-hybrid-routing.md", scope["included_paths"])
+        self.assertEqual(scope["candidate_policy"], "candidate-only")
+
+    def test_query_scope_flags_private_and_sensitive_surfaces_without_widening_truth(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "private-shared-boundary"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+
+            private_qa = fixture_copy / "outputs" / "qa" / "2026-04-10-private-answer.md"
+            private_qa.write_text(
+                """---
+question: \"What should stay private?\"
+visibility_scope: private
+sensitivity_level: restricted
+source_live_pages:
+  - \"[[wiki/live/concepts/review-gate]]\"
+---
+
+# Private Answer
+""",
+                encoding="utf-8",
+            )
+
+            scope = run_json_script("scan_query_scope.py", str(fixture_copy))
+            self.assertTrue(any(item["path"] == "outputs/qa/2026-04-10-private-answer.md" for item in scope["scope_leaks"]))
+            self.assertTrue(any(item["path"] == "outputs/qa/2026-04-10-private-answer.md" for item in scope["sensitivity_candidates"]))
+            self.assertIn("outputs/qa/2026-04-10-private-answer.md", scope["included_paths"])
+
 
     def test_lint_obsidian_mechanics_flags_review_gated_staleness_and_backlog(self) -> None:
         review_ready = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "needs-review"))
@@ -48,11 +87,12 @@ class QueryHealthTests(unittest.TestCase):
         self.assertIn("review_backlog", review_issue_kinds)
         self.assertIn("stale_briefing", stale_issue_kinds)
 
-    def test_governance_index_builder_surfaces_questions_gaps_and_aliases(self) -> None:
+    def test_governance_index_builder_surfaces_questions_gaps_aliases_and_confidence_maintenance(self) -> None:
         query_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "ready-for-query"))
         maintenance_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "needs-maintenance"))
         refresh_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "needs-governance-refresh"))
         writeback_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "writeback-backlog"))
+        confidence_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "confidence-decay"))
 
         self.assertIn("When should governance indices be refreshed?", query_payload["questions"])
         self.assertIn("review-gate", {row["canonical_slug"] for row in query_payload["alias_rows"]})
@@ -63,6 +103,18 @@ class QueryHealthTests(unittest.TestCase):
         self.assertNotIn("How should archived Q&A feed governance refreshes?", refresh_payload["questions"])
         self.assertTrue(any(item["writeback_status"] == "pending" for item in writeback_payload["writeback_backlog"]))
         self.assertTrue(any(item["followup_route"] == "health" for item in refresh_payload["followup_routes"]))
+        self.assertEqual({item["issue_kind"] for item in confidence_payload["confidence_maintenance"]}, {"missing_confidence_metadata", "confidence_decay_due"})
+        self.assertTrue(any(item["recommended_action"] == "fill_core_confidence_metadata" for item in confidence_payload["confidence_maintenance"]))
+        self.assertTrue(any(item["recommended_action"] == "refresh_confidence_review" for item in confidence_payload["confidence_maintenance"]))
+        self.assertIn("## Confidence Maintenance Signals", confidence_payload["files"]["GAPS.md"])
+
+        supersession_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "supersession-chain"))
+        episode_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "episodic-consolidation"))
+        procedure_payload = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "procedural-promotion"))
+        self.assertTrue(any(item["issue_kind"] == "supersession_gap" and item["recommended_action"] == "reconcile_supersession_chain" for item in supersession_payload["closure_signals"]))
+        self.assertTrue(any(item["issue_kind"] == "episodic_backlog" and item["recommended_action"] == "consolidate_episode_followup" for item in episode_payload["closure_signals"]))
+        self.assertTrue(any(item["issue_kind"] == "procedural_promotion_gap" and item["recommended_action"] == "draft_procedure_candidate" for item in procedure_payload["closure_signals"]))
+        self.assertIn("## Closure Signals", supersession_payload["files"]["GAPS.md"])
 
     def test_governance_index_builder_filters_completed_writeback_and_non_archived_routes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -111,10 +163,28 @@ followup_route: draft
             self.assertTrue((indices_root / "ALIASES.md").exists())
             self.assertIn("What governance scaffolding should kb-init generate?", payload["questions"])
 
-    def test_detect_lifecycle_and_health_flag_memory_and_writeback_issues(self) -> None:
+    def test_detect_lifecycle_and_health_flag_memory_writeback_and_boundary_issues(self) -> None:
         writeback = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "writeback-backlog"))
         memory = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "memory-boundary"))
         writeback_lint = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "writeback-backlog"))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "private-shared-boundary"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            private_qa = fixture_copy / "outputs" / "qa" / "2026-04-10-private-answer.md"
+            private_qa.write_text(
+                """---
+question: \"What should stay private?\"
+visibility_scope: private
+source_live_pages:
+  - \"[[wiki/live/concepts/review-gate]]\"
+---
+
+# Private Answer
+""",
+                encoding="utf-8",
+            )
+            private_lint = run_json_script("lint_obsidian_mechanics.py", str(fixture_copy))
 
         self.assertEqual(writeback["state"], "needs-maintenance")
         self.assertEqual(writeback["route"], "kb-health")
@@ -122,8 +192,87 @@ followup_route: draft
 
         memory_issue_kinds = {issue["kind"] for issue in memory["issues"]}
         writeback_issue_kinds = {issue["kind"] for issue in writeback_lint["issues"]}
+        private_issue_kinds = {issue["kind"] for issue in private_lint["issues"]}
         self.assertIn("memory_knowledge_mix", memory_issue_kinds)
         self.assertIn("writeback_backlog", writeback_issue_kinds)
+        self.assertIn("private_scope_leak", private_issue_kinds)
+        self.assertIn("sensitivity_metadata_gap", private_issue_kinds)
+
+    def test_latest_health_flags_cover_confidence_supersession_episode_procedure_graph_and_audit(self) -> None:
+        confidence = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "confidence-decay"))
+        supersession = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "supersession-chain"))
+        episodes = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "episodic-consolidation"))
+        procedures = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "procedural-promotion"))
+        graph_gap = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "graph-relationship-gap"))
+        audit_gap = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "audit-trail"))
+
+        confidence_issues = {issue["kind"]: issue for issue in confidence["issues"]}
+        supersession_issues = {issue["kind"]: issue for issue in supersession["issues"]}
+        episodic_issues = {issue["kind"]: issue for issue in episodes["issues"]}
+        procedural_issues = {issue["kind"]: issue for issue in procedures["issues"]}
+        self.assertIn("missing_confidence_metadata", confidence_issues)
+        self.assertIn("confidence_decay_due", confidence_issues)
+        self.assertEqual(confidence_issues["missing_confidence_metadata"]["recommended_action"], "fill_core_confidence_metadata")
+        self.assertEqual(confidence_issues["confidence_decay_due"]["recommended_action"], "refresh_confidence_review")
+        self.assertGreaterEqual(confidence_issues["confidence_decay_due"]["overdue_days"], 1)
+        self.assertIn("supersession_gap", supersession_issues)
+        self.assertEqual(supersession_issues["supersession_gap"]["recommended_action"], "reconcile_supersession_chain")
+        self.assertEqual(supersession_issues["supersession_gap"]["followup_route"], "review")
+        self.assertIn("episodic_backlog", episodic_issues)
+        self.assertEqual(episodic_issues["episodic_backlog"]["recommended_action"], "consolidate_episode_followup")
+        self.assertEqual(episodic_issues["episodic_backlog"]["followup_route"], "draft")
+        self.assertIn("procedural_promotion_gap", procedural_issues)
+        self.assertEqual(procedural_issues["procedural_promotion_gap"]["recommended_action"], "draft_procedure_candidate")
+        self.assertEqual(procedural_issues["procedural_promotion_gap"]["followup_route"], "draft")
+        self.assertIn("graph_gap", {issue["kind"] for issue in graph_gap["issues"]})
+        self.assertIn("audit_trail_gap", {issue["kind"] for issue in audit_gap["issues"]})
+
+    def test_rank_query_candidates_prefers_approved_live_surfaces_without_widening_truth(self) -> None:
+        payload = run_json_script(
+            "rank_query_candidates.py",
+            str(FIXTURES_DIR / "hybrid-candidate-routing"),
+            "hybrid routing truth boundary",
+        )
+
+        self.assertEqual(payload["candidate_policy"], "candidate-only")
+        self.assertGreaterEqual(payload["included_count"], 1)
+        self.assertGreaterEqual(payload["candidate_count"], 1)
+        self.assertGreaterEqual(len(payload["ranked_paths"]), 3)
+
+        top = payload["ranked_paths"][0]
+        self.assertEqual(top["path"], "wiki/live/concepts/hybrid-routing.md")
+        self.assertEqual(top["candidate_kind"], "included")
+        self.assertEqual(top["truth_boundary"], "approved-live")
+
+        candidate_items = [item for item in payload["ranked_paths"] if item["candidate_kind"] == "candidate"]
+        self.assertTrue(any(item["path"] == "outputs/episodes/2026-04-10-hybrid-routing.md" for item in candidate_items))
+        self.assertTrue(any(item["path"] == "outputs/qa/2026-04-10-hybrid-answer.md" for item in payload["ranked_paths"]))
+        self.assertTrue(any(item["path"] == "outputs/health/graph-snapshot.json" for item in candidate_items))
+        self.assertTrue(all(item["truth_boundary"] == "candidate-only" for item in candidate_items))
+
+    def test_automation_runner_writes_outputs_and_audit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            health_copy = Path(tmp) / "graph-relationship-gap"
+            shutil.copytree(FIXTURES_DIR / "graph-relationship-gap", health_copy)
+            payload = run_json_script("run_automation_hooks.py", str(health_copy), "--mode", "scheduled-health", "--write")
+
+            self.assertEqual(payload["mode"], "scheduled-health")
+            self.assertIn("governance", payload)
+            self.assertIn("graph", payload)
+            self.assertTrue((health_copy / "wiki" / "live" / "indices" / "GAPS.md").exists())
+            self.assertTrue((health_copy / "outputs" / "health" / "graph-snapshot.json").exists())
+            self.assertTrue((health_copy / "outputs" / "audit" / "operations.jsonl").exists())
+
+        with tempfile.TemporaryDirectory() as tmp:
+            episode_copy = Path(tmp) / "episodic-consolidation"
+            shutil.copytree(FIXTURES_DIR / "episodic-consolidation", episode_copy)
+            payload = run_json_script("run_automation_hooks.py", str(episode_copy), "--mode", "session-end", "--write")
+
+            self.assertEqual(payload["mode"], "session-end")
+            self.assertIn("episodes", payload)
+            self.assertTrue((episode_copy / "outputs" / "episodes" / "2026-04-10-review-gate-runtime.md").exists())
+            self.assertTrue((episode_copy / "outputs" / "audit" / "operations.jsonl").exists())
+
 
 
 if __name__ == "__main__":

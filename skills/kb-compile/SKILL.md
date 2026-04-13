@@ -38,6 +38,9 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
 - `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md`
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
+- `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/procedure-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and allowed write surfaces.
 
@@ -77,6 +80,7 @@ Before shaping drafts:
 - `wiki/drafts/summaries/**`
 - `wiki/drafts/concepts/**`
 - `wiki/drafts/entities/**` when needed
+- `wiki/drafts/procedures/**` when the durable delta is a workflow rather than a semantic page
 - `wiki/drafts/indices/*`
 - batch `ingest` entry in `wiki/log.md`
 
@@ -98,6 +102,9 @@ Every draft should include:
 - `uncertainty_level`
 - `alias_candidates` when terminology overlap is visible
 - `duplicate_candidates` when draft/live pages may already cover the concept
+- `promotion_target` as `semantic` or `procedural`
+- `candidate_entities` and `candidate_relationships` when compile sees reusable graph structure
+- `confidence_inputs` when the draft is already strong enough to justify a future confidence score
 
 Drafts should be shaped for review, not for final polish.
 

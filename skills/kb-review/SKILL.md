@@ -36,6 +36,9 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/briefing-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
+- `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/procedure-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
@@ -66,6 +69,8 @@ When the draft is borderline, weigh both accuracy and whether the page deserves 
 - does this draft duplicate an existing approved page?
 - are contradictions recorded rather than silently overwritten?
 - does the page deserve durable retention in the long-term brain?
+- should the durable delta land in `wiki/live/procedures/` instead of another semantic page?
+- is the confidence metadata ready to be promoted, reduced, or left unset?
 - should the durable improvement be a promoted page, a stronger relationship edge, or inclusion in a curated hub?
 - does this draft improve the browseable graph of the wiki, or does it just add more prose?
 

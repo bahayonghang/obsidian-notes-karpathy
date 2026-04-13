@@ -104,6 +104,8 @@ Suggested weighting:
 - review outputs that never generated the corresponding live page or briefing
 - open questions or writeback candidates that recur without an owner
 - repeated archived outputs that imply a missing synthesis or curated hub
+- procedural candidates that never graduated into `wiki/drafts/procedures/` or `wiki/live/procedures/`
+- episodic notes that never re-entered the semantic/procedural lanes despite durable signals
 
 ### Consistency
 
@@ -111,6 +113,7 @@ Suggested weighting:
 - duplicate approved concepts or entities
 - approved claims contradicted by newer approved sources
 - aliases split across multiple live notes that should converge
+- supersession chains that are missing reciprocal links, timestamps, or reasons
 
 ### Connectivity
 
@@ -118,6 +121,7 @@ Suggested weighting:
 - weak cross-linking between live pages and briefings
 - missing `approved_from` / `review_record` provenance edges
 - weakly connected live pages that should likely participate in a synthesis, relationship edge, or curated hub
+- graph-signaled pages with `relationship_notes` or graph requirements but no durable `related` edges
 
 ### Freshness
 
@@ -127,6 +131,7 @@ Suggested weighting:
 - pending writeback candidates that have not re-entered the draft/review loop
 - pages whose `domain_volatility` suggests they should be reviewed sooner
 - repeated question clusters that remain unresolved without visible progress
+- confidence decay windows that have passed without a fresh source check or review
 
 ### Provenance
 
@@ -135,6 +140,8 @@ Suggested weighting:
 - answers or briefings that cite drafts or raw captures as truth
 - approved pages with empty or missing `sources`
 - source hash drift or outdated verification metadata
+- pages using the latest lifecycle metadata missing core confidence metadata (`confidence_score`, `confidence_band`, `support_count`, `contradiction_count`)
+- missing machine-readable audit events for automation surfaces that claim to be governed
 
 ## Mechanical integrity
 
@@ -146,3 +153,4 @@ Treat these as report-worthy mechanical issues even though they do not add a new
 - collaboration memory mixing with approved knowledge surfaces
 - broken wikilinks in approved surfaces
 - curated hubs that are stale, orphaned, or badly imbalanced toward a small portion of the approved graph
+- missing or empty `outputs/audit/operations.jsonl` when audit scaffolding exists

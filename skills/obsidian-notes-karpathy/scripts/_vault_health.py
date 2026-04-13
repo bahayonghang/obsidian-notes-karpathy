@@ -21,7 +21,7 @@ from _vault_common import (
 )
 from _vault_layout import collect_markdown_records, detect_layout_family
 from _vault_query import live_records
-from _vault_review import scan_review_queue
+from _vault_review import reviewable_draft_records, scan_review_queue
 
 
 HEALTH_FLAG_KINDS = {
@@ -40,6 +40,15 @@ HEALTH_FLAG_KINDS = {
     "stale_briefing",
     "duplicate_alias_set",
     "volatile_page_stale",
+    "missing_confidence_metadata",
+    "confidence_decay_due",
+    "supersession_gap",
+    "episodic_backlog",
+    "procedural_promotion_gap",
+    "graph_gap",
+    "audit_trail_gap",
+    "private_scope_leak",
+    "sensitivity_metadata_gap",
 }
 
 
@@ -239,7 +248,7 @@ def briefing_staleness_issues(vault_root: Path) -> list[dict[str, Any]]:
 def weak_live_sources_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity"}:
+        if record.kind not in {"summary", "concept", "entity", "procedure"}:
             continue
         if record.frontmatter.get("trust_level") != "approved":
             continue
@@ -343,10 +352,158 @@ def writeback_backlog_issues(records: list[MarkdownRecord]) -> list[dict[str, An
     return issues
 
 
+def missing_confidence_metadata_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    required_keys = ("confidence_score", "confidence_band", "support_count", "contradiction_count")
+    latest_signal_keys = {
+        "confidence_score",
+        "confidence_band",
+        "support_count",
+        "contradiction_count",
+        "last_confirmed_at",
+        "next_review_due_at",
+        "decay_class",
+        "supersedes",
+        "superseded_by",
+        "superseded_at",
+        "supersession_reason",
+        "visibility_scope",
+    }
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+            continue
+        if record.frontmatter.get("trust_level") != "approved":
+            continue
+        if not any(key in record.frontmatter for key in latest_signal_keys):
+            continue
+        missing = [key for key in required_keys if key not in record.frontmatter]
+        if not missing:
+            continue
+        issues.append(
+            {
+                "kind": "missing_confidence_metadata",
+                "path": record.path,
+                "missing_keys": missing,
+                "recommended_action": "fill_core_confidence_metadata",
+            }
+        )
+    return issues
+
+
+def confidence_decay_due_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    now = datetime.now(UTC)
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+            continue
+        due_at = parse_datetime(record.frontmatter.get("next_review_due_at"))
+        if due_at is None or due_at > now:
+            continue
+        overdue_days = int((now - due_at).total_seconds() // 86400)
+        issues.append(
+            {
+                "kind": "confidence_decay_due",
+                "path": record.path,
+                "next_review_due_at": record.frontmatter.get("next_review_due_at"),
+                "overdue_days": overdue_days,
+                "last_confirmed_at": record.frontmatter.get("last_confirmed_at"),
+                "recommended_action": "refresh_confidence_review",
+            }
+        )
+    return issues
+
+
+def supersession_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    by_path, by_basename = registry_for_records(records)
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+            continue
+        supersedes = list_field(record.frontmatter, "supersedes")
+        superseded_by = list_field(record.frontmatter, "superseded_by")
+        if not supersedes and not superseded_by:
+            continue
+
+        reasons: list[str] = []
+        if superseded_by and not record.frontmatter.get("superseded_at"):
+            reasons.append("missing_superseded_at")
+        if superseded_by and not record.frontmatter.get("supersession_reason"):
+            reasons.append("missing_supersession_reason")
+
+        for target in supersedes + superseded_by:
+            resolved = resolve_target(record, target, by_path, by_basename)
+            if not resolved:
+                reasons.append(f"unresolved_target:{strip_link_alias(target)}")
+
+        for target in superseded_by:
+            resolved = resolve_target(record, target, by_path, by_basename)
+            if not resolved:
+                continue
+            backrefs = []
+            for target_ref in list_field(resolved[0].frontmatter, "supersedes"):
+                for backref in resolve_target(resolved[0], target_ref, by_path, by_basename):
+                    backrefs.append(backref.path_no_ext)
+            if record.path_no_ext not in backrefs:
+                reasons.append(f"missing_reciprocal_supersedes:{resolved[0].path}")
+
+        if reasons:
+            issues.append(
+                {
+                    "kind": "supersession_gap",
+                    "path": record.path,
+                    "reasons": sorted(dict.fromkeys(reasons)),
+                    "recommended_action": "reconcile_supersession_chain",
+                    "followup_route": "review",
+                }
+            )
+    return issues
+
+
+def episodic_backlog_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in records:
+        if record.kind != "episode":
+            continue
+        status = str(record.frontmatter.get("consolidation_status") or "").strip().lower()
+        if status in {"reviewed", "completed"}:
+            continue
+        issues.append(
+            {
+                "kind": "episodic_backlog",
+                "path": record.path,
+                "consolidation_status": status or None,
+                "recommended_action": "consolidate_episode_followup",
+                "followup_route": str(record.frontmatter.get("followup_route") or "draft").strip().lower() or "draft",
+            }
+        )
+    return issues
+
+
+def graph_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+            continue
+        graph_required = str(record.frontmatter.get("graph_required") or "").strip().lower() in {"true", "yes", "1"}
+        relationship_notes = list_field(record.frontmatter, "relationship_notes")
+        if not graph_required and not relationship_notes:
+            continue
+        if list_field(record.frontmatter, "related"):
+            continue
+        issues.append(
+            {
+                "kind": "graph_gap",
+                "path": record.path,
+                "reason": "graph_signals_without_related_edges",
+            }
+        )
+    return issues
+
+
 def unapproved_live_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity"}:
+        if record.kind not in {"summary", "concept", "entity", "procedure"}:
             continue
         trust_level = record.frontmatter.get("trust_level")
         approved_at = record.frontmatter.get("approved_at")
@@ -365,7 +522,7 @@ def unapproved_live_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]
 def approved_conflict_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"concept", "entity"}:
+        if record.kind not in {"concept", "entity", "procedure"}:
             continue
         if record.frontmatter.get("trust_level") == "approved" and record.frontmatter.get("status") == "conflicting":
             issues.append(
@@ -387,6 +544,77 @@ def review_backlog_issues(vault_root: Path) -> list[dict[str, Any]]:
         }
         for item in queue["items"]
         if item["pending"]
+    ]
+
+
+def sensitivity_metadata_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in records:
+        if record.kind not in {"qa", "content_output", "episode", "concept", "entity", "procedure"}:
+            continue
+        visibility_scope = str(record.frontmatter.get("visibility_scope") or "shared").strip().lower()
+        sensitivity_level = str(record.frontmatter.get("sensitivity_level") or "").strip().lower()
+        if visibility_scope == "private" and not sensitivity_level:
+            issues.append(
+                {
+                    "kind": "sensitivity_metadata_gap",
+                    "path": record.path,
+                    "recommended_action": "add_sensitivity_level",
+                }
+            )
+    return issues
+
+
+def private_scope_leak_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in records:
+        if record.kind not in {"qa", "briefing"}:
+            continue
+        visibility_scope = str(record.frontmatter.get("visibility_scope") or "shared").strip().lower()
+        if visibility_scope != "private":
+            continue
+        issues.append(
+            {
+                "kind": "private_scope_leak",
+                "path": record.path,
+                "recommended_action": "move_private_surface_out_of_default_query_scope",
+            }
+        )
+    return issues
+
+
+def procedural_promotion_gap_issues(vault_root: Path) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in reviewable_draft_records(vault_root):
+        if str(record.frontmatter.get("promotion_target") or "").strip().lower() != "procedural":
+            continue
+        expected_path = vault_root / "wiki" / "drafts" / "procedures" / f"{record.basename}.md"
+        if expected_path.exists():
+            continue
+        issues.append(
+            {
+                "kind": "procedural_promotion_gap",
+                "path": record.path,
+                "expected_procedure_path": expected_path.relative_to(vault_root).as_posix(),
+                "recommended_action": "draft_procedure_candidate",
+                "followup_route": "draft",
+            }
+        )
+    return issues
+
+
+def audit_trail_gap_issues(vault_root: Path) -> list[dict[str, Any]]:
+    audit_root = vault_root / "outputs" / "audit"
+    if not audit_root.exists():
+        return []
+    operations_path = audit_root / "operations.jsonl"
+    if operations_path.exists() and operations_path.stat().st_size > 0:
+        return []
+    return [
+        {
+            "kind": "audit_trail_gap",
+            "path": "outputs/audit/operations.jsonl",
+        }
     ]
 
 
@@ -417,7 +645,7 @@ def volatile_page_stale_issues(records: list[MarkdownRecord]) -> list[dict[str, 
     now = datetime.now(UTC)
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity"}:
+        if record.kind not in {"summary", "concept", "entity", "procedure"}:
             continue
         volatility = str(record.frontmatter.get("domain_volatility") or "").strip().lower()
         if volatility not in thresholds:
@@ -442,17 +670,26 @@ def audit_vault_mechanics(vault_root: Path) -> dict[str, Any]:
     issues: list[dict[str, Any]] = []
     issues.extend(alias_wikilink_table_issues(records))
     issues.extend(duplicate_identity_issues(records))
+    issues.extend(missing_confidence_metadata_issues(records))
+    issues.extend(confidence_decay_due_issues(records))
+    issues.extend(supersession_gap_issues(records))
     issues.extend(stale_qa_issues(records))
     issues.extend(writeback_backlog_issues(records))
+    issues.extend(episodic_backlog_issues(records))
     issues.extend(broken_wikilink_issues(records))
     issues.extend(orphan_page_issues(records))
     issues.extend(duplicate_alias_set_issues(records))
     issues.extend(volatile_page_stale_issues(records))
     issues.extend(memory_knowledge_mix_issues(records))
+    issues.extend(graph_gap_issues(records))
     issues.extend(unapproved_live_issues(records))
     issues.extend(weak_live_sources_issues(records))
     issues.extend(approved_conflict_issues(records))
     issues.extend(review_backlog_issues(vault_root))
+    issues.extend(private_scope_leak_issues(records))
+    issues.extend(sensitivity_metadata_gap_issues(records))
+    issues.extend(procedural_promotion_gap_issues(vault_root))
+    issues.extend(audit_trail_gap_issues(vault_root))
     issues.extend(briefing_staleness_issues(vault_root))
 
     counts = Counter(issue["kind"] for issue in issues)
