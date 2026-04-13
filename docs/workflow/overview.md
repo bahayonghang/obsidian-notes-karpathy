@@ -2,9 +2,9 @@
 
 The workflow has one routing stage and six operational stages.
 
-## Enter by symptom
+## Start from the current state
 
-| If the vault or request looks like this | Start here |
+| If the vault or request currently looks like this | Start here |
 | --- | --- |
 | The contract is missing, partial, or still in a legacy-layout | `kb-init` |
 | The support layer exists but the source manifest is stale | `kb-ingest` |
@@ -17,22 +17,6 @@ The workflow has one routing stage and six operational stages.
 
 If some live content exists but `wiki/drafts/`, `wiki/briefings/`, or `outputs/reviews/` is still missing, start at `kb-init` anyway. Structural repair takes priority over normal query work.
 
-```mermaid
-graph LR
-    A[obsidian-notes-karpathy] --> B[kb-init]
-    A --> C[kb-ingest]
-    A --> D[kb-compile]
-    A --> E[kb-review]
-    A --> F[kb-query]
-    A --> G[kb-render]
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    E --> G
-    F -.->|writeback candidates need approval| D
-    G -.->|new durable knowledge| D
-    E -.->|maintenance mode repair or rebuild| E
-```
+<WorkflowLifecycleDiagram locale="en" />
 
 Use the package entry skill only for ambiguous, workflow-level Obsidian vault requests. If the operation is already clear, go straight to the operation-specific skill.
