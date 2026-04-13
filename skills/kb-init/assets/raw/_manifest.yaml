@@ -1,0 +1,4 @@
+version: 1
+generated_at: "{{GENERATED_AT}}"
+profile: "{{KB_PROFILE}}"
+sources:

@@ -8,7 +8,7 @@ source_live_pages:
 writeback_candidates:
   - "strengthen [[wiki/live/concepts/hybrid-routing]]"
 writeback_status: pending
-followup_route: health
+followup_route: review
 confidence_posture: grounded
 compounding_value: medium
 visibility_scope: shared

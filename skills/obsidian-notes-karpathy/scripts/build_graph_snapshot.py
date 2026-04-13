@@ -26,7 +26,7 @@ def build_graph_snapshot(vault_root: Path) -> dict[str, object]:
     records = [
         record
         for record in live_records(collect_markdown_records(vault_root))
-        if record.kind in {"summary", "concept", "entity", "procedure"}
+        if record.kind in {"summary", "concept", "entity", "procedure", "topic"}
     ]
     nodes: list[dict[str, object]] = []
     edges: list[dict[str, object]] = []

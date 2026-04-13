@@ -11,9 +11,9 @@ class SkillAuditTests(unittest.TestCase):
         payload = json.loads(result.stdout)
 
         self.assertEqual(payload["status"], "ok")
-        self.assertEqual(payload["summary"]["skill_count"], 6)
-        self.assertEqual(payload["summary"]["trigger_eval_covered"], 6)
-        self.assertEqual(payload["summary"]["runtime_eval_covered"], 6)
+        self.assertEqual(payload["summary"]["skill_count"], 7)
+        self.assertEqual(payload["summary"]["trigger_eval_covered"], 7)
+        self.assertEqual(payload["summary"]["runtime_eval_covered"], 7)
         self.assertEqual(payload["summary"]["blocking_issue_count"], 0)
         self.assertGreaterEqual(payload["summary"]["average_score"], 0.9)
 
@@ -22,8 +22,9 @@ class SkillAuditTests(unittest.TestCase):
         self.assertTrue(skills["obsidian-notes-karpathy"]["checks"]["description_has_multilingual_trigger"])
         self.assertTrue(skills["obsidian-notes-karpathy"]["checks"]["runtime_eval_covered"])
         self.assertTrue(skills["kb-init"]["checks"]["writable_runtime_covered"])
+        self.assertTrue(skills["kb-ingest"]["checks"]["writable_runtime_covered"])
         self.assertTrue(skills["kb-review"]["checks"]["writable_runtime_covered"])
-        self.assertTrue(skills["kb-health"]["checks"]["runtime_eval_covered"])
+        self.assertTrue(skills["kb-render"]["checks"]["writable_runtime_covered"])
 
     def test_runtime_eval_manifest_now_includes_router_skill(self) -> None:
         result = run_repo_command(
@@ -39,7 +40,7 @@ class SkillAuditTests(unittest.TestCase):
         payload = json.loads(result.stdout)
 
         self.assertIn("obsidian-notes-karpathy", payload["skills"])
-        self.assertGreaterEqual(payload["eval_count"], 15)
+        self.assertGreaterEqual(payload["eval_count"], 17)
 
 
 if __name__ == "__main__":

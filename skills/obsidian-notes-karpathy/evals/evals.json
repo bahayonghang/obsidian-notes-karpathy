@@ -63,6 +63,21 @@
     },
     {
       "id": 5,
+      "prompt": "Use evals/fixtures/needs-ingest. The vault has a review-gated support layer, but raw/_manifest.yaml is stale relative to raw sources. Tell me which step should run before compile and why.",
+      "expected_output": "Routes to kb-ingest because the source registry is stale and should be refreshed before draft compilation continues.",
+      "files": [
+        "evals/fixtures/needs-ingest/AGENTS.md",
+        "evals/fixtures/needs-ingest/raw/_manifest.yaml",
+        "evals/fixtures/needs-ingest/raw/human/articles/2026-04-10-new-source.md"
+      ],
+      "expectations": [
+        "The workflow chooses kb-ingest.",
+        "The response treats raw/_manifest.yaml as the canonical source registry.",
+        "The answer keeps raw files immutable while recommending a manifest refresh."
+      ]
+    },
+    {
+      "id": 6,
       "prompt": "Use evals/fixtures/needs-compilation as the target vault. I added a new raw capture under raw/human/articles and want the draft layer updated without touching raw/ or promoting anything to live.",
       "expected_output": "Routes to kb-compile, detects a new raw source, updates only wiki/drafts and the ingest log, and points to kb-review as the next step.",
       "files": [
@@ -79,7 +94,7 @@
       ]
     },
     {
-      "id": 6,
+      "id": 7,
       "prompt": "Use evals/fixtures/bootstrap-raw-intake. The vault already has wiki/index.md and wiki/log.md, but I dropped two markdown notes directly under raw/ and never created a CLAUDE.md. Compile the new sources without rewriting raw files.",
       "expected_output": "Routes to kb-compile, accepts root-level raw notes, treats missing CLAUDE.md as non-blocking, and surfaces the warning without failing.",
       "files": [
@@ -97,7 +112,7 @@
       ]
     },
     {
-      "id": 7,
+      "id": 8,
       "prompt": "Use evals/fixtures/needs-review. The compile step already produced draft summaries and I want the review gate run now. Approve what is ready, reject what is unsafe, and tell me what should persist.",
       "expected_output": "Routes to kb-review, reads pending drafts plus their cited raw captures, and applies the mixed gate between approve, reject, and human review outcomes.",
       "files": [
@@ -114,7 +129,7 @@
       ]
     },
     {
-      "id": 8,
+      "id": 9,
       "prompt": "Use evals/fixtures/needs-briefing-refresh. The live layer changed after the last briefing build. Rebuild the stale briefing and explain why this is review work rather than query work.",
       "expected_output": "Routes to kb-review because needs-briefing-refresh still belongs to the review gate and briefing rebuild lane.",
       "files": [
@@ -131,7 +146,7 @@
       ]
     },
     {
-      "id": 9,
+      "id": 10,
       "prompt": "Using evals/fixtures/ready-for-query, what do my approved notes say about review gates? Save the answer if it is substantive, and log the query if you archive it.",
       "expected_output": "Routes to kb-query in research mode, checks existing outputs/qa first, and stays grounded in approved live pages and briefings.",
       "files": [
@@ -149,7 +164,7 @@
       ]
     },
     {
-      "id": 10,
+      "id": 11,
       "prompt": "Take evals/fixtures/ready-for-query and turn the current approved knowledge into a short X thread about why review gates matter in Obsidian knowledge workflows.",
       "expected_output": "Routes to kb-query in publish mode and saves a grounded publish artifact derived from the approved live layer.",
       "files": [
@@ -165,9 +180,9 @@
       ]
     },
     {
-      "id": 11,
+      "id": 12,
       "prompt": "Run a health pass on evals/fixtures/needs-maintenance. I care about stale Q&A, provenance, and whether the approved layer has started drifting away from the archived answers.",
-      "expected_output": "Routes to kb-health because the approved live layer has integrity drift that is more urgent than another query.",
+      "expected_output": "Routes to kb-review maintenance mode because the approved live layer has integrity drift that is more urgent than another query.",
       "files": [
         "evals/fixtures/needs-maintenance/AGENTS.md",
         "evals/fixtures/needs-maintenance/wiki/index.md",
@@ -177,13 +192,13 @@
         "evals/fixtures/needs-maintenance/outputs/qa/2026-04-01-rag-answer.md"
       ],
       "expectations": [
-        "The workflow chooses kb-health.",
+        "The workflow chooses kb-review.",
         "The report calls out stale Q&A relative to newer live knowledge.",
         "The response stays on maintenance, provenance, and safe mechanical fixes rather than draft promotion."
       ]
     },
     {
-      "id": 12,
+      "id": 13,
       "prompt": "Inspect evals/fixtures/needs-repair-live-only. Somebody left a live summary in place but the rest of the support layer is missing. Which step should run first and why?",
       "expected_output": "Routes through the package entry skill to kb-init because missing support directories still block normal query work even if some live content exists.",
       "files": [
@@ -199,7 +214,7 @@
       ]
     },
     {
-      "id": 13,
+      "id": 14,
       "prompt": "Use evals/fixtures/paper-intake-with-handle. This vault only has raw/papers plus a sidecar, and it still looks legacy. Tell me what should run first before I try the normal compile loop, and explain what paper handling policy should apply after migration.",
       "expected_output": "Routes to kb-init because this is still a legacy-layout style vault. The response should preserve the rule that raw/papers PDFs go through paper-workbench after migration and treat the sidecar as metadata only.",
       "files": [
@@ -216,7 +231,7 @@
       ]
     },
     {
-      "id": 14,
+      "id": 15,
       "prompt": "Use evals/fixtures/paper-intake-missing-handle. This legacy paper vault has a PDF under raw/papers/ but no deterministic paper handle. Tell me the first workflow step and explain how the paper should still be handled after migration.",
       "expected_output": "Routes to kb-init because the vault still needs migration first. After migration, raw/papers should still route through paper-workbench even without a stable handle.",
       "files": [
@@ -232,7 +247,7 @@
       ]
     },
     {
-      "id": 15,
+      "id": 16,
       "prompt": "Use evals/fixtures/memory-boundary. The vault has a MEMORY.md for collaboration context. Tell me what should remain queryable truth and what should stay outside the topic retrieval boundary.",
       "expected_output": "Explains that approved live pages remain queryable truth while MEMORY.md stays outside the default topic retrieval boundary as collaboration memory.",
       "files": [
@@ -248,9 +263,9 @@
       ]
     },
     {
-      "id": 16,
+      "id": 17,
       "prompt": "Use evals/fixtures/writeback-backlog. An archived answer already has pending writeback candidates. Tell me which lifecycle step should run first and why this is maintenance rather than a normal query.",
-      "expected_output": "Routes to kb-health because pending writeback candidates represent maintenance backlog that should be surfaced before normal querying continues.",
+      "expected_output": "Routes to kb-review maintenance mode because pending writeback candidates represent maintenance backlog that should be surfaced before normal querying continues.",
       "files": [
         "evals/fixtures/writeback-backlog/AGENTS.md",
         "evals/fixtures/writeback-backlog/wiki/index.md",
@@ -258,7 +273,7 @@
         "evals/fixtures/writeback-backlog/wiki/live/concepts/review-gate.md"
       ],
       "expectations": [
-        "The workflow chooses kb-health.",
+        "The workflow chooses kb-review.",
         "The answer identifies pending writeback candidates as the decisive maintenance signal.",
         "The response keeps writeback work inside the draft -> review -> live boundary."
       ]
@@ -306,7 +321,7 @@
     {
       "id": 20,
       "prompt": "Use evals/fixtures/confidence-decay. Explain why this vault is a maintenance case, which current confidence fields are incomplete, and why overdue review windows should not be treated as structural repair.",
-      "expected_output": "Routes to kb-health, calls out missing confidence metadata plus an overdue review window, and keeps this as a maintenance problem rather than a setup failure.",
+      "expected_output": "Routes to kb-review maintenance mode, calls out missing confidence metadata plus an overdue review window, and keeps this as a maintenance problem rather than a setup failure.",
       "files": [
         "evals/fixtures/confidence-decay/AGENTS.md",
         "evals/fixtures/confidence-decay/wiki/index.md",
@@ -321,7 +336,7 @@
     {
       "id": 21,
       "prompt": "Use evals/fixtures/supersession-chain. Explain why the next step is maintenance and what is broken in the supersession chain between the old and new review gate pages.",
-      "expected_output": "Routes to kb-health and calls out the broken supersession bookkeeping rather than silently choosing one page as truth.",
+      "expected_output": "Routes to kb-review maintenance mode and calls out the broken supersession bookkeeping rather than silently choosing one page as truth.",
       "files": [
         "evals/fixtures/supersession-chain/AGENTS.md",
         "evals/fixtures/supersession-chain/wiki/live/concepts/old-review-gate.md",
@@ -404,7 +419,7 @@
     {
       "id": 27,
       "prompt": "Use evals/fixtures/audit-trail. Explain why a missing operations.jsonl is a maintenance issue once audit scaffolding exists, and what kind of automation should write to it.",
-      "expected_output": "Routes to kb-health, flags the audit gap, and explains that automation should append machine-readable events instead of silently mutating derived surfaces.",
+      "expected_output": "Routes to kb-review maintenance mode, flags the audit gap, and explains that automation should append machine-readable events instead of silently mutating derived surfaces.",
       "files": [
         "evals/fixtures/audit-trail/AGENTS.md",
         "evals/fixtures/audit-trail/wiki/live/concepts/audit-trail.md",

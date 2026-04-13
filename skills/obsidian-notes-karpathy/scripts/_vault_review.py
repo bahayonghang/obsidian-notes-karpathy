@@ -9,6 +9,7 @@ from _vault_common import MarkdownRecord, iter_markdown_records, list_field, par
 
 REVIEWABLE_DRAFT_ROOTS = (
     "wiki/drafts/summaries",
+    "wiki/drafts/topics",
     "wiki/drafts/concepts",
     "wiki/drafts/entities",
     "wiki/drafts/procedures",

@@ -19,9 +19,11 @@ Canonical review-gated layering:
 
 ```text
 raw/            -> immutable capture intake
+raw/_manifest.yaml -> canonical source registry
 MEMORY.md       -> collaboration memory and editorial context
 wiki/drafts/    -> compiled but unapproved draft knowledge
 wiki/live/      -> approved long-term brain
+wiki/live/topics/ -> approved browse-layer topics
 wiki/briefings/ -> role-specific context built from live only
 outputs/        -> reviews, Q&A, health reports, and publishable derivatives
 ```
@@ -29,9 +31,11 @@ outputs/        -> reviews, Q&A, health reports, and publishable derivatives
 Treat the vault like a codebase with a promotion gate:
 
 - `raw/` is source evidence and the durable source library.
+- `raw/_manifest.yaml` is the canonical source registry for tracked inputs.
 - `MEMORY.md` is the coordination surface for preferences, priorities, and collaboration rules.
 - `wiki/drafts/` is build output waiting for review.
 - `wiki/live/` is the deployed truth layer.
+- `wiki/live/topics/` is the default browse layer over approved knowledge.
 - `wiki/briefings/` is generated runtime context for agents.
 - `outputs/reviews/` is the decision ledger for promotion.
 - `outputs/qa/` and `outputs/content/` can surface writeback candidates, unresolved questions, and creator-facing derivatives, but they still re-enter the system through draft -> review -> live.
@@ -44,7 +48,7 @@ Treat the vault like a codebase with a promotion gate:
 4. `kb-query` reads `wiki/live/`, `wiki/briefings/`, and prior `outputs/qa/`; it must not treat `raw/` or `wiki/drafts/` as retrieval truth.
 5. `kb-query` must not treat `MEMORY.md` as domain knowledge truth; it is only for collaboration or editorial context.
 6. `wiki/index.md` is the content-oriented landing page for the whole contract, including live, draft, question, and briefing state.
-7. `wiki/log.md` is the append-only activity ledger for `ingest`, `review`, `brief`, `query`, `publish`, and `health`.
+7. `wiki/log.md` is the append-only activity ledger for `ingest`, `review`, `brief`, `query`, `publish`, `render`, and maintenance work.
 8. `outputs/qa/` stores durable research answers, not disposable chat residue.
 9. `outputs/reviews/` stores reviewer decisions and scoring details.
 10. Existing older vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-layout` and migrated before normal operation.
@@ -55,6 +59,7 @@ Treat the vault like a codebase with a promotion gate:
 For creator-style vaults, map common working surfaces onto the contract like this:
 
 - source library / clipped research -> `raw/`
+- source registry / tracked intake -> `raw/_manifest.yaml`
 - editorial memory / collaboration preferences -> `MEMORY.md`
 - temporary research answers or drafting notes worth preserving -> `outputs/qa/`
 - publish-ready outward artifacts -> `outputs/content/`
@@ -74,6 +79,7 @@ A compounding wiki should therefore keep both:
 The minimum support layer for `kb-init` is:
 
 - `raw/`
+- `raw/_manifest.yaml`
 - `wiki/drafts/`
 - `wiki/live/`
 - `wiki/briefings/`
@@ -83,7 +89,7 @@ The minimum support layer for `kb-init` is:
 - `AGENTS.md`
 - `CLAUDE.md`
 
-Downstream output surfaces such as `outputs/qa/`, `outputs/health/`, `outputs/reports/`, `outputs/slides/`, `outputs/charts/`, and `outputs/content/**` are valid parts of the full contract, but they are created on demand when later stages need them. `MEMORY.md` is recommended collaboration scaffolding rather than a blocking support-layer requirement.
+Downstream output surfaces such as `outputs/qa/`, `outputs/health/`, `outputs/reports/`, `outputs/slides/`, `outputs/charts/`, `outputs/web/`, and `outputs/content/**` are valid parts of the full contract, but they are created on demand when later stages need them. `MEMORY.md` is recommended collaboration scaffolding rather than a blocking support-layer requirement.
 
 Optional governance scaffolding should be treated as the recommended default for mature vaults that want recurring maintenance surfaces:
 
@@ -101,12 +107,15 @@ vault/
 │   │   ├── papers/
 │   │   ├── podcasts/
 │   │   ├── repos/
-│   │   └── assets/
-│   └── agents/
-│       └── {role}/
+│   │   ├── assets/
+│   │   └── data/
+│   ├── agents/
+│   │   └── {role}/
+│   └── _manifest.yaml
 ├── wiki/
 │   ├── drafts/
 │   │   ├── summaries/
+│   │   ├── topics/
 │   │   ├── concepts/
 │   │   ├── entities/
 │   │   ├── overviews/
@@ -114,6 +123,7 @@ vault/
 │   │   └── indices/
 │   ├── live/
 │   │   ├── summaries/
+│   │   ├── topics/
 │   │   ├── concepts/
 │   │   ├── entities/
 │   │   ├── overviews/
@@ -129,6 +139,7 @@ vault/
 │   ├── reports/
 │   ├── slides/
 │   ├── charts/
+│   ├── web/
 │   └── content/
 │       ├── articles/
 │       ├── threads/
@@ -172,30 +183,12 @@ Some partially bootstrapped vaults may place markdown directly under `raw/`.
 - preserve raw immutability exactly as with nested capture classes
 - surface any missing support-layer directories separately instead of rejecting the source format itself
 
-## TODO: Image and data raw source expansion
+## Image and data raw source posture
 
-Future intake support should expand beyond markdown and PDF while preserving the same review-gated contract.
-
-Planned next steps:
-
-1. **Image captures under `raw/**/assets/`**
-   - add deterministic metadata-sidecar handling for screenshots, diagrams, and clipped images
-   - distinguish binary assets from image-derived markdown summaries
-   - keep raw binaries immutable and route extracted insights through draft -> review -> live
-
-2. **Structured data captures under `raw/**/data/`**
-   - support CSV / JSON / tabular datasets as immutable evidence inputs
-   - define a metadata contract for schema summary, source hash, and last verification timestamps
-   - compile only derived markdown interpretations, never mutate the original dataset
-
-3. **Routing and lifecycle updates**
-   - extend `accepted_raw_sources()` and compile-delta scanning to classify image/data sources explicitly
-   - add fixture vaults for image intake and data intake edge cases
-   - document when a companion skill is required versus when the core bundle can ingest directly
-
-4. **Query and provenance expectations**
-   - ensure query outputs cite the derived approved markdown page, not the binary/data asset directly as truth
-   - preserve traceability back to the underlying asset or dataset through metadata and review records
+- image assets under `raw/**/assets/` are valid tracked sources
+- structured data files under `raw/**/data/` are valid tracked sources
+- both should be registered in `raw/_manifest.yaml`
+- both can generate deterministic draft packages without becoming retrieval truth directly
 
 ## Draft summaries
 
@@ -322,7 +315,7 @@ Expected operational fields for substantive Q&A and publish outputs:
 - `open_questions_touched` when the output materially advances standing questions
 - `writeback_candidates` when the output discovers durable follow-up worth re-entering the wiki
 - `writeback_status` to show whether that follow-up is still pending
-- `followup_route` as `none | draft | review | health`
+- `followup_route` as `none | draft | review`
 - optional `confidence_posture` when the answer should advertise uncertainty explicitly
 - optional `compounding_value` when the artifact should advertise expected long-term reuse value
 - optional `crystallized_from_episode` when the answer or artifact came out of a broader episodic thread
@@ -393,6 +386,7 @@ For creator-style workflows, a practical mapping is:
 - session crystallization -> `outputs/episodes/`
 - reusable research answers or drafting notes -> `outputs/qa/`
 - outward-facing publish artifacts -> `outputs/content/`
+- static browseable web exports -> `outputs/web/`
 - durable approved knowledge -> `wiki/live/`
 - durable workflows / playbooks -> `wiki/live/procedures/`
 - machine-readable audit -> `outputs/audit/operations.jsonl`

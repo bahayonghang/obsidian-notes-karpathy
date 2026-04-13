@@ -14,6 +14,8 @@ from _vault_utils import (
     detect_layout_family,
     inspect_local_guidance,
     json_dump,
+    resolve_vault_profile,
+    scan_ingest_delta,
     scan_review_queue,
     scan_compile_delta,
 )
@@ -31,6 +33,7 @@ REVIEW_GATED_SUPPORT_PATHS = [
 def detect_lifecycle(vault_root: Path) -> dict:
     signals: list[str] = []
     layout_family = detect_layout_family(vault_root)
+    profile = resolve_vault_profile(vault_root)
     missing = [
         rel_path
         for rel_path in CORE_SUPPORT_FILES
@@ -56,6 +59,7 @@ def detect_lifecycle(vault_root: Path) -> dict:
         *,
         state: str,
         route: str,
+        route_mode: str | None,
         missing_support_files: list[str],
         compile_delta: dict,
         health_flags: list[str],
@@ -63,8 +67,10 @@ def detect_lifecycle(vault_root: Path) -> dict:
         return {
             "vault_root": str(vault_root),
             "layout_family": layout_family,
+            "profile": profile,
             "state": state,
             "route": route,
+            "route_mode": route_mode,
             "signals": signals,
             "missing_support_files": missing_support_files,
             "compile_delta": compile_delta,
@@ -84,6 +90,7 @@ def detect_lifecycle(vault_root: Path) -> dict:
         return build_payload(
             state="needs-setup",
             route="kb-init",
+            route_mode=None,
             missing_support_files=missing,
             compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
             health_flags=[],
@@ -94,6 +101,7 @@ def detect_lifecycle(vault_root: Path) -> dict:
         return build_payload(
             state="needs-migration",
             route="kb-init",
+            route_mode=None,
             missing_support_files=sorted(set(missing)),
             compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
             health_flags=[],
@@ -122,15 +130,37 @@ def detect_lifecycle(vault_root: Path) -> dict:
         return build_payload(
             state="needs-repair",
             route="kb-init",
+            route_mode=None,
             missing_support_files=sorted(dict.fromkeys(missing_support_files)),
             compile_delta={"new_count": 0, "changed_count": 0, "unchanged_count": 0},
             health_flags=[],
         )
 
     compile_delta = scan_compile_delta(vault_root)
+    ingest_delta = scan_ingest_delta(vault_root)
     new_count = compile_delta["counts"]["new"]
     changed_count = compile_delta["counts"]["changed"]
     unchanged_count = compile_delta["counts"]["unchanged"]
+
+    if ingest_delta["needs_ingest"]:
+        if ingest_delta["counts"]["new"]:
+            signals.append("new_sources_not_registered")
+        if ingest_delta["counts"]["changed"]:
+            signals.append("registered_sources_changed")
+        if ingest_delta["counts"]["removed"]:
+            signals.append("manifest_sources_removed")
+        return build_payload(
+            state="needs-ingest",
+            route="kb-ingest",
+            route_mode=None,
+            missing_support_files=[],
+            compile_delta={
+                "new_count": new_count,
+                "changed_count": changed_count,
+                "unchanged_count": unchanged_count,
+            },
+            health_flags=[],
+        )
 
     if new_count or changed_count:
         if new_count:
@@ -140,6 +170,7 @@ def detect_lifecycle(vault_root: Path) -> dict:
         return build_payload(
             state="needs-compilation",
             route="kb-compile",
+            route_mode=None,
             missing_support_files=[],
             compile_delta={
                 "new_count": new_count,
@@ -155,6 +186,7 @@ def detect_lifecycle(vault_root: Path) -> dict:
         return build_payload(
             state="needs-review",
             route="kb-review",
+            route_mode="gate",
             missing_support_files=[],
             compile_delta={
                 "new_count": 0,
@@ -164,12 +196,13 @@ def detect_lifecycle(vault_root: Path) -> dict:
             health_flags=[],
         )
 
-    stale_briefings = briefing_staleness_issues(vault_root)
+    stale_briefings = [] if profile == "fast-personal" else briefing_staleness_issues(vault_root)
     if stale_briefings:
         signals.append("briefing_refresh_required")
         return build_payload(
             state="needs-briefing-refresh",
             route="kb-review",
+            route_mode="gate",
             missing_support_files=[],
             compile_delta={
                 "new_count": 0,
@@ -208,24 +241,34 @@ def detect_lifecycle(vault_root: Path) -> dict:
         }
     ]
 
-    if health_flags:
+    profile_filtered_flags = sorted(set(health_flags))
+    if profile == "standard":
+        suppressed = {"audit_trail_gap", "episodic_backlog"}
+        profile_filtered_flags = [flag for flag in profile_filtered_flags if flag not in suppressed]
+    elif profile == "fast-personal":
+        suppressed = {"stale_briefing", "stale_qa", "writeback_backlog", "confidence_decay_due", "episodic_backlog", "audit_trail_gap", "graph_gap"}
+        profile_filtered_flags = [flag for flag in profile_filtered_flags if flag not in suppressed]
+
+    if profile_filtered_flags:
         signals.append("maintenance_needed")
         return build_payload(
             state="needs-maintenance",
-            route="kb-health",
+            route="kb-review",
+            route_mode="maintenance",
             missing_support_files=[],
             compile_delta={
                 "new_count": 0,
                 "changed_count": 0,
                 "unchanged_count": unchanged_count,
             },
-            health_flags=sorted(set(health_flags)),
+            health_flags=profile_filtered_flags,
         )
 
     signals.append("approved_knowledge_ready")
     return build_payload(
         state="ready-for-query",
         route="kb-query",
+        route_mode=None,
         missing_support_files=[],
         compile_delta={
             "new_count": 0,

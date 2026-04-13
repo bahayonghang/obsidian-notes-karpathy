@@ -17,7 +17,7 @@ open_questions_touched:
   - "{standing question}"
 writeback_candidates:
   - "{durable follow-up}"
-followup_route: none | draft | review | health
+followup_route: none | draft | review
 consolidation_status: pending | drafted | reviewed | completed
 visibility_scope: private | shared
 ---

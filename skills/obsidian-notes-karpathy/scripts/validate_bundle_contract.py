@@ -18,15 +18,38 @@ REPO_ROOT = ENTRY_SKILL_ROOT.parents[1]
 TESTS_DIR = REPO_ROOT / "tests"
 RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals.json"
 WRITABLE_RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals-writable.json"
+KB_INIT_ASSETS_ROOT = REPO_ROOT / "skills" / "kb-init" / "assets"
 REGISTRY_PATH = SCRIPT_DIR / "skill-contract-registry.json"
 SKILL_PATHS = {
     "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
     "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",
+    "kb-ingest": REPO_ROOT / "skills" / "kb-ingest" / "SKILL.md",
     "kb-compile": REPO_ROOT / "skills" / "kb-compile" / "SKILL.md",
     "kb-review": REPO_ROOT / "skills" / "kb-review" / "SKILL.md",
     "kb-query": REPO_ROOT / "skills" / "kb-query" / "SKILL.md",
-    "kb-health": REPO_ROOT / "skills" / "kb-health" / "SKILL.md",
+    "kb-render": REPO_ROOT / "skills" / "kb-render" / "SKILL.md",
 }
+KB_INIT_REQUIRED_ASSETS = (
+    "AGENTS.md",
+    "CLAUDE.md",
+    "MEMORY.md",
+    "raw/_manifest.yaml",
+    "wiki/index.md",
+    "wiki/log.md",
+    "wiki/briefings/researcher.md",
+    "wiki/live/indices/INDEX.md",
+    "wiki/live/indices/CONCEPTS.md",
+    "wiki/live/indices/SOURCES.md",
+    "wiki/live/indices/TOPICS.md",
+    "wiki/live/indices/RECENT.md",
+    "wiki/live/indices/EDITORIAL-PRIORITIES.md",
+)
+HELPER_SCRIPTS = (
+    "bootstrap_review_gated_vault.py",
+    "migrate_legacy_vault.py",
+    "vault_status.py",
+    "render_reference_block.py",
+)
 REFERENCE_BULLETS_RE = re.compile(r"- `([^`]+)`")
 READ_BEFORE_RE = re.compile(r"## Read before .*?(?=\n## |\Z)", re.DOTALL)
 SCOPE_READ_RE = re.compile(r"## Scope\n\nBefore checking the vault, read these files first:.*?(?=\n## |\Z)", re.DOTALL)
@@ -35,6 +58,8 @@ GENERIC_REF_SECTION_RE = re.compile(
     r"## [^\n]*\n\n(?:[^\n]*\n)*?(?=- `\.\./|.*skill-contract-registry).*?(?=\n## |\Z)",
     re.DOTALL,
 )
+
+from _skill_reference_blocks import build_shared_reference_bullets
 
 
 def load_json(path: Path) -> Any:
@@ -81,7 +106,7 @@ def check_registry_and_skills() -> list[str]:
 
     registry_skills = registry.get("skills", {})
     if sorted(registry_skills.keys()) != sorted(SKILL_PATHS.keys()):
-        errors.append("Registry skill keys must match the six shipped core skills.")
+        errors.append("Registry skill keys must match the shipped core skills.")
 
     for skill_name, skill_path in SKILL_PATHS.items():
         if not skill_path.exists():
@@ -97,20 +122,19 @@ def check_registry_and_skills() -> list[str]:
             continue
 
         referenced_paths = extract_reference_bullets(skill_text)
-        if skill_name == "obsidian-notes-karpathy":
-            expected_registry_ref = "./scripts/skill-contract-registry.json"
-            expected_prefix = "./references/"
-        else:
-            expected_registry_ref = "../obsidian-notes-karpathy/scripts/skill-contract-registry.json"
-            expected_prefix = "../obsidian-notes-karpathy/references/"
-
-        if expected_registry_ref not in referenced_paths:
-            errors.append(f"{skill_name} is missing the registry reference bullet.")
-        for reference in expected["reads"]:
-            if f"{expected_prefix}{reference}" not in referenced_paths:
-                errors.append(f"{skill_name} is missing reference bullet for {reference}.")
+        for bullet in build_shared_reference_bullets(skill_name, registry):
+            target = bullet.removeprefix("- `").removesuffix("`")
+            if target not in referenced_paths:
+                errors.append(f"{skill_name} is missing reference bullet for {target}.")
         if expected["baseline_script"] not in skill_text:
             errors.append(f"{skill_name} does not mention baseline script {expected['baseline_script']}.")
+
+    for asset_rel_path in KB_INIT_REQUIRED_ASSETS:
+        if not (KB_INIT_ASSETS_ROOT / asset_rel_path).exists():
+            errors.append(f"kb-init asset is missing: {asset_rel_path}.")
+    for script_name in HELPER_SCRIPTS:
+        if not (SCRIPT_DIR / script_name).exists():
+            errors.append(f"Helper script is missing: {script_name}.")
 
     return errors
 
@@ -135,12 +159,19 @@ def check_docs_and_evals() -> list[str]:
             if needle not in text:
                 errors.append(f"{text_name} is missing contract term {needle}.")
 
-    if "one package entry skill and five operational skills" not in docs_overview:
-        errors.append("docs/skills/overview.md must describe the 1+5 core bundle shape.")
-    if "1 个入口技能和 5 个操作技能" not in docs_overview_zh:
-        errors.append("docs/zh/skills/overview.md must describe the 1+5 core bundle shape.")
+    if "one package entry skill and six operational skills" not in docs_overview:
+        errors.append("docs/skills/overview.md must describe the 1+6 core bundle shape.")
+    if "1 个入口技能和 6 个操作技能" not in docs_overview_zh:
+        errors.append("docs/zh/skills/overview.md must describe the 1+6 core bundle shape.")
     if "Companion skills" not in docs_overview or "搭配技能" not in docs_overview_zh:
         errors.append("Skills overview docs must explicitly distinguish companion skills from the core bundle.")
+    if "Companion skill matrix" not in readme or "搭配技能矩阵" not in readme_cn:
+        errors.append("Top-level READMEs must include the companion skill matrix.")
+    for helper_name in ("bootstrap_review_gated_vault.py", "migrate_legacy_vault.py", "vault_status.py"):
+        if helper_name not in readme:
+            errors.append(f"README.md must mention helper script {helper_name}.")
+        if helper_name not in readme_cn:
+            errors.append(f"README_CN.md must mention helper script {helper_name}.")
 
     if len(trigger_evals) < 20:
         errors.append("trigger-evals.json must contain at least 20 cases.")
@@ -160,7 +191,8 @@ def check_docs_and_evals() -> list[str]:
             errors.append(f"runtime-evals.json item {item.get('id')} is missing vault_root.")
         if item.get("mode", "read-only") != "read-only":
             errors.append(f"runtime-evals.json item {item.get('id')} must stay read-only.")
-    for skill_name in ("kb-init", "kb-compile", "kb-review", "kb-query", "kb-health"):
+    operational_skills = [name for name, entry in load_json(REGISTRY_PATH)["skills"].items() if entry.get("role") == "operation"]
+    for skill_name in operational_skills:
         if runtime_counts.get(skill_name, 0) < 2:
             errors.append(f"runtime-evals.json must include at least two evals for {skill_name}.")
 
@@ -173,7 +205,12 @@ def check_docs_and_evals() -> list[str]:
             errors.append(f"runtime-evals-writable.json item {item.get('id')} must use writable-copy mode.")
         if not item.get("checks"):
             errors.append(f"runtime-evals-writable.json item {item.get('id')} must define checks.")
-    for skill_name in ("kb-init", "kb-compile", "kb-review"):
+    writable_required = [
+        name
+        for name, entry in load_json(REGISTRY_PATH)["skills"].items()
+        if entry.get("role") == "operation" and entry.get("writes")
+    ]
+    for skill_name in writable_required:
         if writable_counts.get(skill_name, 0) < 1:
             errors.append(f"runtime-evals-writable.json must include at least one eval for {skill_name}.")
 

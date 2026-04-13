@@ -12,6 +12,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from _vault_utils import audit_vault_mechanics, json_dump, scan_compile_delta
+from _vault_ingest import scan_ingest_delta, sync_source_manifest
 from build_governance_indices import build_governance_indices, write_governance_indices
 from build_graph_snapshot import build_graph_snapshot, write_graph_snapshot
 from build_memory_episodes import build_memory_episodes, write_memory_episodes
@@ -69,15 +70,18 @@ def run_automation(vault_root: Path, mode: str, write: bool) -> dict[str, object
             write_governance_indices(vault_root, governance_payload)
             payload["written_paths"] = write_memory_episodes(vault_root, episode_payload)
     elif mode == "new-source":
+        ingest_payload = scan_ingest_delta(vault_root)
         compile_payload = scan_compile_delta(vault_root)
         graph_payload = build_graph_snapshot(vault_root)
         payload.update(
             {
+                "ingest": ingest_payload,
                 "compile_delta": compile_payload,
                 "graph": graph_payload,
             }
         )
         if write:
+            payload["ingest"] = sync_source_manifest(vault_root)
             graph_output = write_graph_snapshot(vault_root, graph_payload)
             payload["graph_output_path"] = graph_output.relative_to(vault_root).as_posix()
     else:

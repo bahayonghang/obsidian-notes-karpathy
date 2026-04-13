@@ -23,10 +23,11 @@ DEFAULT_WORKSPACE_ROOT = REPO_ROOT / ".trigger-evals"
 SKILL_PATHS = {
     "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
     "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",
+    "kb-ingest": REPO_ROOT / "skills" / "kb-ingest" / "SKILL.md",
     "kb-compile": REPO_ROOT / "skills" / "kb-compile" / "SKILL.md",
     "kb-review": REPO_ROOT / "skills" / "kb-review" / "SKILL.md",
     "kb-query": REPO_ROOT / "skills" / "kb-query" / "SKILL.md",
-    "kb-health": REPO_ROOT / "skills" / "kb-health" / "SKILL.md",
+    "kb-render": REPO_ROOT / "skills" / "kb-render" / "SKILL.md",
 }
 DESCRIPTION_RE = re.compile(r"^description:\s*(.+)$", re.MULTILINE)
 
@@ -103,7 +104,7 @@ def parse_selected_skill(text: str) -> str | None:
         if selected in {*SKILL_PATHS.keys(), "none"}:
             return None if selected == "none" else selected
 
-    pattern = re.compile(r'"selected_skill"\s*:\s*"(obsidian-notes-karpathy|kb-init|kb-compile|kb-review|kb-query|kb-health|none)"')
+    pattern = re.compile(r'"selected_skill"\s*:\s*"(obsidian-notes-karpathy|kb-init|kb-ingest|kb-compile|kb-review|kb-query|kb-render|none)"')
     match = pattern.search(stripped)
     if match:
         value = match.group(1)

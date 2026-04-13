@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "这个知识库下一步该做什么", "现在应该初始化/编译/审校/查询/体检哪个步骤", mentions review gates, draft/live separation, briefings, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" / "second brain" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, compile, review, query, or health, and only route through this package entry skill when the workflow step is genuinely ambiguous.
+description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "personal knowledge base", "second brain", "这个知识库下一步该做什么", "现在应该初始化/摄取/编译/审校/检索/渲染/体检哪个步骤", mentions review gates, draft/live separation, source manifests, browse topics, local-first search, render outputs, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, ingest, compile, review, query, or render, and only route through this package entry skill when the workflow step is genuinely ambiguous.
 ---
 
 # Obsidian Notes Karpathy
@@ -11,10 +11,12 @@ Use this skill when the user talks about the workflow as a whole, not just one o
 
 ## Minimal loop
 
+- `kb-ingest` registers raw sources into `raw/_manifest.yaml`
 - `kb-compile` builds reviewable candidates from immutable captures
 - `kb-review` decides what deserves durable truth
-- `kb-query` reuses approved knowledge and proposes the next durable deltas
-- `kb-health` audits drift and identifies where the wiki should grow next
+- `kb-query` reuses approved knowledge for search, grounded answers, archived Q&A reuse, and static web export
+- `kb-render` turns approved knowledge into deterministic derivative artifacts
+- `kb-review` also owns the maintenance lane when approved knowledge drifts or backlog accumulates
 
 ## When this compounds the wiki
 
@@ -33,6 +35,8 @@ Read these shared references first:
 - `./references/questions-and-reflection-policy.md`
 - `./references/memory-lifecycle.md`
 - `./references/graph-contract.md`
+- `./references/source-manifest-contract.md`
+- `./references/profile-contract.md`
 - `./references/automation-hooks.md`
 
 Treat `skill-contract-registry.json` as the canonical list of package roles, required shared references, baseline scripts, and output surfaces.
@@ -45,6 +49,8 @@ If the target vault already exists, inspect:
 - the most recent entries in `wiki/log.md` when available
 
 If `./scripts/detect_lifecycle.py` exists, run it first and treat its JSON output as the deterministic baseline.
+
+If `./scripts/vault_status.py` exists, use it as the user-facing status wrapper after lifecycle detection when the user mainly wants a concise "where am I and what next?" summary.
 
 ## Lifecycle signals
 
@@ -68,6 +74,15 @@ Route to `kb-compile` when:
 - alias candidates, duplicate candidates, or source-integrity drift need to be surfaced before review
 - a legacy-layout raw source still needs to be converted into the draft layer during migration
 
+### Ingest signals
+
+Route to `kb-ingest` when:
+
+- `raw/_manifest.yaml` exists but is stale relative to `raw/**`
+- the user explicitly wants to refresh the source registry or inspect deferred raw sources
+- a paper PDF, image asset, or data asset should be registered before compile runs
+- a manifest drift signal appears before draft compilation work starts
+
 ### Review signals
 
 Route to `kb-review` when:
@@ -87,10 +102,19 @@ Route to `kb-query` when:
 - the user wants an answer, report, thread, slides, or other artifact grounded in the approved brain
 - the user wants to reuse prior approved coverage or archived outputs before drafting a new outward-facing artifact
 - the user wants question-resolution candidates or reflection outputs that should stay outside live until re-reviewed
+- the user explicitly uses older `kb-search` wording for local-first retrieval or candidate ranking
+
+### Render signals
+
+Route to `kb-render` when:
+
+- the user explicitly wants slides, a report, chart brief, or canvas output
+- the task is deterministic format generation from approved knowledge rather than a normal grounded answer
+- the user already has the source pages or archived answer and now wants a derivative artifact
 
 ### Health signals
 
-Route to `kb-health` when:
+Route to `kb-review` in `maintenance` mode when:
 
 - the live layer feels contradictory, weakly linked, or poorly provenanced
 - approved pages appear to have bypassed review
@@ -101,13 +125,15 @@ Route to `kb-health` when:
 - the user wants planning surfaces such as curated hubs or editorial-gap views refreshed without widening the truth boundary
 - the user wants to know which repeated outputs, question clusters, or weakly connected topics should become syntheses or hubs next
 
-`kb-health` owns the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, graph weakness, hub backlog, and safe mechanical fixes after the immediate review gate has passed.
+`kb-review` owns both the immediate gate and the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, graph weakness, hub backlog, and safe mechanical fixes after the immediate review gate has passed.
 
 ## Read before routing
 
 - Treat `raw/` as immutable evidence intake.
+- Treat `raw/_manifest.yaml` as the canonical source registry.
 - Treat `wiki/drafts/` as reviewable knowledge, not query truth.
 - Treat `wiki/live/` as the only approved long-term brain.
+- Treat `wiki/live/topics/` as the default browse layer over approved knowledge.
 - Treat `wiki/live/procedures/` as approved procedural memory, not just another concept bucket.
 - Treat `wiki/briefings/` as per-role context generated from live only.
 - Treat `outputs/episodes/` as episodic memory and `outputs/audit/operations.jsonl` as the machine-readable audit trail.

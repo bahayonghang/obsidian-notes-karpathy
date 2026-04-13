@@ -76,6 +76,16 @@ class QualityCommandTests(unittest.TestCase):
         self.assertIn(fallback, {None, "claude"})
         self.assertIsNone(fallback_runner_for("claude"))
 
+    def test_reference_block_renderer_uses_registry_driven_shared_refs(self) -> None:
+        result = run_repo_command(
+            "py",
+            "-3",
+            str(SCRIPTS_DIR / "render_reference_block.py"),
+            "kb-init",
+        )
+        self.assertIn("../obsidian-notes-karpathy/scripts/skill-contract-registry.json", result.stdout)
+        self.assertIn("../obsidian-notes-karpathy/references/source-manifest-contract.md", result.stdout)
+
     def test_runtime_eval_detects_repo_root_leakage(self) -> None:
         leakage = detect_root_leakage(
             f"The current workspace root is {REPO_ROOT.as_posix()} and AGENTS.md lives there.",

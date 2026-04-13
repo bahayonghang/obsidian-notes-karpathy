@@ -16,6 +16,15 @@ ARXIV_URL_RE = re.compile(
 )
 PDF_SIDECAR_SUFFIX = ".source.md"
 PDF_COMPANION_SKILLS = ("paper-workbench", "pdf")
+IMAGE_ASSET_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
+DATA_ASSET_SUFFIXES = {".csv", ".tsv", ".json", ".jsonl", ".ndjson"}
+DEFAULT_KB_PROFILE = "governed-team"
+LEGACY_RAW_DIR_MAP = {
+    "articles": "raw/human/articles",
+    "papers": "raw/human/papers",
+    "podcasts": "raw/human/podcasts",
+    "repos": "raw/human/repos",
+}
 
 
 def is_pdf_sidecar(path: Path) -> bool:
@@ -90,7 +99,57 @@ def raw_source_metadata(vault_root: Path, raw_path: Path) -> dict[str, Any]:
 
 
 def source_class_for_raw(raw_path: Path) -> str:
-    return "paper_pdf" if raw_path.suffix.lower() == ".pdf" else "markdown"
+    suffix = raw_path.suffix.lower()
+    parts = {part.lower() for part in raw_path.parts}
+    if suffix == ".pdf":
+        return "paper_pdf"
+    if "assets" in parts and suffix in IMAGE_ASSET_SUFFIXES:
+        return "image_asset"
+    if "data" in parts and suffix in DATA_ASSET_SUFFIXES:
+        return "data_asset"
+    return "markdown"
+
+
+def manifest_path(vault_root: Path) -> Path:
+    return vault_root / "raw" / "_manifest.yaml"
+
+
+def is_manifest_path(vault_root: Path, raw_path: Path) -> bool:
+    try:
+        return raw_path.resolve() == manifest_path(vault_root).resolve()
+    except FileNotFoundError:
+        return raw_path == manifest_path(vault_root)
+
+
+def load_manifest_profile(vault_root: Path) -> str | None:
+    path = manifest_path(vault_root)
+    if not path.exists():
+        return None
+
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if not line.startswith("profile:"):
+            continue
+        value = line.split(":", 1)[1].strip().strip('"').strip("'")
+        return value or None
+    return None
+
+
+def resolve_vault_profile(vault_root: Path) -> str:
+    manifest_profile = load_manifest_profile(vault_root)
+    if manifest_profile:
+        return manifest_profile
+
+    index_path = vault_root / "wiki" / "index.md"
+    if index_path.exists():
+        record = load_markdown(index_path, vault_root)
+        profile = record.frontmatter.get("kb_profile")
+        if isinstance(profile, str) and profile.strip():
+            return profile.strip()
+
+    return DEFAULT_KB_PROFILE
 
 
 def configured_skill_roots() -> list[Path]:
@@ -220,6 +279,7 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
     if not raw_root.exists():
         return []
 
+    layout_family = detect_layout_family(vault_root)
     sources: list[Path] = []
     for path in sorted(raw_root.rglob("*")):
         if not path.is_file():
@@ -228,14 +288,31 @@ def accepted_raw_sources(vault_root: Path) -> list[Path]:
         rel = path.relative_to(vault_root)
         if any(part.startswith(".") for part in rel.parts):
             continue
+        if is_manifest_path(vault_root, path):
+            continue
         if path.name.startswith("_"):
             continue
         if is_pdf_sidecar(path):
             continue
-        if "assets" in rel.parts:
+        if (
+            layout_family == "review-gated"
+            and len(rel.parts) >= 2
+            and rel.parts[0] == "raw"
+            and rel.parts[1] in LEGACY_RAW_DIR_MAP
+        ):
+            # Preserve legacy raw captures on disk after migration without
+            # letting them double-count as active review-gated intake.
             continue
 
         suffix = path.suffix.lower()
+        source_class = source_class_for_raw(rel)
+        if source_class == "image_asset":
+            sources.append(path)
+            continue
+        if source_class == "data_asset":
+            sources.append(path)
+            continue
+
         if suffix not in {".md", ".pdf"}:
             continue
 
@@ -279,7 +356,18 @@ def collect_markdown_records(vault_root: Path):
     if layout_family == "review-gated":
         records = iter_markdown_records(
             vault_root,
-            ("raw", "wiki/live", "wiki/briefings", "outputs/qa", "outputs/content", "outputs/episodes", "outputs/reviews"),
+            (
+                "raw",
+                "wiki/live",
+                "wiki/briefings",
+                "outputs/qa",
+                "outputs/content",
+                "outputs/reports",
+                "outputs/slides",
+                "outputs/charts",
+                "outputs/episodes",
+                "outputs/reviews",
+            ),
         )
         memory_path = vault_root / "MEMORY.md"
         if memory_path.exists():

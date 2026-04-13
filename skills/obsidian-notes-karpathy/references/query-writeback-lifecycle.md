@@ -1,6 +1,6 @@
 # Query Writeback Lifecycle
 
-Use this reference when `kb-query`, publish outputs, or health maintenance needs to decide how durable follow-up work should re-enter the review-gated workflow.
+Use this reference when `kb-query`, publish outputs, or governance maintenance needs to decide how durable follow-up work should re-enter the review-gated workflow.
 
 ## Core rule
 
@@ -12,7 +12,7 @@ If an output discovers reusable long-term knowledge, the change must still re-en
 
 `draft -> review -> live`
 
-If an output mainly reveals governance drift, alias problems, stale archives, or maintenance backlog, route that work to `kb-health` instead of pretending it is already approved knowledge.
+If an output mainly reveals governance drift, alias problems, stale archives, or maintenance backlog, route that work to `kb-review` maintenance mode instead of pretending it is already approved knowledge.
 
 Compounding doctrine: treat archived outputs as reusable working memory for the system rather than as dead-end deliverables. A good output should either stand on its own for reuse or leave behind clear next actions that help the vault become denser, better linked, and easier to query later.
 
@@ -24,7 +24,7 @@ Substantive Q&A or publish artifacts should record these fields when relevant:
 - `open_questions_touched` — standing questions materially advanced or reframed by the output
 - `writeback_candidates` — concrete long-term follow-up worth re-entering the wiki
 - `writeback_status` — `none | pending | triaged | drafted | reviewed | rejected`
-- `followup_route` — `none | draft | review | health`
+- `followup_route` — `none | draft | review`
 - optional `confidence_posture` — when the answer should advertise uncertainty or source disagreement explicitly
 - optional `compounding_value` — `low | medium | high` to indicate how strongly the artifact is expected to pay off for future reuse, navigation, or follow-up drafting
 - optional `crystallized_from_episode` — when the answer or artifact came out of an explicit episodic note
@@ -46,8 +46,8 @@ Use when the output suggests:
 ### `review`
 Use when the next step is an immediate human decision on an already-prepared candidate, disputed interpretation, or promotion boundary question.
 
-### `health`
-Use when the output mainly surfaces:
+### `review`
+Use `review` when the next step is an immediate human decision or a governance pass on already-prepared maintenance work, including:
 
 - writeback backlog
 - alias drift or duplicate approved pages
@@ -122,9 +122,9 @@ The episode is not the truth source. It is the reusable memory wrapper around th
 
 - grounded answer with no new follow-up -> archive with `followup_route: none`
 - answer discovers a missing long-term concept -> archive with `writeback_candidates` and `followup_route: draft`
-- answer reveals duplicate aliases across approved pages -> archive with `followup_route: health`
-- answer mainly shows that three approved pages need stronger `related` links and a shared hub -> archive with `writeback_candidates`, `followup_route: health`, and `compounding_value: high`
-- answer reframes an unresolved governance question -> archive with `open_questions_touched` and either `review` or `health`, depending on the next action
+- answer reveals duplicate aliases across approved pages -> archive with `followup_route: review`
+- answer mainly shows that three approved pages need stronger `related` links and a shared hub -> archive with `writeback_candidates`, `followup_route: review`, and `compounding_value: high`
+- answer reframes an unresolved governance question -> archive with `open_questions_touched` and `review`
 
 ## Simple writeback for personal vaults
 

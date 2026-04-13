@@ -16,16 +16,18 @@ WRITABLE_RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals-writab
 SKILL_PATHS = {
     "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
     "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",
+    "kb-ingest": REPO_ROOT / "skills" / "kb-ingest" / "SKILL.md",
     "kb-compile": REPO_ROOT / "skills" / "kb-compile" / "SKILL.md",
     "kb-review": REPO_ROOT / "skills" / "kb-review" / "SKILL.md",
     "kb-query": REPO_ROOT / "skills" / "kb-query" / "SKILL.md",
-    "kb-health": REPO_ROOT / "skills" / "kb-health" / "SKILL.md",
+    "kb-render": REPO_ROOT / "skills" / "kb-render" / "SKILL.md",
 }
 REFERENCE_BULLETS_RE = re.compile(r"- `([^`]+)`")
 READ_BEFORE_RE = re.compile(r"## Read before .*?(?=\n## |\Z)", re.DOTALL)
 SCOPE_READ_RE = re.compile(r"## Scope\n\nBefore checking the vault, read these files first:.*?(?=\n## |\Z)", re.DOTALL)
 sys.path.insert(0, str(SCRIPTS_DIR))
 
+from _skill_reference_blocks import build_shared_reference_bullets
 from _vault_utils import accepted_raw_sources, summarize_local_guidance
 
 

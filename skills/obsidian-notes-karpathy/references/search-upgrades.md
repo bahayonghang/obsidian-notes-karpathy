@@ -12,11 +12,12 @@ Use the cheapest layer that solves the problem while preserving traceability.
 
 1. `wiki/index.md`
 2. `wiki/live/indices/*`
-3. governance indices such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md`
-4. role-specific `wiki/briefings/*`
-5. prior `outputs/qa/`
-6. local structured / metadata-driven search
-7. optional semantic retrieval only as candidate surfacing
+3. `wiki/live/topics/*`
+4. governance indices such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md`
+5. role-specific `wiki/briefings/*`
+6. prior `outputs/qa/`
+7. local structured / metadata-driven search
+8. optional semantic retrieval only as candidate surfacing
 
 Approved live pages remain the truth source throughout the ladder.
 `outputs/episodes/**` and `outputs/health/graph-snapshot.json` are candidate-retrieval surfaces only. They can improve discovery, but they never override `wiki/live/**` as approved truth.
@@ -27,6 +28,7 @@ Use this first for small to medium vaults.
 
 - read `wiki/index.md`
 - read `wiki/live/indices/INDEX.md`, `wiki/live/indices/CONCEPTS.md`, and `wiki/live/indices/SOURCES.md`
+- read `wiki/live/topics/*` when the request is thematic rather than source-specific
 - check governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` when they exist
 - check role briefings when the request maps to a stable audience or workflow
 - reuse prior `outputs/qa/` when a substantive grounded answer already exists

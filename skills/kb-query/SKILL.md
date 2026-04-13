@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a report, thread, talk, or slides grounded in `wiki/live/`, says "query kb", "search live wiki", "问知识库", "搜索批准层", "生成报告", or wants a substantive answer reused from prior approved outputs and archived back into the vault. Do not use this skill for generic writing, open-ended web research, or maintenance/audit passes when the task is not anchored in approved live knowledge.
+description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a grounded answer, ranked local candidates, archived Q&A reuse, or a static web export from `wiki/live/`, says "query kb", "kb-search", "search live wiki", "导出静态知识站", "问知识库", or "搜索批准层并回答". This is the canonical read-side skill for approved retrieval, candidate ranking, grounded answers, archived answer reuse, and static web export. Do not use this skill for generic writing, open-ended web research, deterministic slide/report/chart/canvas rendering, or governance/maintenance passes that belong to `kb-render` or `kb-review`.
 ---
 
 # KB Query
@@ -40,6 +40,8 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
 - `../obsidian-notes-karpathy/references/memory-lifecycle.md`
 - `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/render-template.md`
+- `../obsidian-notes-karpathy/references/profile-contract.md`
 - `../obsidian-notes-karpathy/references/episode-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
@@ -52,6 +54,7 @@ Then start with:
 - `wiki/live/indices/INDEX.md`
 - `wiki/live/indices/CONCEPTS.md`
 - `wiki/live/indices/SOURCES.md`
+- `wiki/live/indices/TOPICS.md` when present
 - `wiki/live/indices/QUESTIONS.md` when present
 - relevant `wiki/briefings/{role}.md` when the request maps to a role
 - prior `outputs/qa/`
@@ -73,12 +76,12 @@ Those layers may be cited only as evidence if a human explicitly asks for source
 
 ## Modes
 
-1. search mode for quickly locating approved pages
+1. search mode for quickly locating approved pages and ranking local candidates before synthesis
 2. research mode for grounded answers archived into `outputs/qa/`
-3. publish mode for reports, threads, talks, and slides derived from approved knowledge
+3. web mode for static browseable web exports under `outputs/web/`
 4. reflect-lite mode for question resolution, synthesis notes, or gap reports that should stay outside live until re-reviewed
 
-When a substantive answer or artifact creates durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, `writeback_status`, and a `followup_route` so the next compile/review or health pass can decide what should happen next.
+When a substantive answer or artifact creates durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, `writeback_status`, and a `followup_route` so the next compile/review or maintenance pass can decide what should happen next.
 
 Prefer the smallest durable delta that improves future reuse:
 
@@ -101,6 +104,10 @@ Default retrieval order:
 
 Semantic retrieval may help discover candidate pages, but approved live pages remain the truth source.
 
+If the user explicitly says `kb-search`, treat that as direct wording for `kb-query` search mode.
+
+If the user wants slides, reports, charts, or canvas derivatives from approved knowledge, hand off to `kb-render` instead of stretching `kb-query` into deterministic rendering work.
+
 ## Writeback contract
 
 Compounding principle: every substantive query should leave the wiki at least slightly better — whether through a new draft page, a stronger relationship, an updated hub, or a promoted question. Writeback is the default posture, not an opt-in extra.
@@ -115,14 +122,13 @@ At minimum, substantive Q&A or publish outputs should:
 - record `writeback_status` so later passes can see whether the work is still pending
 - record `compounding_value` when future reuse, navigation value, or synthesis payoff should be explicit
 - record `crystallized_from_episode` when the output came out of a broader episodic chain
-- set `followup_route` to `none`, `draft`, `review`, or `health`
+- set `followup_route` to `none`, `draft`, or `review`
 
 Use:
 
 - `none` when the output is grounded and does not create durable follow-up work
 - `draft` when the output suggests new or updated long-term knowledge that must re-enter draft -> review -> live
-- `review` when the next action is an immediate human decision about an already-prepared candidate
-- `health` when the output mainly exposes governance, drift, alias, backlog, or stale-archive maintenance work
+- `review` when the next action is an immediate human decision or a governance pass on already-prepared maintenance work
 
 ## Output to the user
 

@@ -8,7 +8,7 @@ source_artifacts:
   - "[[outputs/qa/2026-04-10-hybrid-answer]]"
 source_live_pages:
   - "[[wiki/live/concepts/hybrid-routing]]"
-followup_route: health
+followup_route: review
 consolidation_status: reviewed
 visibility_scope: shared
 ---

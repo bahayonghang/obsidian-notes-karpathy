@@ -14,6 +14,7 @@ The script is the deterministic baseline for:
 - repair-needed vault detection
 - legacy-layout migration detection
 - compile-delta detection
+- source-manifest drift detection
 - pending review queue detection
 - briefing refresh detection
 - maintenance-needed integrity flags over the approved layer
@@ -26,15 +27,16 @@ The script is the deterministic baseline for:
 | `needs-setup` | `kb-init` | The support layer does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
 | `needs-repair` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
 | `needs-migration` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before normal operation. | migration path, old compiled files, missing companions | migration guidance or repair |
+| `needs-ingest` | `kb-ingest` | Raw sources and the canonical source manifest disagree. | `scan_ingest_delta.py`, `raw/_manifest.yaml`, deferred sources | refreshed `raw/_manifest.yaml`, `wiki/log.md` |
 | `needs-compilation` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `scan_compile_delta.py`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
 | `needs-review` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `scan_review_queue.py`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
 | `needs-briefing-refresh` | `kb-review` | The approved brain changed after the last briefing build. | briefing sources, latest live timestamps | regenerated `wiki/briefings/`, `wiki/log.md` |
 | `ready-for-query` | `kb-query` | The live layer exists and there is no obvious source delta, review backlog, or stale briefing. | `wiki/live/index`, live indices, prior `outputs/qa/`, relevant briefings | `outputs/qa/`, `outputs/content/`, `wiki/log.md` |
-| `needs-maintenance` | `kb-health` | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, `wiki/log.md`, deterministic mechanical fixes in approved surfaces only |
+| `needs-maintenance` | `kb-review` (`maintenance` mode) | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, `wiki/live/indices/`, `wiki/log.md`, deterministic mechanical fixes in approved surfaces only |
 
 ## Symptom overrides
 
-These symptoms should push routing toward `kb-health` even when the structure alone might allow `kb-query`:
+These symptoms should push routing toward `kb-review` maintenance mode even when the structure alone might allow `kb-query`:
 
 - the live notes feel contradictory or unreliable
 - briefings seem wrong even after a recent review pass
@@ -64,8 +66,9 @@ These symptoms should be surfaced as repair targets without blocking compile/que
 ## Operational reminders
 
 - `kb-init` owns contract creation, migration, repair, and optional governance scaffolding.
+- `kb-ingest` owns source registration, manifest refresh, and deferred-source visibility.
 - `kb-compile` owns source-to-draft updates, source metadata normalization, and alias-candidate surfacing.
-- `kb-review` owns draft promotion, rejection, contradiction handling, and briefing refresh.
-- `kb-query` owns synthesis, archival, publish artifacts, and question-resolution candidates from the approved layer only.
-- `kb-health` owns deep maintenance passes over live knowledge, briefings, review backlog, duplicate detection, stale-page heuristics, and deterministic mechanical fixes in approved surfaces only.
-- backward compatibility rule: old vaults do not become `needs-repair` just because they lack the latest lifecycle fields; this drift is surfaced through `kb-health` flags instead.
+- `kb-review` owns draft promotion, rejection, contradiction handling, briefing refresh, and maintenance-mode governance passes.
+- `kb-query` owns synthesis, local-first retrieval, archival, and static web export from the approved layer only.
+- `kb-render` owns deterministic derivative rendering from approved knowledge.
+- backward compatibility rule: old vaults do not become `needs-repair` just because they lack the latest lifecycle fields; this drift is surfaced through `kb-review` maintenance flags instead.

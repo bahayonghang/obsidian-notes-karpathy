@@ -27,7 +27,7 @@ from _vault_common import (
     slugify_identity,
     strip_link_alias,
 )
-from _vault_compile import scan_compile_delta
+from _vault_compile import build_draft_packages, scan_compile_delta
 from _vault_guidance import GUIDANCE_CONTRACTS, inspect_local_guidance, summarize_local_guidance
 from _vault_health import (
     HEALTH_FLAG_KINDS,
@@ -54,9 +54,16 @@ from _vault_health import (
     weak_live_sources_issues,
     writeback_backlog_issues,
 )
+from _vault_ingest import (
+    load_source_manifest,
+    scan_ingest_delta,
+    sync_source_manifest,
+    write_source_manifest,
+)
 from _vault_layout import (
     ARXIV_ID_RE,
     ARXIV_URL_RE,
+    DEFAULT_KB_PROFILE,
     PDF_COMPANION_SKILLS,
     PDF_SIDECAR_SUFFIX,
     accepted_raw_sources,
@@ -69,14 +76,17 @@ from _vault_layout import (
     extract_paper_handle,
     iso_from_timestamp,
     is_pdf_sidecar,
+    manifest_path,
     legacy_summary_for_raw,
     pdf_ingest_plan,
     raw_source_metadata,
+    resolve_vault_profile,
     sidecar_for_pdf,
     source_class_for_raw,
     summary_for_raw,
 )
 from _vault_query import live_records, query_scope
+from _vault_render import render_artifact
 from _vault_review import (
     REVIEWABLE_DRAFT_ROOTS,
     TERMINAL_REVIEW_STATES,
@@ -110,10 +120,12 @@ __all__ = [
     "audit_trail_gap_issues",
     "briefing_staleness_issues",
     "broken_wikilink_issues",
+    "build_draft_packages",
     "classify_markdown_path",
     "collapse_posix",
     "collect_markdown_records",
     "compute_hash",
+    "DEFAULT_KB_PROFILE",
     "compute_review_score",
     "configured_skill_roots",
     "detect_companion_skills",
@@ -134,7 +146,9 @@ __all__ = [
     "list_field",
     "live_record_for_draft",
     "live_records",
+    "load_source_manifest",
     "load_markdown",
+    "manifest_path",
     "memory_knowledge_mix_issues",
     "missing_confidence_metadata_issues",
     "normalize_identity",
@@ -147,6 +161,7 @@ __all__ = [
     "pdf_ingest_plan",
     "query_scope",
     "raw_source_metadata",
+    "render_artifact",
     "record_identities",
     "registry_for_records",
     "resolve_target",
@@ -154,6 +169,7 @@ __all__ = [
     "review_record_for_draft",
     "reviewable_draft_records",
     "scan_compile_delta",
+    "scan_ingest_delta",
     "scan_review_queue",
     "sidecar_for_pdf",
     "slugify_identity",
@@ -163,11 +179,14 @@ __all__ = [
     "summarize_local_guidance",
     "summary_for_raw",
     "supersession_gap_issues",
+    "sync_source_manifest",
     "unapproved_live_issues",
     "volatile_page_stale_issues",
     "weak_live_sources_issues",
+    "write_source_manifest",
     "confidence_decay_due_issues",
     "graph_gap_issues",
     "procedural_promotion_gap_issues",
+    "resolve_vault_profile",
     "writeback_backlog_issues",
 ]

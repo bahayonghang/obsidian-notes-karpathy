@@ -4,6 +4,7 @@ import unittest
 from _bundle_test_support import (
     FIXTURES_DIR,
     SKILL_PATHS,
+    build_shared_reference_bullets,
     extract_reference_bullets,
     load_registry,
     run_json_script,
@@ -24,6 +25,7 @@ class ContractAndRoutingTests(unittest.TestCase):
         live_ready = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "ready-for-query"))
         briefing_refresh = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "needs-briefing-refresh"))
         migration = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "needs-migration"))
+        needs_ingest = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "needs-ingest"))
         confidence_decay = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "confidence-decay"))
         supersession_chain = run_json_script("detect_lifecycle.py", str(FIXTURES_DIR / "supersession-chain"))
 
@@ -36,7 +38,8 @@ class ContractAndRoutingTests(unittest.TestCase):
         self.assertEqual(fresh["layout_family"], "uninitialized")
 
         self.assertEqual(maintenance["state"], "needs-maintenance")
-        self.assertEqual(maintenance["route"], "kb-health")
+        self.assertEqual(maintenance["route"], "kb-review")
+        self.assertEqual(maintenance["route_mode"], "maintenance")
         self.assertIn("maintenance_needed", maintenance["signals"])
         self.assertIn("stale_qa", maintenance["health_flags"])
 
@@ -59,26 +62,34 @@ class ContractAndRoutingTests(unittest.TestCase):
         self.assertEqual(review_ready["layout_family"], "review-gated")
         self.assertEqual(review_ready["state"], "needs-review")
         self.assertEqual(review_ready["route"], "kb-review")
+        self.assertEqual(review_ready["route_mode"], "gate")
         self.assertIn("drafts_pending_review", review_ready["signals"])
 
         self.assertEqual(root_raw["state"], "needs-compilation")
         self.assertEqual(root_raw["route"], "kb-compile")
         self.assertIn("missing_claude_guidance", root_raw["guidance_warnings"])
 
+        self.assertEqual(needs_ingest["state"], "needs-ingest")
+        self.assertEqual(needs_ingest["route"], "kb-ingest")
+        self.assertIn("new_sources_not_registered", needs_ingest["signals"])
+
         self.assertEqual(live_ready["state"], "ready-for-query")
         self.assertEqual(live_ready["route"], "kb-query")
 
         self.assertEqual(briefing_refresh["state"], "needs-briefing-refresh")
         self.assertEqual(briefing_refresh["route"], "kb-review")
+        self.assertEqual(briefing_refresh["route_mode"], "gate")
         self.assertIn("briefing_refresh_required", briefing_refresh["signals"])
 
         self.assertEqual(confidence_decay["state"], "needs-maintenance")
-        self.assertEqual(confidence_decay["route"], "kb-health")
+        self.assertEqual(confidence_decay["route"], "kb-review")
+        self.assertEqual(confidence_decay["route_mode"], "maintenance")
         self.assertIn("missing_confidence_metadata", confidence_decay["health_flags"])
         self.assertIn("confidence_decay_due", confidence_decay["health_flags"])
 
         self.assertEqual(supersession_chain["state"], "needs-maintenance")
-        self.assertEqual(supersession_chain["route"], "kb-health")
+        self.assertEqual(supersession_chain["route"], "kb-review")
+        self.assertEqual(supersession_chain["route_mode"], "maintenance")
         self.assertIn("supersession_gap", supersession_chain["health_flags"])
 
         self.assertEqual(migration["layout_family"], "legacy-layout")
@@ -104,14 +115,16 @@ class ContractAndRoutingTests(unittest.TestCase):
         self.assertEqual(sorted(registry["skills"].keys()), sorted(SKILL_PATHS.keys()))
         self.assertIn("MEMORY.md", registry["skills"]["kb-init"]["writes"])
         self.assertIn("outputs/episodes/", registry["skills"]["kb-init"]["writes"])
+        self.assertIn("raw/_manifest.yaml", registry["skills"]["kb-ingest"]["writes"])
         self.assertIn("wiki/live/procedures/", registry["skills"]["kb-review"]["writes"])
+        self.assertIn("wiki/live/topics/", registry["skills"]["kb-review"]["writes"])
         self.assertIn(
             "wiki/live/indices/ALIASES.md",
-            registry["skills"]["kb-health"]["writes"],
+            registry["skills"]["kb-review"]["writes"],
         )
-        self.assertIn("wiki/live/indices/RELATIONSHIPS.md", registry["skills"]["kb-health"]["writes"])
-        self.assertIn("outputs/health/graph-snapshot.json", registry["skills"]["kb-health"]["outputs"])
-        self.assertIn("wiki/live/indices/", registry["skills"]["kb-health"]["outputs"])
+        self.assertIn("wiki/live/indices/RELATIONSHIPS.md", registry["skills"]["kb-review"]["writes"])
+        self.assertIn("outputs/health/graph-snapshot.json", registry["skills"]["kb-review"]["outputs"])
+        self.assertIn("wiki/live/indices/", registry["skills"]["kb-review"]["outputs"])
 
         shared_refs = set(registry["shared_references"])
         for reference in shared_refs:
@@ -123,13 +136,11 @@ class ContractAndRoutingTests(unittest.TestCase):
             expected = registry["skills"][skill_name]
 
             if skill_name == "obsidian-notes-karpathy":
-                self.assertIn("./scripts/skill-contract-registry.json", referenced_paths)
-                for reference in expected["reads"]:
-                    self.assertIn(f"./references/{reference}", referenced_paths)
+                expected_bullets = build_shared_reference_bullets(skill_name, registry)
             else:
-                self.assertIn("../obsidian-notes-karpathy/scripts/skill-contract-registry.json", referenced_paths)
-                for reference in expected["reads"]:
-                    self.assertIn(f"../obsidian-notes-karpathy/references/{reference}", referenced_paths)
+                expected_bullets = build_shared_reference_bullets(skill_name, registry)
+            for bullet in expected_bullets:
+                self.assertIn(bullet.removeprefix("- `").removesuffix("`"), referenced_paths)
 
             self.assertIn(expected["baseline_script"], skill_text)
 

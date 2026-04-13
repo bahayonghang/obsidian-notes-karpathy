@@ -1,11 +1,14 @@
 ---
 name: kb-review
-description: Run the independent review gate for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "review gate", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "审校草稿", "批准草稿", "质量门", or whenever lifecycle detection reports `needs-review` or `needs-briefing-refresh`. Treat this as the immediate gate for pending drafts and briefing refresh work, not the longer-horizon maintenance lane.
+description: Run the canonical governance lane for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "kb health", "review gate", "health check", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "lint live wiki", "审校草稿", "批准草稿", "知识库体检", or whenever lifecycle detection reports `needs-review`, `needs-briefing-refresh`, or `needs-maintenance`. This skill owns both the immediate gate and the longer-horizon maintenance lane through internal `gate` and `maintenance` modes. Do not use it for normal approved-layer retrieval or deterministic derivative rendering.
 ---
 
 # KB Review
 
-Run the explicit gate between draft knowledge and the approved live brain. This is the immediate gate lane: resolve pending draft decisions, decide promotion or rejection, and rebuild briefings when that refresh belongs to the current review pass.
+Run the canonical governance lane between draft knowledge and the approved live brain. `kb-review` owns two internal modes:
+
+- `gate` mode for pending draft decisions, promotion/rejection, and briefing rebuilds tied to the same review pass
+- `maintenance` mode for approved-layer drift, stale briefings, provenance and alias refresh, governance-index rebuilds, graph gaps, backlog pressure, and safe mechanical fixes
 
 ## Minimal loop
 
@@ -35,9 +38,18 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/review-template.md`
 - `../obsidian-notes-karpathy/references/briefing-template.md`
 - `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/health-rubric.md`
+- `../obsidian-notes-karpathy/references/search-upgrades.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
+- `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
+- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
 - `../obsidian-notes-karpathy/references/memory-lifecycle.md`
 - `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/source-manifest-contract.md`
+- `../obsidian-notes-karpathy/references/topic-template.md`
+- `../obsidian-notes-karpathy/references/profile-contract.md`
+- `../obsidian-notes-karpathy/references/automation-hooks.md`
+- `../obsidian-notes-karpathy/references/episode-template.md`
 - `../obsidian-notes-karpathy/references/procedure-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
@@ -46,6 +58,9 @@ If available, run:
 
 - `../obsidian-notes-karpathy/scripts/scan_review_queue.py`
 - `../obsidian-notes-karpathy/scripts/scan_query_scope.py` when validating downstream boundaries
+- `../obsidian-notes-karpathy/scripts/lint_obsidian_mechanics.py` for maintenance-mode diagnostics
+- `../obsidian-notes-karpathy/scripts/build_governance_indices.py` when maintenance mode should refresh `QUESTIONS.md`, `GAPS.md`, `ALIASES.md`, `ENTITIES.md`, or `RELATIONSHIPS.md`
+- `../obsidian-notes-karpathy/scripts/build_graph_snapshot.py` when the user wants machine-readable graph export during maintenance
 
 ## Independence rule
 
@@ -81,11 +96,32 @@ When the draft is borderline, weigh both accuracy and whether the page deserves 
 - read and resolve pending work from `wiki/drafts/**`
 - `outputs/reviews/*.md`
 - promoted pages under `wiki/live/**`
+- promoted browse-layer topic pages under `wiki/live/topics/**`
+- refreshed governance indices under `wiki/live/indices/**`
 - regenerated `wiki/briefings/{role}.md`
+- maintenance reports under `outputs/health/**`
+- graph snapshot exports under `outputs/health/graph-snapshot.json`
+- safe mechanical fixes in archived `outputs/qa/**` or `outputs/content/**` when the target is unambiguous
 - `review` and `brief` entries in `wiki/log.md`
 
 It should not mutate raw captures.
 
-`kb-review` is the immediate gate for specific pending draft packages and briefing rebuilds. When the task is broader maintenance across approved surfaces, archived answers, backlog pressure, or provenance drift, route that work to `kb-health` instead.
+## Mode selection
+
+Use `gate` mode when:
+
+- drafts are pending
+- a human approval boundary is the next safe step
+- briefings should be rebuilt because the current review pass changed approved truth
+
+Use `maintenance` mode when:
+
+- the approved layer is drifting, contradictory, stale, or weakly linked
+- archived answers or content have writeback backlog
+- confidence metadata, supersession bookkeeping, or audit trails have decayed
+- governance indices or graph exports need deterministic refresh
+- safe mechanical fixes in approved or archived surfaces are clearer than creating new prose
+
+`kb-review` is now the only public governance surface. If the user literally says `kb-health`, treat that as `kb-review` maintenance mode.
 
 Review records should capture whether fact and inference are separated cleanly enough for safe reuse, plus a short promotion reason explaining why the page should or should not persist.

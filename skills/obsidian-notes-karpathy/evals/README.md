@@ -13,7 +13,7 @@ The fixtures are grouped by lifecycle and contract boundary rather than by a sin
 - `needs-compilation/` and `bootstrap-raw-intake/` - raw captures that should route to `kb-compile`
 - `needs-review/` and `needs-briefing-refresh/` - draft gate and briefing-refresh cases for `kb-review`
 - `ready-for-query/` - approved live-layer path for `kb-query`
-- `needs-maintenance/` - long-horizon maintenance path for `kb-health`
+- `needs-maintenance/` - long-horizon maintenance path for `kb-review` maintenance mode
 
 ### Contract boundary fixtures
 - `review-conflict-mixed-gate/` - approve / reject / needs-human mixed review outcomes

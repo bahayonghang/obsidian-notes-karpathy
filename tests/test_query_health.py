@@ -41,6 +41,32 @@ class QueryHealthTests(unittest.TestCase):
         self.assertIn("wiki/live/concepts/editorial-boundary.md", scope["included_paths"])
         self.assertIn("MEMORY.md", scope["excluded_paths"])
 
+    def test_query_scope_fast_personal_profile_skips_briefings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "ready-for-query"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            sync_payload = run_json_script("sync_source_manifest.py", str(fixture_copy))
+            manifest_path = fixture_copy / sync_payload["written_manifest"]
+            manifest_text = manifest_path.read_text(encoding="utf-8").replace('profile: "governed-team"', 'profile: "fast-personal"')
+            manifest_path.write_text(manifest_text, encoding="utf-8")
+
+            scope = run_json_script("scan_query_scope.py", str(fixture_copy))
+            self.assertEqual(scope["profile"], "fast-personal")
+            self.assertNotIn("wiki/briefings/researcher.md", scope["included_paths"])
+
+    def test_fast_personal_profile_delays_briefing_refresh_route(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "needs-briefing-refresh"
+            shutil.copytree(FIXTURES_DIR / "needs-briefing-refresh", fixture_copy)
+            sync_payload = run_json_script("sync_source_manifest.py", str(fixture_copy))
+            manifest_path = fixture_copy / sync_payload["written_manifest"]
+            manifest_text = manifest_path.read_text(encoding="utf-8").replace('profile: "governed-team"', 'profile: "fast-personal"')
+            manifest_path.write_text(manifest_text, encoding="utf-8")
+
+            payload = run_json_script("detect_lifecycle.py", str(fixture_copy))
+            self.assertEqual(payload["profile"], "fast-personal")
+            self.assertNotEqual(payload["state"], "needs-briefing-refresh")
+
     def test_query_scope_surfaces_candidate_paths_without_widening_truth(self) -> None:
         scope = run_json_script("scan_query_scope.py", str(FIXTURES_DIR / "hybrid-candidate-routing"))
 
@@ -102,7 +128,7 @@ source_live_pages:
         self.assertIn("Which approval signals should trigger a governance refresh?", refresh_payload["questions"])
         self.assertNotIn("How should archived Q&A feed governance refreshes?", refresh_payload["questions"])
         self.assertTrue(any(item["writeback_status"] == "pending" for item in writeback_payload["writeback_backlog"]))
-        self.assertTrue(any(item["followup_route"] == "health" for item in refresh_payload["followup_routes"]))
+        self.assertTrue(any(item["followup_route"] == "review" for item in refresh_payload["followup_routes"]))
         self.assertEqual({item["issue_kind"] for item in confidence_payload["confidence_maintenance"]}, {"missing_confidence_metadata", "confidence_decay_due"})
         self.assertTrue(any(item["recommended_action"] == "fill_core_confidence_metadata" for item in confidence_payload["confidence_maintenance"]))
         self.assertTrue(any(item["recommended_action"] == "refresh_confidence_review" for item in confidence_payload["confidence_maintenance"]))
@@ -140,7 +166,7 @@ followup_route: draft
             briefing_text = briefing_path.read_text(encoding="utf-8")
             briefing_text = briefing_text.replace(
                 'source_live_pages:\n  - "[[wiki/live/summaries/human/articles/2026-04-05-approved-summary]]"\n  - "[[wiki/live/concepts/review-gate]]"\n',
-                'source_live_pages:\n  - "[[wiki/live/summaries/human/articles/2026-04-05-approved-summary]]"\n  - "[[wiki/live/concepts/review-gate]]"\nfollowup_route: health\n',
+                'source_live_pages:\n  - "[[wiki/live/summaries/human/articles/2026-04-05-approved-summary]]"\n  - "[[wiki/live/concepts/review-gate]]"\nfollowup_route: review\n',
             )
             briefing_path.write_text(briefing_text, encoding="utf-8")
 
@@ -187,7 +213,8 @@ source_live_pages:
             private_lint = run_json_script("lint_obsidian_mechanics.py", str(fixture_copy))
 
         self.assertEqual(writeback["state"], "needs-maintenance")
-        self.assertEqual(writeback["route"], "kb-health")
+        self.assertEqual(writeback["route"], "kb-review")
+        self.assertEqual(writeback["route_mode"], "maintenance")
         self.assertIn("writeback_backlog", writeback["health_flags"])
 
         memory_issue_kinds = {issue["kind"] for issue in memory["issues"]}
@@ -249,6 +276,98 @@ source_live_pages:
         self.assertTrue(any(item["path"] == "outputs/qa/2026-04-10-hybrid-answer.md" for item in payload["ranked_paths"]))
         self.assertTrue(any(item["path"] == "outputs/health/graph-snapshot.json" for item in candidate_items))
         self.assertTrue(all(item["truth_boundary"] == "candidate-only" for item in candidate_items))
+
+    def test_rank_query_candidates_can_prioritize_topics(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "ready-for-query"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            topic_path = fixture_copy / "wiki" / "live" / "topics" / "review-gates.md"
+            topic_path.parent.mkdir(parents=True, exist_ok=True)
+            topic_path.write_text(
+                """---
+title: "Review Gates"
+trust_level: approved
+related:
+  - "[[wiki/live/concepts/review-gate]]"
+---
+
+# Review Gates
+""",
+                encoding="utf-8",
+            )
+            payload = run_json_script("rank_query_candidates.py", str(fixture_copy), "review gates")
+            self.assertEqual(payload["ranked_paths"][0]["kind"], "topic")
+
+    def test_render_live_artifact_writes_supported_modes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "ready-for-query"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            source_path = "wiki/live/concepts/review-gate.md"
+
+            slides = run_json_script(
+                "render_live_artifact.py",
+                str(fixture_copy),
+                "--mode",
+                "slides",
+                "--source",
+                source_path,
+                "--write",
+            )
+            report = run_json_script(
+                "render_live_artifact.py",
+                str(fixture_copy),
+                "--mode",
+                "report",
+                "--source",
+                source_path,
+                "--write",
+            )
+            canvas = run_json_script(
+                "render_live_artifact.py",
+                str(fixture_copy),
+                "--mode",
+                "canvas",
+                "--source",
+                source_path,
+                "--write",
+            )
+            web = run_json_script(
+                "render_live_artifact.py",
+                str(fixture_copy),
+                "--mode",
+                "web",
+                "--source",
+                source_path,
+                "--write",
+            )
+
+            self.assertTrue((fixture_copy / slides["output_path"]).exists())
+            self.assertTrue((fixture_copy / report["output_path"]).exists())
+            self.assertTrue((fixture_copy / canvas["output_path"]).exists())
+            self.assertTrue((fixture_copy / web["output_path"]).exists())
+            self.assertTrue((fixture_copy / web["package_root"] / "manifest.json").exists())
+            self.assertTrue((fixture_copy / web["package_root"] / "app.js").exists())
+            self.assertIn("source_live_pages", (fixture_copy / slides["output_path"]).read_text(encoding="utf-8"))
+            self.assertIn("followup_route", (fixture_copy / report["output_path"]).read_text(encoding="utf-8"))
+            self.assertIn("source_live_pages", (fixture_copy / web["package_root"] / "manifest.json").read_text(encoding="utf-8"))
+
+    def test_render_live_artifact_web_mode_rejects_unapproved_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "ready-for-query"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            payload = run_json_script(
+                "render_live_artifact.py",
+                str(fixture_copy),
+                "--mode",
+                "web",
+                "--source",
+                "raw/human/articles/2026-04-05-approved-summary.md",
+                "--write",
+            )
+
+            self.assertIn("raw/human/articles/2026-04-05-approved-summary.md", payload["rejected_source_paths"])
+            self.assertEqual(payload["source_paths"], [])
+            self.assertTrue((fixture_copy / payload["package_root"] / "manifest.json").exists())
 
     def test_automation_runner_writes_outputs_and_audit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

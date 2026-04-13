@@ -10,7 +10,7 @@ sources:
 tags:
   - qa
   - governance
-followup_route: health
+followup_route: review
 confidence_posture: grounded
 ---
 

@@ -41,6 +41,42 @@
       ]
     },
     {
+      "id": "kb-init-migrate-legacy-write",
+      "skill": "kb-init",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/needs-migration",
+      "prompt": "Migrate the copied fixture vault from the old single-layer layout into the review-gated contract. Preserve original legacy files, sync the new manifest, and emit a migration report.",
+      "files": [
+        "evals/fixtures/needs-migration/AGENTS.md",
+        "evals/fixtures/needs-migration/raw/articles/2026-03-20-old-pattern.md",
+        "evals/fixtures/needs-migration/wiki/summaries/2026-03-20-old-pattern.md"
+      ],
+      "checks": [
+        {"name": "legacy-raw-preserved", "kind": "exists", "path": "raw/articles/2026-03-20-old-pattern.md"},
+        {"name": "review-gated-raw-created", "kind": "exists", "path": "raw/human/articles/2026-03-20-old-pattern.md"},
+        {"name": "legacy-summary-preserved", "kind": "exists", "path": "wiki/summaries/2026-03-20-old-pattern.md"},
+        {"name": "live-summary-created", "kind": "exists", "path": "wiki/live/summaries/2026-03-20-old-pattern.md"},
+        {"name": "migration-report-written", "kind": "exists", "path": "outputs/reviews/migration-report.md"},
+        {"name": "manifest-written", "kind": "exists", "path": "raw/_manifest.yaml"}
+      ]
+    },
+    {
+      "id": "kb-ingest-needs-ingest-write",
+      "skill": "kb-ingest",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/needs-ingest",
+      "prompt": "Refresh raw/_manifest.yaml for this copied fixture vault, keep raw files immutable, and surface the newly registered source plus removed registry entry clearly.",
+      "files": [
+        "evals/fixtures/needs-ingest/raw/_manifest.yaml",
+        "evals/fixtures/needs-ingest/raw/human/articles/2026-04-10-new-source.md"
+      ],
+      "checks": [
+        {"name": "manifest-written", "kind": "exists", "path": "raw/_manifest.yaml"},
+        {"name": "manifest-has-new-source", "kind": "file_contains", "path": "raw/_manifest.yaml", "needle": "2026-04-10-new-source.md"},
+        {"name": "raw-unchanged", "kind": "same_tree", "path": "raw/human"}
+      ]
+    },
+    {
       "id": "kb-compile-needs-compilation-write",
       "skill": "kb-compile",
       "mode": "writable-copy",
@@ -96,8 +132,42 @@
       ]
     },
     {
-      "id": "kb-health-needs-maintenance-write",
-      "skill": "kb-health",
+      "id": "kb-query-web-export-write",
+      "skill": "kb-query",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/ready-for-query",
+      "prompt": "Export the approved live notes about review gates as a static web package under outputs/web/2026-04-10-review-gate/. Keep the export grounded only in approved live pages or already-cited archived outputs.",
+      "files": [
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ],
+      "checks": [
+        {"name": "web-index-written", "kind": "exists", "path": "outputs/web/2026-04-10-review-gate/index.html"},
+        {"name": "web-manifest-written", "kind": "exists", "path": "outputs/web/2026-04-10-review-gate/manifest.json"},
+        {"name": "web-manifest-has-source-pages", "kind": "file_contains", "path": "outputs/web/2026-04-10-review-gate/manifest.json", "needle": "source_live_pages"},
+        {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"}
+      ]
+    },
+    {
+      "id": "kb-render-ready-for-query-write",
+      "skill": "kb-render",
+      "mode": "writable-copy",
+      "vault_root": "evals/fixtures/ready-for-query",
+      "prompt": "Render a Marp slide deck grounded in the approved live notes about review gates and save it to outputs/slides/2026-04-10-review-gate.md. Keep source_live_pages and followup_route metadata intact.",
+      "files": [
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/wiki/live/summaries/human/articles/2026-04-05-approved-summary.md"
+      ],
+      "checks": [
+        {"name": "slides-output-written", "kind": "exists", "path": "outputs/slides/2026-04-10-review-gate.md"},
+        {"name": "slides-has-source-pages", "kind": "file_contains", "path": "outputs/slides/2026-04-10-review-gate.md", "needle": "source_live_pages"},
+        {"name": "slides-has-followup-route", "kind": "file_contains", "path": "outputs/slides/2026-04-10-review-gate.md", "needle": "followup_route"},
+        {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"}
+      ]
+    },
+    {
+      "id": "kb-review-needs-maintenance-write",
+      "skill": "kb-review",
       "mode": "writable-copy",
       "vault_root": "evals/fixtures/needs-maintenance",
       "prompt": "Run a maintenance pass on the copied vault, write the report to outputs/health/health-check-2026-04-10.md, and refresh the governance indices at wiki/live/indices/QUESTIONS.md, wiki/live/indices/GAPS.md, and wiki/live/indices/ALIASES.md if that is a safe deterministic fix.",

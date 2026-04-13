@@ -67,7 +67,7 @@ def rank_query_candidates(vault_root: Path, query: str) -> dict[str, object]:
             metadata_score += 1
         if record.frontmatter.get("visibility_scope") == "shared":
             metadata_score += 1
-        if record.kind in {"concept", "entity", "procedure"}:
+        if record.kind in {"topic", "concept", "entity", "procedure"}:
             metadata_score += 1
         if record.kind == "briefing":
             metadata_score += 1
@@ -86,6 +86,8 @@ def rank_query_candidates(vault_root: Path, query: str) -> dict[str, object]:
             graph_score += 1
         if record.frontmatter.get("crystallized_from_episode"):
             graph_score += 1
+        if record.kind == "topic":
+            graph_score += 2
 
         score = lexical_overlap * 10 + metadata_score * 2 + graph_score
         ranked.append(

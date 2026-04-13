@@ -19,10 +19,11 @@ WRITABLE_RUNTIME_EVALS_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals-writab
 SKILL_PATHS = {
     "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
     "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",
+    "kb-ingest": REPO_ROOT / "skills" / "kb-ingest" / "SKILL.md",
     "kb-compile": REPO_ROOT / "skills" / "kb-compile" / "SKILL.md",
     "kb-review": REPO_ROOT / "skills" / "kb-review" / "SKILL.md",
     "kb-query": REPO_ROOT / "skills" / "kb-query" / "SKILL.md",
-    "kb-health": REPO_ROOT / "skills" / "kb-health" / "SKILL.md",
+    "kb-render": REPO_ROOT / "skills" / "kb-render" / "SKILL.md",
 }
 DESCRIPTION_RE = re.compile(r"^description:\s*(.+)$", re.MULTILINE)
 NAME_RE = re.compile(r"^name:\s*(.+)$", re.MULTILINE)
@@ -92,7 +93,12 @@ def audit_skill(
         "mentions_baseline_script": bool(registry_entry) and registry_entry["baseline_script"] in text,
         "trigger_eval_covered": skill_name in trigger_skills,
         "runtime_eval_covered": skill_name in runtime_skills,
-        "writable_runtime_covered": (role != "operation") or (skill_name in writable_skills),
+        "writable_runtime_covered": (
+            role != "operation"
+            or not registry_entry
+            or not registry_entry.get("writes")
+            or (skill_name in writable_skills)
+        ),
     }
 
     blocking_issues: list[str] = []

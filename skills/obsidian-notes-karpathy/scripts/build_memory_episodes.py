@@ -31,7 +31,7 @@ def build_memory_episodes(vault_root: Path) -> dict[str, object]:
     records = collect_markdown_records(vault_root)
     proposals: list[dict[str, object]] = []
     for record in records:
-        if record.kind not in {"qa", "content_output"}:
+        if record.kind not in {"qa", "content_output", "report_output", "slide_output", "chart_output"}:
             continue
         target_path = _episode_path(vault_root, record.path)
         proposals.append(

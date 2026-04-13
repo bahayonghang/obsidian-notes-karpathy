@@ -3,13 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 
 from _vault_common import MarkdownRecord, load_markdown
-from _vault_layout import detect_layout_family
+from _vault_layout import detect_layout_family, resolve_vault_profile
 
 
 def query_scope(vault_root: Path) -> dict:
     layout_family = detect_layout_family(vault_root)
+    profile = resolve_vault_profile(vault_root)
     if layout_family == "review-gated":
-        included_roots = ("wiki/live", "wiki/briefings", "outputs/qa")
+        included_roots = ("wiki/live", "outputs/qa")
+        if profile != "fast-personal":
+            included_roots = (*included_roots[:1], "wiki/briefings", *included_roots[1:])
         candidate_roots = ("outputs/episodes",)
         excluded_roots = ("raw", "wiki/drafts", "outputs/reviews")
     else:
@@ -72,6 +75,7 @@ def query_scope(vault_root: Path) -> dict:
     return {
         "vault_root": str(vault_root),
         "layout_family": layout_family,
+        "profile": profile,
         "included_paths": included,
         "candidate_paths": sorted(dict.fromkeys(candidate_paths)),
         "candidate_policy": "candidate-only",

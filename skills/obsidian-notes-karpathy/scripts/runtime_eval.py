@@ -24,10 +24,11 @@ DEFAULT_WORKSPACE_ROOT = REPO_ROOT / ".runtime-evals"
 SKILL_PATHS = {
     "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
     "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",
+    "kb-ingest": REPO_ROOT / "skills" / "kb-ingest" / "SKILL.md",
     "kb-compile": REPO_ROOT / "skills" / "kb-compile" / "SKILL.md",
     "kb-review": REPO_ROOT / "skills" / "kb-review" / "SKILL.md",
     "kb-query": REPO_ROOT / "skills" / "kb-query" / "SKILL.md",
-    "kb-health": REPO_ROOT / "skills" / "kb-health" / "SKILL.md",
+    "kb-render": REPO_ROOT / "skills" / "kb-render" / "SKILL.md",
 }
 SUPPORTED_MODES = {"read-only", "writable-copy"}
 INFRA_FAILURE_PATTERNS = (

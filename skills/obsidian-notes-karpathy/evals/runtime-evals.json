@@ -29,6 +29,18 @@
       ]
     },
     {
+      "id": "router-karpathy-status",
+      "skill": "obsidian-notes-karpathy",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-review",
+      "prompt": "I am building a Karpathy-style LLM Wiki in Obsidian. Inspect this fixture vault, tell me the current lifecycle stage, and explain the next safe step without modifying any files.",
+      "files": [
+        "evals/fixtures/needs-review/AGENTS.md",
+        "evals/fixtures/needs-review/wiki/index.md",
+        "evals/fixtures/needs-review/wiki/drafts/summaries/human/articles/2026-04-01-compiler-safety.md"
+      ]
+    },
+    {
       "id": "kb-init-needs-setup",
       "skill": "kb-init",
       "mode": "read-only",
@@ -60,6 +72,40 @@
         "evals/fixtures/ready-for-query/AGENTS.md",
         "evals/fixtures/ready-for-query/wiki/index.md",
         "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ]
+    },
+    {
+      "id": "kb-init-karpathy-onboarding",
+      "skill": "kb-init",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-setup",
+      "prompt": "I want this fixture vault to become an Obsidian LLM Wiki / second brain with a Karpathy-style raw -> draft -> live workflow. Explain the first safe step, the profile choices, and which starter files should appear. Do not modify any files.",
+      "files": [
+        "evals/fixtures/needs-setup/README.md"
+      ]
+    },
+    {
+      "id": "kb-ingest-needs-ingest",
+      "skill": "kb-ingest",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/needs-ingest",
+      "prompt": "Inspect the fixture vault and explain why the next safe step is to refresh raw/_manifest.yaml before compile runs. Do not modify any files.",
+      "files": [
+        "evals/fixtures/needs-ingest/AGENTS.md",
+        "evals/fixtures/needs-ingest/raw/_manifest.yaml",
+        "evals/fixtures/needs-ingest/raw/human/articles/2026-04-10-new-source.md"
+      ]
+    },
+    {
+      "id": "kb-ingest-paper-deferred",
+      "skill": "kb-ingest",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/paper-intake-with-handle",
+      "prompt": "Inspect the raw paper fixture and explain how the source manifest should record the PDF, including any deferred handler. Do not modify any files.",
+      "files": [
+        "evals/fixtures/paper-intake-with-handle/AGENTS.md",
+        "evals/fixtures/paper-intake-with-handle/raw/papers/2026-04-08-transformers.pdf",
+        "evals/fixtures/paper-intake-with-handle/raw/papers/2026-04-08-transformers.source.md"
       ]
     },
     {
@@ -135,8 +181,41 @@
       ]
     },
     {
-      "id": "kb-health-needs-maintenance",
-      "skill": "kb-health",
+      "id": "kb-query-web-export",
+      "skill": "kb-query",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/ready-for-query",
+      "prompt": "Inspect the fixture vault and explain how a static web export should be grounded only in approved live pages or already-cited archived outputs. Do not modify any files.",
+      "files": [
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ]
+    },
+    {
+      "id": "kb-render-slides-grounding",
+      "skill": "kb-render",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/ready-for-query",
+      "prompt": "Inspect the fixture vault and explain how you would ground a slide deck about review gates from approved knowledge. Do not modify any files.",
+      "files": [
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/wiki/live/summaries/human/articles/2026-04-05-approved-summary.md"
+      ]
+    },
+    {
+      "id": "kb-render-report-grounding",
+      "skill": "kb-render",
+      "mode": "read-only",
+      "vault_root": "evals/fixtures/ready-for-query",
+      "prompt": "Inspect the fixture vault and explain how a deterministic report or canvas artifact should be rendered from approved pages and archived answers. Do not modify any files.",
+      "files": [
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ]
+    },
+    {
+      "id": "kb-review-needs-maintenance",
+      "skill": "kb-review",
       "mode": "read-only",
       "vault_root": "evals/fixtures/needs-maintenance",
       "prompt": "Inspect the fixture vault and summarize the maintenance risks across stale Q&A, provenance, and drift. Do not modify any files.",
@@ -147,8 +226,8 @@
       ]
     },
     {
-      "id": "kb-health-writeback-backlog",
-      "skill": "kb-health",
+      "id": "kb-review-writeback-backlog",
+      "skill": "kb-review",
       "mode": "read-only",
       "vault_root": "evals/fixtures/writeback-backlog",
       "prompt": "Inspect the fixture vault and explain why writeback backlog is a maintenance concern instead of a normal query step. Do not modify any files.",
@@ -159,8 +238,8 @@
       ]
     },
     {
-      "id": "kb-health-governance-indices",
-      "skill": "kb-health",
+      "id": "kb-review-governance-indices",
+      "skill": "kb-review",
       "mode": "read-only",
       "vault_root": "evals/fixtures/needs-maintenance",
       "prompt": "Inspect the fixture vault and explain what QUESTIONS, GAPS, and ALIASES governance views should surface from the approved layer. Do not modify any files.",
@@ -171,8 +250,8 @@
       ]
     },
     {
-      "id": "kb-health-governance-refresh-readme",
-      "skill": "kb-health",
+      "id": "kb-review-governance-refresh-readme",
+      "skill": "kb-review",
       "mode": "read-only",
       "vault_root": "evals/fixtures/needs-governance-refresh",
       "prompt": "Inspect the governance refresh fixture and explain why derived indices should be refreshed from current approved knowledge instead of treated as permanent truth pages. Do not modify any files.",

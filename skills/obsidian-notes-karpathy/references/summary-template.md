@@ -34,6 +34,9 @@ candidate_entities:
   - "entity-a"
 candidate_relationships:
   - "concept-a --supports--> concept-b"
+topic_candidates:
+  - "topic-a"
+review_package_meta: "[[wiki/drafts/indices/packages/example-package]]"
 confidence_inputs:
   - "support_count=2"
   - "contradiction_count=0"
@@ -69,6 +72,10 @@ confidence_inputs:
 ## Proposed Entities
 
 - [[wiki/drafts/entities/entity-a]] - {relationship}
+
+## Proposed Topics
+
+- [[wiki/drafts/topics/topic-a]] - {browse-layer role}
 
 ## Alias and Duplicate Signals
 

@@ -1,6 +1,6 @@
 ---
 name: kb-init
-description: Initialize, migrate, or repair a review-gated Obsidian knowledge base. Use this skill whenever the user says "kb init", "initialize knowledge base", "repair vault", "migrate an old layout", "add draft/live review gate", "set up briefings", "初始化知识库", "迁移知识库", "修复知识库结构", or wants a fresh vault or legacy-layout vault brought onto the review-gated contract. Do not use it for normal compile, review, query, or maintenance work once the support layer is already healthy.
+description: Initialize, migrate, or repair a review-gated Obsidian knowledge base. Use this skill whenever the user says "kb init", "initialize knowledge base", "repair vault", "migrate an old layout", "add draft/live review gate", "set up briefings", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "personal knowledge base", "second brain", "初始化知识库", "迁移知识库", "修复知识库结构", or wants a fresh vault or legacy-layout vault brought onto the review-gated contract. Do not use it for normal compile, review, query, or maintenance work once the support layer is already healthy.
 ---
 
 # KB Init
@@ -9,13 +9,14 @@ One-time setup, migration, and repair for the review-gated workflow.
 
 ## Quick Start
 
-For a fresh vault, the happy path is three steps:
+For a fresh vault, the happy path is four steps:
 
 1. **Init** — run `kb-init` to create the support layer (`raw/`, `wiki/`, `outputs/`, `AGENTS.md`)
-2. **Compile** — drop source files into `raw/`, then run `kb-compile` to build reviewable drafts
-3. **Review** — run `kb-review` to approve drafts into the permanent wiki under `wiki/live/`
+2. **Ingest** — run `kb-ingest` to register raw sources into `raw/_manifest.yaml`
+3. **Compile** — run `kb-compile` to build reviewable drafts
+4. **Review** — run `kb-review` to approve drafts into the permanent wiki under `wiki/live/`
 
-After that, use `kb-query` to ask questions (each answer compounds the wiki) and `kb-health` to audit drift.
+After that, use `kb-query` to ask questions, `kb-render` to generate deterministic outward artifacts, and `kb-review` maintenance mode to audit drift.
 
 This mirrors Karpathy's LLM Wiki pattern: raw sources are immutable evidence, the LLM compiles and maintains the wiki, and you curate by sourcing documents and asking the right questions.
 
@@ -38,6 +39,9 @@ Read these shared references first:
 - `../obsidian-notes-karpathy/references/taxonomy-and-hubs.md`
 - `../obsidian-notes-karpathy/references/memory-lifecycle.md`
 - `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/source-manifest-contract.md`
+- `../obsidian-notes-karpathy/references/topic-template.md`
+- `../obsidian-notes-karpathy/references/profile-contract.md`
 - `../obsidian-notes-karpathy/references/automation-hooks.md`
 - `../obsidian-notes-karpathy/references/procedure-template.md`
 - `../obsidian-notes-karpathy/references/episode-template.md`
@@ -46,7 +50,21 @@ Treat `skill-contract-registry.json` as the canonical source for role, baseline 
 
 If `../obsidian-notes-karpathy/scripts/detect_lifecycle.py` exists, run it first to distinguish setup, repair, and `needs-migration` / legacy-layout migration.
 
+If `../obsidian-notes-karpathy/scripts/bootstrap_review_gated_vault.py` exists, use it for fresh setup and non-destructive repair scaffolding.
+
+If `../obsidian-notes-karpathy/scripts/migrate_legacy_vault.py` exists, use it for legacy single-layer vault migration so old files are preserved and the report is deterministic.
+
 If `../obsidian-notes-karpathy/scripts/build_governance_indices.py` exists and the user wants optional governance scaffolding, use it to generate starter `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` content after the support layer exists.
+
+## Profile choice
+
+Surface the operating profile during init or repair:
+
+- `governed-team` for the strictest default governance
+- `standard` for lighter maintenance noise without widening truth
+- `fast-personal` for solo use where briefings can stay out of default query scope
+
+Persist the chosen profile in scaffolded starter files so later lifecycle and query tooling can see it deterministically.
 
 ## Create or repair the canonical structure
 
@@ -54,9 +72,11 @@ Create the required support layer:
 
 ```text
 raw/human/{articles,papers,podcasts,repos,assets}
+raw/human/data
 raw/agents/{role}/
-wiki/drafts/{summaries,concepts,entities,procedures,overviews,comparisons,indices}
-wiki/live/{summaries,concepts,entities,procedures,overviews,comparisons,indices}
+raw/_manifest.yaml
+wiki/drafts/{summaries,topics,concepts,entities,procedures,overviews,comparisons,indices}
+wiki/live/{summaries,topics,concepts,entities,procedures,overviews,comparisons,indices}
 wiki/briefings/
 wiki/index.md
 wiki/log.md
@@ -108,9 +128,11 @@ Create:
 - `wiki/index.md`
 - `wiki/log.md`
 - `MEMORY.md`
+- `raw/_manifest.yaml`
 - `wiki/live/indices/INDEX.md`
 - `wiki/live/indices/CONCEPTS.md`
 - `wiki/live/indices/SOURCES.md`
+- `wiki/live/indices/TOPICS.md`
 - `wiki/live/indices/RECENT.md`
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md`
 - optional `wiki/live/indices/QUESTIONS.md` when the user wants governance scaffolding

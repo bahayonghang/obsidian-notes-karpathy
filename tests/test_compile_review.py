@@ -1,10 +1,22 @@
 # pyright: reportMissingImports=false
 import unittest
+import shutil
+import tempfile
+from pathlib import Path
 
 from _bundle_test_support import FIXTURES_DIR, accepted_raw_sources, run_json_script
 
 
 class CompileReviewTests(unittest.TestCase):
+    def test_scan_ingest_delta_reports_manifest_drift(self) -> None:
+        payload = run_json_script("scan_ingest_delta.py", str(FIXTURES_DIR / "needs-ingest"))
+
+        self.assertTrue(payload["manifest_present"])
+        self.assertEqual(payload["manifest_status"], "stale")
+        self.assertTrue(payload["needs_ingest"])
+        self.assertEqual(payload["counts"]["new"], 1)
+        self.assertEqual(payload["counts"]["removed"], 1)
+
     def test_scan_compile_delta_reports_review_gated_capture_trust(self) -> None:
         review_ready = run_json_script("scan_compile_delta.py", str(FIXTURES_DIR / "needs-review"))
 
@@ -102,6 +114,40 @@ class CompileReviewTests(unittest.TestCase):
             ],
         )
         self.assertEqual(pdf_sources, ["raw/papers/2026-04-08-transformers.pdf"])
+
+    def test_build_draft_packages_writes_topics_and_review_meta(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "needs-compilation"
+            shutil.copytree(FIXTURES_DIR / "needs-compilation", fixture_copy)
+            run_json_script("sync_source_manifest.py", str(fixture_copy))
+            payload = run_json_script("build_draft_packages.py", str(fixture_copy), "--write")
+
+            self.assertGreaterEqual(payload["package_count"], 1)
+            self.assertTrue((fixture_copy / "wiki" / "drafts" / "topics").exists())
+            self.assertTrue((fixture_copy / "wiki" / "drafts" / "indices" / "packages").exists())
+            self.assertTrue(any(path.startswith("wiki/drafts/topics/") for path in payload["written_paths"]))
+            self.assertTrue(any(path.startswith("wiki/drafts/indices/packages/") for path in payload["written_paths"]))
+
+    def test_sync_manifest_tracks_asset_and_data_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "ready-for-query"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            asset_path = fixture_copy / "raw" / "human" / "assets" / "diagram.png"
+            data_path = fixture_copy / "raw" / "human" / "data" / "stats.json"
+            asset_path.parent.mkdir(parents=True, exist_ok=True)
+            data_path.parent.mkdir(parents=True, exist_ok=True)
+            asset_path.write_bytes(b"png-bytes")
+            data_path.write_text('{"count": 3}', encoding="utf-8")
+
+            manifest_payload = run_json_script("sync_source_manifest.py", str(fixture_copy))
+            compile_payload = run_json_script("scan_compile_delta.py", str(fixture_copy))
+
+            manifest_text = (fixture_copy / manifest_payload["written_manifest"]).read_text(encoding="utf-8")
+            self.assertIn("raw/human/assets/diagram.png", manifest_text)
+            self.assertIn("raw/human/data/stats.json", manifest_text)
+            source_items = {item["path"]: item for item in compile_payload["items"]}
+            self.assertEqual(source_items["raw/human/assets/diagram.png"]["source_class"], "image_asset")
+            self.assertEqual(source_items["raw/human/data/stats.json"]["source_class"], "data_asset")
 
 
 if __name__ == "__main__":

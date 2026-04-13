@@ -21,7 +21,7 @@ open_questions_touched:
 writeback_candidates:
   - "update [[wiki/live/concepts/concept-a]] with a sharper distinction"
 writeback_status: none | pending | triaged | drafted | reviewed | rejected
-followup_route: none | draft | review | health
+followup_route: none | draft | review
 confidence_posture: grounded | mixed-evidence | exploratory
 compounding_value: low | medium | high
 crystallized_from_episode: "[[outputs/episodes/example-episode]]"

@@ -10,9 +10,19 @@
     "reason": "Whole-workflow Obsidian vault request rather than one operation."
   },
   {
+    "query": "I am building a Karpathy-style LLM Wiki in Obsidian and before you do anything, tell me what lifecycle stage this vault is in and what should run next.",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Novice Karpathy-native wording that still needs workflow routing."
+  },
+  {
     "query": "Set up a fresh Obsidian sub-vault as a review-gated knowledge base with raw, wiki, outputs/reviews, starter indices, and local guidance files.",
     "expected_skill": "kb-init",
     "reason": "Explicit initialization request."
+  },
+  {
+    "query": "Please create an LLM Wiki / second brain in Obsidian for me with a Karpathy-style raw -> draft -> live workflow and the starter contract files.",
+    "expected_skill": "kb-init",
+    "reason": "Novice onboarding wording should still land on kb-init."
   },
   {
     "query": "Repair this partially initialized Obsidian vault before I ingest anything else. It has raw/, wiki/index.md, and wiki/log.md, but the support layer is obviously incomplete.",
@@ -28,6 +38,16 @@
     "query": "This older Obsidian vault still uses wiki/summaries and wiki/concepts directly. Migrate it to the review-gated layout before we do anything else.",
     "expected_skill": "kb-init",
     "reason": "Explicit legacy-layout migration."
+  },
+  {
+    "query": "Refresh raw/_manifest.yaml for this Obsidian vault before compile. I added a new raw article and want the source registry updated first.",
+    "expected_skill": "kb-ingest",
+    "reason": "Explicit manifest refresh before compile."
+  },
+  {
+    "query": "Register these new raw assets and data files into the source manifest, but do not compile them yet.",
+    "expected_skill": "kb-ingest",
+    "reason": "Explicit raw intake registration without draft generation."
   },
   {
     "query": "Compile the new markdown notes I dropped under raw/human/articles and raw/agents/researcher into reviewable drafts without touching the raw files.",
@@ -65,6 +85,16 @@
     "reason": "Grounded research query against the approved live layer."
   },
   {
+    "query": "Search the approved live wiki and topic pages for everything related to review gates, but just rank local candidates first.",
+    "expected_skill": "kb-query",
+    "reason": "Canonical read-side lane now owns local-first retrieval as search mode."
+  },
+  {
+    "query": "Use kb-search to rank wiki/live, wiki/live/topics, briefings, and outputs/qa so I can see the best approved candidates before writing.",
+    "expected_skill": "kb-query",
+    "reason": "Literal kb-search wording should now map to the canonical query skill."
+  },
+  {
     "query": "Search the live wiki for everything related to local markdown search, reuse prior outputs/qa if they help, and give me a short grounded answer.",
     "expected_skill": "kb-query",
     "reason": "Search and reuse prior durable answers."
@@ -75,19 +105,34 @@
     "reason": "Publish-mode artifact grounded in live knowledge."
   },
   {
+    "query": "Render a short Marp slide deck from my approved live notes about review gates and save it under outputs/slides.",
+    "expected_skill": "kb-query",
+    "reason": "Canonical read-side lane now owns deterministic derivatives."
+  },
+  {
+    "query": "Use kb-render to turn the approved answer I already have into a report plus a canvas outline. I do not need a new grounded answer first.",
+    "expected_skill": "kb-render",
+    "reason": "Explicit deterministic-render wording should map to the standalone kb-render skill."
+  },
+  {
+    "query": "Export my approved live knowledge as a static web wiki under outputs/web so I can browse it outside Obsidian.",
+    "expected_skill": "kb-query",
+    "reason": "Static web export now belongs to kb-query web mode."
+  },
+  {
     "query": "Run a weekly health check on this approved Obsidian vault. I care about stale Q&A, weak provenance, contradictions, and whether the live layer has started drifting.",
-    "expected_skill": "kb-health",
-    "reason": "Explicit maintenance and health pass."
+    "expected_skill": "kb-review",
+    "reason": "Explicit maintenance and health wording now routes to kb-review maintenance mode."
   },
   {
     "query": "My archived answers have pending writeback candidates and I want the vault audited before I keep querying it.",
-    "expected_skill": "kb-health",
-    "reason": "Writeback backlog is a maintenance signal, not a normal query."
+    "expected_skill": "kb-review",
+    "reason": "Writeback backlog is a maintenance signal handled by kb-review maintenance mode."
   },
   {
     "query": "I know the live wiki exists, but before I ask another question I want you to audit stale Q&A, unresolved writeback backlog, and briefing drift across the approved layer.",
-    "expected_skill": "kb-health",
-    "reason": "Maintenance-first near-miss against query wording."
+    "expected_skill": "kb-review",
+    "reason": "Maintenance-first near-miss against query wording should now route to kb-review maintenance mode."
   },
   {
     "query": "This vault has a MEMORY.md with preferences and editorial priorities. Keep that outside the topic retrieval boundary and tell me what layer is still query truth.",
@@ -96,18 +141,23 @@
   },
   {
     "query": "Lint the live wiki for render issues in tables, stale briefings, and approval drift. Apply only obvious mechanical fixes and leave judgment calls for humans.",
-    "expected_skill": "kb-health",
-    "reason": "Health workflow with safe mechanical fixes only."
+    "expected_skill": "kb-review",
+    "reason": "Maintenance workflow with safe mechanical fixes now belongs to kb-review."
   },
   {
     "query": "My approved layer is structurally present, but the archived Q&A notes are older than the newer live concepts they cite. Audit drift first, not query.",
-    "expected_skill": "kb-health",
-    "reason": "Maintenance-first due stale Q&A drift."
+    "expected_skill": "kb-review",
+    "reason": "Maintenance-first due stale Q&A drift now routes to kb-review maintenance mode."
   },
   {
     "query": "Lifecycle detection says needs-review, and after that I want a short publishable summary. Handle the immediate safe next step first.",
     "expected_skill": "kb-review",
     "reason": "Immediate gate should win over downstream publish intent."
+  },
+  {
+    "query": "This knowledge compiler vault needs both a local-first search pass and maybe a health audit, but first tell me the current stage and the safest next step.",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Mixed-intent novice wording should route through the package entry skill."
   },
   {
     "query": "I dropped a new PDF into raw/papers/ and want it ingested into the Obsidian workflow. Do not assume it is already markdown.",

@@ -1,0 +1,15 @@
+version: 1
+generated_at: "2026-04-09T00:00:00Z"
+profile: "governed-team"
+sources:
+  - source_id: "raw--human--articles--2026-04-01-old-source"
+    path: "raw/human/articles/2026-04-01-old-source.md"
+    source_type: "markdown"
+    capture_origin: "human"
+    source_url_or_handle: "https://example.com/old-source"
+    content_hash: "stale-old-source-hash"
+    first_seen_at: "2026-04-01T00:00:00Z"
+    last_seen_at: "2026-04-09T00:00:00Z"
+    ingest_status: "ready-for-compile"
+    normalized_outputs:
+      - "wiki/drafts/summaries/human/articles/2026-04-01-old-source.md"

@@ -132,7 +132,7 @@ def orphan_page_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     trackable = {
         record.path_no_ext: record
         for record in records
-        if record.kind in {"concept", "entity", "summary", "qa"}
+        if record.kind in {"topic", "concept", "entity", "summary", "qa"}
         and not record.basename.startswith("_")
         and "/drafts/" not in record.path
     }
@@ -248,7 +248,7 @@ def briefing_staleness_issues(vault_root: Path) -> list[dict[str, Any]]:
 def weak_live_sources_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+        if record.kind not in {"summary", "topic", "concept", "entity", "procedure"}:
             continue
         if record.frontmatter.get("trust_level") != "approved":
             continue
@@ -309,7 +309,7 @@ def memory_knowledge_mix_issues(records: list[MarkdownRecord]) -> list[dict[str,
                 )
             continue
 
-        if record.path.startswith("wiki/live/") and record.kind in {"summary", "concept", "entity"}:
+        if record.path.startswith("wiki/live/") and record.kind in {"summary", "topic", "concept", "entity"}:
             reasons = sorted(key for key in ("preferences", "working_style", "collaboration_rules") if key in record.frontmatter)
             if any(heading in record.body for heading in collaboration_headings):
                 reasons.append("collaboration_heading")
@@ -370,7 +370,7 @@ def missing_confidence_metadata_issues(records: list[MarkdownRecord]) -> list[di
     }
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+        if record.kind not in {"summary", "topic", "concept", "entity", "procedure"}:
             continue
         if record.frontmatter.get("trust_level") != "approved":
             continue
@@ -394,7 +394,7 @@ def confidence_decay_due_issues(records: list[MarkdownRecord]) -> list[dict[str,
     now = datetime.now(UTC)
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+        if record.kind not in {"summary", "topic", "concept", "entity", "procedure"}:
             continue
         due_at = parse_datetime(record.frontmatter.get("next_review_due_at"))
         if due_at is None or due_at > now:
@@ -417,7 +417,7 @@ def supersession_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any
     by_path, by_basename = registry_for_records(records)
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+        if record.kind not in {"summary", "topic", "concept", "entity", "procedure"}:
             continue
         supersedes = list_field(record.frontmatter, "supersedes")
         superseded_by = list_field(record.frontmatter, "superseded_by")
@@ -482,7 +482,7 @@ def episodic_backlog_issues(records: list[MarkdownRecord]) -> list[dict[str, Any
 def graph_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+        if record.kind not in {"summary", "topic", "concept", "entity", "procedure"}:
             continue
         graph_required = str(record.frontmatter.get("graph_required") or "").strip().lower() in {"true", "yes", "1"}
         relationship_notes = list_field(record.frontmatter, "relationship_notes")
@@ -503,7 +503,7 @@ def graph_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
 def unapproved_live_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+        if record.kind not in {"summary", "topic", "concept", "entity", "procedure"}:
             continue
         trust_level = record.frontmatter.get("trust_level")
         approved_at = record.frontmatter.get("approved_at")
@@ -522,7 +522,7 @@ def unapproved_live_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]
 def approved_conflict_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"concept", "entity", "procedure"}:
+        if record.kind not in {"topic", "concept", "entity", "procedure"}:
             continue
         if record.frontmatter.get("trust_level") == "approved" and record.frontmatter.get("status") == "conflicting":
             issues.append(
@@ -550,7 +550,7 @@ def review_backlog_issues(vault_root: Path) -> list[dict[str, Any]]:
 def sensitivity_metadata_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in records:
-        if record.kind not in {"qa", "content_output", "episode", "concept", "entity", "procedure"}:
+        if record.kind not in {"qa", "content_output", "report_output", "slide_output", "chart_output", "episode", "topic", "concept", "entity", "procedure"}:
             continue
         visibility_scope = str(record.frontmatter.get("visibility_scope") or "shared").strip().lower()
         sensitivity_level = str(record.frontmatter.get("sensitivity_level") or "").strip().lower()
@@ -621,7 +621,7 @@ def audit_trail_gap_issues(vault_root: Path) -> list[dict[str, Any]]:
 def duplicate_alias_set_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     alias_map: dict[tuple[str, ...], list[str]] = defaultdict(list)
     for record in live_records(records):
-        if record.kind not in {"concept", "entity"}:
+        if record.kind not in {"topic", "concept", "entity"}:
             continue
         aliases = sorted({slugify_identity(alias) for alias in list_field(record.frontmatter, "aliases") if slugify_identity(alias)})
         if len(aliases) < 2:
@@ -645,7 +645,7 @@ def volatile_page_stale_issues(records: list[MarkdownRecord]) -> list[dict[str, 
     now = datetime.now(UTC)
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
-        if record.kind not in {"summary", "concept", "entity", "procedure"}:
+        if record.kind not in {"summary", "topic", "concept", "entity", "procedure"}:
             continue
         volatility = str(record.frontmatter.get("domain_volatility") or "").strip().lower()
         if volatility not in thresholds:

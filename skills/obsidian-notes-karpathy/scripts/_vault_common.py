@@ -64,6 +64,8 @@ def classify_markdown_path(rel_path: str) -> str:
         return "entity"
     if normalized.startswith("wiki/live/procedures/") or normalized.startswith("wiki/drafts/procedures/"):
         return "procedure"
+    if normalized.startswith("wiki/live/topics/") or normalized.startswith("wiki/drafts/topics/"):
+        return "topic"
     if normalized.startswith("wiki/live/overviews/") or normalized.startswith("wiki/drafts/overviews/"):
         return "overview"
     if normalized.startswith("wiki/live/comparisons/") or normalized.startswith("wiki/drafts/comparisons/"):
@@ -79,6 +81,12 @@ def classify_markdown_path(rel_path: str) -> str:
         return "index"
     if normalized.startswith("outputs/qa/"):
         return "qa"
+    if normalized.startswith("outputs/reports/"):
+        return "report_output"
+    if normalized.startswith("outputs/slides/"):
+        return "slide_output"
+    if normalized.startswith("outputs/charts/"):
+        return "chart_output"
     if normalized.startswith("raw/"):
         return "raw"
     return "other"

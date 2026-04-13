@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: Incrementally compile immutable markdown captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants newly added markdown material under `raw/human/**`, `raw/agents/{role}/**`, or bootstrap `raw/*.md` turned into reviewable summaries, concepts, entities, and draft indices. Do not treat `raw/**/papers/*.pdf` as a normal compile trigger: those paper ingests still belong to `paper-workbench`, and `kb-compile` should only surface or defer them.
+description: Incrementally compile tracked raw captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants tracked material under `raw/human/**`, `raw/agents/{role}/**`, bootstrap `raw/*.md`, `raw/**/assets/*`, or `raw/**/data/*` turned into reviewable summaries, topics, concepts, entities, and draft indices. Do not treat `raw/**/papers/*.pdf` as a normal compile trigger: those paper ingests still belong to `paper-workbench`, and `kb-compile` should only surface or defer them.
 ---
 
 # KB Compile
@@ -10,7 +10,7 @@ Incrementally turn immutable raw captures into reviewable draft knowledge.
 ## Minimal loop
 
 1. detect new or changed captures
-2. compile them into reviewable summaries, concepts, entities, and indices
+2. compile them into reviewable summaries, topics, concepts, entities, relationships, and indices
 3. surface conflicts, alias overlap, duplicate risk, and hub candidates
 4. hand the package to `kb-review`
 
@@ -40,6 +40,8 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md`
 - `../obsidian-notes-karpathy/references/memory-lifecycle.md`
 - `../obsidian-notes-karpathy/references/graph-contract.md`
+- `../obsidian-notes-karpathy/references/source-manifest-contract.md`
+- `../obsidian-notes-karpathy/references/topic-template.md`
 - `../obsidian-notes-karpathy/references/procedure-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and allowed write surfaces.
@@ -53,6 +55,7 @@ If `../obsidian-notes-karpathy/scripts/scan_compile_delta.py` exists, run it fir
 - never promote directly into `wiki/live/`
 - keep human captures and agent captures distinguishable in provenance
 - keep PDF paper handling strict: `raw/**/papers/*.pdf` still routes through `paper-workbench`
+- prefer tracked sources from `raw/_manifest.yaml` when it is present
 
 ## Source discovery
 
@@ -61,6 +64,8 @@ Accept:
 - markdown captures under `raw/human/**`
 - markdown captures under `raw/agents/{role}/**`
 - markdown captures directly under `raw/` in bootstrap vaults
+- image assets under `raw/**/assets/*`
+- data assets under `raw/**/data/*`
 - legacy-layout markdown captures under older paths only during migration
 - paper PDFs under any `papers/` subtree inside raw
 
@@ -78,10 +83,12 @@ Before shaping drafts:
 ## Main outputs
 
 - `wiki/drafts/summaries/**`
+- `wiki/drafts/topics/**`
 - `wiki/drafts/concepts/**`
 - `wiki/drafts/entities/**` when needed
 - `wiki/drafts/procedures/**` when the durable delta is a workflow rather than a semantic page
 - `wiki/drafts/indices/*`
+- `wiki/drafts/indices/packages/**`
 - batch `ingest` entry in `wiki/log.md`
 
 The compile pass exists to hand clean draft packages to `kb-review`, which then writes `outputs/reviews/**`, promotes approved pages into `wiki/live/**`, and rebuilds `wiki/briefings/**`.
@@ -104,6 +111,8 @@ Every draft should include:
 - `duplicate_candidates` when draft/live pages may already cover the concept
 - `promotion_target` as `semantic` or `procedural`
 - `candidate_entities` and `candidate_relationships` when compile sees reusable graph structure
+- `topic_candidates` when compile sees a stable browse-layer clustering signal
+- `review_package_meta` pointing at the deterministic source package
 - `confidence_inputs` when the draft is already strong enough to justify a future confidence score
 
 Drafts should be shaped for review, not for final polish.
