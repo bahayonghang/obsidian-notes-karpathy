@@ -7,12 +7,20 @@ description: Register and normalize raw source intake for an Obsidian knowledge 
 
 Track raw sources in a canonical manifest before compile shapes draft knowledge.
 
+In Karpathy's LLM Wiki pattern, ingest is the moment raw evidence becomes visible to the system. A well-maintained manifest means compile can trust what it sees, deferred sources stay explicit instead of silently lost, and the user always knows what the knowledge base has ingested.
+
 ## Minimal loop
 
-1. discover raw sources
-2. compare them against `raw/_manifest.yaml`
-3. register new or changed entries
-4. mark deferred sources such as paper PDFs explicitly instead of hiding them
+1. scan `raw/` for all source files
+2. run `scan_ingest_delta.py` to compare against `raw/_manifest.yaml`
+3. present the delta to the user for confirmation
+4. register new or changed entries via `sync_source_manifest.py`
+5. mark deferred sources explicitly with reason
+6. append an `ingest` entry to `wiki/log.md`
+
+## When this compounds the wiki
+
+Good ingest work makes the source library navigable and trustworthy. Every source should be visible in the manifest with enough metadata that compile, review, and query can trace provenance back to the original capture.
 
 ## Read before ingesting
 
@@ -30,16 +38,73 @@ Treat `skill-contract-registry.json` as the canonical source for required refere
 
 If available, run:
 
-- `../obsidian-notes-karpathy/scripts/scan_ingest_delta.py`
+- `../obsidian-notes-karpathy/scripts/scan_ingest_delta.py` to detect the delta
 - `../obsidian-notes-karpathy/scripts/sync_source_manifest.py` when the task is writable
 
-## Rules
+## Source discovery
+
+Scan these paths for raw sources:
+
+- `raw/human/articles/**` — web clips and article captures
+- `raw/human/papers/**` — literature PDFs (deferred to `paper-workbench`)
+- `raw/human/podcasts/**` — podcast and audio transcripts
+- `raw/human/repos/**` — repository snapshots or code captures
+- `raw/human/assets/**` — images and visual evidence
+- `raw/human/data/**` — structured data files
+- `raw/agents/{role}/**` — agent-generated captures
+- `raw/*.md` — bootstrap root captures in early-stage vaults
+
+## Manifest entry format
+
+Each entry in `raw/_manifest.yaml` must include:
+
+```yaml
+- source_id: "{unique-slug}"
+  path: "raw/human/articles/example-article.md"
+  source_type: article | paper | podcast | repo | asset | data | agent-capture
+  capture_origin: human | agent:{role}
+  source_url_or_handle: "https://example.com/article"
+  content_hash: "{sha256 or mtime}"
+  first_seen_at: "2026-04-14"
+  last_seen_at: "2026-04-14"
+  ingest_status: ready-for-compile | deferred | deferred-missing-skill
+  normalized_outputs: []
+```
+
+Optional fields:
+
+- `deferred_to: paper-workbench` — for paper PDFs awaiting external processing
+- `metadata_path: raw/human/papers/example.meta.yaml` — when metadata lives alongside the source
+
+## Non-negotiable rules
 
 - never rewrite `raw/**` content
 - always record paper PDFs in the manifest even when compile must defer them
 - keep image and data assets visible at the manifest layer even if downstream compile remains metadata-first
 - preserve `first_seen_at` when an entry already exists
 - use `raw/_manifest.yaml` as the user-visible canonical registry
+- if the manifest file does not exist, create it with the entries discovered
+
+## Checkpoint
+
+Before writing the manifest update, present the delta summary:
+
+```
+New sources:      N (list paths)
+Changed sources:  N (list paths with what changed)
+Deferred sources: N (list paths with reason)
+Removed sources:  N (list paths — only mark removed, never delete raw files)
+```
+
+Proceed only after the user confirms, or if all sources are straightforward new markdown captures with no ambiguity.
+
+## Edge cases
+
+- **Missing manifest**: create `raw/_manifest.yaml` from scratch by scanning all of `raw/`
+- **Corrupted manifest**: warn the user, rebuild from the file system, preserve any `first_seen_at` dates that can be recovered
+- **Mixed source types in one directory**: register each file individually with the correct `source_type`
+- **Paper PDFs**: always register with `ingest_status: deferred` and `deferred_to: paper-workbench`; never skip them silently
+- **Duplicate paths**: warn and deduplicate by keeping the entry with the earlier `first_seen_at`
 
 ## Output to the user
 
@@ -49,3 +114,4 @@ Report:
 2. how many sources were new, changed, unchanged, or removed
 3. which sources were deferred and why
 4. whether the next step is `kb-compile`
+5. any anomalies discovered during scanning (missing files, duplicates, unexpected formats)
