@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: Incrementally compile tracked raw captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants tracked material under `raw/human/**`, `raw/agents/{role}/**`, bootstrap `raw/*.md`, `raw/**/assets/*`, or `raw/**/data/*` turned into reviewable summaries, topics, concepts, entities, and draft indices. Do not treat `raw/**/papers/*.pdf` as a normal compile trigger: those paper ingests still belong to `paper-workbench`, and `kb-compile` should only surface or defer them.
+description: 'Incrementally compile tracked raw captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants tracked material under `raw/human/**`, `raw/agents/{role}/**`, bootstrap `raw/*.md`, `raw/**/assets/*`, or `raw/**/data/*` turned into reviewable summaries, topics, concepts, entities, and draft indices. Do not treat `raw/**/papers/*.pdf` as a normal compile trigger: those paper ingests still belong to `paper-workbench`, and `kb-compile` should only surface or defer them.'
 ---
 
 # KB Compile
