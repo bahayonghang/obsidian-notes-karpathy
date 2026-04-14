@@ -78,6 +78,21 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 
 这样可以保持 provenance 清晰，避免快速摄入直接固化成长期真相。
 
+## Karpathy 对齐
+
+本项目实现了 [Karpathy 的 LLM Wiki 模式](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)，并增加了一个关键扩展：显式的 review gate（draft → review → live 提升流程）。
+
+| Karpathy 原始模式 | 本项目 | 扩展理由 |
+| --- | --- | --- |
+| Raw sources（不可变） | `raw/` + `raw/_manifest.yaml` | 增加来源登记表用于跟踪摄入 |
+| The wiki（LLM维护） | `wiki/drafts/` → `wiki/live/` | 拆分为草稿层和已批准层，中间有提升门控 |
+| The schema（CLAUDE.md） | `AGENTS.md` + `CLAUDE.md` + 共享 `references/` | 扩展为完整的契约注册表 |
+| Ingest | `kb-ingest` + `kb-compile` | 将来源登记与草稿编译分离 |
+| Query | `kb-query` + `kb-render` | 将有依据的回答与确定性派生物分离 |
+| Lint | `kb-review` 维护模式 | 将健康检查提升为一等治理通道 |
+
+核心隐喻保持不变："Obsidian 是 IDE；LLM 是程序员；wiki 是代码库。" 用户负责策展来源和提问。LLM 负责所有让知识持续复利的记账工作。
+
 ## 必需支撑层与可选输出
 
 初始化最小支撑层是 `raw/`、`wiki/drafts/`、`wiki/live/`、`wiki/briefings/`、`wiki/index.md`、`wiki/log.md`、`outputs/reviews/`、`AGENTS.md`、`CLAUDE.md`。

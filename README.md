@@ -78,6 +78,21 @@ Instead:
 
 This keeps provenance visible and prevents fast ingest from silently hardening into long-term truth.
 
+## Karpathy alignment
+
+This project implements [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) with one key extension: an explicit review gate.
+
+| Karpathy's pattern | This project | Why the extension |
+| --- | --- | --- |
+| Raw sources (immutable) | `raw/` + `raw/_manifest.yaml` | Added a canonical manifest for tracked intake |
+| The wiki (LLM-maintained) | `wiki/drafts/` → `wiki/live/` | Split into draft and approved layers with a promotion gate |
+| The schema (CLAUDE.md) | `AGENTS.md` + `CLAUDE.md` + shared `references/` | Expanded into a full contract registry |
+| Ingest | `kb-ingest` + `kb-compile` | Separated source registration from draft compilation |
+| Query | `kb-query` + `kb-render` | Separated grounded answers from deterministic derivatives |
+| Lint | `kb-review` maintenance mode | Made the health check a first-class governance lane |
+
+The core metaphor is preserved: "Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase." The user curates sources and asks questions. The LLM handles all the bookkeeping that makes knowledge compound over time.
+
 ## Required support vs optional outputs
 
 The required support layer is `raw/`, `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, `wiki/index.md`, `wiki/log.md`, `outputs/reviews/`, `AGENTS.md`, and `CLAUDE.md`.
