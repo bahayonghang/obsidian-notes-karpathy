@@ -112,6 +112,16 @@ For legacy-layout vaults:
 - scaffold the review-gated directories first
 - treat migration as a repair step, not as a normal compile or query pass
 
+## Checkpoint
+
+Before creating or repairing the support layer, confirm with the user:
+
+- which operating profile to use (`governed-team`, `standard`, or `fast-personal`)
+- whether optional governance scaffolding (`QUESTIONS.md`, `GAPS.md`, `ALIASES.md`) is wanted
+- whether this is a fresh setup, a repair of an existing vault, or a legacy-layout migration
+
+For a fresh vault with no existing content, proceed after profile selection without further confirmation.
+
 ## Contract guarantees
 
 - `raw/` stays immutable

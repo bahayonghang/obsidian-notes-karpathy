@@ -7,6 +7,8 @@ description: Query, search, and generate grounded outputs from the approved live
 
 Search, answer, and generate outputs from the approved live layer.
 
+In Karpathy's words: "good answers can be filed back into the wiki as new pages." `kb-query` is where explorations compound — every substantive answer should leave the wiki slightly better than before.
+
 ## Minimal loop
 
 1. locate the best approved live pages and briefings
@@ -76,10 +78,21 @@ Those layers may be cited only as evidence if a human explicitly asks for source
 
 ## Modes
 
-1. search mode for quickly locating approved pages and ranking local candidates before synthesis
-2. research mode for grounded answers archived into `outputs/qa/`
-3. web mode for static browseable web exports under `outputs/web/`
-4. reflect-lite mode for question resolution, synthesis notes, or gap reports that should stay outside live until re-reviewed
+1. **search** — quickly locate approved pages and rank local candidates before synthesis
+   - Example: "这个wiki里有没有关于 transformer attention 的内容"
+   - Output: ranked page list with relevance snippets, no new file created
+
+2. **research** — grounded answers archived into `outputs/qa/`
+   - Example: "对比一下 RAG 和 LLM Wiki 的优缺点"
+   - Output: structured Q&A markdown saved to `outputs/qa/`
+
+3. **web** — static browseable web exports under `outputs/web/`
+   - Example: "导出一个静态知识站"
+   - Output: HTML package rooted at `outputs/web/{slug}/index.html`
+
+4. **reflect-lite** — question resolution, synthesis notes, or gap reports that stay outside live until re-reviewed
+   - Example: "这几个概念之间的关系还没理清楚，帮我整理一下"
+   - Output: reflection note in `outputs/qa/`, with `followup_route: draft` if durable
 
 When a substantive answer or artifact creates durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, `writeback_status`, and a `followup_route` so the next compile/review or maintenance pass can decide what should happen next.
 
@@ -129,6 +142,16 @@ Use:
 - `none` when the output is grounded and does not create durable follow-up work
 - `draft` when the output suggests new or updated long-term knowledge that must re-enter draft -> review -> live
 - `review` when the next action is an immediate human decision or a governance pass on already-prepared maintenance work
+
+## Checkpoint
+
+Before archiving a substantive answer, confirm:
+
+- the answer is grounded in approved pages (not fabricated from general knowledge)
+- the `followup_route` is set correctly: `none` when self-contained, `draft` when new knowledge was discovered, `review` when existing approved pages need updating
+- any `writeback_candidates` are concrete and actionable, not vague placeholders
+
+For simple search-mode lookups, no checkpoint is needed.
 
 ## Output to the user
 

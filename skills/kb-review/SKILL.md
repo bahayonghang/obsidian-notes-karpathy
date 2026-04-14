@@ -10,6 +10,8 @@ Run the canonical governance lane between draft knowledge and the approved live 
 - `gate` mode for pending draft decisions, promotion/rejection, and briefing rebuilds tied to the same review pass
 - `maintenance` mode for approved-layer drift, stale briefings, provenance and alias refresh, governance-index rebuilds, graph gaps, backlog pressure, and safe mechanical fixes
 
+In Karpathy's LLM Wiki, this maps to two operations: the implicit quality judgment during ingest (our `gate` mode), and the explicit "Lint" pass he describes — "look for contradictions between pages, stale claims that newer sources have superseded, orphan pages with no inbound links, important concepts mentioned but lacking their own page, missing cross-references" (our `maintenance` mode). This contract makes both operations explicit and separable.
+
 ## Minimal loop
 
 1. inspect the draft package, cited captures, and overlapping live pages
