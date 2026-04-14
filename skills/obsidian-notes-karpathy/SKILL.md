@@ -18,6 +18,12 @@ Use this skill when the user talks about the workflow as a whole, not just one o
 - `kb-render` turns approved knowledge into deterministic derivative artifacts
 - `kb-review` also owns the maintenance lane when approved knowledge drifts or backlog accumulates
 
+## Karpathy alignment
+
+This package implements the LLM Wiki pattern: "Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase." The user curates sources, asks questions, and thinks about meaning. The LLM handles summarizing, cross-referencing, filing, and bookkeeping that makes knowledge compound over time.
+
+The key extension beyond Karpathy's original idea is an explicit review gate: unreviewed drafts never silently harden into long-term truth. This adds a `draft → review → live` promotion step that Karpathy's pattern leaves implicit.
+
 ## When this compounds the wiki
 
 The package should behave like a persistent markdown wiki operator, not just a staged pipeline. Each step should either improve approved knowledge directly through the gate or leave behind clearer navigation, better reuse surfaces, and explicit next actions.
@@ -127,7 +133,7 @@ Route to `kb-review` in `maintenance` mode when:
 
 `kb-review` owns both the immediate gate and the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, graph weakness, hub backlog, and safe mechanical fixes after the immediate review gate has passed.
 
-## Read before routing
+## Contract rules
 
 - Treat `raw/` as immutable evidence intake.
 - Treat `raw/_manifest.yaml` as the canonical source registry.
