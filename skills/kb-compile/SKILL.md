@@ -7,6 +7,8 @@ description: 'Incrementally compile tracked raw captures into reviewable draft k
 
 Incrementally turn immutable raw captures into reviewable draft knowledge.
 
+In Karpathy's pattern, this is where "the LLM reads it, extracts the key information, and integrates it into the existing wiki — updating entity pages, revising topic summaries, noting where new data contradicts old claims." A single source might touch 10-15 wiki pages. In this contract, compile shapes candidates for the review gate rather than writing directly to the live brain.
+
 ## Minimal loop
 
 1. detect new or changed captures
@@ -116,6 +118,16 @@ Every draft should include:
 - `confidence_inputs` when the draft is already strong enough to justify a future confidence score
 
 Drafts should be shaped for review, not for final polish.
+
+## Checkpoint
+
+Before writing draft packages, confirm with the user:
+
+- how many captures will be compiled and which ones
+- whether any sources look ambiguous, duplicated, or potentially conflicting with existing live pages
+- whether alias or duplicate candidates should be surfaced now or deferred to review
+
+For single-source incremental compiles with no ambiguity, proceed without pausing.
 
 ## Output to the user
 
