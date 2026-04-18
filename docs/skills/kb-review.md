@@ -31,4 +31,4 @@ Run the canonical governance lane between draft knowledge and the approved live 
 - auto-reject when blocking flags remain or the evidence trail is weak
 - escalate to human review when the draft conflicts with approved live knowledge or falls into an ambiguous score band
 
-`kb-review` should explicitly weigh fact/inference separation, alias alignment, duplicate risk, contradiction handling, and promotion value. In maintenance mode it should also audit drift, backlog pressure, provenance quality, stale archived outputs, and weak graph structure across approved surfaces.
+`kb-review` should explicitly weigh fact/inference separation, alias alignment, duplicate risk, contradiction handling, and promotion value. In maintenance mode it should also audit drift, backlog pressure, provenance quality, stale archived outputs, weak graph structure across approved surfaces, and creator consistency between `CLAUDE.md`, `MEMORY.md`, account `_style-guide.md`, and account briefings.

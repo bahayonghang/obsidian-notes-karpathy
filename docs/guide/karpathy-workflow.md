@@ -21,6 +21,19 @@ This workflow treats a knowledge base like a codebase with source, build artifac
 - useful Q&A gets stored as artifacts
 - durable outputs can generate writeback work that re-enters drafts and review
 - the wiki can be checked for drift, contradictions, and weak structure
+- creator-facing prose can be produced from approved knowledge without collapsing the truth boundary
+
+## Compile posture
+
+This bundle's default compile method is not "write a generic summary".
+
+Instead, compile should follow:
+
+`浓缩 -> 质疑 -> 对标`
+
+- `浓缩` keeps only the core conclusions plus evidence
+- `质疑` records assumptions, boundary conditions, and failure cases
+- `对标` looks for cross-domain transfer value and procedure / hub candidates
 
 ## Retrieval model
 

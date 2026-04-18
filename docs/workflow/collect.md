@@ -22,6 +22,14 @@ Use metadata such as:
 - `tags`
 - `clipped_at`
 
+### web-access or browser-side collection
+
+Use this before `kb-ingest` when the source is still on the web and has not been captured into `raw/` yet.
+
+- `web-access` is the preferred upstream companion when the site needs real-browser navigation, login state, or asset-aware collection
+- after collection, commit the markdown capture and any linked local assets into `raw/`
+- let `kb-ingest` register the capture rather than writing manifest entries by hand
+
 ### Manual markdown creation
 
 Use the same metadata shape, but keep raw notes free of compilation-state fields.
@@ -43,6 +51,8 @@ If the source artifact is a paper PDF, place it under a `papers/` subtree inside
 That means:
 
 - put source metadata in raw notes
+- put browser/CDP or Web Clipper provenance into manifest metadata such as `capture_method`
+- keep local images or attachments visible through `linked_assets` when the markdown depends on them
 - put compilation metadata in summary pages
 - let `kb-compile` update wiki pages, not the source file itself
 

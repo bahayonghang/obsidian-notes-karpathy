@@ -1,6 +1,6 @@
 # Obsidian Notes Karpathy
 
-面向多 Agent 的、带显式审校与批准流程的 Obsidian 知识库技能包。
+面向多 Agent 的、带显式审校与批准流程的 Obsidian 知识库技能包，并进一步朝 creator-ready LLM Wiki 工作流演进。
 
 这个 bundle 也面向那些不会先说 `kb-init`、`kb-compile` 的用户。他们可能会说“帮我做个 LLM Wiki”“做个 Karpathy 风格知识库”“把 Obsidian 当 IDE”“做个知识编译器”“搭个个人知识库 / second brain”，这些都应该自然落到正确技能。
 
@@ -17,7 +17,7 @@ wiki/briefings/ -> 只从 live 生成的角色简报
 outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 ```
 
-核心思想不再只是“把笔记编译成 wiki”，而是“把生产和裁决分开，避免未审草稿进入可复用真相层并持续复利。”
+核心思想不再只是“把笔记编译成 wiki”，而是“把生产和裁决分开，避免未审草稿进入可复用真相层并持续复利”，并让 compile 本身具备面向创作者的知识编译能力。
 
 ## 技能列表
 
@@ -35,6 +35,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 | --- | --- | --- |
 | 新建、修复或迁移带审校与批准流程的 vault | `kb-init` | 无 |
 | 把 raw Markdown、asset、data 登记进 manifest | `kb-ingest` | 无 |
+| 在登记前先把网页采集进 vault | 还不属于核心路由 | `web-access` 或 Obsidian Web Clipper |
 | 把 raw Markdown 编译成 drafts | `kb-compile` | 无 |
 | 审校并提升 draft knowledge | `kb-review` | 无 |
 | 只从已批准知识层检索 / 排序 / 归档 / 导出静态知识站 | `kb-query` | 无 |
@@ -88,7 +89,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 | The wiki（LLM维护） | `wiki/drafts/` → `wiki/live/` | 拆分为草稿层和已批准层，中间有提升门控 |
 | The schema（CLAUDE.md） | `AGENTS.md` + `CLAUDE.md` + 共享 `references/` | 扩展为完整的契约注册表 |
 | Ingest | `kb-ingest` + `kb-compile` | 将来源登记与草稿编译分离 |
-| Query | `kb-query` + `kb-render` | 将有依据的回答与确定性派生物分离 |
+| Query / publish | `kb-query` + `kb-render` | 将 grounded 对外内容与确定性派生物分离 |
 | Lint | `kb-review` 维护模式 | 将健康检查提升为一等治理通道 |
 
 核心隐喻保持不变："Obsidian 是 IDE；LLM 是程序员；wiki 是代码库。" 用户负责策展来源和提问。LLM 负责所有让知识持续复利的记账工作。
@@ -113,6 +114,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 面向创作者的常见工作面可这样映射：
 
 - 素材库 / 网页摘录 -> `raw/`
+- 网页采集进入 raw 前 -> `web-access` 或 Obsidian Web Clipper，再交给 `kb-ingest`
 - 编辑协作记忆 -> `MEMORY.md`
 - 工作链路结晶 -> `outputs/episodes/`
 - 可复用的研究问答或写作笔记 -> `outputs/qa/`
@@ -127,7 +129,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 - `kb-ingest` 负责来源登记表、manifest 刷新与 deferred intake 说明。
 - `kb-compile` 负责 raw 到 draft 的更新，也接受 bootstrap 阶段的 `raw/*.md`。
 - `kb-review` 统一负责治理路径：既处理 pending drafts 与角色简报重建，也负责 `维护模式` 下的 drift、backlog、provenance、alias 和已批准层面的安全机械修复。
-- `kb-query` 只读取已批准知识层，并负责 search / 有依据的 Q&A / archived Q&A reuse / static web export。
+- `kb-query` 只读取已批准知识层，并负责 search / 有依据的 Q&A / explicit `publish` mode / archived Q&A reuse / static web export。
 - `kb-render` 负责确定性派生产物。
 
 ## 确定性脚本

@@ -22,6 +22,14 @@
 - `tags`
 - `clipped_at`
 
+### web-access / 浏览器采集
+
+如果资料还在网页上、尚未进入 `raw/`，先走这个上游步骤，再交给 `kb-ingest`。
+
+- 当站点需要真实浏览器、登录态或资产级采集时，优先用 `web-access`
+- 采集完成后，把 markdown 和本地附件一起放进 `raw/`
+- manifest 仍然交给 `kb-ingest` 统一登记，不要手工写
+
 ### 手动创建 markdown
 
 保持同样的元数据结构，但不要在 raw 中加入编译状态字段。
@@ -43,6 +51,8 @@
 这意味着：
 
 - 来源元数据放在 raw
+- 浏览器/CDP 或 Web Clipper 的采集方式应落到 manifest 元数据，例如 `capture_method`
+- markdown 依赖的本地图片或附件应通过 `linked_assets` 显式登记
 - 编译元数据放在摘要页
 - 让 `kb-compile` 维护 drafts，而不是回写源文件
 

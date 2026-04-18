@@ -29,6 +29,10 @@ vault/
 
 `MEMORY.md` 是推荐的协作记忆层，用来承接偏好、编辑优先级和协作约束，不应该变成专题知识页。
 
+如果资料还在网页上、尚未落进 `raw/`，把浏览器采集看成上游步骤。常见路径是：
+
+`web-access` 或 Web Clipper -> `raw/` -> `kb-ingest`
+
 `wiki/live/indices/` 下的 `INDEX.md`、`CONCEPTS.md`、`SOURCES.md`、`RECENT.md`、`EDITORIAL-PRIORITIES.md` 属于核心 live 索引。`QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图只在 vault 需要时创建。
 
 ## 所有权模型

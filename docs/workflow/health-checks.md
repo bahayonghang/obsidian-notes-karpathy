@@ -11,6 +11,7 @@
 - archived Q&A or publish artifacts may have writeback backlog
 - governance views such as `QUESTIONS.md`, `GAPS.md`, or `ALIASES.md` need a refresh
 - you need to check whether collaboration memory is leaking into approved knowledge
+- creator-facing guidance surfaces may be drifting apart
 
 If the immediate job is to approve pending drafts or rebuild stale briefings, use `kb-review` in `gate` mode. The same public skill switches to `maintenance` mode for broader upkeep across approved surfaces.
 
@@ -34,6 +35,9 @@ Health reports live in:
 - flag contradictions for human review
 - flag alias drift or duplicated concepts
 - flag stale archived Q&A or publish outputs
+- flag creator consistency drift across `CLAUDE.md`, `MEMORY.md`, `_style-guide.md`, and briefings
+- flag reuse gaps in archived creator outputs
+- flag underused approved sources that are not showing up in downstream outputs
 - identify missing concept pages
 - identify writeback backlog
 - identify collaboration memory drifting into approved knowledge

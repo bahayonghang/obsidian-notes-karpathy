@@ -29,6 +29,10 @@ vault/
 
 `MEMORY.md` is recommended collaboration scaffolding. It should hold preferences, editorial priorities, and coordination context, not approved topic knowledge.
 
+If the source is still on the web and has not been captured into `raw/` yet, treat browser-side collection as an upstream step. A common path is:
+
+`web-access` or Web Clipper -> `raw/` -> `kb-ingest`
+
 Core live indices such as `INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `RECENT.md`, and `EDITORIAL-PRIORITIES.md` belong under `wiki/live/indices/`. Optional governance views such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` are created only when the vault needs them.
 
 ## Ownership model

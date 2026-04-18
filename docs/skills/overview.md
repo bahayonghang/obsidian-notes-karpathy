@@ -10,7 +10,7 @@ This bundle has one package entry skill and six operational skills. It should al
 | The support layer exists but the source registry is stale | `kb-ingest` | Compile should follow a current source manifest rather than guessing raw state |
 | New or changed raw captures are waiting | `kb-compile` | The draft layer is behind the evidence layer |
 | Draft knowledge is waiting or briefings are stale and should be rebuilt in the next review pass | `kb-review` | The immediate next safe step is to gate a specific draft package or rebuild briefings |
-| The live wiki exists and the user wants an answer, ranked candidates, archived answer reuse, or a static web export | `kb-query` | The task is retrieval, synthesis, archival reuse, or static export from approved knowledge |
+| The live wiki exists and the user wants an answer, ranked candidates, archived answer reuse, a publishable article/thread, or a static web export | `kb-query` | The task is retrieval, synthesis, publish-mode prose, archival reuse, or static export from approved knowledge |
 | The user wants a deterministic slide deck, report, chart brief, or canvas artifact | `kb-render` | The task is a deterministic derivative from approved knowledge |
 | The user explicitly uses older `kb-search` wording | `kb-query` | Literal `kb-search` phrasing is absorbed by the canonical query skill |
 | The approved layer feels stale, contradictory, or disconnected, or backlog pressure has become a maintenance problem | `kb-review` | The canonical governance skill switches to `maintenance` mode for approved-surface diagnosis and safe repair |
@@ -30,6 +30,7 @@ This bundle has one package entry skill and six operational skills. It should al
 - `outputs/reviews/` stores promotion decisions.
 - optional governance views such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` are recommended for mature vaults, but they must stay grounded in approved live pages rather than archived outputs.
 - archived `outputs/qa/` and `outputs/content/` can feed maintenance signals, writeback backlog, and follow-up routing, but they do not become approved truth automatically.
+- web collection before `raw/` should use an upstream companion such as `web-access` or Obsidian Web Clipper; core bundle ownership starts once the source is in the vault.
 - curated hubs or editorial planning surfaces may exist, but they stay navigation/maintenance layers rather than truth-boundary shortcuts.
 - `wiki/index.md` is the content-first entry surface.
 - `wiki/log.md` is the time-first entry surface.

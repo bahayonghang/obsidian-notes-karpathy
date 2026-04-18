@@ -20,6 +20,7 @@ It should also keep `MEMORY.md` out of default topic retrieval. That file is for
 
 - research mode for grounded answers archived to `outputs/qa/**`
 - search mode for local-first candidate ranking before synthesis
+- publish mode for outward-facing prose grounded in approved knowledge and saved under `outputs/content/**`
 - web mode for static exports saved under `outputs/web/**`
 - reflect-lite mode for synthesis or gap notes that should stay outside live until re-reviewed
 
@@ -27,7 +28,7 @@ If the user still says `kb-search`, route it here as `kb-query` search mode.
 
 When a Q&A note or static web export creates durable follow-up work, capture structured `writeback_candidates`, `open_questions_touched`, `source_live_pages`, and a `followup_route` instead of leaving the next draft/review step implicit.
 
-Before drafting a new outward-facing artifact, prefer checking whether prior approved live coverage or archived Q&A already explains the background well enough to reuse directly.
+Before drafting a new outward-facing artifact, prefer checking whether prior approved live coverage or archived Q&A already explains the background well enough to reuse directly. Creator-facing requests such as public articles, threads, or newsletters belong to `publish` mode rather than generic writing.
 
 ## Retrieval ladder
 

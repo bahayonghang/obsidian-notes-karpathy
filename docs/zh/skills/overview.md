@@ -10,7 +10,7 @@
 | 支撑层已存在，但来源登记表已过期 | `kb-ingest` | 先把 manifest 刷新好，再进入 compile |
 | 新 raw 捕获还没进草稿层 | `kb-compile` | draft 层落后于 evidence 层 |
 | 草稿待审，或角色简报已过期且应在下一次审校流程中重建 | `kb-review` | 当前最安全的下一步是处理具体 draft package，或立刻重建角色简报 |
-| live 层已存在且用户要答案、候选排序、历史答案复用或静态知识站 | `kb-query` | 当前任务是提取、综合、归档复用或静态导出 |
+| live 层已存在且用户要答案、候选排序、历史答案复用、对外文章 / thread，或静态知识站 | `kb-query` | 当前任务是提取、综合、publish-mode prose、归档复用或静态导出 |
 | 用户想要确定性的幻灯片 / 报告 / 图表简报 / Canvas | `kb-render` | 当前任务是把已批准知识变成确定性派生产物 |
 | 用户明确沿用旧的 `kb-search` 说法 | `kb-query` | `kb-search` 会直接落到统一查询技能 |
 | 已批准知识层变脏、矛盾、断链，或 backlog pressure 已经变成维护问题 | `kb-review` | 统一治理技能会切到 `维护模式` 处理已批准层面的维护工作 |
@@ -30,6 +30,7 @@
 - `outputs/reviews/` 存 promotion 决策。
 - `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图更适合成熟 vault，但它们必须以已批准的 live 页面为基础，不能直接把归档产物抬升成真相层。
 - `outputs/qa/` 与 `outputs/content/` 里的归档内容可以提供维护信号、writeback backlog 与后续路由，但不会自动变成已批准知识层。
+- 资料还没进入 `raw/` 时，网页采集应先走 `web-access` 或 Obsidian Web Clipper；核心 bundle 从 vault 内部生命周期开始接管。
 - curated hub 或编辑规划面可以存在，但它们仍然是导航 / 维护层，而不是绕过真相边界的捷径。
 - `wiki/index.md` 是内容优先入口。
 - `wiki/log.md` 是时间优先入口。

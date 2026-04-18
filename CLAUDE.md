@@ -14,7 +14,7 @@ This is a skills-only project. The deliverables are:
 
 Canonical workflow:
 
-`raw/` -> `kb-ingest` -> `kb-compile` -> `wiki/drafts/` -> `kb-review` (`gate` / `maintenance`) -> `wiki/live/` + `wiki/live/topics/` + `wiki/live/procedures/` + `wiki/briefings/` -> `kb-query` / `kb-render` -> `outputs/`
+`collect` (`web-access` / Web Clipper / manual markdown) -> `kb-ingest` -> `kb-compile` (`浓缩 -> 质疑 -> 对标`) -> `wiki/drafts/` -> `kb-review` (`gate` / `maintenance`) -> `wiki/live/` + `wiki/live/topics/` + `wiki/live/procedures/` + `wiki/briefings/` -> `kb-query` (`research` / `publish` / `web`) or `kb-render` -> `outputs/`
 
 ## Repository Structure
 
@@ -23,7 +23,7 @@ Canonical workflow:
 - `skills/kb-ingest/SKILL.md` - source registration and manifest refresh
 - `skills/kb-compile/SKILL.md` - raw-to-draft compilation
 - `skills/kb-review/SKILL.md` - draft review gate plus approved-layer maintenance and governance refresh
-- `skills/kb-query/SKILL.md` - approved-layer search, answers, archived Q&A reuse, and static web export
+- `skills/kb-query/SKILL.md` - approved-layer search, answers, publish-mode outputs, archived Q&A reuse, and static web export
 - `skills/kb-render/SKILL.md` - deterministic slides/report/chart/canvas generation
 - `skills/obsidian-notes-karpathy/references/` - shared review-gated file model, lifecycle matrix, templates, governance policy, and rubric
 - `skills/obsidian-notes-karpathy/scripts/` - deterministic helpers including the skill contract registry, lifecycle detection, compile delta, review queue, query scope, and mechanical linting
@@ -47,6 +47,7 @@ Canonical workflow:
 - `AGENTS.md` is the required local contract; `CLAUDE.md` is the generated companion.
 - legacy-layout vaults must route through `kb-init` migration before normal operation.
 - source integrity, alias alignment, stale-page checks, and question / gap tracking are governance enhancements layered on top of the review gate rather than replacements for it.
+- creator consistency checks across `CLAUDE.md`, `MEMORY.md`, account `_style-guide.md`, and account briefings belong to `kb-review` maintenance mode.
 
 ## Support Layer Notes
 

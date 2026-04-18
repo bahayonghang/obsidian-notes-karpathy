@@ -1,6 +1,6 @@
 # Obsidian Notes Karpathy
 
-Review-gated, multi-agent-friendly Obsidian knowledge-base skills inspired by Karpathy-style markdown wikis.
+Review-gated, multi-agent-friendly Obsidian knowledge-base skills inspired by Karpathy-style markdown wikis and extended toward a creator-ready LLM Wiki workflow.
 
 This bundle is aimed at users who may ask for an `LLM Wiki`, a `Karpathy wiki`, an `Obsidian IDE` for notes, a `knowledge compiler`, a personal knowledge base, or a markdown-first `second brain` without knowing the internal `kb-*` command names yet.
 
@@ -17,7 +17,7 @@ wiki/briefings/ -> role-specific context generated from live
 outputs/        -> reviews, Q&A, health reports, audit logs, and publishable artifacts
 ```
 
-The core idea is no longer just "compile notes into a wiki". It is "separate production from judgment so unreviewed drafts never become compound retrieval truth."
+The core idea is no longer just "compile notes into a wiki". It is "separate production from judgment so unreviewed drafts never become compound retrieval truth," and make compile itself strong enough to produce creator-ready knowledge assets.
 
 ## Skill set
 
@@ -35,6 +35,7 @@ The core idea is no longer just "compile notes into a wiki". It is "separate pro
 | --- | --- | --- |
 | Fresh setup, repair, or legacy migration | `kb-init` | none |
 | Register raw markdown, assets, or data into the manifest | `kb-ingest` | none |
+| Collect a webpage into the vault before manifest registration | not a core route yet | `web-access` or Obsidian Web Clipper |
 | Compile raw markdown into drafts | `kb-compile` | none |
 | Review and promote draft knowledge | `kb-review` | none |
 | Query, rank approved candidates, reuse archived answers, or export a static knowledge site from approved live knowledge | `kb-query` | none |
@@ -88,7 +89,7 @@ This project implements [Karpathy's LLM Wiki pattern](https://gist.github.com/ka
 | The wiki (LLM-maintained) | `wiki/drafts/` → `wiki/live/` | Split into draft and approved layers with a promotion gate |
 | The schema (CLAUDE.md) | `AGENTS.md` + `CLAUDE.md` + shared `references/` | Expanded into a full contract registry |
 | Ingest | `kb-ingest` + `kb-compile` | Separated source registration from draft compilation |
-| Query | `kb-query` + `kb-render` | Separated grounded answers from deterministic derivatives |
+| Query / publish | `kb-query` + `kb-render` | Kept creator-facing prose in the read-side lane and deterministic derivatives in the render lane |
 | Lint | `kb-review` maintenance mode | Made the health check a first-class governance lane |
 
 The core metaphor is preserved: "Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase." The user curates sources and asks questions. The LLM handles all the bookkeeping that makes knowledge compound over time.
@@ -113,6 +114,7 @@ Substantive answers and publish artifacts may also carry structured writeback ca
 For creator-style workflows, a practical mapping is:
 
 - source library / clipped research -> `raw/`
+- web collection before raw intake -> `web-access` or Obsidian Web Clipper, then `kb-ingest`
 - editorial memory -> `MEMORY.md`
 - session crystallization -> `outputs/episodes/`
 - reusable research answers or drafting notes -> `outputs/qa/`
@@ -127,7 +129,7 @@ For creator-style workflows, a practical mapping is:
 - `kb-ingest` owns source registration, manifest refresh, and deferred intake surfacing.
 - `kb-compile` owns raw-to-draft updates, including bootstrap `raw/*.md` captures.
 - `kb-review` owns the governance lane: immediate draft promotion plus maintenance-mode drift checks, backlog pressure, provenance audits, alias drift, question/gap resurfacing, and safe mechanical fixes in approved surfaces only.
-- `kb-query` reads approved live knowledge only and owns search, grounded answers, archived Q&A reuse, and static web export.
+- `kb-query` reads approved live knowledge only and owns search, grounded answers, explicit `publish` mode, archived Q&A reuse, and static web export.
 - `kb-render` owns deterministic derivatives from approved knowledge.
 
 ## Deterministic helpers
