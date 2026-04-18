@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from _vault_common import list_field, load_markdown, normalize_identity, parse_datetime, slugify_identity
-from _vault_ingest import load_source_manifest
+from _vault_ingest import load_source_manifest, manifest_optional_metadata_for_source
 from _vault_layout import (
     accepted_raw_sources,
     compute_hash,
@@ -149,6 +149,55 @@ def _source_package(vault_root: Path, raw_path: Path) -> dict[str, Any]:
     }
 
 
+def _record_list(record: Any | None, *keys: str) -> list[str]:
+    if record is None:
+        return []
+    values: list[str] = []
+    for key in keys:
+        values.extend(list_field(record.frontmatter, key))
+    return sorted(dict.fromkeys(value.strip() for value in values if value.strip()))
+
+
+def _compile_method_payload(
+    record: Any | None,
+    topic_candidates: list[str],
+    concept_candidates: list[str],
+) -> dict[str, Any]:
+    boundary_conditions = _record_list(record, "boundary_conditions", "limits", "boundary_notes")
+    assumption_flags = _record_list(record, "assumption_flags", "assumptions")
+    transfer_targets = _record_list(record, "transfer_targets", "cross_domain_targets", "transferable_to")
+    core_conclusions = _record_list(record, "core_conclusions")
+    key_evidence = _record_list(record, "key_evidence")
+
+    if not core_conclusions and record is not None:
+        title = record.frontmatter.get("title")
+        if isinstance(title, str) and title.strip():
+            core_conclusions = [f"{title.strip()} introduces a durable candidate for the review gate."]
+    if not key_evidence and record is not None:
+        source = record.frontmatter.get("source")
+        if isinstance(source, str) and source.strip():
+            key_evidence = [source.strip()]
+    if not transfer_targets:
+        transfer_targets = [f"hub:{topic_candidates[0]}"] if topic_candidates else []
+        if not transfer_targets and concept_candidates:
+            transfer_targets = [f"concept:{concept_candidates[0]}"]
+
+    promotion_target = "semantic"
+    if record is not None:
+        explicit = record.frontmatter.get("promotion_target")
+        if isinstance(explicit, str) and explicit.strip():
+            promotion_target = explicit.strip()
+
+    return {
+        "boundary_conditions": boundary_conditions,
+        "assumption_flags": assumption_flags,
+        "transfer_targets": transfer_targets,
+        "core_conclusions": core_conclusions,
+        "key_evidence": key_evidence,
+        "promotion_target": promotion_target,
+    }
+
+
 def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
     items: list[dict[str, Any]] = []
     counts = Counter()
@@ -202,6 +251,9 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
         if manifest_entry:
             item["manifest_source_id"] = manifest_entry.get("source_id")
             item["source_url_or_handle"] = manifest_entry.get("source_url_or_handle") or ""
+            item["capture_method"] = manifest_entry.get("capture_method") or ""
+            item["linked_assets"] = manifest_entry.get("linked_assets") or []
+            item["source_profile"] = manifest_entry.get("source_profile") or ""
         raw_mtime_dt = parse_datetime(raw_mtime)
         stale_hint, age_days = _staleness_hint(raw_mtime_dt, now_dt)
         item["last_verified_at"] = raw_mtime
@@ -213,13 +265,26 @@ def scan_compile_delta(vault_root: Path) -> dict[str, Any]:
         duplicate_paths = sorted({path for candidate in alias_candidates for path in identity_registry.get(candidate, set())})
         item["alias_candidates"] = alias_candidates
         item["duplicate_candidates"] = duplicate_paths
-        item["source_package"] = _source_package(vault_root, raw_path)
-
         if item["source_class"] == "paper_pdf":
             item.update(pdf_ingest_plan(vault_root, raw_path, companion_status))
         else:
             item["ingest_plan"] = "markdown"
             item["ingest_reason"] = "markdown_source"
+        if not manifest_entry:
+            item.update(
+                manifest_optional_metadata_for_source(
+                    vault_root,
+                    raw_path,
+                    item["source_class"],
+                    item if item["source_class"] == "paper_pdf" else None,
+                )
+            )
+
+        item["source_package"] = _source_package(vault_root, raw_path)
+        item["source_package"]["capture_method"] = item.get("capture_method") or ""
+        item["source_package"]["linked_assets"] = item.get("linked_assets") or []
+        if item.get("source_profile"):
+            item["source_package"]["source_profile"] = item["source_profile"]
 
         ingest_counts[item["ingest_plan"]] += 1
         if item["ingest_plan"] == "skip":
@@ -317,6 +382,11 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
 
         raw_path = vault_root / item["path"]
         record = _candidate_record(vault_root, raw_path)
+        topic_candidates = item["source_package"]["topic_candidates"]
+        concept_candidates = item["source_package"]["concept_candidates"]
+        entity_candidates = item["source_package"]["entity_candidates"]
+        relationship_candidates = item["source_package"]["relationship_candidates"]
+        compile_method = _compile_method_payload(record, topic_candidates, concept_candidates)
         package = {
             "source_id": item.get("manifest_source_id") or item["path"].replace("/", "--").removesuffix(".md"),
             "source_path": item["path"],
@@ -324,6 +394,10 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
             "source_package": item["source_package"],
             "capture_source": item["capture_source"],
             "source_class": item["source_class"],
+            "capture_method": item.get("capture_method") or "",
+            "linked_assets": item.get("linked_assets") or [],
+            "source_profile": item.get("source_profile") or "",
+            "compile_method": compile_method,
         }
         packages.append(package)
 
@@ -332,10 +406,6 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
 
         summary_path = vault_root / item["source_package"]["summary"]
         review_meta_path = vault_root / item["source_package"]["review_package_meta"]
-        topic_candidates = item["source_package"]["topic_candidates"]
-        concept_candidates = item["source_package"]["concept_candidates"]
-        entity_candidates = item["source_package"]["entity_candidates"]
-        relationship_candidates = item["source_package"]["relationship_candidates"]
         source_ref = f"[[{item['path'].removesuffix('.md')}]]" if item["path"].endswith(".md") else item["path"]
 
         summary_lines = [
@@ -351,6 +421,7 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
             'review_state: "pending"',
             'review_score: "0.75"',
             "blocking_flags: []",
+            f'promotion_target: "{compile_method["promotion_target"]}"',
             "topic_candidates:",
         ]
         summary_lines.extend(f'  - "{slug}"' for slug in topic_candidates) if topic_candidates else summary_lines.append('  - ""')
@@ -360,6 +431,12 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
         summary_lines.extend(f'  - "{slug}"' for slug in entity_candidates) if entity_candidates else summary_lines.append('  - ""')
         summary_lines.append("relationship_candidates:")
         summary_lines.extend(f'  - "{rel}"' for rel in relationship_candidates) if relationship_candidates else summary_lines.append('  - ""')
+        summary_lines.append("boundary_conditions:")
+        summary_lines.extend(f'  - "{value}"' for value in compile_method["boundary_conditions"]) if compile_method["boundary_conditions"] else summary_lines.append('  - ""')
+        summary_lines.append("assumption_flags:")
+        summary_lines.extend(f'  - "{value}"' for value in compile_method["assumption_flags"]) if compile_method["assumption_flags"] else summary_lines.append('  - ""')
+        summary_lines.append("transfer_targets:")
+        summary_lines.extend(f'  - "{value}"' for value in compile_method["transfer_targets"]) if compile_method["transfer_targets"] else summary_lines.append('  - ""')
         summary_lines.extend(
             [
                 f'review_package_meta: "[[{item["source_package"]["review_package_meta"].removesuffix(".md")}]]"',
@@ -372,6 +449,61 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
                 f"- source_path: `{item['path']}`",
                 f"- source_class: `{item['source_class']}`",
                 f"- capture_source: `{item['capture_source']}`",
+                f"- capture_method: `{item.get('capture_method') or 'unknown'}`",
+                f"- source_profile: `{item.get('source_profile') or 'none'}`",
+                "",
+                "## Compression",
+                "",
+                "### Core Conclusions",
+                "",
+            ]
+        )
+        summary_lines.extend(f"- {value}" for value in compile_method["core_conclusions"]) if compile_method["core_conclusions"] else summary_lines.append("- No core conclusions extracted yet.")
+        summary_lines.extend(
+            [
+                "",
+                "### Key Evidence",
+                "",
+            ]
+        )
+        summary_lines.extend(f"- {value}" for value in compile_method["key_evidence"]) if compile_method["key_evidence"] else summary_lines.append("- No key evidence extracted yet.")
+        summary_lines.extend(
+            [
+                "",
+                "## Assumption Checks",
+                "",
+                "### Assumption Flags",
+                "",
+            ]
+        )
+        summary_lines.extend(f"- {value}" for value in compile_method["assumption_flags"]) if compile_method["assumption_flags"] else summary_lines.append("- None surfaced yet.")
+        summary_lines.extend(
+            [
+                "",
+                "### Boundary Conditions",
+                "",
+            ]
+        )
+        summary_lines.extend(f"- {value}" for value in compile_method["boundary_conditions"]) if compile_method["boundary_conditions"] else summary_lines.append("- None surfaced yet.")
+        summary_lines.extend(
+            [
+                "",
+                "## Transfer Targets",
+                "",
+            ]
+        )
+        summary_lines.extend(f"- {value}" for value in compile_method["transfer_targets"]) if compile_method["transfer_targets"] else summary_lines.append("- None surfaced yet.")
+        if item.get("linked_assets"):
+            summary_lines.extend(
+                [
+                    "",
+                    "## Linked Assets",
+                    "",
+                ]
+            )
+            summary_lines.extend(f"- `{value}`" for value in item["linked_assets"])
+        summary_lines.extend(
+            [
                 "",
                 "## Candidate Topics",
                 "",
@@ -443,6 +575,7 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
             f'source_id: "{package["source_id"]}"',
             'review_state: "pending"',
             f'summary_path: "[[{item["source_package"]["summary"].removesuffix(".md")}]]"',
+            f'promotion_target: "{compile_method["promotion_target"]}"',
             "topic_candidates:",
         ]
         package_lines.extend(f'  - "[[wiki/drafts/topics/{slug}]]"' for slug in topic_candidates) if topic_candidates else package_lines.append('  - ""')
@@ -460,6 +593,7 @@ def build_draft_packages(vault_root: Path, *, write: bool = False) -> dict[str, 
                 "",
                 f"- summary: [[{item['source_package']['summary'].removesuffix('.md')}]]",
                 f"- source: `{item['path']}`",
+                f"- capture_method: `{item.get('capture_method') or 'unknown'}`",
                 "",
             ]
         )

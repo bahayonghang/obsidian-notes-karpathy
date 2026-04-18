@@ -106,8 +106,8 @@
   },
   {
     "query": "Render a short Marp slide deck from my approved live notes about review gates and save it under outputs/slides.",
-    "expected_skill": "kb-query",
-    "reason": "Canonical read-side lane now owns deterministic derivatives."
+    "expected_skill": "kb-render",
+    "reason": "Deterministic slide rendering belongs to the dedicated render lane."
   },
   {
     "query": "Use kb-render to turn the approved answer I already have into a report plus a canvas outline. I do not need a new grounded answer first.",
@@ -148,6 +148,11 @@
     "query": "My approved layer is structurally present, but the archived Q&A notes are older than the newer live concepts they cite. Audit drift first, not query.",
     "expected_skill": "kb-review",
     "reason": "Maintenance-first due stale Q&A drift now routes to kb-review maintenance mode."
+  },
+  {
+    "query": "Check whether my creator style guides, MEMORY.md, and account briefings are drifting apart before I publish anything else.",
+    "expected_skill": "kb-review",
+    "reason": "Creator consistency drift is a maintenance-mode governance concern."
   },
   {
     "query": "Lifecycle detection says needs-review, and after that I want a short publishable summary. Handle the immediate safe next step first.",

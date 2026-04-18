@@ -25,6 +25,9 @@ Optional fields may include:
 
 - `deferred_to`
 - `metadata_path`
+- `capture_method`
+- `linked_assets`
+- `source_profile`
 
 ## Status posture
 
@@ -37,3 +40,6 @@ Optional fields may include:
 - Updating the manifest must not rewrite `raw/**` source files.
 - The manifest can point at candidate downstream outputs, but it does not widen the truth boundary.
 - Paper PDFs under `raw/**/papers/*.pdf` must be recorded in the manifest even when compile cannot process them yet.
+- `capture_method` should help distinguish Web Clipper, browser/CDP capture, manual markdown, agent capture, or file-drop intake without changing the truth boundary.
+- `linked_assets` should list local image or attachment paths when the markdown source depends on them.
+- `source_profile` can record the originating creator/account/profile context when the vault needs downstream editorial consistency checks.

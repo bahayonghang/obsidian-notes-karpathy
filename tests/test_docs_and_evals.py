@@ -23,6 +23,9 @@ class DocsAndEvalsTests(unittest.TestCase):
         file_model = (ENTRY_SKILL_ROOT / "references" / "file-model.md").read_text(encoding="utf-8")
         procedure_template = (ENTRY_SKILL_ROOT / "references" / "procedure-template.md").read_text(encoding="utf-8")
         episode_template = (ENTRY_SKILL_ROOT / "references" / "episode-template.md").read_text(encoding="utf-8")
+        compile_method = (ENTRY_SKILL_ROOT / "references" / "compile-method.md").read_text(encoding="utf-8")
+        manifest_contract = (ENTRY_SKILL_ROOT / "references" / "source-manifest-contract.md").read_text(encoding="utf-8")
+        health_rubric = (ENTRY_SKILL_ROOT / "references" / "health-rubric.md").read_text(encoding="utf-8")
 
         self.assertIn("evidence_coverage", summary_template)
         self.assertIn("uncertainty_level", summary_template)
@@ -30,6 +33,9 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("candidate_relationships", summary_template)
         self.assertIn("topic_candidates", summary_template)
         self.assertIn("review_package_meta", summary_template)
+        self.assertIn("boundary_conditions", summary_template)
+        self.assertIn("assumption_flags", summary_template)
+        self.assertIn("transfer_targets", summary_template)
         self.assertIn("promotion_reason", review_template)
         self.assertIn("fact_inference_separation", review_template)
         self.assertIn("supersession_decision", review_template)
@@ -44,6 +50,8 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("source_live_pages", content_template)
         self.assertIn("crystallized_from_episode", content_template)
         self.assertIn("MEMORY.md", file_model)
+        self.assertIn("web-access", file_model)
+        self.assertIn("浓缩 -> 质疑 -> 对标", file_model)
         self.assertIn("followup_route", file_model)
         self.assertIn("outputs/episodes/", file_model)
         self.assertIn("wiki/live/procedures/", file_model)
@@ -52,6 +60,12 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("Prior coverage reused", content_template)
         self.assertIn("procedure_id", procedure_template)
         self.assertIn("memory_tier: episodic", episode_template)
+        self.assertIn("capture_method", manifest_contract)
+        self.assertIn("linked_assets", manifest_contract)
+        self.assertIn("source_profile", manifest_contract)
+        self.assertIn("Creator Consistency", health_rubric)
+        self.assertIn("Reuse Signals", health_rubric)
+        self.assertIn("浓缩 -> 质疑 -> 对标", compile_method)
 
     def test_bundle_docs_and_trigger_evals_stay_consistent(self) -> None:
         readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
@@ -74,6 +88,7 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("render-template.md", registry_text)
         self.assertIn("profile-contract.md", registry_text)
         self.assertIn("automation-hooks.md", registry_text)
+        self.assertIn("compile-method.md", registry_text)
         self.assertIn("outputs/web/", registry_text)
 
         self.assertIn("kb-review", readme)
@@ -83,6 +98,8 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("bootstrap_review_gated_vault.py", readme)
         self.assertIn("migrate_legacy_vault.py", readme)
         self.assertIn("vault_status.py", readme)
+        self.assertIn("web-access", readme)
+        self.assertIn("publish` mode", readme)
         self.assertIn("kb-review", readme_cn)
         self.assertIn("kb-ingest", readme_cn)
         self.assertIn("kb-render", readme_cn)
@@ -90,13 +107,18 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("bootstrap_review_gated_vault.py", readme_cn)
         self.assertIn("migrate_legacy_vault.py", readme_cn)
         self.assertIn("vault_status.py", readme_cn)
+        self.assertIn("web-access", readme_cn)
+        self.assertIn("publish` mode", readme_cn)
         self.assertIn("kb-review", entry_skill)
+        self.assertIn("creator knowledge compiler", entry_skill)
         self.assertIn("MEMORY.md", readme)
         self.assertIn("outputs/episodes/", readme)
         self.assertIn("outputs/web/", readme)
         self.assertIn("wiki/live/procedures/", readme)
         self.assertIn("outputs/episodes/", readme_cn)
         self.assertIn("outputs/web/", readme_cn)
+        self.assertIn("web-access", (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8"))
+        self.assertIn("publish", (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8"))
         self.assertIn("wiki/live/procedures/", (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8"))
         self.assertIn("source library / clipped research", readme)
         self.assertIn("素材库 / 网页摘录", readme_cn)
@@ -203,6 +225,7 @@ class DocsAndEvalsTests(unittest.TestCase):
             "private-shared-boundary",
             "hybrid-candidate-routing",
             "audit-trail",
+            "creator-consistency",
         }:
             self.assertIn(fixture_name, fixture_names)
 

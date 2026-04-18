@@ -254,6 +254,22 @@ source_live_pages:
         self.assertIn("graph_gap", {issue["kind"] for issue in graph_gap["issues"]})
         self.assertIn("audit_trail_gap", {issue["kind"] for issue in audit_gap["issues"]})
 
+    def test_creator_consistency_health_flags_cover_editorial_drift_reuse_gap_and_underused_sources(self) -> None:
+        payload = run_json_script("lint_obsidian_mechanics.py", str(FIXTURES_DIR / "creator-consistency"))
+        governance = run_json_script("build_governance_indices.py", str(FIXTURES_DIR / "creator-consistency"))
+
+        issue_kinds = {issue["kind"] for issue in payload["issues"]}
+        self.assertIn("editorial_drift", issue_kinds)
+        self.assertIn("profile_conflict", issue_kinds)
+        self.assertIn("reuse_gap", issue_kinds)
+        self.assertIn("underused_sources", issue_kinds)
+        self.assertIn("editorial_drift", governance["gap_issue_kinds"])
+        self.assertIn("profile_conflict", governance["gap_issue_kinds"])
+        self.assertIn("reuse_gap", governance["gap_issue_kinds"])
+        self.assertIn("underused_sources", governance["gap_issue_kinds"])
+        self.assertIn("## Creator Consistency Signals", governance["files"]["GAPS.md"])
+        self.assertIn("## Reuse Signals", governance["files"]["GAPS.md"])
+
     def test_rank_query_candidates_prefers_approved_live_surfaces_without_widening_truth(self) -> None:
         payload = run_json_script(
             "rank_query_candidates.py",

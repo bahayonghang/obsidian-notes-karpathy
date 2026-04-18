@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a grounded answer, ranked local candidates, archived Q&A reuse, or a static web export from `wiki/live/`, says "query kb", "kb-search", "search live wiki", "导出静态知识站", "问知识库", or "搜索批准层并回答". This is the canonical read-side skill for approved retrieval, candidate ranking, grounded answers, archived answer reuse, and static web export. Do not use this skill for generic writing, open-ended web research, deterministic slide/report/chart/canvas rendering, or governance/maintenance passes that belong to `kb-render` or `kb-review`.
+description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a grounded answer, ranked local candidates, archived Q&A reuse, a publishable outward artifact from approved knowledge, or a static web export from `wiki/live/`, says "query kb", "kb-search", "search live wiki", "写成公众号", "写成 thread", "对外内容", "一鱼多吃", "复用批准知识出稿", "导出静态知识站", "问知识库", or "搜索批准层并回答". This is the canonical read-side skill for approved retrieval, candidate ranking, grounded answers, archived answer reuse, creator-facing publish mode, and static web export. Do not use this skill for generic writing, open-ended web research, deterministic slide/report/chart/canvas rendering, or governance/maintenance passes that belong to `kb-render` or `kb-review`.
 ---
 
 # KB Query
@@ -86,11 +86,15 @@ Those layers may be cited only as evidence if a human explicitly asks for source
    - Example: "对比一下 RAG 和 LLM Wiki 的优缺点"
    - Output: structured Q&A markdown saved to `outputs/qa/`
 
-3. **web** — static browseable web exports under `outputs/web/`
+3. **publish** — grounded outward-facing artifacts archived under `outputs/content/`
+   - Example: "把批准知识写成公众号短文"
+   - Output: article, thread, newsletter, or talk-outline grounded in approved live pages or prior archived Q&A
+
+4. **web** — static browseable web exports under `outputs/web/`
    - Example: "导出一个静态知识站"
    - Output: HTML package rooted at `outputs/web/{slug}/index.html`
 
-4. **reflect-lite** — question resolution, synthesis notes, or gap reports that stay outside live until re-reviewed
+5. **reflect-lite** — question resolution, synthesis notes, or gap reports that stay outside live until re-reviewed
    - Example: "这几个概念之间的关系还没理清楚，帮我整理一下"
    - Output: reflection note in `outputs/qa/`, with `followup_route: draft` if durable
 
@@ -120,6 +124,8 @@ Semantic retrieval may help discover candidate pages, but approved live pages re
 If the user explicitly says `kb-search`, treat that as direct wording for `kb-query` search mode.
 
 If the user wants slides, reports, charts, or canvas derivatives from approved knowledge, hand off to `kb-render` instead of stretching `kb-query` into deterministic rendering work.
+
+When the user wants creator-facing prose from approved knowledge, keep that inside `publish` mode instead of treating it as generic writing.
 
 ## Writeback contract
 

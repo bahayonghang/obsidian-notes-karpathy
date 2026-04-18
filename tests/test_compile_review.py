@@ -128,6 +128,45 @@ class CompileReviewTests(unittest.TestCase):
             self.assertTrue(any(path.startswith("wiki/drafts/topics/") for path in payload["written_paths"]))
             self.assertTrue(any(path.startswith("wiki/drafts/indices/packages/") for path in payload["written_paths"]))
 
+    def test_build_draft_packages_emits_three_step_compile_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "needs-compilation"
+            shutil.copytree(FIXTURES_DIR / "needs-compilation", fixture_copy)
+            raw_path = fixture_copy / "raw" / "human" / "articles" / "2026-04-12-three-step-source.md"
+            raw_path.write_text(
+                """---
+title: "Three Step Source"
+core_conclusions:
+  - "Compile should preserve signal instead of writing only a soft summary."
+key_evidence:
+  - "Founders need boundary conditions before they reuse a claim."
+assumption_flags:
+  - "Assumes the source still matches the current market context."
+boundary_conditions:
+  - "Applies to creator-led distribution, not generic SaaS."
+transfer_targets:
+  - "creator-growth-playbooks"
+promotion_target: procedural
+---
+
+# Three Step Source
+""",
+                encoding="utf-8",
+            )
+            run_json_script("sync_source_manifest.py", str(fixture_copy))
+            payload = run_json_script("build_draft_packages.py", str(fixture_copy), "--write")
+
+            summary_path = fixture_copy / "wiki" / "drafts" / "summaries" / "human" / "articles" / "2026-04-12-three-step-source.md"
+            summary_text = summary_path.read_text(encoding="utf-8")
+            self.assertGreaterEqual(payload["package_count"], 1)
+            self.assertIn("boundary_conditions:", summary_text)
+            self.assertIn("assumption_flags:", summary_text)
+            self.assertIn("transfer_targets:", summary_text)
+            self.assertIn('promotion_target: "procedural"', summary_text)
+            self.assertIn("## Compression", summary_text)
+            self.assertIn("## Assumption Checks", summary_text)
+            self.assertIn("## Transfer Targets", summary_text)
+
     def test_sync_manifest_tracks_asset_and_data_sources(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             fixture_copy = Path(tmp) / "ready-for-query"
@@ -148,6 +187,44 @@ class CompileReviewTests(unittest.TestCase):
             source_items = {item["path"]: item for item in compile_payload["items"]}
             self.assertEqual(source_items["raw/human/assets/diagram.png"]["source_class"], "image_asset")
             self.assertEqual(source_items["raw/human/data/stats.json"]["source_class"], "data_asset")
+
+    def test_sync_manifest_tracks_capture_method_linked_assets_and_source_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture_copy = Path(tmp) / "ready-for-query"
+            shutil.copytree(FIXTURES_DIR / "ready-for-query", fixture_copy)
+            article_path = fixture_copy / "raw" / "human" / "articles" / "2026-04-11-browser-capture.md"
+            asset_path = fixture_copy / "raw" / "human" / "assets" / "2026-04-11-chart.png"
+            asset_path.parent.mkdir(parents=True, exist_ok=True)
+            asset_path.write_bytes(b"chart-bytes")
+            article_path.write_text(
+                """---
+title: "Browser Capture"
+capture_method: browser-cdp
+linked_assets:
+  - "raw/human/assets/2026-04-11-chart.png"
+source_profile: "creator-alpha"
+source: "https://example.com/browser-capture"
+---
+
+# Browser Capture
+""",
+                encoding="utf-8",
+            )
+
+            manifest_payload = run_json_script("sync_source_manifest.py", str(fixture_copy))
+            compile_payload = run_json_script("scan_compile_delta.py", str(fixture_copy))
+
+            manifest_text = (fixture_copy / manifest_payload["written_manifest"]).read_text(encoding="utf-8")
+            self.assertIn('capture_method: "browser-cdp"', manifest_text)
+            self.assertIn('source_profile: "creator-alpha"', manifest_text)
+            self.assertIn('linked_assets:', manifest_text)
+            source_items = {item["path"]: item for item in compile_payload["items"]}
+            self.assertEqual(source_items["raw/human/articles/2026-04-11-browser-capture.md"]["capture_method"], "browser-cdp")
+            self.assertEqual(
+                source_items["raw/human/articles/2026-04-11-browser-capture.md"]["linked_assets"],
+                ["raw/human/assets/2026-04-11-chart.png"],
+            )
+            self.assertEqual(source_items["raw/human/articles/2026-04-11-browser-capture.md"]["source_profile"], "creator-alpha")
 
 
 if __name__ == "__main__":

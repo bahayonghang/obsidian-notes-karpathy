@@ -138,6 +138,7 @@
       "role": "operation",
       "reads": [
         "file-model.md",
+        "compile-method.md",
         "lifecycle-matrix.md",
         "schema-template.md",
         "summary-template.md",

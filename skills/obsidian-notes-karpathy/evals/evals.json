@@ -429,6 +429,25 @@
         "The response treats missing audit output as maintenance debt.",
         "The answer mentions machine-readable automation events."
       ]
+    },
+    {
+      "id": 28,
+      "prompt": "Use evals/fixtures/creator-consistency. Explain why this vault is now a creator-consistency maintenance case, including the style-guide/briefing drift, missing reuse bookkeeping in archived content, and the approved summary that is staying underused.",
+      "expected_output": "Routes to kb-review maintenance mode and calls out creator consistency drift, reuse gaps, and underused approved sources without widening the truth boundary.",
+      "files": [
+        "evals/fixtures/creator-consistency/AGENTS.md",
+        "evals/fixtures/creator-consistency/CLAUDE.md",
+        "evals/fixtures/creator-consistency/MEMORY.md",
+        "evals/fixtures/creator-consistency/creator-alpha_style-guide.md",
+        "evals/fixtures/creator-consistency/wiki/briefings/creator-alpha.md",
+        "evals/fixtures/creator-consistency/wiki/live/summaries/human/articles/2026-04-10-unused-source.md",
+        "evals/fixtures/creator-consistency/outputs/content/articles/2026-04-10-launch-thread.md"
+      ],
+      "expectations": [
+        "The response treats style-guide drift as maintenance rather than normal query work.",
+        "The answer explicitly mentions creator consistency, reuse bookkeeping, and underused approved sources.",
+        "The workflow keeps approved live pages as truth even while auditing creator-facing surfaces."
+      ]
     }
   ]
 }

@@ -7,6 +7,7 @@
 - [Required vs optional support](#required-vs-optional-support)
 - [Expected directories](#expected-directories)
 - [Raw capture classes](#raw-capture-classes)
+- [Compile method](#compile-method)
 - [Draft summaries](#draft-summaries)
 - [Live pages](#live-pages)
 - [Briefings](#briefings)
@@ -59,6 +60,7 @@ Treat the vault like a codebase with a promotion gate:
 For creator-style vaults, map common working surfaces onto the contract like this:
 
 - source library / clipped research -> `raw/`
+- web collection before raw intake -> `web-access` or Obsidian Web Clipper, then `kb-ingest`
 - source registry / tracked intake -> `raw/_manifest.yaml`
 - editorial memory / collaboration preferences -> `MEMORY.md`
 - temporary research answers or drafting notes worth preserving -> `outputs/qa/`
@@ -159,6 +161,7 @@ Live under `raw/human/**`.
 - may be markdown notes or PDFs under a `papers/` subtree
 - should preserve source metadata only
 - may carry `last_verified_at` and `possibly_outdated` as intake hints
+- may record optional manifest metadata such as `capture_method`, `linked_assets`, and `source_profile`
 
 ### Agent captures
 
@@ -189,6 +192,20 @@ Some partially bootstrapped vaults may place markdown directly under `raw/`.
 - structured data files under `raw/**/data/` are valid tracked sources
 - both should be registered in `raw/_manifest.yaml`
 - both can generate deterministic draft packages without becoming retrieval truth directly
+- compile should read markdown first and only pull linked local assets or attachments when the source actually depends on them
+
+## Compile method
+
+The default compile contract is:
+
+`浓缩 -> 质疑 -> 对标`
+
+That means draft summaries should preserve:
+
+- compressed conclusions plus key evidence
+- assumption and boundary-condition checks
+- cross-domain transfer targets
+- promotion hints about whether the durable delta is semantic, procedural, or relationship / hub oriented
 
 ## Draft summaries
 
@@ -210,6 +227,9 @@ Expected properties:
 - `blocking_flags`
 - `alias_candidates`
 - `duplicate_candidates`
+- `boundary_conditions`
+- `assumption_flags`
+- `transfer_targets`
 
 ## Live pages
 
@@ -382,6 +402,7 @@ The latest lifecycle contract keeps tiers explicit:
 For creator-style workflows, a practical mapping is:
 
 - source library / clipped research -> `raw/`
+- web collection before raw intake -> `web-access` or Obsidian Web Clipper, then `kb-ingest`
 - editorial memory -> `MEMORY.md`
 - session crystallization -> `outputs/episodes/`
 - reusable research answers or drafting notes -> `outputs/qa/`

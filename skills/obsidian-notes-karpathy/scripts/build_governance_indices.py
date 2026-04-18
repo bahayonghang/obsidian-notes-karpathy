@@ -46,6 +46,10 @@ GAP_KINDS = {
     "procedural_promotion_gap",
     "graph_gap",
     "audit_trail_gap",
+    "editorial_drift",
+    "profile_conflict",
+    "reuse_gap",
+    "underused_sources",
 }
 
 
@@ -274,6 +278,21 @@ def build_governance_indices(vault_root: Path) -> dict:
             else:
                 expected = item["expected_procedure_path"] or "(unspecified)"
                 gaps_md += f"- {item['path']} | issue: procedural_promotion_gap | expected: {expected} | route: {route} | action: {action}\n"
+
+    creator_issues = [issue for issue in gap_issues if issue["kind"] in {"editorial_drift", "profile_conflict"}]
+    if creator_issues:
+        gaps_md += "\n## Creator Consistency Signals\n\n"
+        for issue in creator_issues:
+            detail = issue.get("reason") or issue.get("field") or "unspecified"
+            account_key = issue.get("account_key") or "n/a"
+            gaps_md += f"- {issue['path']} | issue: {issue['kind']} | account: {account_key} | detail: {detail}\n"
+
+    reuse_issues = [issue for issue in gap_issues if issue["kind"] in {"reuse_gap", "underused_sources"}]
+    if reuse_issues:
+        gaps_md += "\n## Reuse Signals\n\n"
+        for issue in reuse_issues:
+            action = issue.get("recommended_action") or "review_reuse_signal"
+            gaps_md += f"- {issue['path']} | issue: {issue['kind']} | action: {action}\n"
 
     if followup_routes:
         gaps_md += "\n## Follow-up Routes Seen In Archived Outputs\n\n"

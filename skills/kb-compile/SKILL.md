@@ -13,8 +13,9 @@ In Karpathy's pattern, this is where "the LLM reads it, extracts the key informa
 
 1. detect new or changed captures
 2. compile them into reviewable summaries, topics, concepts, entities, relationships, and indices
-3. surface conflicts, alias overlap, duplicate risk, and hub candidates
-4. hand the package to `kb-review`
+3. apply the default `浓缩 -> 质疑 -> 对标` compile method
+4. surface conflicts, alias overlap, duplicate risk, and hub candidates
+5. hand the package to `kb-review`
 
 ## When this compounds the wiki
 
@@ -32,6 +33,7 @@ Read these files first:
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
 - `../obsidian-notes-karpathy/references/file-model.md`
+- `../obsidian-notes-karpathy/references/compile-method.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/summary-template.md`
@@ -75,12 +77,15 @@ Accept:
 
 Before shaping drafts:
 
+- follow the shared compile method in `compile-method.md`
 - normalize source metadata such as `source_hash`, `source_mtime`, `last_verified_at`, and `possibly_outdated`
 - surface alias and duplicate candidates rather than silently creating competing concept/entity drafts
 - treat duplicate/alias surfacing as both governance input and authoring leverage, so later query/publish work can reuse prior approved coverage instead of restating the same concept from scratch
 - preserve cross-language or terminology overlap as review input, not as automatic merges
 - surface repeated concept clusters, repeated question clusters, and likely hub candidates when the durable improvement is navigational rather than just another standalone page
 - prefer strengthening relationships between likely draft/live neighbors when the knowledge exists but the graph is weak
+- treat process-level takeaways as candidates for `wiki/drafts/procedures/**`, not as forced semantic pages
+- treat cross-domain transfer value as a first-class output, not an optional flourish
 
 ## Main outputs
 
@@ -112,6 +117,9 @@ Every draft should include:
 - `alias_candidates` when terminology overlap is visible
 - `duplicate_candidates` when draft/live pages may already cover the concept
 - `promotion_target` as `semantic` or `procedural`
+- `boundary_conditions` when the conclusion depends on market, scale, geography, recency, or other scope limits
+- `assumption_flags` when the claim relies on unstated premises that review should inspect
+- `transfer_targets` when compile discovers cross-domain analogy, migration value, or hub candidates
 - `candidate_entities` and `candidate_relationships` when compile sees reusable graph structure
 - `topic_candidates` when compile sees a stable browse-layer clustering signal
 - `review_package_meta` pointing at the deterministic source package
@@ -138,4 +146,5 @@ Always report:
 3. how many draft concepts or entities were touched
 4. whether any PDFs were skipped because `paper-workbench` was unavailable
 5. whether alias or duplicate candidates were surfaced for review
-6. whether the next step is `kb-review`
+6. whether boundary conditions, assumption flags, or transfer targets were surfaced
+7. whether the next step is `kb-review`

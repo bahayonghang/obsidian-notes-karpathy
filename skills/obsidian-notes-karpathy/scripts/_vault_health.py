@@ -11,6 +11,7 @@ from _vault_common import (
     MarkdownRecord,
     extract_wikilinks,
     list_field,
+    load_markdown,
     normalize_identity,
     parse_datetime,
     record_identities,
@@ -22,6 +23,7 @@ from _vault_common import (
 from _vault_layout import collect_markdown_records, detect_layout_family
 from _vault_query import live_records
 from _vault_review import reviewable_draft_records, scan_review_queue
+from _vault_guidance import inspect_local_guidance
 
 
 HEALTH_FLAG_KINDS = {
@@ -49,6 +51,10 @@ HEALTH_FLAG_KINDS = {
     "audit_trail_gap",
     "private_scope_leak",
     "sensitivity_metadata_gap",
+    "editorial_drift",
+    "profile_conflict",
+    "reuse_gap",
+    "underused_sources",
 }
 
 
@@ -500,6 +506,181 @@ def graph_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     return issues
 
 
+def _creator_account_key(record: MarkdownRecord) -> str:
+    for key in ("account_id", "brief_for", "creator_profile", "source_profile"):
+        value = record.frontmatter.get(key)
+        if isinstance(value, str) and value.strip():
+            return slugify_identity(value)
+    basename = record.basename
+    if basename.endswith("_style-guide"):
+        basename = basename[: -len("_style-guide")]
+    return slugify_identity(basename)
+
+
+def _creator_rules(record: MarkdownRecord) -> dict[str, Any]:
+    return {
+        "account_key": _creator_account_key(record),
+        "voice_profile": str(record.frontmatter.get("voice_profile") or "").strip(),
+        "target_audience": str(record.frontmatter.get("target_audience") or "").strip(),
+        "forbidden_terms": sorted({value for value in list_field(record.frontmatter, "forbidden_terms") if value.strip()}),
+        "required_constraints": sorted(
+            {
+                *list_field(record.frontmatter, "required_constraints"),
+                *list_field(record.frontmatter, "publishing_constraints"),
+            }
+        ),
+    }
+
+
+def creator_guidance_issues(vault_root: Path, records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    guidance = inspect_local_guidance(vault_root)
+    claude_text = (vault_root / "CLAUDE.md").read_text(encoding="utf-8") if (vault_root / "CLAUDE.md").exists() else ""
+    memory_text = (vault_root / "MEMORY.md").read_text(encoding="utf-8") if (vault_root / "MEMORY.md").exists() else ""
+    style_guides = [load_markdown(path, vault_root) for path in sorted(vault_root.glob("*_style-guide.md"))]
+    briefings = [record for record in records if record.kind == "briefing"]
+    briefings_by_account = {_creator_account_key(record): record for record in briefings}
+
+    if style_guides and not guidance["claude"]["present"]:
+        issues.append(
+            {
+                "kind": "editorial_drift",
+                "path": "CLAUDE.md",
+                "reason": "missing_claude_guidance_for_creator_profiles",
+            }
+        )
+    if style_guides and not (vault_root / "MEMORY.md").exists():
+        issues.append(
+            {
+                "kind": "editorial_drift",
+                "path": "MEMORY.md",
+                "reason": "missing_memory_context_for_creator_profiles",
+            }
+        )
+
+    for style_guide in style_guides:
+        account_key = _creator_account_key(style_guide)
+        style_rules = _creator_rules(style_guide)
+        briefing = briefings_by_account.get(account_key)
+        if briefing is None:
+            issues.append(
+                {
+                    "kind": "editorial_drift",
+                    "path": style_guide.path,
+                    "reason": "missing_account_briefing",
+                    "account_key": account_key,
+                }
+            )
+            continue
+
+        briefing_rules = _creator_rules(briefing)
+        for field in ("voice_profile", "target_audience"):
+            if style_rules[field] and not briefing_rules[field]:
+                issues.append(
+                    {
+                        "kind": "editorial_drift",
+                        "path": briefing.path,
+                        "reason": f"missing_{field}",
+                        "account_key": account_key,
+                    }
+                )
+            elif style_rules[field] and briefing_rules[field] and style_rules[field] != briefing_rules[field]:
+                issues.append(
+                    {
+                        "kind": "profile_conflict",
+                        "path": briefing.path,
+                        "account_key": account_key,
+                        "field": field,
+                        "style_value": style_rules[field],
+                        "briefing_value": briefing_rules[field],
+                    }
+                )
+
+        missing_terms = [term for term in style_rules["forbidden_terms"] if term not in briefing_rules["forbidden_terms"]]
+        if missing_terms:
+            issues.append(
+                {
+                    "kind": "editorial_drift",
+                    "path": briefing.path,
+                    "reason": "missing_forbidden_terms",
+                    "account_key": account_key,
+                    "missing_terms": missing_terms,
+                }
+            )
+
+        missing_constraints = [value for value in style_rules["required_constraints"] if value not in briefing_rules["required_constraints"]]
+        if missing_constraints:
+            issues.append(
+                {
+                    "kind": "editorial_drift",
+                    "path": briefing.path,
+                    "reason": "missing_required_constraints",
+                    "account_key": account_key,
+                    "missing_constraints": missing_constraints,
+                }
+            )
+
+        if account_key and account_key not in slugify_identity(claude_text) and account_key not in slugify_identity(memory_text):
+            issues.append(
+                {
+                    "kind": "editorial_drift",
+                    "path": style_guide.path,
+                    "reason": "account_profile_not_reflected_in_claude_or_memory",
+                    "account_key": account_key,
+                }
+            )
+
+    return issues
+
+
+def reuse_gap_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    issues: list[dict[str, Any]] = []
+    for record in records:
+        if record.kind != "content_output":
+            continue
+        if not list_field(record.frontmatter, "source_live_pages"):
+            continue
+        if list_field(record.frontmatter, "reused_prior_coverage") or list_field(record.frontmatter, "derived_from"):
+            continue
+        issues.append(
+            {
+                "kind": "reuse_gap",
+                "path": record.path,
+                "recommended_action": "record_reused_prior_coverage",
+            }
+        )
+    return issues
+
+
+def underused_source_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
+    used_sources: set[str] = set()
+    for record in records:
+        if record.kind == "summary" and record.path.startswith("wiki/live/"):
+            continue
+        for key in ("sources", "source_live_pages", "reused_prior_coverage"):
+            for target in list_field(record.frontmatter, key):
+                stripped = strip_link_alias(target)
+                if stripped:
+                    used_sources.add(stripped)
+
+    issues: list[dict[str, Any]] = []
+    for record in live_records(records):
+        if record.kind != "summary":
+            continue
+        if record.frontmatter.get("trust_level") != "approved":
+            continue
+        if record.path_no_ext in used_sources:
+            continue
+        issues.append(
+            {
+                "kind": "underused_sources",
+                "path": record.path,
+                "recommended_action": "surface_source_for_creator_reuse",
+            }
+        )
+    return issues
+
+
 def unapproved_live_issues(records: list[MarkdownRecord]) -> list[dict[str, Any]]:
     issues: list[dict[str, Any]] = []
     for record in live_records(records):
@@ -682,6 +863,9 @@ def audit_vault_mechanics(vault_root: Path) -> dict[str, Any]:
     issues.extend(volatile_page_stale_issues(records))
     issues.extend(memory_knowledge_mix_issues(records))
     issues.extend(graph_gap_issues(records))
+    issues.extend(creator_guidance_issues(vault_root, records))
+    issues.extend(reuse_gap_issues(records))
+    issues.extend(underused_source_issues(records))
     issues.extend(unapproved_live_issues(records))
     issues.extend(weak_live_sources_issues(records))
     issues.extend(approved_conflict_issues(records))

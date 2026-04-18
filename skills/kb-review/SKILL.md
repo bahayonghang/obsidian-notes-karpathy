@@ -1,6 +1,6 @@
 ---
 name: kb-review
-description: Run the canonical governance lane for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "kb health", "review gate", "health check", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "lint live wiki", "审校草稿", "批准草稿", "知识库体检", or whenever lifecycle detection reports `needs-review`, `needs-briefing-refresh`, or `needs-maintenance`. This skill owns both the immediate gate and the longer-horizon maintenance lane through internal `gate` and `maintenance` modes. Do not use it for normal approved-layer retrieval or deterministic derivative rendering.
+description: Run the canonical governance lane for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "kb health", "review gate", "health check", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "lint live wiki", "检查风格约束是否冲突", "检查账号 briefing", "审校草稿", "批准草稿", "知识库体检", or whenever lifecycle detection reports `needs-review`, `needs-briefing-refresh`, or `needs-maintenance`. This skill owns both the immediate gate and the longer-horizon maintenance lane through internal `gate` and `maintenance` modes. Do not use it for normal approved-layer retrieval or deterministic derivative rendering.
 ---
 
 # KB Review
@@ -8,7 +8,7 @@ description: Run the canonical governance lane for an Obsidian knowledge base. U
 Run the canonical governance lane between draft knowledge and the approved live brain. `kb-review` owns two internal modes:
 
 - `gate` mode for pending draft decisions, promotion/rejection, and briefing rebuilds tied to the same review pass
-- `maintenance` mode for approved-layer drift, stale briefings, provenance and alias refresh, governance-index rebuilds, graph gaps, backlog pressure, and safe mechanical fixes
+- `maintenance` mode for approved-layer drift, stale briefings, provenance and alias refresh, creator consistency checks, governance-index rebuilds, graph gaps, backlog pressure, and safe mechanical fixes
 
 In Karpathy's LLM Wiki, this maps to two operations: the implicit quality judgment during ingest (our `gate` mode), and the explicit "Lint" pass he describes — "look for contradictions between pages, stale claims that newer sources have superseded, orphan pages with no inbound links, important concepts mentioned but lacking their own page, missing cross-references" (our `maintenance` mode). This contract makes both operations explicit and separable.
 
@@ -123,6 +123,9 @@ Use `maintenance` mode when:
 - confidence metadata, supersession bookkeeping, or audit trails have decayed
 - governance indices or graph exports need deterministic refresh
 - safe mechanical fixes in approved or archived surfaces are clearer than creating new prose
+- creator-facing guidance surfaces such as `CLAUDE.md`, `MEMORY.md`, account `_style-guide.md`, or account briefings may be drifting apart
+- archived publish outputs are not reusing prior approved coverage cleanly
+- important approved sources are staying underused in downstream Q&A or publish artifacts
 
 `kb-review` is now the only public governance surface. If the user literally says `kb-health`, treat that as `kb-review` maintenance mode.
 

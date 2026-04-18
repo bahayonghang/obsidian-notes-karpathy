@@ -34,6 +34,11 @@ health_score: {overall}
 
 - {duplicate concept/entity or alias split}
 
+## Creator Consistency
+
+- {editorial drift across CLAUDE.md, MEMORY.md, style guides, or briefings}
+- {profile conflict between account guidance surfaces}
+
 ## Review Backlog
 
 - {pending draft or human review queue item}
@@ -45,6 +50,11 @@ health_score: {overall}
 ## Writeback Backlog
 
 - {qa or content artifact with pending writeback candidates}
+
+## Reuse Signals
+
+- {reuse gap in archived creator outputs}
+- {underused approved source that is not showing up in reusable outputs}
 
 ## Open Questions and Gaps
 
@@ -142,6 +152,16 @@ Suggested weighting:
 - source hash drift or outdated verification metadata
 - pages using the latest lifecycle metadata missing core confidence metadata (`confidence_score`, `confidence_band`, `support_count`, `contradiction_count`)
 - missing machine-readable audit events for automation surfaces that claim to be governed
+
+## Creator consistency checks
+
+Treat these as first-class maintenance diagnostics when the vault has creator-facing outputs:
+
+- `CLAUDE.md`, `MEMORY.md`, account `_style-guide.md` files, and account-facing briefings drifting apart
+- forbidden terms, tone rules, or publishing constraints present in one creator surface but missing from another
+- creator/account profile collisions where two guidance surfaces disagree on voice, positioning, or audience
+- archived creator outputs that fail to record reuse of prior approved coverage
+- approved sources that have not been reused in archived Q&A or publish outputs despite remaining central to the topic area
 
 ## Mechanical integrity
 

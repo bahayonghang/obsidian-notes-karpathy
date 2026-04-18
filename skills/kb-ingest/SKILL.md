@@ -1,6 +1,6 @@
 ---
 name: kb-ingest
-description: Register and normalize raw source intake for an Obsidian knowledge base. Use this skill whenever the user says "kb ingest", "ingest sources", "refresh manifest", "register new raw files", "scan raw library", "同步素材清单", "登记新来源", "更新 manifest", or wants `raw/**` captures recorded into `raw/_manifest.yaml` before compile runs. Do not use it for draft generation, review, query, or maintenance once the source registry is already current.
+description: Register and normalize raw source intake for an Obsidian knowledge base. Use this skill whenever the user says "kb ingest", "ingest sources", "refresh manifest", "register new raw files", "scan raw library", "同步素材清单", "登记新来源", "更新 manifest", or wants `raw/**` captures recorded into `raw/_manifest.yaml` before compile runs. Treat browser-side collection as an upstream companion lane: if the source is still on the web and not in `raw/` yet, use `web-access` or Web Clipper first, then come here. Do not use it for draft generation, review, query, or maintenance once the source registry is already current.
 ---
 
 # KB Ingest
@@ -75,12 +75,17 @@ Optional fields:
 
 - `deferred_to: paper-workbench` — for paper PDFs awaiting external processing
 - `metadata_path: raw/human/papers/example.meta.yaml` — when metadata lives alongside the source
+- `capture_method: web-clipper | browser-cdp | manual-markdown | agent-capture | file-drop`
+- `linked_assets:` — local images or attachments tied to the markdown source
+- `source_profile:` — creator/account/profile context used later for editorial consistency checks
 
 ## Non-negotiable rules
 
 - never rewrite `raw/**` content
 - always record paper PDFs in the manifest even when compile must defer them
 - keep image and data assets visible at the manifest layer even if downstream compile remains metadata-first
+- keep browser-collected or Web Clipper-collected intake distinguishable through `capture_method` when the metadata is available
+- preserve attached local images or files through `linked_assets` instead of forcing compile to guess from the body
 - preserve `first_seen_at` when an entry already exists
 - use `raw/_manifest.yaml` as the user-visible canonical registry
 - if the manifest file does not exist, create it with the entries discovered

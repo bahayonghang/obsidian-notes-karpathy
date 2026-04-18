@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "personal knowledge base", "second brain", "这个知识库下一步该做什么", "现在应该初始化/摄取/编译/审校/检索/渲染/体检哪个步骤", mentions review gates, draft/live separation, source manifests, browse topics, local-first search, render outputs, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, ingest, compile, review, query, or render, and only route through this package entry skill when the workflow step is genuinely ambiguous.
+description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "creator knowledge compiler", "personal knowledge base", "second brain", "这个知识库下一步该做什么", "现在应该初始化/摄取/编译/审校/检索/发布/渲染/体检哪个步骤", mentions review gates, draft/live separation, source manifests, browse topics, local-first search, publish outputs, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, ingest, compile, review, query, publish, or render, and only route through this package entry skill when the workflow step is genuinely ambiguous.
 ---
 
 # Obsidian Notes Karpathy
@@ -14,7 +14,7 @@ Use this skill when the user talks about the workflow as a whole, not just one o
 - `kb-ingest` registers raw sources into `raw/_manifest.yaml`
 - `kb-compile` builds reviewable candidates from immutable captures
 - `kb-review` decides what deserves durable truth
-- `kb-query` reuses approved knowledge for search, grounded answers, archived Q&A reuse, and static web export
+- `kb-query` reuses approved knowledge for search, grounded answers, creator-facing publish artifacts, archived Q&A reuse, and static web export
 - `kb-render` turns approved knowledge into deterministic derivative artifacts
 - `kb-review` also owns the maintenance lane when approved knowledge drifts or backlog accumulates
 
@@ -23,6 +23,8 @@ Use this skill when the user talks about the workflow as a whole, not just one o
 This package implements the LLM Wiki pattern: "Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase." The user curates sources, asks questions, and thinks about meaning. The LLM handles summarizing, cross-referencing, filing, and bookkeeping that makes knowledge compound over time.
 
 The key extension beyond Karpathy's original idea is an explicit review gate: unreviewed drafts never silently harden into long-term truth. This adds a `draft → review → live` promotion step that Karpathy's pattern leaves implicit.
+
+The creator-ready extension is that compile should behave like a knowledge compiler, not just a summarizer: collect -> ingest -> compile (`浓缩 -> 质疑 -> 对标`) -> review -> query/publish -> maintenance.
 
 ## When this compounds the wiki
 
