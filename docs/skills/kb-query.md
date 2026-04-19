@@ -1,6 +1,6 @@
 # kb-query
 
-Search the approved live brain, answer questions, archive substantive answers, reuse prior Q&A, and export static web packages from one canonical read-side lane.
+Search the approved live brain, answer questions, archive substantive answers, reuse prior Q&A, reuse archived publish artifacts when appropriate, and export static web packages from one canonical read-side lane.
 
 ## Hard boundary
 
@@ -24,11 +24,20 @@ It should also keep `MEMORY.md` out of default topic retrieval. That file is for
 - web mode for static exports saved under `outputs/web/**`
 - reflect-lite mode for synthesis or gap notes that should stay outside live until re-reviewed
 
+Archive is a first-class responsibility here, not an afterthought:
+
+- Q&A archive -> `outputs/qa/**`
+- publish archive -> `outputs/content/**`
+- both are reusable artifact archive
+- both still sit below the truth boundary
+
 If the user still says `kb-search`, route it here as `kb-query` search mode.
 
 When a Q&A note or static web export creates durable follow-up work, capture structured `writeback_candidates`, `open_questions_touched`, `source_live_pages`, and a `followup_route` instead of leaving the next draft/review step implicit.
 
 Before drafting a new outward-facing artifact, prefer checking whether prior approved live coverage or archived Q&A already explains the background well enough to reuse directly. Creator-facing requests such as public articles, threads, or newsletters belong to `publish` mode rather than generic writing.
+
+Archived publish artifacts can also be reused, but only after live grounding and archived Q&A reuse have already been checked.
 
 ## Retrieval ladder
 

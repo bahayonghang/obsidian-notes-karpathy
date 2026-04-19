@@ -39,6 +39,13 @@ They may:
 
 But long-term knowledge still re-enters through draft -> review -> live.
 
+That is why this bundle keeps two archive meanings separate:
+
+- source retention archive -> `raw/**` + `raw/_manifest.yaml`
+- artifact archive -> `outputs/**`
+
+Neither one replaces `wiki/live/**` as approved truth.
+
 ## Why this matters
 
 Without clear boundaries, three failure modes compound quickly:
@@ -55,3 +62,4 @@ The health pass is moving toward explicit checks for:
 - approved knowledge leaking into coordination memory
 - writeback backlog piling up without review
 - archived outputs being mistaken for approved live governance truth
+- archive hygiene issues being mistaken for truth-promotion work

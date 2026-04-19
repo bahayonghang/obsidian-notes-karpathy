@@ -8,6 +8,7 @@
 
 - `kb-query` 把高价值回答归档到 `outputs/qa/`
 - 对外内容放到 `outputs/content/`
+- 这两类产物都属于 artifact archive，不是 approved truth
 - 高价值输出生成结构化 `writeback_candidates`、`source_live_pages` 和 `followup_route`
 - 在新写一篇发布产物之前，优先显式复用已批准 coverage 与归档 Q&A，而不是把同样的背景重新写一遍
 - 回写必须重新走 draft -> review -> live，不能直接写 live
@@ -32,6 +33,13 @@
 7. 当前面层级都不够时，才把语义检索作为候选补充
 
 整个梯度里，已批准的 live 页面始终是真相来源。
+
+默认复用顺序保持为：
+
+1. approved live pages
+2. live indices 和 briefings
+3. 历史 archived Q&A
+4. 已经正确复用批准知识的 archived publish artifacts
 
 ## Planned / evolving search upgrades
 

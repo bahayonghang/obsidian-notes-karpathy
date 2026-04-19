@@ -39,6 +39,13 @@
 
 但长期知识仍然必须重新走 draft -> review -> live。
 
+这里还要额外区分两种 archive：
+
+- source retention archive -> `raw/**` + `raw/_manifest.yaml`
+- artifact archive -> `outputs/**`
+
+它们都不是 `wiki/live/**` 的替代品。
+
 ## 为什么这条线重要
 
 如果边界不清，系统会很快出现三个问题：
@@ -55,4 +62,5 @@ health 会继续增强这几类检查：
 - 已批准知识倒灌进协作记忆
 - 回写 backlog 长期堆积不处理
 - 把归档产物误当成已批准的 live 治理真相
+- 把 archive hygiene 问题误当成 truth promotion 工作
 

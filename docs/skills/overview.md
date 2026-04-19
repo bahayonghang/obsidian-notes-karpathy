@@ -30,6 +30,7 @@ This bundle has one package entry skill and six operational skills. It should al
 - `outputs/reviews/` stores promotion decisions.
 - optional governance views such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` are recommended for mature vaults, but they must stay grounded in approved live pages rather than archived outputs.
 - archived `outputs/qa/` and `outputs/content/` can feed maintenance signals, writeback backlog, and follow-up routing, but they do not become approved truth automatically.
+- source retention archive (`raw/**` + `raw/_manifest.yaml`) and artifact archive (`outputs/**`) are both durable surfaces, but neither one replaces `wiki/live/**` as approved truth.
 - web collection before `raw/` should use an upstream companion such as `web-access` or Obsidian Web Clipper; core bundle ownership starts once the source is in the vault.
 - curated hubs or editorial planning surfaces may exist, but they stay navigation/maintenance layers rather than truth-boundary shortcuts.
 - `wiki/index.md` is the content-first entry surface.

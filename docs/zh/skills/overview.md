@@ -30,6 +30,7 @@
 - `outputs/reviews/` 存 promotion 决策。
 - `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图更适合成熟 vault，但它们必须以已批准的 live 页面为基础，不能直接把归档产物抬升成真相层。
 - `outputs/qa/` 与 `outputs/content/` 里的归档内容可以提供维护信号、writeback backlog 与后续路由，但不会自动变成已批准知识层。
+- source retention archive（`raw/**` + `raw/_manifest.yaml`）和 artifact archive（`outputs/**`）都是持久面，但都不会替代 `wiki/live/**`。
 - 资料还没进入 `raw/` 时，网页采集应先走 `web-access` 或 Obsidian Web Clipper；核心 bundle 从 vault 内部生命周期开始接管。
 - curated hub 或编辑规划面可以存在，但它们仍然是导航 / 维护层，而不是绕过真相边界的捷径。
 - `wiki/index.md` 是内容优先入口。

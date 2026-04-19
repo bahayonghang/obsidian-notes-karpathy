@@ -27,6 +27,11 @@ vault/
 
 `outputs/reviews/` is part of the required support layer. The other output surfaces are valid parts of the full contract, but they come online when later stages need them.
 
+The archive split is:
+
+- source retention archive -> `raw/**` + `raw/_manifest.yaml`
+- artifact archive -> `outputs/**`
+
 `MEMORY.md` is recommended collaboration scaffolding. It should hold preferences, editorial priorities, and coordination context, not approved topic knowledge.
 
 If the source is still on the web and has not been captured into `raw/` yet, treat browser-side collection as an upstream step. A common path is:
@@ -53,3 +58,15 @@ Core live indices such as `INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `RECENT.md`, 
 | `outputs/slides/**`, `outputs/reports/**`, `outputs/charts/**` | `kb-render` | Deterministic downstream artifacts |
 | `outputs/web/**` | `kb-query` | Static browseable web exports from approved knowledge |
 | `outputs/health/**` | `kb-review` (`maintenance` mode) | Maintenance reports |
+
+## Archive ownership matrix
+
+| Surface | Archive type | Owner | Approved truth | Reusable | Maintenance-triggering |
+| --- | --- | --- | --- | --- | --- |
+| `raw/**` + `raw/_manifest.yaml` | source retention archive | human + `kb-ingest` | no | yes | yes |
+| `outputs/qa/**` | artifact archive | `kb-query` | no | yes | yes |
+| `outputs/content/**` | artifact archive | `kb-query` | no | yes | yes |
+| `outputs/episodes/**` | artifact archive | workflow/runtime | no | yes | yes |
+| `outputs/reviews/**` | artifact archive | `kb-review` | no | yes | yes |
+| `outputs/health/**` | artifact archive | `kb-review` | no | yes | yes |
+| `outputs/web/**` | artifact archive | `kb-query` | no | yes | yes |

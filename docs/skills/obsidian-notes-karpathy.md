@@ -11,9 +11,10 @@ If the operation is already clear, prefer the operation-specific skill instead o
 - `kb-compile` when markdown captures under `raw/human/**`, `raw/agents/{role}/**`, or bootstrap `raw/*.md` are ahead of the draft layer
 - `kb-review` when drafts are pending, the immediate next job is to promote or reject them, or briefings should be rebuilt as part of the same gate pass
 - `kb-query` when the live layer is ready for retrieval, local-first candidate ranking, grounded answers, archived answer reuse, or static web export
+- `kb-query` when the user wants a substantive answer archived back into the vault or wants to reuse prior archived artifacts
 - `kb-query` when the user explicitly uses older `kb-search` wording for search-first retrieval
 - `kb-render` when the user wants deterministic derivatives such as slides, reports, charts, or canvas artifacts
-- `kb-review` when approved knowledge needs longer-horizon maintenance, governance refresh, writeback backlog review, or collaboration memory and approved knowledge appear to be mixing
+- `kb-review` when approved knowledge or archived outputs need longer-horizon maintenance, governance refresh, writeback backlog review, archive hygiene, or collaboration memory and approved knowledge appear to be mixing
 
 ## Router posture
 

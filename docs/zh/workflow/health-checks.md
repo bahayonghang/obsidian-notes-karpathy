@@ -12,6 +12,7 @@
 - 需要每周或每月做一次质量基线
 - `QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 这类治理视图需要刷新
 - 归档 Q&A 或发布产物可能已经积累 writeback backlog
+- archived outputs 可能已经出现 reuse drift、过时结论或 scope leak
 - 需要检查协作记忆是否渗入已批准知识
 - 需要检查 creator-facing 指导面是否开始漂移
 
@@ -39,6 +40,7 @@
 - 标记长期没有进入下游输出面的 underused approved sources
 - 找出缺失概念页
 - 找出 writeback backlog
+- 找出 archive hygiene 问题，但不把 archive 当成真相层
 - 找出协作记忆渗入已批准知识的地方
 - 在目标明确时刷新治理视图
 - 提醒哪些旧 Q&A 该重写或补注释

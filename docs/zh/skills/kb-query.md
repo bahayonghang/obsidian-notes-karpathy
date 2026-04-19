@@ -1,6 +1,6 @@
 # kb-query
 
-统一的读侧入口：只从已批准知识层做检索、回答、归档、派生产物和静态网站导出。
+统一的读侧入口：只从已批准知识层做检索、回答、归档、派生产物、已归档 publish artifact 复用和静态网站导出。
 
 默认读取：
 
@@ -22,11 +22,20 @@
 - web：导出静态知识站到 `outputs/web/**`
 - reflect-lite：先停在 live 外的综合、问题分解或 gap 记录
 
+archive 在这里是一等职责：
+
+- Q&A archive -> `outputs/qa/**`
+- publish archive -> `outputs/content/**`
+- 两者都可复用
+- 两者都不等于 approved truth
+
 如果用户还在说 `kb-search`，直接把它路由到这里的 search mode。
 
 如果 Q&A 或发布产物产生了值得长期处理的后续工作，应该显式记录 `writeback_candidates`、`open_questions_touched`、`source_live_pages` 和 `followup_route`，而不是把下一步埋在聊天里。
 
 在起草新的对外交付物之前，优先检查是否已有已批准的 live 页面覆盖，或已有归档 Q&A 可以直接复用，避免把同一段背景解释反复重写。公众号、thread、newsletter 这类 creator-facing prose 应走 `publish` 模式，而不是泛化成普通写作请求。
+
+已归档的 publish artifacts 也可以复用，但前提是已经先检查过 live grounding 和 archived Q&A。
 
 ## 检索梯度
 

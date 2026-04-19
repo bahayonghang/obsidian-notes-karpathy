@@ -8,6 +8,7 @@ Current direction:
 
 - `kb-query` archives durable answers into `outputs/qa/`
 - publish artifacts live under `outputs/content/`
+- both of those surfaces belong to artifact archive, not approved truth
 - high-value outputs can produce structured `writeback_candidates`, `source_live_pages`, and `followup_route`
 - prior approved coverage and archived Q&A should be reused explicitly before a new publish artifact re-explains the same background
 - writeback should re-enter the system through draft -> review -> live, not directly into live
@@ -32,6 +33,13 @@ The default search order stays:
 7. semantic retrieval only as candidate surfacing when earlier layers stop being sufficient
 
 Approved live pages remain the truth source throughout that ladder.
+
+Archive reuse order stays:
+
+1. approved live pages
+2. live indices and briefings
+3. prior archived Q&A
+4. prior archived publish artifacts when they already reuse approved coverage cleanly
 
 ## Planned / evolving search upgrades
 

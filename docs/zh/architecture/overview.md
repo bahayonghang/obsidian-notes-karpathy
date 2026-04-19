@@ -15,6 +15,8 @@
 - `outputs/qa/`、`outputs/content/`、`outputs/health/` 是按阶段出现的下游产物
 - `outputs/episodes/` 是工作链路结晶后的情节记忆
 - `outputs/audit/operations.jsonl` 是机器可读的审计轨
+- `raw/**` + `raw/_manifest.yaml` 构成 source retention archive
+- `outputs/**` 构成 artifact archive
 - `raw/` 同时也是长期素材库面，创作者的整理、复用和发布编排则发生在下游工作面
 - `MEMORY.md` 是协作记忆层，默认不进入专题检索面
 - `wiki/live/indices/EDITORIAL-PRIORITIES.md` 是总编工作面
@@ -30,6 +32,7 @@
 - 把完整工作链当作情节记忆资产，后续再提炼成 semantic / 流程记忆。
 - 把协作记忆与专题知识分层，而不是混成一个桶。
 - 让归档产物参与维护与 writeback 闭环，但不把它们静默提升成已批准知识层。
+- 把来源保留归档和产物归档明确分开，避免 archive 语义漂移。
 
 ## 当前演进压力点
 
@@ -42,4 +45,6 @@
 - 更明确的 retrieval ladder 与 follow-up routing 说明
 
 Guide、Skills、Workflow 页面描述当前合同；Architecture 页面解释设计理由和前进方向。
+
+归档模型详见 [归档模型](/zh/architecture/archive-model)。
 

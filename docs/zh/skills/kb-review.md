@@ -29,3 +29,12 @@
 
 `kb-review` 还应该显式判断 fact / inference 分离、alias 对齐、duplicate 风险、矛盾是否被记录，以及页面是否值得长期保留。切到 `维护模式` 时，它还要审计 drift、backlog pressure、provenance、过期归档产物、creator consistency（`CLAUDE.md` / `MEMORY.md` / `_style-guide.md` / briefing），以及已批准层面上的图结构薄弱点。
 
+archive hygiene 也是 maintenance 的一部分：
+
+- archived Q&A 相对 live pages 已经过时
+- archived publish artifacts 出现 reuse drift
+- archived outputs 里有 writeback backlog
+- archived outputs 出现 scope leak
+
+这些都属于“维护 artifact archive”，不是“把 archive 升格成真相层”。
+

@@ -65,6 +65,26 @@ The core bundle should own the review-gated lifecycle. Companion skills take ove
 - alias alignment, source integrity, stale-page checks, and question tracking are absorbed as governance rules without collapsing the review gate.
 - curated hubs and creator-planning surfaces may exist, but they remain navigation/maintenance layers rather than truth-boundary shortcuts.
 
+## Archive Surfaces
+
+This bundle uses `archive` in two distinct senses:
+
+- **source retention archive** - `raw/**` plus `raw/_manifest.yaml`
+- **artifact archive** - durable downstream outputs under `outputs/**`
+
+That split is intentional.
+
+- The source retention archive means original captures stay retained and registered.
+- It does **not** mean moving files into `raw/09-archive/`.
+- The artifact archive is where durable answers, publish artifacts, episodes, review records, health reports, and static exports accumulate for reuse and maintenance.
+
+The truth boundary stays the same:
+
+- `wiki/live/**` = approved truth
+- `outputs/**` = reusable archive surfaces
+- archived outputs can trigger maintenance and writeback
+- archived outputs do not become approved truth automatically
+
 ## Why this is not a single-layer source/concept/synthesis wiki
 
 This package deliberately does **not** treat a freshly generated `wiki/` page as durable truth.
@@ -106,6 +126,18 @@ Downstream output surfaces are created when the later stages need them:
 - `outputs/web/` - static browseable exports from `kb-query`
 - `outputs/health/` - maintenance reports from `kb-review` maintenance mode
 - `MEMORY.md` - recommended collaboration memory and editorial context
+
+The archive posture across those surfaces is:
+
+| Surface | Archive type | Truth status | Reusable | Can trigger maintenance |
+| --- | --- | --- | --- | --- |
+| `raw/**` + `raw/_manifest.yaml` | source retention archive | no | yes | yes |
+| `outputs/qa/**` | artifact archive | no | yes | yes |
+| `outputs/content/**` | artifact archive | no | yes | yes |
+| `outputs/episodes/**` | artifact archive | no | yes | yes |
+| `outputs/reviews/**` | artifact archive | no | yes | yes |
+| `outputs/health/**` | artifact archive | no | yes | yes |
+| `outputs/web/**` | artifact archive | no | yes | yes |
 
 Optional governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when the user wants richer maintenance surfaces.
 

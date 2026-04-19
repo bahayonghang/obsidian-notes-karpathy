@@ -65,6 +65,26 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 - alias 对齐、source integrity、stale 页面检查、开放问题跟踪都会被纳入治理规则，但不会绕过 review gate。
 - curated hub 和创作者规划面可以存在，但它们仍然是导航 / 维护层，不是绕过真相边界的捷径。
 
+## 归档面
+
+这个 bundle 里的 `archive` 分两类：
+
+- **source retention archive**：`raw/**` + `raw/_manifest.yaml`
+- **artifact archive**：`outputs/**` 下的持久产物
+
+这里故意把“保留来源”和“归档产物”拆开。
+
+- source retention archive 的意思是原始来源被保留并登记。
+- 它**不等于**把文件移动到 `raw/09-archive/`。
+- artifact archive 用来承接可复用的问答、对外内容、episodes、review 记录、health 报告和静态导出。
+
+真相边界不变：
+
+- `wiki/live/**` = 已批准真相层
+- `outputs/**` = 可复用归档面
+- 归档产物可以触发 writeback 和 maintenance
+- 归档产物不会自动变成 approved truth
+
 ## 为什么不是单层 source/concept/synthesis wiki
 
 这个包**故意不**把新生成的 `wiki/` 页面直接当作长期真相。
@@ -106,6 +126,18 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 - `outputs/web/`：`kb-query` 导出的静态浏览站
 - `outputs/health/`：`kb-review` `维护模式` 输出的体检报告
 - `MEMORY.md`：推荐的协作记忆与编辑上下文
+
+这些归档面的语义如下：
+
+| Surface | 归档类型 | 是否真相层 | 是否可复用 | 是否会触发维护 |
+| --- | --- | --- | --- | --- |
+| `raw/**` + `raw/_manifest.yaml` | source retention archive | 否 | 是 | 是 |
+| `outputs/qa/**` | artifact archive | 否 | 是 | 是 |
+| `outputs/content/**` | artifact archive | 否 | 是 | 是 |
+| `outputs/episodes/**` | artifact archive | 否 | 是 | 是 |
+| `outputs/reviews/**` | artifact archive | 否 | 是 | 是 |
+| `outputs/health/**` | artifact archive | 否 | 是 | 是 |
+| `outputs/web/**` | artifact archive | 否 | 是 | 是 |
 
 可选治理索引如 `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 可按需创建，用于跟踪开放问题、知识空白和别名映射。
 

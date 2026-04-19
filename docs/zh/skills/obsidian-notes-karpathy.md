@@ -11,9 +11,10 @@
 - `raw/human/**`、`raw/agents/{role}/**`、或 bootstrap 阶段的 `raw/*.md` 领先于 drafts -> `kb-compile`
 - 当前马上要处理待审草稿，或角色简报应该在这一次审校流程里重建 -> `kb-review`
 - live 层已准备好检索、候选排序、归档研究结果复用或静态 web 导出 -> `kb-query`
+- 用户要把一个有价值的回答归档回 vault，或想复用已有 archive -> `kb-query`
 - 用户明确沿用旧的 `kb-search` 说法 -> `kb-query`
 - 用户明确要 slides / reports / charts / canvas 这类确定性派生产物 -> `kb-render`
-- 已批准知识层进入更长期维护，治理视图需要刷新，或 writeback backlog / memory 与 knowledge 混写开始出现 -> `kb-review`
+- 已批准知识层或 archived outputs 进入更长期维护，治理视图需要刷新，或 writeback backlog / memory 与 knowledge 混写开始出现 -> `kb-review`
 
 ## 路由姿态
 

@@ -9,6 +9,7 @@
 - concept pages disagree
 - you want a weekly or monthly maintenance baseline
 - archived Q&A or publish artifacts may have writeback backlog
+- archived outputs may have reuse drift, stale claims, or scope leaks
 - governance views such as `QUESTIONS.md`, `GAPS.md`, or `ALIASES.md` need a refresh
 - you need to check whether collaboration memory is leaking into approved knowledge
 - creator-facing guidance surfaces may be drifting apart
@@ -40,6 +41,7 @@ Health reports live in:
 - flag underused approved sources that are not showing up in downstream outputs
 - identify missing concept pages
 - identify writeback backlog
+- identify archive hygiene problems without promoting archive into truth
 - identify collaboration memory drifting into approved knowledge
 - refresh governance views when the target is deterministic
 - recommend new sources to add to `raw/`

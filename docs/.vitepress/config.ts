@@ -179,6 +179,7 @@ function sidebarEn() {
         text: 'Design Notes',
         items: [
           { text: 'Overview', link: '/architecture/overview' },
+          { text: 'Archive Model', link: '/architecture/archive-model' },
           { text: 'Boundaries', link: '/architecture/boundaries' },
           { text: 'Writeback & Search', link: '/architecture/writeback-search' },
         ],
@@ -248,6 +249,7 @@ function sidebarZh() {
         text: '设计说明',
         items: [
           { text: '概览', link: '/zh/architecture/overview' },
+          { text: '归档模型', link: '/zh/architecture/archive-model' },
           { text: '边界', link: '/zh/architecture/boundaries' },
           { text: '回写与搜索', link: '/zh/architecture/writeback-search' },
         ],

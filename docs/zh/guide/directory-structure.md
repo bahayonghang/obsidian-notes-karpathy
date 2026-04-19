@@ -27,6 +27,11 @@ vault/
 
 `outputs/reviews/` 属于必需支撑层。其余 `outputs/` 目录是完整合同的一部分，但按阶段按需出现。
 
+archive 在这里分成两层：
+
+- source retention archive -> `raw/**` + `raw/_manifest.yaml`
+- artifact archive -> `outputs/**`
+
 `MEMORY.md` 是推荐的协作记忆层，用来承接偏好、编辑优先级和协作约束，不应该变成专题知识页。
 
 如果资料还在网页上、尚未落进 `raw/`，把浏览器采集看成上游步骤。常见路径是：
@@ -53,5 +58,17 @@ vault/
 | `outputs/slides/**`、`outputs/reports/**`、`outputs/charts/**` | `kb-render` | 确定性派生产物 |
 | `outputs/web/**` | `kb-query` | 基于已批准知识的静态浏览站导出 |
 | `outputs/health/**` | `kb-review`（`维护模式`） | 维护与体检报告 |
+
+## Archive ownership matrix
+
+| Surface | 归档类型 | Owner | 是否真相层 | 是否可复用 | 是否会触发维护 |
+| --- | --- | --- | --- | --- | --- |
+| `raw/**` + `raw/_manifest.yaml` | source retention archive | human + `kb-ingest` | 否 | 是 | 是 |
+| `outputs/qa/**` | artifact archive | `kb-query` | 否 | 是 | 是 |
+| `outputs/content/**` | artifact archive | `kb-query` | 否 | 是 | 是 |
+| `outputs/episodes/**` | artifact archive | workflow/runtime | 否 | 是 | 是 |
+| `outputs/reviews/**` | artifact archive | `kb-review` | 否 | 是 | 是 |
+| `outputs/health/**` | artifact archive | `kb-review` | 否 | 是 | 是 |
+| `outputs/web/**` | artifact archive | `kb-query` | 否 | 是 | 是 |
 
 
