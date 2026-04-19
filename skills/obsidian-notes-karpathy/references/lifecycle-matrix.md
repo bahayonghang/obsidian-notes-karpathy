@@ -45,6 +45,7 @@ These symptoms should push routing toward `kb-review` maintenance mode even when
 - source hashes or verification timestamps suggest provenance drift
 - the approved layer renders badly in Obsidian
 - archived answers have pending writeback work piling up
+- archived outputs need hygiene work such as reuse drift, stale claims, or scope leakage
 - collaboration memory and approved knowledge appear to be mixing
 - open questions and gap reports are accumulating without clear ownership
 - pages using the latest lifecycle metadata are missing confidence metadata, supersession bookkeeping, or due-date refreshes

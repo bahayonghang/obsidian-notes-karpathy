@@ -8,6 +8,13 @@ Every substantive query should either improve the wiki or explicitly record why 
 
 Archived Q&A and publish outputs may surface durable follow-up work, but they never mutate `wiki/live/` directly.
 
+Treat them as artifact archive:
+
+- reusable
+- inspectable
+- maintenance-visible
+- still outside approved truth
+
 If an output discovers reusable long-term knowledge, the change must still re-enter through:
 
 `draft -> review -> live`
@@ -15,6 +22,12 @@ If an output discovers reusable long-term knowledge, the change must still re-en
 If an output mainly reveals governance drift, alias problems, stale archives, or maintenance backlog, route that work to `kb-review` maintenance mode instead of pretending it is already approved knowledge.
 
 Compounding doctrine: treat archived outputs as reusable working memory for the system rather than as dead-end deliverables. A good output should either stand on its own for reuse or leave behind clear next actions that help the vault become denser, better linked, and easier to query later.
+
+Archive reuse order should stay disciplined:
+
+1. approved live pages first
+2. archived Q&A next
+3. archived publish artifacts only when they already reuse approved coverage cleanly
 
 ## Required writeback signals for substantive outputs
 
@@ -85,6 +98,8 @@ Prefer candidates such as:
 Avoid vague placeholders like "update the wiki later".
 
 When substantive outputs create durable follow-up work, surface that work somewhere operators can triage repeatedly rather than leaving it stranded inside a single archived artifact. Valid surfaces include governance indices, health reports, or another maintained backlog note that points back to the archived output.
+
+Archive backlog is therefore a normal maintenance concern, not a reason to treat archive as truth.
 
 ## Relationship-first compounding
 

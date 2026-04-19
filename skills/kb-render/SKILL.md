@@ -26,6 +26,7 @@ A good render pass should not be disposable. If the artifact reveals a missing s
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
+- `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/content-output-template.md`
@@ -38,6 +39,7 @@ If `../obsidian-notes-karpathy/scripts/render_live_artifact.py` exists, run it f
 ## Non-negotiable rules
 
 - only ground artifacts in `wiki/live/` pages and already-cited `outputs/qa/` answers
+- already-cited archived grounded answers are valid inputs, but they remain artifact archive rather than truth
 - never read `wiki/drafts/` or `raw/` as source material
 - static web export belongs to `kb-query`, not here
 - obey Obsidian-safe markdown rules: no alias-style wikilinks inside table cells

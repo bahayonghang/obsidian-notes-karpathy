@@ -162,6 +162,7 @@ Treat these as first-class maintenance diagnostics when the vault has creator-fa
 - creator/account profile collisions where two guidance surfaces disagree on voice, positioning, or audience
 - archived creator outputs that fail to record reuse of prior approved coverage
 - approved sources that have not been reused in archived Q&A or publish outputs despite remaining central to the topic area
+- archived outputs whose wording or scope implies they are being mistaken for approved truth
 
 ## Mechanical integrity
 

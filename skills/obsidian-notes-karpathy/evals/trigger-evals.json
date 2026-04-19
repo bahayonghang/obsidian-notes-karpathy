@@ -160,6 +160,26 @@
     "reason": "Immediate gate should win over downstream publish intent."
   },
   {
+    "query": "Archive this answer back into my Obsidian vault after you ground it in the approved live notes. I want it reusable later instead of lost in chat.",
+    "expected_skill": "kb-query",
+    "reason": "Direct archive-this-answer wording should map to the canonical query/archive lane."
+  },
+  {
+    "query": "Before you write another thread, check whether I already have an archived Q&A or archived article that covers this topic so we can reuse it instead of rewriting the same background.",
+    "expected_skill": "kb-query",
+    "reason": "Archived artifact reuse should still route through kb-query."
+  },
+  {
+    "query": "Do not answer yet. Clean up the archive backlog first because old outputs still have pending writeback candidates and a few of them may now be stale relative to newer live pages.",
+    "expected_skill": "kb-review",
+    "reason": "Archive hygiene and backlog cleanup belong to kb-review maintenance mode."
+  },
+  {
+    "query": "Explain why this Karpathy-style vault keeps raw sources retained in place instead of moving them into a raw/09-archive folder after compile.",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Archive-model clarification at the workflow level should route through the package entry skill."
+  },
+  {
     "query": "This knowledge compiler vault needs both a local-first search pass and maybe a health audit, but first tell me the current stage and the safest next step.",
     "expected_skill": "obsidian-notes-karpathy",
     "reason": "Mixed-intent novice wording should route through the package entry skill."

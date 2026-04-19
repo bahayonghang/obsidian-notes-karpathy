@@ -1,6 +1,7 @@
 {
   "contract_family": "review-gated",
   "shared_references": [
+    "archive-model.md",
     "file-model.md",
     "lifecycle-matrix.md",
     "activity-log-template.md",
@@ -24,6 +25,7 @@
     "obsidian-notes-karpathy": {
       "role": "router",
       "reads": [
+        "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
         "search-upgrades.md",
@@ -171,6 +173,7 @@
     "kb-review": {
       "role": "operation",
       "reads": [
+        "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
         "schema-template.md",
@@ -226,6 +229,7 @@
     "kb-query": {
       "role": "operation",
       "reads": [
+        "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
         "briefing-template.md",
@@ -258,6 +262,7 @@
     "kb-render": {
       "role": "operation",
       "reads": [
+        "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
         "content-output-template.md",

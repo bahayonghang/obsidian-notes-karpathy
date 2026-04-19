@@ -448,6 +448,66 @@
         "The answer explicitly mentions creator consistency, reuse bookkeeping, and underused approved sources.",
         "The workflow keeps approved live pages as truth even while auditing creator-facing surfaces."
       ]
+    },
+    {
+      "id": 29,
+      "prompt": "Use evals/fixtures/ready-for-query. Explain how this vault should archive a strong grounded answer back into `outputs/qa/` without treating that archived note as approved truth.",
+      "expected_output": "Explains the archive step for a substantive grounded answer, keeps `outputs/qa/` reusable, and preserves `wiki/live/` as the truth layer.",
+      "files": [
+        "evals/fixtures/ready-for-query/AGENTS.md",
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ],
+      "expectations": [
+        "The response treats `outputs/qa/` as artifact archive rather than approved truth.",
+        "The answer keeps archived Q&A reusable for later query work.",
+        "The workflow preserves draft -> review -> live for durable knowledge changes."
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "Use evals/fixtures/creator-consistency. Explain how an archived publish artifact should be reused and audited without letting polished output outrank the approved live summary behind it.",
+      "expected_output": "Explains archived publish artifact reuse, keeps live grounding first, and treats reuse drift as maintenance work.",
+      "files": [
+        "evals/fixtures/creator-consistency/AGENTS.md",
+        "evals/fixtures/creator-consistency/wiki/live/summaries/human/articles/2026-04-10-unused-source.md",
+        "evals/fixtures/creator-consistency/outputs/content/articles/2026-04-10-launch-thread.md"
+      ],
+      "expectations": [
+        "The response says archived publish artifacts are reusable but not approved truth.",
+        "The answer makes live pages or approved summaries the first grounding layer.",
+        "The workflow describes reuse drift as archive hygiene or maintenance."
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "Use evals/fixtures/writeback-backlog. Explain why this archived backlog belongs to maintenance work and should not be solved by silently promoting the archived Q&A into live knowledge.",
+      "expected_output": "Routes to kb-review maintenance mode and explains that archive backlog is maintenance of the artifact archive, not truth promotion.",
+      "files": [
+        "evals/fixtures/writeback-backlog/AGENTS.md",
+        "evals/fixtures/writeback-backlog/outputs/qa/2026-04-08-writeback-gap.md",
+        "evals/fixtures/writeback-backlog/wiki/live/concepts/writeback-loop.md"
+      ],
+      "expectations": [
+        "The response frames this as archive hygiene and writeback backlog.",
+        "The answer does not let archived Q&A jump directly into approved truth.",
+        "The workflow keeps the next step inside review or draft routing."
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "Use evals/fixtures/needs-ingest. Explain why this bundle keeps raw sources retained in place and registered in `raw/_manifest.yaml` instead of moving them into a `raw/09-archive/` folder after processing.",
+      "expected_output": "Explains source retention archive semantics, keeps raw immutable, and states that physical source-file archiving is outside the current contract.",
+      "files": [
+        "evals/fixtures/needs-ingest/AGENTS.md",
+        "evals/fixtures/needs-ingest/raw/_manifest.yaml",
+        "evals/fixtures/needs-ingest/raw/human/articles/2026-04-10-new-source.md"
+      ],
+      "expectations": [
+        "The response distinguishes source retention archive from artifact archive.",
+        "The answer explicitly says this repo does not default to `raw/09-archive/`.",
+        "The workflow preserves raw immutability and manifest registration."
+      ]
     }
   ]
 }

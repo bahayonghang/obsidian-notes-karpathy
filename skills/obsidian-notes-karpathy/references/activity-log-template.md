@@ -55,6 +55,19 @@ Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-bas
 - Archived answer: [[outputs/qa/{file}]]
 ```
 
+## Archived artifact reuse
+
+```markdown
+## [{date}] query | reuse-{reuse-slug}
+
+- Reused artifact:
+  - [[outputs/qa/{file}]]
+- Reuse target:
+  - [[outputs/content/articles/{file}]]
+- Grounding still checked against:
+  - [[wiki/live/concepts/concept-a]]
+```
+
 ## Publish artifact
 
 ```markdown
@@ -64,6 +77,18 @@ Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-bas
 - Channel: thread | article | talk | report | slides | chart
 - Derived from:
   - [[outputs/qa/{file}]]
+```
+
+## Publish archive
+
+```markdown
+## [{date}] publish | archive-{artifact-slug}
+
+- Archived artifact:
+  - [[outputs/content/articles/{file}]]
+- Prior archived coverage reused:
+  - [[outputs/qa/{file}]]
+- Follow-up route: none | draft | review
 ```
 
 ## Health pass
@@ -76,6 +101,18 @@ Use `wiki/log.md` as the append-only activity ledger for the whole knowledge-bas
 - Critical issues: {count}
 - Review backlog items: {count}
 - Stale briefings: {count}
+```
+
+## Archived backlog escalation
+
+```markdown
+## [{date}] health | archive-backlog-{run-slug}
+
+- Escalated archived outputs:
+  - [[outputs/qa/{file}]]
+  - [[outputs/content/articles/{file}]]
+- Reason: writeback backlog | stale archive | reuse gap | scope leak
+- Routed to: kb-review (maintenance)
 ```
 
 Rules:

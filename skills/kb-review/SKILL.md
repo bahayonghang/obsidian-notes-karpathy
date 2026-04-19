@@ -1,6 +1,6 @@
 ---
 name: kb-review
-description: Run the canonical governance lane for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "kb health", "review gate", "health check", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "lint live wiki", "检查风格约束是否冲突", "检查账号 briefing", "审校草稿", "批准草稿", "知识库体检", or whenever lifecycle detection reports `needs-review`, `needs-briefing-refresh`, or `needs-maintenance`. This skill owns both the immediate gate and the longer-horizon maintenance lane through internal `gate` and `maintenance` modes. Do not use it for normal approved-layer retrieval or deterministic derivative rendering.
+description: Run the canonical governance lane for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "kb health", "review gate", "health check", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "lint live wiki", "clear archive backlog", "audit archived outputs", "检查归档内容", "检查风格约束是否冲突", "检查账号 briefing", "审校草稿", "批准草稿", "知识库体检", or whenever lifecycle detection reports `needs-review`, `needs-briefing-refresh`, or `needs-maintenance`. This skill owns both the immediate gate and the longer-horizon maintenance lane through internal `gate` and `maintenance` modes. Do not use it for normal approved-layer retrieval or deterministic derivative rendering.
 ---
 
 # KB Review
@@ -34,6 +34,7 @@ Read these files first:
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
+- `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
@@ -120,6 +121,7 @@ Use `maintenance` mode when:
 
 - the approved layer is drifting, contradictory, stale, or weakly linked
 - archived answers or content have writeback backlog
+- archived outputs have reuse drift, stale claims, or private/shared scope leaks
 - confidence metadata, supersession bookkeeping, or audit trails have decayed
 - governance indices or graph exports need deterministic refresh
 - safe mechanical fixes in approved or archived surfaces are clearer than creating new prose
@@ -130,3 +132,12 @@ Use `maintenance` mode when:
 `kb-review` is now the only public governance surface. If the user literally says `kb-health`, treat that as `kb-review` maintenance mode.
 
 Review records should capture whether fact and inference are separated cleanly enough for safe reuse, plus a short promotion reason explaining why the page should or should not persist.
+
+Archive hygiene in maintenance mode should stay explicit:
+
+- stale archived Q&A relative to newer live pages
+- archived publish artifacts that no longer reuse the best approved coverage
+- archive backlog with `writeback_status: pending`
+- scope leaks or sensitivity metadata drift in archived outputs
+
+This is maintenance of the artifact archive, not promotion of archive into truth.

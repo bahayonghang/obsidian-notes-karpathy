@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Core rules](#core-rules)
+- [Archive model](#archive-model)
 - [Creator workflow mapping](#creator-workflow-mapping)
 - [Required vs optional support](#required-vs-optional-support)
 - [Expected directories](#expected-directories)
@@ -29,6 +30,12 @@ wiki/briefings/ -> role-specific context built from live only
 outputs/        -> reviews, Q&A, health reports, and publishable derivatives
 ```
 
+Archive model:
+
+- source retention archive -> `raw/**` + `raw/_manifest.yaml`
+- artifact archive -> `outputs/**`
+- approved truth -> `wiki/live/**`
+
 Treat the vault like a codebase with a promotion gate:
 
 - `raw/` is source evidence and the durable source library.
@@ -39,7 +46,23 @@ Treat the vault like a codebase with a promotion gate:
 - `wiki/live/topics/` is the default browse layer over approved knowledge.
 - `wiki/briefings/` is generated runtime context for agents.
 - `outputs/reviews/` is the decision ledger for promotion.
+- `outputs/**` is the durable artifact archive.
 - `outputs/qa/` and `outputs/content/` can surface writeback candidates, unresolved questions, and creator-facing derivatives, but they still re-enter the system through draft -> review -> live.
+
+## Archive model
+
+This bundle uses archive in two senses:
+
+1. **source retention archive** — retained raw evidence plus its manifest
+2. **artifact archive** — durable downstream outputs under `outputs/**`
+
+The contract intentionally does not use `archive` to mean "move raw files into `raw/09-archive/`".
+
+Archive surfaces can be reused and audited, but they do not outrank the truth boundary:
+
+- `raw/**` is retained evidence
+- `outputs/**` is reusable artifact archive
+- `wiki/live/**` is approved truth
 
 ## Core rules
 
@@ -51,9 +74,10 @@ Treat the vault like a codebase with a promotion gate:
 6. `wiki/index.md` is the content-oriented landing page for the whole contract, including live, draft, question, and briefing state.
 7. `wiki/log.md` is the append-only activity ledger for `ingest`, `review`, `brief`, `query`, `publish`, `render`, and maintenance work.
 8. `outputs/qa/` stores durable research answers, not disposable chat residue.
-9. `outputs/reviews/` stores reviewer decisions and scoring details.
-10. Existing older vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-layout` and migrated before normal operation.
-11. Alias alignment, source integrity, stale-page checks, and duplicate detection are part of governance, but they must respect the review gate rather than bypass it.
+9. `outputs/**` is artifact archive, not approved truth.
+10. `outputs/reviews/` stores reviewer decisions and scoring details.
+11. Existing older vaults using `wiki/summaries/` and `wiki/concepts/` directly should be detected as `legacy-layout` and migrated before normal operation.
+12. Alias alignment, source integrity, stale-page checks, and duplicate detection are part of governance, but they must respect the review gate rather than bypass it.
 
 ## Creator workflow mapping
 
@@ -62,9 +86,11 @@ For creator-style vaults, map common working surfaces onto the contract like thi
 - source library / clipped research -> `raw/`
 - web collection before raw intake -> `web-access` or Obsidian Web Clipper, then `kb-ingest`
 - source registry / tracked intake -> `raw/_manifest.yaml`
+- retained source archive -> `raw/**` + `raw/_manifest.yaml`
 - editorial memory / collaboration preferences -> `MEMORY.md`
 - temporary research answers or drafting notes worth preserving -> `outputs/qa/`
 - publish-ready outward artifacts -> `outputs/content/`
+- durable artifact archive -> `outputs/**`
 - reusable approved concepts, entities, and summaries -> `wiki/live/`
 - curated topic maps, hubs, or editorial navigation surfaces -> `wiki/live/indices/` or approved hub-style live pages when review says they are durable enough
 - actionable writeback backlog and editorial triage surfaces -> governance indices, health reports, or a maintained backlog note derived from archived outputs rather than hidden inside one-off artifacts

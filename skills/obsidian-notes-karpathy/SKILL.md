@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "creator knowledge compiler", "personal knowledge base", "second brain", "这个知识库下一步该做什么", "现在应该初始化/摄取/编译/审校/检索/发布/渲染/体检哪个步骤", mentions review gates, draft/live separation, source manifests, browse topics, local-first search, publish outputs, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, ingest, compile, review, query, publish, or render, and only route through this package entry skill when the workflow step is genuinely ambiguous.
+description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "creator knowledge compiler", "personal knowledge base", "second brain", "archive this answer", "归档这个回答", "存回知识库", "复用归档内容", "清理 archive backlog", "这个知识库下一步该做什么", "现在应该初始化/摄取/编译/审校/检索/发布/渲染/体检哪个步骤", mentions review gates, draft/live separation, source manifests, browse topics, local-first search, publish outputs, archive hygiene, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, ingest, compile, review, query, publish, render, or archive maintenance, and only route through this package entry skill when the workflow step is genuinely ambiguous.
 ---
 
 # Obsidian Notes Karpathy
@@ -8,6 +8,13 @@ description: Diagnose and route ambiguous, workflow-level review-gated Obsidian 
 Package-level entry point for the review-gated knowledge workflow.
 
 Use this skill when the user talks about the workflow as a whole, not just one operation. Diagnose the lifecycle stage first, then route to the correct operational skill. If the operation is already obvious, skip the router and go straight to the matching `kb-*` skill.
+
+Archive semantics are split deliberately:
+
+- raw retention archive: `raw/**` plus `raw/_manifest.yaml`
+- artifact archive: durable outputs under `outputs/**`
+
+Neither archive surface bypasses the `draft -> review -> live` truth boundary.
 
 ## Minimal loop
 
@@ -35,6 +42,7 @@ The package should behave like a persistent markdown wiki operator, not just a s
 Read these shared references first:
 
 - `./scripts/skill-contract-registry.json`
+- `./references/archive-model.md`
 - `./references/file-model.md`
 - `./references/lifecycle-matrix.md`
 - `./references/search-upgrades.md`
@@ -109,6 +117,7 @@ Route to `kb-query` when:
 - `wiki/live/**` is trustworthy and current
 - the user wants an answer, report, thread, slides, or other artifact grounded in the approved brain
 - the user wants to reuse prior approved coverage or archived outputs before drafting a new outward-facing artifact
+- the user wants to archive a substantive answer or reuse a prior archived answer/content artifact
 - the user wants question-resolution candidates or reflection outputs that should stay outside live until re-reviewed
 - the user explicitly uses older `kb-search` wording for local-first retrieval or candidate ranking
 
@@ -128,6 +137,7 @@ Route to `kb-review` in `maintenance` mode when:
 - approved pages appear to have bypassed review
 - review backlog, stale briefings, or writeback pressure have become longer-horizon maintenance issues rather than the next immediate gate
 - archived answers have pending writeback work
+- archived outputs need hygiene work such as stale reuse, archive backlog cleanup, or private/shared scope leakage
 - collaboration memory and approved knowledge appear to be mixing
 - the user wants a maintenance baseline, drift audit, duplicate pass, alias audit, coverage-gap review, or report-first cleanup pass across approved surfaces
 - the user wants planning surfaces such as curated hubs or editorial-gap views refreshed without widening the truth boundary
@@ -145,6 +155,7 @@ Route to `kb-review` in `maintenance` mode when:
 - Treat `wiki/live/procedures/` as approved procedural memory, not just another concept bucket.
 - Treat `wiki/briefings/` as per-role context generated from live only.
 - Treat `outputs/episodes/` as episodic memory and `outputs/audit/operations.jsonl` as the machine-readable audit trail.
+- Treat archived `outputs/qa/**` and `outputs/content/**` as reusable artifact archive, not as approved truth.
 - Treat `outputs/reviews/` as the durable decision ledger.
 - Keep `wiki/index.md` and `wiki/log.md` as complementary navigation surfaces.
 - Absorb stronger governance signals such as source integrity, alias alignment, stale-page checks, and question tracking without collapsing the review gate.

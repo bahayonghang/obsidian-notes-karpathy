@@ -1,6 +1,6 @@
 ---
 name: kb-query
-description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a grounded answer, ranked local candidates, archived Q&A reuse, a publishable outward artifact from approved knowledge, or a static web export from `wiki/live/`, says "query kb", "kb-search", "search live wiki", "写成公众号", "写成 thread", "对外内容", "一鱼多吃", "复用批准知识出稿", "导出静态知识站", "问知识库", or "搜索批准层并回答". This is the canonical read-side skill for approved retrieval, candidate ranking, grounded answers, archived answer reuse, creator-facing publish mode, and static web export. Do not use this skill for generic writing, open-ended web research, deterministic slide/report/chart/canvas rendering, or governance/maintenance passes that belong to `kb-render` or `kb-review`.
+description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a grounded answer, ranked local candidates, archived Q&A reuse, an answer archived back into the vault, a publishable outward artifact from approved knowledge, or a static web export from `wiki/live/`, says "query kb", "kb-search", "search live wiki", "archive this answer", "归档这个回答", "把回答存回去", "复用旧 Q&A", "写成公众号", "写成 thread", "对外内容", "一鱼多吃", "复用批准知识出稿", "导出静态知识站", "问知识库", or "搜索批准层并回答". This is the canonical read-side skill for approved retrieval, candidate ranking, grounded answers, archive and reuse of durable answers, creator-facing publish mode, and static web export. Do not use this skill for generic writing, open-ended web research, deterministic slide/report/chart/canvas rendering, or governance/maintenance passes that belong to `kb-render` or `kb-review`.
 ---
 
 # KB Query
@@ -20,6 +20,14 @@ In Karpathy's words: "good answers can be filed back into the wiki as new pages.
 
 `kb-query` should not behave like disposable chat over live notes. Strong outputs should either become reusable archived artifacts or leave behind explicit candidates for a better concept page, synthesis page, relationship edge, governed question, or curated hub.
 
+Archive is a first-class responsibility here:
+
+- `research` archives reusable grounded answers
+- `publish` archives creator-facing artifacts
+- `reflect-lite` archives synthesis notes that should stay outside approved truth
+
+That archive layer is durable and reusable, but it is still not the approved truth layer.
+
 ## When not to promote
 
 Do not treat a polished answer as approved truth by itself. If the result discovers durable knowledge, it must still re-enter through `draft -> review -> live`.
@@ -31,6 +39,7 @@ Read these files first:
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
+- `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/briefing-template.md`
@@ -99,6 +108,14 @@ Those layers may be cited only as evidence if a human explicitly asks for source
    - Output: reflection note in `outputs/qa/`, with `followup_route: draft` if durable
 
 When a substantive answer or artifact creates durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, `writeback_status`, and a `followup_route` so the next compile/review or maintenance pass can decide what should happen next.
+
+Archive reuse order should stay explicit:
+
+1. reuse approved live coverage first
+2. reuse prior archived Q&A when it already carries the needed grounded synthesis
+3. reuse archived publish artifacts only when they already cite or reuse approved coverage cleanly
+
+Do not let archived outputs outrank live grounding just because they are more polished.
 
 Prefer the smallest durable delta that improves future reuse:
 
