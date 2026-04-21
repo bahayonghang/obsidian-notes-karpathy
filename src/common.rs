@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 use std::fs;
 use std::path::Path;
+use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use chrono::{DateTime, Timelike, Utc};
@@ -368,20 +369,18 @@ pub fn strip_link_alias(target: &str) -> String {
         .to_string()
 }
 
-pub fn registry_for_records(
-    records: &[MarkdownRecord],
-) -> (
-    HashMap<String, MarkdownRecord>,
-    HashMap<String, Vec<MarkdownRecord>>,
-) {
-    let mut by_path = HashMap::new();
-    let mut by_basename: HashMap<String, Vec<MarkdownRecord>> = HashMap::new();
+/// path_no_ext → record 的 Arc 共享索引。
+pub type RecordByPath = HashMap<String, Arc<MarkdownRecord>>;
+/// basename → records 的 Arc 共享倒排索引（basename 重名时有多个）。
+pub type RecordByBasename = HashMap<String, Vec<Arc<MarkdownRecord>>>;
+
+pub fn registry_for_records(records: &[MarkdownRecord]) -> (RecordByPath, RecordByBasename) {
+    let mut by_path: RecordByPath = HashMap::new();
+    let mut by_basename: RecordByBasename = HashMap::new();
     for record in records {
-        by_path.insert(record.path_no_ext(), record.clone());
-        by_basename
-            .entry(record.basename())
-            .or_default()
-            .push(record.clone());
+        let arc = Arc::new(record.clone());
+        by_path.insert(record.path_no_ext(), Arc::clone(&arc));
+        by_basename.entry(record.basename()).or_default().push(arc);
     }
     (by_path, by_basename)
 }
@@ -389,15 +388,15 @@ pub fn registry_for_records(
 pub fn resolve_target(
     source_record: &MarkdownRecord,
     target: &str,
-    by_path: &HashMap<String, MarkdownRecord>,
-    by_basename: &HashMap<String, Vec<MarkdownRecord>>,
-) -> Vec<MarkdownRecord> {
+    by_path: &RecordByPath,
+    by_basename: &RecordByBasename,
+) -> Vec<Arc<MarkdownRecord>> {
     let stripped = strip_link_alias(target);
     if stripped.is_empty() {
         return Vec::new();
     }
 
-    let mut candidates: Vec<MarkdownRecord> = Vec::new();
+    let mut candidates: Vec<Arc<MarkdownRecord>> = Vec::new();
     let normalized = stripped
         .strip_suffix(".md")
         .unwrap_or(&stripped)
@@ -410,21 +409,21 @@ pub fn resolve_target(
             .unwrap_or_default();
         let joined = collapse_posix(&format!("{parent}/{normalized}"));
         if let Some(record) = by_path.get(&joined) {
-            candidates.push(record.clone());
+            candidates.push(Arc::clone(record));
         }
     } else if let Some(record) = by_path.get(&normalized) {
-        candidates.push(record.clone());
+        candidates.push(Arc::clone(record));
     } else {
         let basename = Path::new(&normalized)
             .file_name()
             .map(|value| value.to_string_lossy().into_owned())
             .unwrap_or_default();
         if let Some(values) = by_basename.get(&basename) {
-            candidates.extend(values.iter().cloned());
+            candidates.extend(values.iter().map(Arc::clone));
         }
     }
 
-    let mut deduped = BTreeMap::new();
+    let mut deduped: BTreeMap<String, Arc<MarkdownRecord>> = BTreeMap::new();
     for candidate in candidates {
         deduped.insert(candidate.path_no_ext(), candidate);
     }
