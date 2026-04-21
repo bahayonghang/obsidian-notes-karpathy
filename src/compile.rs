@@ -639,14 +639,15 @@ pub fn scan_compile_delta(vault_root: &Path) -> Result<Value> {
         items.push(Value::Object(item));
     }
 
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "layout_family": layout_family,
-        "counts": counts,
-        "ingest_counts": ingest_counts,
-        "companion_skills": detect_companion_skills(None),
-        "items": items,
-    }))
+    let delta = crate::payload::CompileDelta {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        layout_family: layout_family.to_string(),
+        counts,
+        ingest_counts,
+        companion_skills: detect_companion_skills(None),
+        items,
+    };
+    Ok(serde_json::to_value(&delta)?)
 }
 
 fn title_for_source(raw_path: &Path, record: Option<&crate::common::MarkdownRecord>) -> String {
@@ -1189,10 +1190,11 @@ pub fn build_draft_packages(vault_root: &Path, write: bool) -> Result<Value> {
         written_paths.push(relative_posix(&review_meta_path, vault_root));
     }
 
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "package_count": packages.len(),
-        "packages": packages,
-        "written_paths": written_paths,
-    }))
+    let result = crate::payload::CompileBuildResult {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        package_count: packages.len(),
+        packages,
+        written_paths,
+    };
+    Ok(serde_json::to_value(&result)?)
 }

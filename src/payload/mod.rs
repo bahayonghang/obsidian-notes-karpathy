@@ -229,3 +229,25 @@ pub struct IngestDelta {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub written_manifest: Option<String>,
 }
+
+/// `onkb compile scan` 的返回结构。
+///
+/// `items` 与 `companion_skills` 保留 `Value`，阶段 5 拆 `compile/` 时再细化。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompileDelta {
+    pub vault_root: String,
+    pub layout_family: String,
+    pub counts: Counts,
+    pub ingest_counts: Counts,
+    pub companion_skills: Value,
+    pub items: Vec<Value>,
+}
+
+/// `onkb compile build --write` 的返回结构。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompileBuildResult {
+    pub vault_root: String,
+    pub package_count: usize,
+    pub packages: Vec<Value>,
+    pub written_paths: Vec<String>,
+}
