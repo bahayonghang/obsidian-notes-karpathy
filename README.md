@@ -207,12 +207,20 @@ Compatibility and repo-maintenance scripts:
 - `onkb --json dev contract-validate`
 - `onkb --json dev audit-skills`
 - `onkb --json dev render-reference-block <skill>`
-- `onkb --json dev eval-trigger [--dry-run]`
-- `onkb --json dev eval-runtime [--dry-run]`
+- `onkb --json dev eval-trigger [--dry-run] [--skill <name>]`
+- `onkb --json dev eval-runtime [--dry-run] [--skill <name>] [--eval-id <id>] [--reuse-baseline-from <workspace>]`
 
 ## Install
 
 ```bash
-cargo install --path . --locked
+cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karpathy.git onkb
 onkb skill install
 ```
+
+For local development from a checked-out repo, use:
+
+```bash
+cargo install --path . --locked
+```
+
+If a skill step says `onkb` is not installed, use the GitHub install command above as the default fallback, then retry the same lifecycle command.

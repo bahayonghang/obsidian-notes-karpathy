@@ -14,7 +14,7 @@ use onkb::{
         reference_blocks::render_shared_reference_block,
         runtime_eval::{run_runtime_eval, RuntimeEvalOptions},
         skill_audit::build_payload as build_skill_audit_payload,
-        trigger_eval::run_trigger_eval,
+        trigger_eval::{run_trigger_eval, TriggerEvalOptions},
     },
     governance::{build_governance_indices, write_governance_indices},
     graph::{build_graph_snapshot, write_graph_snapshot},
@@ -198,6 +198,8 @@ enum DevCommand {
     AuditSkills {
         #[arg(long)]
         json: bool,
+        #[arg(long = "skill")]
+        skills: Vec<String>,
     },
     EvalTrigger {
         #[arg(long = "eval-set")]
@@ -206,6 +208,8 @@ enum DevCommand {
         runner: Option<String>,
         #[arg(long)]
         workspace: Option<PathBuf>,
+        #[arg(long = "skill")]
+        skills: Vec<String>,
         #[arg(long)]
         dry_run: bool,
         #[arg(long)]
@@ -224,6 +228,12 @@ enum DevCommand {
         runner: Option<String>,
         #[arg(long)]
         workspace: Option<PathBuf>,
+        #[arg(long = "reuse-baseline-from")]
+        reuse_baseline_from: Option<PathBuf>,
+        #[arg(long = "skill")]
+        skills: Vec<String>,
+        #[arg(long = "eval-id")]
+        eval_ids: Vec<String>,
         #[arg(long)]
         limit: Option<usize>,
         #[arg(long = "timeout-sec", default_value_t = 180)]
@@ -325,22 +335,28 @@ fn main() -> Result<()> {
         )?,
         Commands::Dev { command } => match command {
             DevCommand::ContractValidate => validate_bundle(&current_repo_root()?)?,
-            DevCommand::AuditSkills { .. } => build_skill_audit_payload(&current_repo_root()?)?,
+            DevCommand::AuditSkills { skills, .. } => {
+                build_skill_audit_payload(&current_repo_root()?, &skills)?
+            }
             DevCommand::EvalTrigger {
                 eval_set,
                 runner,
                 workspace,
+                skills,
                 dry_run,
                 limit,
                 timeout_sec,
             } => run_trigger_eval(
                 &current_repo_root()?,
-                eval_set.as_deref(),
-                runner.as_deref(),
-                workspace.as_deref(),
-                dry_run,
-                limit,
-                timeout_sec,
+                TriggerEvalOptions {
+                    eval_set: eval_set.as_deref(),
+                    runner: runner.as_deref(),
+                    workspace: workspace.as_deref(),
+                    skills: &skills,
+                    dry_run,
+                    limit,
+                    timeout_sec,
+                },
             )?,
             DevCommand::EvalRuntime {
                 manifest,
@@ -348,6 +364,9 @@ fn main() -> Result<()> {
                 dry_run,
                 runner,
                 workspace,
+                reuse_baseline_from,
+                skills,
+                eval_ids,
                 limit,
                 timeout_sec,
             } => {
@@ -360,6 +379,9 @@ fn main() -> Result<()> {
                         manifest_override: manifest.as_deref(),
                         runner: runner.as_deref(),
                         workspace: workspace.as_deref(),
+                        reuse_baseline_from: reuse_baseline_from.as_deref(),
+                        skills: &skills,
+                        eval_ids: &eval_ids,
                         dry_run,
                         limit,
                         timeout_sec,

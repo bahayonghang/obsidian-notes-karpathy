@@ -49,6 +49,8 @@ Treat `skill-contract-registry.json` as the canonical source for required refere
 
 If `onkb` is available, run `onkb --json query scope <vault-root>` first and treat its output as the deterministic baseline for live-layer retrieval boundaries.
 
+If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
 Then start with:
 
 - `wiki/index.md`

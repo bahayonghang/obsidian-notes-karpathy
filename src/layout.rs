@@ -451,7 +451,11 @@ pub fn compute_hash(path: &Path) -> Result<String> {
     let bytes = fs::read(path)?;
     let mut digest = Sha256::new();
     digest.update(bytes);
-    Ok(format!("{:x}", digest.finalize()))
+    Ok(digest
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect())
 }
 
 pub fn collect_markdown_records(vault_root: &Path) -> Result<Vec<MarkdownRecord>> {

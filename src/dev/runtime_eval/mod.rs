@@ -18,6 +18,9 @@ pub struct RuntimeEvalOptions<'a> {
     pub manifest_override: Option<&'a Path>,
     pub runner: Option<&'a str>,
     pub workspace: Option<&'a Path>,
+    pub reuse_baseline_from: Option<&'a Path>,
+    pub skills: &'a [String],
+    pub eval_ids: &'a [String],
     pub dry_run: bool,
     pub limit: Option<usize>,
     pub timeout_sec: u64,
@@ -134,9 +137,9 @@ pub fn build_prompt(
         "Treat `{vault_root}` as the only target vault root for this task.\nThe listed files are evidence from that vault, not alternate roots.\nDo not reason about the repository root as if it were the vault.\n"
     );
     let common = if mode == "writable-copy" {
-        "You may modify files only under the declared vault root.\nDo not modify repository-tracked files outside that target vault copy.\nUse only repository-local evidence from the declared vault root and the listed files.\nPrefer the listed files over open-ended repo exploration.\nIf search is required, prefer rg over grep for repository-local searches.\nOn Windows, avoid shell globs inside literal paths. Prefer reading the exact listed files, and if search is required use PowerShell-native commands instead of rg against wildcarded absolute paths.\nReturn a concise answer with:\n1. the conclusion\n2. the files used\n3. any assumptions\n"
+        "You may modify files only under the declared vault root.\nDo not modify repository-tracked files outside that target vault copy.\nUse only repository-local evidence from the declared vault root and the listed files.\nPrefer the listed files over open-ended repo exploration.\nIf search is required, prefer rg over grep for repository-local searches.\nOn Windows, avoid shell globs inside literal paths. Prefer reading the exact listed files, and if search is required use PowerShell-native commands instead of rg against wildcarded absolute paths.\nDo not quote or restate the task instructions verbatim.\nDo not echo full absolute repository paths back to the user; prefer repo-relative or vault-relative paths.\nReturn a concise answer with:\n1. the conclusion\n2. the files used\n3. any assumptions\n"
     } else {
-        "Work in read-only mode. Do not modify any files.\nUse only repository-local evidence from the declared vault root and the listed files.\nPrefer the listed files over open-ended repo exploration.\nIf search is required, prefer rg over grep for repository-local searches.\nOn Windows, avoid shell globs inside literal paths. Prefer reading the exact listed files, and if search is required use PowerShell-native commands instead of rg against wildcarded absolute paths.\nReturn a concise answer with:\n1. the conclusion\n2. the files used\n3. any assumptions\n"
+        "Work in read-only mode. Do not modify any files.\nUse only repository-local evidence from the declared vault root and the listed files.\nPrefer the listed files over open-ended repo exploration.\nIf search is required, prefer rg over grep for repository-local searches.\nOn Windows, avoid shell globs inside literal paths. Prefer reading the exact listed files, and if search is required use PowerShell-native commands instead of rg against wildcarded absolute paths.\nDo not quote or restate the task instructions verbatim.\nDo not echo full absolute repository paths back to the user; prefer repo-relative or vault-relative paths.\nReturn a concise answer with:\n1. the conclusion\n2. the files used\n3. any assumptions\n"
     };
 
     if use_skill {
@@ -168,6 +171,10 @@ pub fn build_plan_payload(
         .iter()
         .filter_map(|item| item.get("skill").and_then(Value::as_str))
         .collect::<std::collections::BTreeSet<_>>();
+    let eval_ids = evals
+        .iter()
+        .filter_map(|item| item.get("id").and_then(Value::as_str))
+        .collect::<std::collections::BTreeSet<_>>();
     let modes = evals
         .iter()
         .map(|item| {
@@ -183,8 +190,136 @@ pub fn build_plan_payload(
         "eval_count": evals.len(),
         "reason": reason,
         "skills": skills,
+        "eval_ids": eval_ids,
         "modes": modes,
     })
+}
+
+/*
+ * ========================================================================
+ * 步骤1：按 skill 和 eval id 缩小运行时评估集合
+ * ========================================================================
+ * 目标：
+ * 1) 让 Darwin 式迭代可以只跑目标 skill 或目标 case
+ * 2) 保持现有 manifest 结构和默认全量行为不变
+ */
+fn filter_manifest_evals(manifest: &mut Value, skills: &[String], eval_ids: &[String]) {
+    let Some(evals) = manifest.get_mut("evals").and_then(Value::as_array_mut) else {
+        return;
+    };
+    if skills.is_empty() && eval_ids.is_empty() {
+        return;
+    }
+
+    let allowed_skills = skills
+        .iter()
+        .cloned()
+        .collect::<std::collections::BTreeSet<_>>();
+    let allowed_eval_ids = eval_ids
+        .iter()
+        .cloned()
+        .collect::<std::collections::BTreeSet<_>>();
+
+    evals.retain(|item| {
+        let skill_ok = allowed_skills.is_empty()
+            || item
+                .get("skill")
+                .and_then(Value::as_str)
+                .map(|skill| allowed_skills.contains(skill))
+                .unwrap_or(false);
+        let eval_id_ok = allowed_eval_ids.is_empty()
+            || item
+                .get("id")
+                .and_then(Value::as_str)
+                .map(|eval_id| allowed_eval_ids.contains(eval_id))
+                .unwrap_or(false);
+        skill_ok && eval_id_ok
+    });
+}
+
+/*
+ * ========================================================================
+ * 步骤3：复用上一轮成功的 baseline 产物
+ * ========================================================================
+ * 目标：
+ * 1) 在 read-only 评估里只重跑 with-skill
+ * 2) 用上一轮稳定 baseline 缩短迭代回路
+ */
+fn copy_run_tree(source: &Path, target: &Path) -> Result<()> {
+    for entry in walkdir::WalkDir::new(source) {
+        let entry = match entry {
+            Ok(value) => value,
+            Err(_) => continue,
+        };
+        let relative = entry.path().strip_prefix(source).unwrap_or(entry.path());
+        let destination = target.join(relative);
+        if entry.file_type().is_dir() {
+            fs::create_dir_all(&destination)
+                .with_context(|| format!("create {}", destination.display()))?;
+        } else {
+            if let Some(parent) = destination.parent() {
+                fs::create_dir_all(parent)
+                    .with_context(|| format!("create {}", parent.display()))?;
+            }
+            fs::copy(entry.path(), &destination)
+                .with_context(|| format!("copy {}", entry.path().display()))?;
+        }
+    }
+    Ok(())
+}
+
+pub fn try_reuse_baseline_artifacts(
+    repo_root: &Path,
+    previous_workspace: Option<&Path>,
+    skill: &str,
+    eval_id: &str,
+    mode: &str,
+    current_metadata: &Value,
+    baseline_dir: &Path,
+) -> Result<Option<Value>> {
+    if mode != "read-only" {
+        return Ok(None);
+    }
+    let Some(previous_workspace) = previous_workspace else {
+        return Ok(None);
+    };
+
+    let previous_eval_dir = previous_workspace.join(skill).join(eval_id);
+    let previous_metadata_path = previous_eval_dir.join("metadata.json");
+    let previous_baseline_dir = previous_eval_dir.join("baseline");
+    let previous_result_path = previous_baseline_dir.join("result.json");
+    if !previous_metadata_path.exists() || !previous_result_path.exists() {
+        return Ok(None);
+    }
+
+    let previous_metadata = serde_json::from_str::<Value>(&read_utf8(&previous_metadata_path)?)
+        .with_context(|| format!("parse {}", previous_metadata_path.display()))?;
+    if previous_metadata != *current_metadata {
+        return Ok(None);
+    }
+
+    let mut previous_result = serde_json::from_str::<Value>(&read_utf8(&previous_result_path)?)
+        .with_context(|| format!("parse {}", previous_result_path.display()))?;
+    if previous_result.get("failure_kind").and_then(Value::as_str) != Some("ok") {
+        return Ok(None);
+    }
+    if previous_result
+        .get("output_captured")
+        .and_then(Value::as_bool)
+        != Some(true)
+    {
+        return Ok(None);
+    }
+
+    if baseline_dir.exists() {
+        fs::remove_dir_all(baseline_dir)
+            .with_context(|| format!("remove {}", baseline_dir.display()))?;
+    }
+    copy_run_tree(&previous_baseline_dir, baseline_dir)?;
+    previous_result["reused"] = Value::Bool(true);
+    previous_result["reused_from"] =
+        Value::String(paths::repo_relative(repo_root, &previous_baseline_dir));
+    Ok(Some(previous_result))
 }
 
 pub fn run_runtime_eval(
@@ -203,6 +338,7 @@ pub fn run_runtime_eval(
             }
         });
     let mut manifest = load_manifest(&manifest_path)?;
+    filter_manifest_evals(&mut manifest, options.skills, options.eval_ids);
     if let Some(limit) = options.limit {
         let trimmed = manifest
             .get("evals")
@@ -359,14 +495,26 @@ pub fn run_runtime_eval(
             sandbox_mode,
             repo_root,
         )?;
-        let mut baseline_result = runner::execute_run(
-            &runner,
-            &baseline_prompt,
-            &baseline_dir,
-            options.timeout_sec,
-            sandbox_mode,
+        let mut baseline_result = if let Some(reused) = try_reuse_baseline_artifacts(
             repo_root,
-        )?;
+            options.reuse_baseline_from,
+            skill,
+            eval_id,
+            mode,
+            &metadata,
+            &baseline_dir,
+        )? {
+            reused
+        } else {
+            runner::execute_run(
+                &runner,
+                &baseline_prompt,
+                &baseline_dir,
+                options.timeout_sec,
+                sandbox_mode,
+                repo_root,
+            )?
+        };
 
         for (run_dir, result_payload, target_vault_root) in [
             (

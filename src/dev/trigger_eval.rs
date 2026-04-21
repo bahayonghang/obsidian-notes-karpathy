@@ -8,6 +8,16 @@ use super::runtime_eval::runner;
 use super::skill_audit::load_skill_catalog;
 use super::{read_utf8, trigger_evals_path};
 
+pub struct TriggerEvalOptions<'a> {
+    pub eval_set: Option<&'a Path>,
+    pub runner: Option<&'a str>,
+    pub workspace: Option<&'a Path>,
+    pub skills: &'a [String],
+    pub dry_run: bool,
+    pub limit: Option<usize>,
+    pub timeout_sec: u64,
+}
+
 pub fn build_trigger_prompt(
     query: &str,
     catalog: &std::collections::BTreeMap<String, String>,
@@ -154,24 +164,44 @@ fn default_workspace_root(repo_root: &Path) -> PathBuf {
     repo_root.join(".trigger-evals")
 }
 
-pub fn run_trigger_eval(
-    repo_root: &Path,
-    eval_set: Option<&Path>,
-    runner: Option<&str>,
-    workspace: Option<&Path>,
-    dry_run: bool,
-    limit: Option<usize>,
-    timeout_sec: u64,
-) -> Result<Value> {
-    let eval_set_path = eval_set
+/*
+ * ========================================================================
+ * 步骤1：按预期 skill 缩小 trigger 基准集
+ * ========================================================================
+ * 目标：
+ * 1) 让触发词评估可以围绕单个 skill 小步回归
+ * 2) 保留 `none` 这类非 bundle 请求的基准样本
+ */
+fn filter_trigger_evals(evals: &mut Vec<Value>, skills: &[String]) {
+    if skills.is_empty() {
+        return;
+    }
+
+    let allowed_skills = skills
+        .iter()
+        .cloned()
+        .collect::<std::collections::BTreeSet<_>>();
+    evals.retain(
+        |item| match item.get("expected_skill").and_then(Value::as_str) {
+            Some(skill_name) => allowed_skills.contains(skill_name),
+            None => allowed_skills.contains("none"),
+        },
+    );
+}
+
+pub fn run_trigger_eval(repo_root: &Path, options: TriggerEvalOptions<'_>) -> Result<Value> {
+    let eval_set_path = options
+        .eval_set
         .map(PathBuf::from)
         .unwrap_or_else(|| trigger_evals_path(repo_root));
     let mut evals = load_eval_set(&eval_set_path)?;
-    if let Some(limit) = limit {
+    filter_trigger_evals(&mut evals, options.skills);
+    if let Some(limit) = options.limit {
         evals.truncate(limit);
     }
-    let runner = runner::detect_runner(runner);
-    let workspace_root = workspace
+    let runner = runner::detect_runner(options.runner);
+    let workspace_root = options
+        .workspace
         .map(PathBuf::from)
         .unwrap_or_else(|| {
             default_workspace_root(repo_root).join(crate::dev::runtime_eval::utc_stamp())
@@ -189,13 +219,14 @@ pub fn run_trigger_eval(
     }
     let runner = runner.unwrap();
 
-    if dry_run {
+    if options.dry_run {
         return Ok(json!({
             "status": "planned",
             "workspace": workspace_root.to_string_lossy(),
             "runner": runner,
             "eval_count": evals.len(),
             "skills": catalog.keys().cloned().collect::<Vec<_>>(),
+            "selected_skills": options.skills,
         }));
     }
 
@@ -213,7 +244,7 @@ pub fn run_trigger_eval(
             &runner,
             &prompt,
             &run_dir,
-            timeout_sec,
+            options.timeout_sec,
             "read-only",
             repo_root,
         )?;

@@ -58,6 +58,8 @@ If `onkb` is available, use these commands first:
 - `onkb --json migrate <vault-root> ...` for legacy single-layer vault migration
 - `onkb --json review governance <vault-root> --write` when optional governance scaffolding should be materialized
 
+If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
 ## Profile choice
 
 Surface the operating profile during init or repair:

@@ -68,6 +68,8 @@ If `onkb` is available, run:
 - `onkb --json review governance <vault-root>` when maintenance mode should refresh `QUESTIONS.md`, `GAPS.md`, `ALIASES.md`, `ENTITIES.md`, or `RELATIONSHIPS.md`
 - `onkb --json review graph <vault-root>` when the user wants machine-readable graph export during maintenance
 
+If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
 ## Independence rule
 
 Review the draft package, the directly cited raw captures, and overlapping live pages only.

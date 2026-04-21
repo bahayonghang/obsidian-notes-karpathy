@@ -4,7 +4,13 @@ Install the Rust CLI first, then let `onkb` install the embedded skill bundle.
 
 ## Install the CLI
 
-Build and install from the repo root:
+For normal use, install directly from GitHub:
+
+```bash
+cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karpathy.git onkb
+```
+
+For local development from the repo root:
 
 ```bash
 cargo install --path . --locked
@@ -15,6 +21,8 @@ Verify the binary:
 ```bash
 onkb --json doctor
 ```
+
+If a skill or shell step reports that `onkb` is not installed, use the GitHub install command above as the default fallback, then rerun the same `onkb ...` command.
 
 ## Install the embedded skills
 

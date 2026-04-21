@@ -46,7 +46,7 @@ Some fixture homes intentionally contain `SKILL.md` files under `fixtures/compan
 When you need an old/new review pass for skill wording:
 
 1. snapshot the tracked baseline into `skills/obsidian-notes-karpathy-workspace/skill-snapshot/`
-2. run `onkb dev eval-trigger --dry-run` and `onkb dev eval-runtime --dry-run` for the current tree
+2. run `onkb dev eval-trigger --dry-run --skill <name>` and `onkb dev eval-runtime --dry-run --skill <name> [--eval-id <id>] [--reuse-baseline-from <workspace>]` for the current tree
 3. write benchmark artifacts under `skills/obsidian-notes-karpathy-workspace/iteration-1/`
 4. capture the result with `onkb dev audit-skills --json`
 
@@ -55,3 +55,5 @@ On this Windows machine:
 - treat `evals/trigger-evals.json`, `evals/runtime-evals.json`, and `evals/runtime-evals-writable.json` as the authoritative scenario lists
 - prefer `onkb dev audit-skills --json` over ad-hoc reviewer scripts
 - keep evaluation entrypoints on `onkb`; the bundle no longer uses repo-local script wrappers
+- for `obsidian-notes-karpathy`, `kb-init`, `kb-ingest`, and `kb-compile`, prefer `--skill` / `--eval-id` slices and raise `--timeout-sec` before attempting a broad runtime batch
+- when iterating on a read-only skill, point `--reuse-baseline-from` at the previous runtime workspace so only the with-skill leg reruns

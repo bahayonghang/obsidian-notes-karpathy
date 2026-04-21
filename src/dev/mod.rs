@@ -138,9 +138,26 @@ pub fn load_registry(repo_root: &Path) -> Result<Registry> {
 }
 
 pub fn relative_to_repo(repo_root: &Path, path: &Path) -> String {
-    path.strip_prefix(repo_root)
-        .map(|value| value.to_string_lossy().replace('\\', "/"))
-        .unwrap_or_else(|_| path.to_string_lossy().replace('\\', "/"))
+    let repo_candidates = [
+        repo_root.to_path_buf(),
+        repo_root
+            .canonicalize()
+            .unwrap_or_else(|_| repo_root.to_path_buf()),
+    ];
+    let path_candidates = [
+        path.to_path_buf(),
+        path.canonicalize().unwrap_or_else(|_| path.to_path_buf()),
+    ];
+
+    for candidate in &path_candidates {
+        for root in &repo_candidates {
+            if let Ok(relative) = candidate.strip_prefix(root) {
+                return relative.to_string_lossy().replace('\\', "/");
+            }
+        }
+    }
+
+    path.to_string_lossy().replace('\\', "/")
 }
 
 pub fn list_repo_files(repo_root: &Path, relative_roots: &[&str]) -> Result<Vec<PathBuf>> {

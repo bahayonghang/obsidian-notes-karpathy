@@ -5,16 +5,9 @@ description: Diagnose and route ambiguous, workflow-level review-gated Obsidian 
 
 # Obsidian Notes Karpathy
 
-Package-level entry point for the review-gated knowledge workflow.
-
 Use this skill when the user talks about the workflow as a whole, not just one operation. Diagnose the lifecycle stage first, then route to the correct operational skill. If the operation is already obvious, skip the router and go straight to the matching `kb-*` skill.
 
-Archive semantics are split deliberately:
-
-- raw retention archive: `raw/**` plus `raw/_manifest.yaml`
-- artifact archive: durable outputs under `outputs/**`
-
-Neither archive surface bypasses the `draft -> review -> live` truth boundary.
+Archive semantics stay split: `raw/**` plus `raw/_manifest.yaml` are source retention archive, while durable outputs under `outputs/**` are artifact archive. Neither archive surface bypasses the `draft -> review -> live` truth boundary.
 
 When the user brings in the simpler `raw/wiki/output` vocabulary from `Chinese-LLM-Wiki`, route by meaning rather than mirroring that older structure literally.
 
@@ -34,10 +27,6 @@ This package implements the LLM Wiki pattern: "Obsidian is the IDE; the LLM is t
 The key extension beyond Karpathy's original idea is an explicit review gate: unreviewed drafts never silently harden into long-term truth. This adds a `draft → review → live` promotion step that Karpathy's pattern leaves implicit.
 
 The creator-ready extension is that compile should behave like a knowledge compiler, not just a summarizer: collect -> ingest -> compile (`浓缩 -> 质疑 -> 对标`) -> review -> query/publish -> maintenance.
-
-## When this compounds the wiki
-
-The package should behave like a persistent markdown wiki operator, not just a staged pipeline. Each step should either improve approved knowledge directly through the gate or leave behind clearer navigation, better reuse surfaces, and explicit next actions.
 
 ## Read before routing
 
@@ -68,6 +57,8 @@ If the target vault already exists, inspect:
 - the most recent entries in `wiki/log.md` when available
 
 If `onkb` is available, run `onkb --json status <vault-root>` first and treat its JSON output as the deterministic baseline.
+
+If `onkb` is missing, follow the install fallback in `./references/lifecycle-matrix.md`, then rerun the same command.
 
 If the user mainly wants a concise "where am I and what next?" summary, prefer `onkb status <vault-root>`.
 

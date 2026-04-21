@@ -34,6 +34,8 @@ Treat `skill-contract-registry.json` as the canonical source for required refere
 
 If `onkb` is available, run `onkb --json render <vault-root> --mode <mode> --source <path>` first to get the deterministic baseline before manual shaping.
 
+If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
 ## Non-negotiable rules
 
 - only ground artifacts in `wiki/live/` pages and already-cited `outputs/qa/` answers

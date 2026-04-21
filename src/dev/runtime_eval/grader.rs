@@ -129,7 +129,11 @@ fn file_digest(path: &Path) -> Result<String> {
     let bytes = fs::read(path).with_context(|| format!("read {}", path.display()))?;
     let mut digest = Sha256::new();
     digest.update(bytes);
-    Ok(format!("{:x}", digest.finalize()))
+    Ok(digest
+        .finalize()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect())
 }
 
 fn tree_snapshot(root: &Path) -> Result<BTreeMap<String, String>> {

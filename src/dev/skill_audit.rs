@@ -234,6 +234,13 @@ fn audit_skill(
         ),
     );
     checks.insert(
+        "mentions_cli_install_fallback".to_string(),
+        Value::Bool(
+            text.contains("If `onkb` is missing")
+                || text.contains("If the shell reports `onkb` is not installed"),
+        ),
+    );
+    checks.insert(
         "trigger_eval_covered".to_string(),
         Value::Bool(trigger_skills.contains(skill_name)),
     );
@@ -264,6 +271,7 @@ fn audit_skill(
         "has_output_section",
         "mentions_registry",
         "mentions_baseline_command",
+        "mentions_cli_install_fallback",
         "trigger_eval_covered",
         "runtime_eval_covered",
         "writable_runtime_covered",
@@ -308,13 +316,16 @@ fn audit_skill(
     }))
 }
 
-pub fn build_payload(repo_root: &Path) -> Result<Value> {
+pub fn build_payload(repo_root: &Path, skill_filters: &[String]) -> Result<Value> {
     let eval_sets = load_eval_skill_sets(repo_root)?;
     let registry = load_registry(repo_root)?;
     let compatibility_report = compatibility_trigger_report(&eval_sets.trigger_data);
 
     let audits = skill_paths(repo_root)
         .iter()
+        .filter(|(skill_name, _)| {
+            skill_filters.is_empty() || skill_filters.iter().any(|item| item == *skill_name)
+        })
         .map(|(skill_name, skill_path)| {
             audit_skill(
                 skill_name,
@@ -375,6 +386,7 @@ pub fn build_payload(repo_root: &Path) -> Result<Value> {
         "status": if blocking_issue_count == 0 { "ok" } else { "error" },
         "summary": {
             "skill_count": audits.len(),
+            "selected_skills": skill_filters,
             "trigger_eval_covered": audits.iter().filter(|item| item.get("checks").and_then(|checks| checks.get("trigger_eval_covered")).and_then(Value::as_bool) == Some(true)).count(),
             "runtime_eval_covered": audits.iter().filter(|item| item.get("checks").and_then(|checks| checks.get("runtime_eval_covered")).and_then(Value::as_bool) == Some(true)).count(),
             "writable_runtime_covered": audits.iter().filter(|item| item.get("checks").and_then(|checks| checks.get("writable_runtime_covered")).and_then(Value::as_bool) == Some(true)).count(),

@@ -207,14 +207,22 @@ Repo 契约与维护入口：
 - `onkb --json dev contract-validate`
 - `onkb --json dev audit-skills`
 - `onkb --json dev render-reference-block <skill>`
-- `onkb --json dev eval-trigger [--dry-run]`
-- `onkb --json dev eval-runtime [--dry-run]`
+- `onkb --json dev eval-trigger [--dry-run] [--skill <name>]`
+- `onkb --json dev eval-runtime [--dry-run] [--skill <name>] [--eval-id <id>] [--reuse-baseline-from <workspace>]`
 
 ## 安装
 
 ```bash
-cargo install --path . --locked
+cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karpathy.git onkb
 onkb skill install
 ```
+
+如果你是在本地 clone 的仓库里做开发，也可以用：
+
+```bash
+cargo install --path . --locked
+```
+
+如果 skill 提示 `onkb` 没有安装，默认就用上面的 GitHub 安装命令补装，然后重试原来的生命周期命令。
 
 

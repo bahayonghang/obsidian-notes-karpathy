@@ -8,6 +8,11 @@ Prefer a structural diagnosis over user phrasing alone.
 
 If `onkb` is available, run `onkb --json status <vault-root>` before deciding how to route.
 
+If the shell reports `onkb` is not installed, install it from GitHub first, then rerun the same command:
+
+- `cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karpathy.git onkb`
+- repo maintainers working from a local clone may use `cargo install --path . --locked` instead
+
 The CLI is the deterministic baseline for:
 
 - setup-needed vault detection

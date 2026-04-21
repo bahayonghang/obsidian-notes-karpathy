@@ -41,6 +41,8 @@ If `onkb` is available, run:
 - `onkb --json ingest scan <vault-root>` to detect the delta
 - `onkb --json ingest sync <vault-root> --write` when the task is writable
 
+If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
 ## Source discovery
 
 Scan these paths for raw sources:

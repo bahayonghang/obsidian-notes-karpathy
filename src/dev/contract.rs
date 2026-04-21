@@ -188,7 +188,7 @@ pub fn validate_bundle(repo_root: &Path) -> Result<Value> {
         }
     }
 
-    let audit_payload = build_audit_payload(repo_root)?;
+    let audit_payload = build_audit_payload(repo_root, &[])?;
     if audit_payload.get("status").and_then(Value::as_str) != Some("ok") {
         errors.push("Skill audit must pass before bundle validation succeeds.".to_string());
     }
