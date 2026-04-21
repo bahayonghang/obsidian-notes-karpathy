@@ -86,12 +86,7 @@ fn review_queue_mixed_gate_snapshot() {
 
 #[test]
 fn review_lint_ready_for_query_snapshot() {
-    let payload = run_json(&[
-        "--json",
-        "review",
-        "lint",
-        &fixture_str("ready-for-query"),
-    ]);
+    let payload = run_json(&["--json", "review", "lint", &fixture_str("ready-for-query")]);
     insta::assert_json_snapshot!("review_lint_ready_for_query", payload, {
         ".vault_root" => VAULT_REDACT,
     });
@@ -112,12 +107,7 @@ fn review_governance_ready_for_query_snapshot() {
 
 #[test]
 fn review_graph_ready_for_query_snapshot() {
-    let payload = run_json(&[
-        "--json",
-        "review",
-        "graph",
-        &fixture_str("ready-for-query"),
-    ]);
+    let payload = run_json(&["--json", "review", "graph", &fixture_str("ready-for-query")]);
     insta::assert_json_snapshot!("review_graph_ready_for_query", payload, {
         ".vault_root" => VAULT_REDACT,
         ".generated_at" => TS_REDACT,
@@ -126,12 +116,7 @@ fn review_graph_ready_for_query_snapshot() {
 
 #[test]
 fn query_scope_ready_for_query_snapshot() {
-    let payload = run_json(&[
-        "--json",
-        "query",
-        "scope",
-        &fixture_str("ready-for-query"),
-    ]);
+    let payload = run_json(&["--json", "query", "scope", &fixture_str("ready-for-query")]);
     insta::assert_json_snapshot!("query_scope_ready_for_query", payload, {
         ".vault_root" => VAULT_REDACT,
     });

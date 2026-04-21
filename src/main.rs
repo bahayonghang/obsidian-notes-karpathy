@@ -21,6 +21,7 @@ use onkb::{
     health::audit_vault_mechanics,
     ingest::{scan_ingest_delta, sync_source_manifest},
     init::{describe_vault_status, migrate_legacy_vault, scaffold_review_gated_vault},
+    payload::DoctorPayload,
     query::{query_scope, rank_query_candidates},
     render::render_artifact,
     review::scan_review_queue,
@@ -414,32 +415,22 @@ fn main() -> Result<()> {
 
 fn doctor_report() -> Result<Value> {
     let binary_path = env::current_exe()?.to_string_lossy().into_owned();
-    let compat_label = ['p', 'y', 't', 'h', 'o', 'n'].iter().collect::<String>();
-    let compat_key = ["needs", compat_label.as_str()].join("_");
-    let compat_probe_key = [compat_label.as_str(), "detected"].join("_");
-    let mut payload = serde_json::Map::new();
-    payload.insert("version".to_string(), json!(env!("CARGO_PKG_VERSION")));
-    payload.insert("binary_path".to_string(), json!(crate_path(&binary_path)));
-    payload.insert(
-        "embedded_assets_detected".to_string(),
-        json!(bundle_available()),
-    );
-    payload.insert(
-        "skill_bundle_available".to_string(),
-        json!(bundle_available()),
-    );
-    payload.insert("runtime_mode".to_string(), json!("standalone-cli"));
-    payload.insert(compat_key, json!(false));
-    payload.insert(compat_probe_key, Value::Null);
-    payload.insert(
-        "missing_steps".to_string(),
-        json!(if bundle_available() {
-            Vec::<String>::new()
+    let bundle = bundle_available();
+    let payload = DoctorPayload {
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        binary_path: crate_path(&binary_path),
+        embedded_assets_detected: bundle,
+        skill_bundle_available: bundle,
+        runtime_mode: "standalone-cli".to_string(),
+        needs_python: false,
+        python_detected: None,
+        missing_steps: if bundle {
+            Vec::new()
         } else {
             vec!["reinstall_onkb".to_string()]
-        }),
-    );
-    Ok(Value::Object(payload))
+        },
+    };
+    Ok(serde_json::to_value(&payload)?)
 }
 
 fn crate_path(value: &str) -> String {

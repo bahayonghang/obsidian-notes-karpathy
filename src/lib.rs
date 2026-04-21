@@ -12,6 +12,7 @@ pub mod health;
 pub mod ingest;
 pub mod init;
 pub mod layout;
+pub mod payload;
 pub mod query;
 pub mod render;
 pub mod review;

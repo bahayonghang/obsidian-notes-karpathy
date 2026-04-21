@@ -3,7 +3,9 @@ use std::path::Path;
 
 use anyhow::{Context, Result};
 use include_dir::{include_dir, Dir};
-use serde_json::{json, Value};
+use serde_json::Value;
+
+use crate::payload::{SkillInstallPayload, SkillInstallTarget};
 
 static SKILLS_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/skills");
 
@@ -14,34 +16,28 @@ pub fn install_skills(
     overwrite: bool,
 ) -> Result<Value> {
     let install_both = !install_claude && !install_codex;
-    let mut payload = serde_json::Map::new();
+    let mut payload = SkillInstallPayload::default();
 
     if install_both || install_claude {
         let dir = workspace.join(".claude").join("skills");
-        let result = install_to(&dir, overwrite)?;
-        payload.insert(
-            "claude".to_string(),
-            json!({
-                "target_dir": crate::common::normalize_path_string(dir.to_string_lossy().as_ref()),
-                "installed": result.0,
-                "skipped": result.1,
-            }),
-        );
+        let (installed, skipped) = install_to(&dir, overwrite)?;
+        payload.claude = Some(SkillInstallTarget {
+            target_dir: crate::common::normalize_path_string(dir.to_string_lossy().as_ref()),
+            installed,
+            skipped,
+        });
     }
     if install_both || install_codex {
         let dir = workspace.join(".agents").join("skills");
-        let result = install_to(&dir, overwrite)?;
-        payload.insert(
-            "codex".to_string(),
-            json!({
-                "target_dir": crate::common::normalize_path_string(dir.to_string_lossy().as_ref()),
-                "installed": result.0,
-                "skipped": result.1,
-            }),
-        );
+        let (installed, skipped) = install_to(&dir, overwrite)?;
+        payload.codex = Some(SkillInstallTarget {
+            target_dir: crate::common::normalize_path_string(dir.to_string_lossy().as_ref()),
+            installed,
+            skipped,
+        });
     }
 
-    Ok(Value::Object(payload))
+    Ok(serde_json::to_value(&payload)?)
 }
 
 pub fn list_skills() -> Vec<String> {

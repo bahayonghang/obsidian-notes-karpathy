@@ -4,10 +4,11 @@ use std::path::Path;
 use anyhow::Result;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use serde_json::{json, Value};
+use serde_json::Value;
 
 use crate::common::{list_field, load_markdown, MarkdownRecord};
 use crate::layout::{collect_markdown_records, resolve_vault_profile};
+use crate::payload::{QueryRanked, QueryScope, RankedEntry, ScopeLeak, SensitivityCandidate};
 
 static TOKEN_RE: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"[A-Za-z0-9_-]+").expect("valid token regex"));
@@ -115,11 +116,11 @@ pub fn query_scope(vault_root: &Path) -> Result<Value> {
             .trim()
             .to_lowercase();
         if visibility_scope == "private" {
-            scope_leaks.push(json!({
-                "path": rel_path,
-                "visibility_scope": "private",
-                "reason": "private_surface_in_default_query_scope",
-            }));
+            scope_leaks.push(ScopeLeak {
+                path: rel_path.clone(),
+                visibility_scope: "private".to_string(),
+                reason: "private_surface_in_default_query_scope".to_string(),
+            });
         }
         let sensitivity_level = record
             .frontmatter
@@ -132,28 +133,33 @@ pub fn query_scope(vault_root: &Path) -> Result<Value> {
             sensitivity_level.as_str(),
             "internal" | "restricted" | "secret"
         ) {
-            sensitivity_candidates.push(json!({
-                "path": rel_path,
-                "sensitivity_level": sensitivity_level,
-                "candidate_kind": if included.contains(&rel_path) { "included" } else { "candidate" },
-            }));
+            sensitivity_candidates.push(SensitivityCandidate {
+                path: rel_path.clone(),
+                sensitivity_level,
+                candidate_kind: if included.contains(&rel_path) {
+                    "included".to_string()
+                } else {
+                    "candidate".to_string()
+                },
+            });
         }
     }
 
     candidate_paths.sort();
     candidate_paths.dedup();
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "layout_family": layout_family,
-        "profile": profile,
-        "included_paths": included,
-        "candidate_paths": candidate_paths,
-        "candidate_policy": "candidate-only",
-        "excluded_paths": excluded,
-        "excluded_prefixes": excluded_roots,
-        "scope_leaks": scope_leaks,
-        "sensitivity_candidates": sensitivity_candidates,
-    }))
+    let scope = QueryScope {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        layout_family,
+        profile,
+        included_paths: included,
+        candidate_paths,
+        candidate_policy: "candidate-only".to_string(),
+        excluded_paths: excluded,
+        excluded_prefixes: excluded_roots.iter().map(|s| (*s).to_string()).collect(),
+        scope_leaks,
+        sensitivity_candidates,
+    };
+    Ok(serde_json::to_value(&scope)?)
 }
 
 pub fn live_records(records: &[MarkdownRecord]) -> Vec<MarkdownRecord> {
@@ -197,19 +203,20 @@ pub fn rank_query_candidates(vault_root: &Path, query: &str) -> Result<Value> {
     let candidate_policy = scope
         .get("candidate_policy")
         .and_then(Value::as_str)
-        .unwrap_or("candidate-only");
-    let mut ranked = Vec::new();
+        .unwrap_or("candidate-only")
+        .to_string();
+    let mut ranked: Vec<RankedEntry> = Vec::new();
 
     for path in included.iter().chain(candidates.iter()) {
         let candidate_kind = if included.contains(path) {
-            "included"
+            "included".to_string()
         } else {
-            "candidate"
+            "candidate".to_string()
         };
         let truth_boundary = if candidate_kind == "included" {
             "approved-live".to_string()
         } else {
-            candidate_policy.to_string()
+            candidate_policy.clone()
         };
 
         if path.ends_with("graph-snapshot.json") {
@@ -225,17 +232,17 @@ pub fn rank_query_candidates(vault_root: &Path, query: &str) -> Result<Value> {
             let metadata_score = 1_i64;
             let graph_score = 2_i64;
             let score = lexical_overlap * 10 + metadata_score * 2 + graph_score;
-            ranked.push(json!({
-                "path": path,
-                "kind": "graph_snapshot",
-                "candidate_kind": candidate_kind,
-                "truth_boundary": truth_boundary,
-                "score": score,
-                "lexical_overlap": lexical_overlap,
-                "metadata_score": metadata_score,
-                "graph_score": graph_score,
-                "title": title,
-            }));
+            ranked.push(RankedEntry {
+                path: path.clone(),
+                kind: "graph_snapshot".to_string(),
+                candidate_kind,
+                truth_boundary,
+                score,
+                lexical_overlap,
+                metadata_score,
+                graph_score,
+                title,
+            });
             continue;
         }
 
@@ -288,42 +295,34 @@ pub fn rank_query_candidates(vault_root: &Path, query: &str) -> Result<Value> {
             graph_score += 2;
         }
         let score = lexical_overlap * 10 + metadata_score * 2 + graph_score;
-        ranked.push(json!({
-            "path": path,
-            "kind": record.kind,
-            "candidate_kind": candidate_kind,
-            "truth_boundary": truth_boundary,
-            "score": score,
-            "lexical_overlap": lexical_overlap,
-            "metadata_score": metadata_score,
-            "graph_score": graph_score,
-            "title": title,
-        }));
+        ranked.push(RankedEntry {
+            path: path.clone(),
+            kind: record.kind.clone(),
+            candidate_kind,
+            truth_boundary,
+            score,
+            lexical_overlap,
+            metadata_score,
+            graph_score,
+            title,
+        });
     }
 
-    ranked.sort_by_key(|item| {
+    ranked.sort_by_key(|entry| {
         (
-            -(item
-                .get("score")
-                .and_then(Value::as_i64)
-                .unwrap_or_default() as i128),
-            item.get("candidate_kind")
-                .and_then(Value::as_str)
-                .unwrap_or_default()
-                != "included",
-            item.get("path")
-                .and_then(Value::as_str)
-                .unwrap_or_default()
-                .to_string(),
+            -(entry.score as i128),
+            entry.candidate_kind != "included",
+            entry.path.clone(),
         )
     });
 
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "query": query,
-        "candidate_policy": candidate_policy,
-        "included_count": included.len(),
-        "candidate_count": candidates.len(),
-        "ranked_paths": ranked,
-    }))
+    let payload = QueryRanked {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        query: query.to_string(),
+        candidate_policy,
+        included_count: included.len(),
+        candidate_count: candidates.len(),
+        ranked_paths: ranked,
+    };
+    Ok(serde_json::to_value(&payload)?)
 }

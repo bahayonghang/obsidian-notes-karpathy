@@ -6,6 +6,7 @@ use serde_json::{json, Value};
 
 use crate::common::{json_string, list_field, now_iso, write_markdown, MarkdownRecord};
 use crate::layout::collect_markdown_records;
+use crate::payload::RenderResult;
 
 pub const RENDER_MODES: [&str; 5] = ["slides", "charts", "canvas", "report", "web"];
 
@@ -28,20 +29,21 @@ pub fn render_artifact(
         .map(|value| value.to_string())
         .unwrap_or_else(|| default_output_path(mode, &title_slug));
     let source_live_pages = source_live_pages_from_records(&sources);
-    let mut payload = json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "mode": mode,
-        "requested_source_paths": source_paths,
-        "source_paths": sources.iter().map(|record| record.path.clone()).collect::<Vec<_>>(),
-        "rejected_source_paths": rejected_source_paths,
-        "source_live_pages": source_live_pages,
-        "output_path": rel_output_path,
-        "title": resolved_title,
-        "followup_route": "none",
-    });
+    let mut result = RenderResult {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        mode: mode.to_string(),
+        requested_source_paths: source_paths.to_vec(),
+        source_paths: sources.iter().map(|record| record.path.clone()).collect(),
+        rejected_source_paths,
+        source_live_pages: source_live_pages.clone(),
+        output_path: rel_output_path.clone(),
+        title: resolved_title.clone(),
+        followup_route: "none".to_string(),
+        package_root: None,
+    };
 
     if !write {
-        return Ok(payload);
+        return Ok(serde_json::to_value(&result)?);
     }
 
     let output_abs = vault_root.join(&rel_output_path);
@@ -52,10 +54,10 @@ pub fn render_artifact(
             &resolved_title,
             &sources,
             &source_live_pages,
-            &payload["rejected_source_paths"],
+            &result.rejected_source_paths,
         )?;
-        payload["package_root"] = json!(crate::common::relative_posix(package_root, vault_root));
-        return Ok(payload);
+        result.package_root = Some(crate::common::relative_posix(package_root, vault_root));
+        return Ok(serde_json::to_value(&result)?);
     }
 
     if mode == "canvas" {
@@ -66,7 +68,7 @@ pub fn render_artifact(
             &output_abs,
             serde_json::to_string_pretty(&canvas_payload(&resolved_title, &source_live_pages))?,
         )?;
-        return Ok(payload);
+        return Ok(serde_json::to_value(&result)?);
     }
 
     let mut frontmatter_lines = vec![
@@ -94,7 +96,7 @@ pub fn render_artifact(
     let mut lines = frontmatter_lines;
     lines.extend(body_lines);
     write_markdown(&output_abs, &lines)?;
-    Ok(payload)
+    Ok(serde_json::to_value(&result)?)
 }
 
 fn records_by_path(vault_root: &Path) -> Result<std::collections::HashMap<String, MarkdownRecord>> {
@@ -236,7 +238,7 @@ fn write_web_export(
     title: &str,
     sources: &[MarkdownRecord],
     source_live_pages: &[String],
-    rejected_source_paths: &Value,
+    rejected_source_paths: &[String],
 ) -> Result<()> {
     fs::create_dir_all(package_root.join("pages"))?;
     let mut manifest_pages = Vec::new();
