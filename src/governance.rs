@@ -574,32 +574,38 @@ pub fn build_governance_indices(vault_root: &Path) -> Result<Value> {
         }
     }
 
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "questions": questions,
-        "gap_issue_kinds": gap_issues
+    let mut files: BTreeMap<String, String> = BTreeMap::new();
+    files.insert("QUESTIONS.md".to_string(), questions_md);
+    files.insert("GAPS.md".to_string(), gaps_md);
+    files.insert("ALIASES.md".to_string(), aliases_md);
+    files.insert("ENTITIES.md".to_string(), entities_md);
+    files.insert("RELATIONSHIPS.md".to_string(), relationships_md);
+    let indices = crate::payload::GovernanceIndices {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        questions,
+        gap_issue_kinds: gap_issues
             .iter()
-            .filter_map(|issue| issue.get("kind").and_then(Value::as_str).map(ToString::to_string))
+            .filter_map(|issue| {
+                issue
+                    .get("kind")
+                    .and_then(Value::as_str)
+                    .map(ToString::to_string)
+            })
             .collect::<BTreeSet<_>>()
             .into_iter()
-            .collect::<Vec<_>>(),
-        "alias_rows": alias_rows,
-        "entity_rows": entity_rows,
-        "relationship_rows": relationship_rows,
-        "writeback_backlog": writeback_backlog,
-        "confidence_maintenance": confidence_maintenance,
-        "closure_signals": closure_signals,
-        "followup_routes": followup_routes,
-        "route_counts": route_counts,
-        "hub_candidates": hub_candidates,
-        "files": {
-            "QUESTIONS.md": questions_md,
-            "GAPS.md": gaps_md,
-            "ALIASES.md": aliases_md,
-            "ENTITIES.md": entities_md,
-            "RELATIONSHIPS.md": relationships_md,
-        },
-    }))
+            .collect(),
+        alias_rows,
+        entity_rows,
+        relationship_rows,
+        writeback_backlog,
+        confidence_maintenance,
+        closure_signals,
+        followup_routes,
+        route_counts,
+        hub_candidates,
+        files,
+    };
+    Ok(serde_json::to_value(&indices)?)
 }
 
 pub fn write_governance_indices(vault_root: &Path, payload: &Value) -> Result<Vec<String>> {

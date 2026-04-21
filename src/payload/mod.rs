@@ -251,3 +251,23 @@ pub struct CompileBuildResult {
     pub packages: Vec<Value>,
     pub written_paths: Vec<String>,
 }
+
+/// `onkb review governance` 的返回结构。
+///
+/// 各子集合保留 `Vec<Value>`，阶段 5 拆 `governance/` 时再细化（alias/entity/relationship row 都有差异字段）。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GovernanceIndices {
+    pub vault_root: String,
+    pub questions: Vec<String>,
+    pub gap_issue_kinds: Vec<String>,
+    pub alias_rows: Vec<Value>,
+    pub entity_rows: Vec<Value>,
+    pub relationship_rows: Vec<Value>,
+    pub writeback_backlog: Vec<Value>,
+    pub confidence_maintenance: Vec<Value>,
+    pub closure_signals: Vec<Value>,
+    pub followup_routes: Vec<Value>,
+    pub route_counts: Counts,
+    pub hub_candidates: Vec<Value>,
+    pub files: BTreeMap<String, String>,
+}
