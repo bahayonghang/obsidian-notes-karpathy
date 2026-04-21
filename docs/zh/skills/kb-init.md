@@ -35,9 +35,9 @@
 
 ## 确定性 helper
 
-- `bootstrap_review_gated_vault.py`：新建与非破坏式修复支撑层
-- `migrate_legacy_vault.py`：迁移 legacy 单层 vault，并保留来源与迁移报告
-- `vault_status.py`：初始化或修复后快速查看当前阶段与下一步
+- `onkb --json init <vault-root> ...`：新建与非破坏式修复支撑层
+- `onkb --json migrate <vault-root> ...`：迁移 legacy 单层 vault，并保留来源与迁移报告
+- `onkb --json status <vault-root>`：初始化或修复后快速查看当前阶段与下一步
 
 `outputs/qa/**`、`outputs/health/**`、`outputs/content/**`、`outputs/reports/**`、`outputs/slides/**`、`outputs/charts/**` 等下游目录按需创建，不是最小初始化要求。
 

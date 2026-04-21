@@ -21,6 +21,24 @@ outputs/        -> reviews, Q&A, health reports, audit logs, and publishable art
 
 The core idea is no longer just "compile notes into a wiki". It is "separate production from judgment so unreviewed drafts never become compound retrieval truth," and make compile itself strong enough to produce creator-ready knowledge assets.
 
+## Rust CLI
+
+`onkb` is the deterministic Rust CLI for this bundle.
+
+- normal lifecycle operations should use `onkb` directly
+- skills remain the intelligent contract layer, but their baseline command is now `onkb`
+- repo-local Python remains only as migration or repo-maintenance fallback while the Rust surface settles
+
+Key commands:
+
+- `onkb --json doctor`
+- `onkb --json status <vault-root>`
+- `onkb --json ingest scan <vault-root>`
+- `onkb --json compile scan <vault-root>`
+- `onkb --json review queue <vault-root>`
+- `onkb --json query scope <vault-root>`
+- `onkb --json render <vault-root> --mode <mode> --source <path>`
+
 ## Skill set
 
 - `obsidian-notes-karpathy` - lifecycle router
@@ -170,29 +188,31 @@ For creator-style workflows, a practical mapping is:
 
 ## Deterministic helpers
 
+Rust-first CLI surface:
+
+- `onkb --json doctor`
+- `onkb skill install|list|show`
+- `onkb --json status <vault-root>`
+- `onkb --json init <vault-root> ...`
+- `onkb --json migrate <vault-root> ...`
+- `onkb --json ingest scan|sync <vault-root>`
+- `onkb --json compile scan|build <vault-root>`
+- `onkb --json review queue|lint|governance|graph <vault-root>`
+- `onkb --json query scope|rank <vault-root>`
+- `onkb --json render <vault-root> --mode <mode> --source <path>`
+
+Compatibility and repo-maintenance scripts:
+
 - `skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json`
-- `scripts/detect_lifecycle.py`
-- `scripts/scan_ingest_delta.py`
-- `scripts/sync_source_manifest.py`
-- `scripts/scan_compile_delta.py`
-- `scripts/build_draft_packages.py`
-- `scripts/bootstrap_review_gated_vault.py`
-- `scripts/migrate_legacy_vault.py`
-- `scripts/scan_review_queue.py`
-- `scripts/scan_query_scope.py`
-- `scripts/rank_query_candidates.py`
-- `scripts/render_live_artifact.py`
-- `scripts/vault_status.py`
-- `scripts/render_reference_block.py`
-- `scripts/lint_obsidian_mechanics.py`
-- `scripts/build_memory_episodes.py`
-- `scripts/build_graph_snapshot.py`
-- `scripts/runtime_eval.py`
-- `scripts/trigger_eval.py`
+- `onkb --json dev contract-validate`
+- `onkb --json dev audit-skills`
+- `onkb --json dev render-reference-block <skill>`
+- `onkb --json dev eval-trigger [--dry-run]`
+- `onkb --json dev eval-runtime [--dry-run]`
 
 ## Install
 
 ```bash
-cp -r skills/* ~/.claude/skills/
-cp -r skills/* ~/.codex/skills/
+cargo install --path . --locked
+onkb skill install
 ```

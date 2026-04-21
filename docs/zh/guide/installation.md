@@ -1,32 +1,33 @@
 # 安装
 
-可以通过 `npx` 安装，也可以手动复制技能目录。
+先装 Rust CLI，再用 `onkb` 下发内嵌 skill bundle。
 
-## 使用 npx 安装
+## 安装 CLI
 
-全局安装：
+在仓库根目录执行：
 
 ```bash
-npx skills add bahayonghang/obsidian-notes-karpathy -g
+cargo install --path . --locked
 ```
 
-项目内安装：
+确认二进制可用：
 
 ```bash
-cd /path/to/your/obsidian-vault
-npx skills add bahayonghang/obsidian-notes-karpathy
+onkb --json doctor
 ```
 
-## 手动安装
+## 安装内嵌 skills
+
+在目标 vault 或工作目录中执行：
 
 ```bash
-cp -r skills/* ~/.claude/skills/
+onkb skill install --claude --codex
 ```
 
 PowerShell：
 
 ```powershell
-Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
+onkb skill install --dir D:\path\to\your\obsidian-vault --claude --codex
 ```
 
 ## 验证
@@ -46,6 +47,8 @@ Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
 - `obsidian-notes-karpathy/references/`
 - `obsidian-notes-karpathy/scripts/`
 - `obsidian-notes-karpathy/evals/`
+
+这个 bundle 直接内嵌在 CLI 二进制里。`onkb skill install` 安装时不依赖仓库源码仍然留在本地。
 
 ## 推荐搭配技能
 

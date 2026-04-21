@@ -4,11 +4,12 @@ This repository defines a review-gated Obsidian knowledge-base contract.
 
 ## Project Overview
 
-This is a skills-only project. The deliverables are:
+This is a Rust CLI plus skills project. The deliverables are:
 
 - `SKILL.md` contracts
+- `onkb` Rust CLI
 - shared references under `skills/obsidian-notes-karpathy/references/`
-- deterministic scripts under `skills/obsidian-notes-karpathy/scripts/`
+- compatibility and repo-maintenance scripts under `skills/obsidian-notes-karpathy/scripts/`
 - docs pages
 - eval fixtures and tests
 
@@ -25,8 +26,9 @@ Canonical workflow:
 - `skills/kb-review/SKILL.md` - draft review gate plus approved-layer maintenance and governance refresh
 - `skills/kb-query/SKILL.md` - approved-layer search, answers, publish-mode outputs, archived Q&A reuse, and static web export
 - `skills/kb-render/SKILL.md` - deterministic slides/report/chart/canvas generation
+- `src/` - Rust CLI implementation for `onkb`
 - `skills/obsidian-notes-karpathy/references/` - shared review-gated file model, lifecycle matrix, templates, governance policy, and rubric
-- `skills/obsidian-notes-karpathy/scripts/` - deterministic helpers including the skill contract registry, lifecycle detection, compile delta, review queue, query scope, and mechanical linting
+- `skills/obsidian-notes-karpathy/scripts/` - compatibility and repo-maintenance helpers that should no longer be the primary skill baseline
 - `skills/obsidian-notes-karpathy/evals/fixtures/` - legacy and review-gated fixture vaults
 - `README.md` and `README_CN.md` - public docs that must stay aligned
 
@@ -62,6 +64,6 @@ Canonical workflow:
 ## Installation
 
 ```bash
-cp -r skills/* ~/.claude/skills/
-cp -r skills/* ~/.codex/skills/
+cargo install --path . --locked
+onkb skill install
 ```

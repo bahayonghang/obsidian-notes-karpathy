@@ -21,6 +21,24 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 
 核心思想不再只是“把笔记编译成 wiki”，而是“把生产和裁决分开，避免未审草稿进入可复用真相层并持续复利”，并让 compile 本身具备面向创作者的知识编译能力。
 
+## Rust CLI
+
+`onkb` 是这个 bundle 的确定性 Rust CLI。
+
+- 正常生命周期操作优先走 `onkb`，不再默认依赖 repo 内 Python 入口脚本
+- skills 继续承担智能合同层，但它们的 deterministic baseline 现在由 `onkb` 提供
+- Python 入口暂时只保留为迁移期或 repo 维护期的兼容后备
+
+关键命令：
+
+- `onkb --json doctor`
+- `onkb --json status <vault-root>`
+- `onkb --json ingest scan <vault-root>`
+- `onkb --json compile scan <vault-root>`
+- `onkb --json review queue <vault-root>`
+- `onkb --json query scope <vault-root>`
+- `onkb --json render <vault-root> --mode <mode> --source <path>`
+
 ## 技能列表
 
 - `obsidian-notes-karpathy`：生命周期路由
@@ -168,33 +186,35 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 - `kb-query` 只读取已批准知识层，并负责 search / 有依据的 Q&A / explicit `publish` mode / archived Q&A reuse / static web export。
 - `kb-render` 负责确定性派生产物。
 
-## 确定性脚本
+## 确定性工具
+
+Rust-first CLI：
+
+- `onkb --json doctor`
+- `onkb skill install|list|show`
+- `onkb --json status <vault-root>`
+- `onkb --json init <vault-root> ...`
+- `onkb --json migrate <vault-root> ...`
+- `onkb --json ingest scan|sync <vault-root>`
+- `onkb --json compile scan|build <vault-root>`
+- `onkb --json review queue|lint|governance|graph <vault-root>`
+- `onkb --json query scope|rank <vault-root>`
+- `onkb --json render <vault-root> --mode <mode> --source <path>`
+
+Repo 契约与维护入口：
 
 - `skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json`
-- `scripts/detect_lifecycle.py`
-- `scripts/scan_ingest_delta.py`
-- `scripts/sync_source_manifest.py`
-- `scripts/scan_compile_delta.py`
-- `scripts/build_draft_packages.py`
-- `scripts/bootstrap_review_gated_vault.py`
-- `scripts/migrate_legacy_vault.py`
-- `scripts/scan_review_queue.py`
-- `scripts/scan_query_scope.py`
-- `scripts/rank_query_candidates.py`
-- `scripts/render_live_artifact.py`
-- `scripts/vault_status.py`
-- `scripts/render_reference_block.py`
-- `scripts/lint_obsidian_mechanics.py`
-- `scripts/build_memory_episodes.py`
-- `scripts/build_graph_snapshot.py`
-- `scripts/runtime_eval.py`
-- `scripts/trigger_eval.py`
+- `onkb --json dev contract-validate`
+- `onkb --json dev audit-skills`
+- `onkb --json dev render-reference-block <skill>`
+- `onkb --json dev eval-trigger [--dry-run]`
+- `onkb --json dev eval-runtime [--dry-run]`
 
 ## 安装
 
 ```bash
-cp -r skills/* ~/.claude/skills/
-cp -r skills/* ~/.codex/skills/
+cargo install --path . --locked
+onkb skill install
 ```
 
 

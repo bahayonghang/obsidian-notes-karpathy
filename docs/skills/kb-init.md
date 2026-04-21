@@ -35,9 +35,9 @@ Optional governance views such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, a
 
 ## Deterministic helpers
 
-- `bootstrap_review_gated_vault.py` for fresh setup and non-destructive repair
-- `migrate_legacy_vault.py` for single-layer legacy vault migration with a preserved-source report
-- `vault_status.py` for a quick current-stage summary after setup or repair
+- `onkb --json init <vault-root> ...` for fresh setup and non-destructive repair
+- `onkb --json migrate <vault-root> ...` for single-layer legacy vault migration with a preserved-source report
+- `onkb --json status <vault-root>` for a quick current-stage summary after setup or repair
 
 Optional downstream scaffolding such as `outputs/qa/**`, `outputs/health/**`, `outputs/content/**`, `outputs/reports/**`, `outputs/slides/**`, or `outputs/charts/**` should be created only when the user wants full setup or later stages need them.
 

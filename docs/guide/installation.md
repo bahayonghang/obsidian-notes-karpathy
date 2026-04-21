@@ -1,38 +1,39 @@
 # Installation
 
-Install the bundle with `npx` or copy the skill directories manually.
+Install the Rust CLI first, then let `onkb` install the embedded skill bundle.
 
-## Install with npx
+## Install the CLI
 
-Global:
+Build and install from the repo root:
 
 ```bash
-npx skills add bahayonghang/obsidian-notes-karpathy -g
+cargo install --path . --locked
 ```
 
-Project-local:
+Verify the binary:
 
 ```bash
-cd /path/to/your/obsidian-vault
-npx skills add bahayonghang/obsidian-notes-karpathy
+onkb --json doctor
 ```
 
-## Manual installation
+## Install the embedded skills
+
+Inside the target vault or workspace:
 
 ```bash
-cp -r skills/* ~/.claude/skills/
+onkb skill install --claude --codex
 ```
 
-Codex:
+Or point at another directory explicitly:
 
 ```bash
-cp -r skills/* ~/.codex/skills/
+onkb skill install --dir /path/to/your/obsidian-vault --claude --codex
 ```
 
 PowerShell:
 
 ```powershell
-Copy-Item -Recurse skills\* $env:USERPROFILE\.claude\skills\
+onkb skill install --dir D:\path\to\your\obsidian-vault --claude --codex
 ```
 
 ## Verify
@@ -52,6 +53,8 @@ Then confirm the bundled resources live inside the shared package home:
 - `obsidian-notes-karpathy/references/`
 - `obsidian-notes-karpathy/scripts/`
 - `obsidian-notes-karpathy/evals/`
+
+The bundle is embedded in the CLI binary. `onkb skill install` does not depend on the repo source tree being present at install time.
 
 ## Recommended companion skills
 
