@@ -161,3 +161,40 @@ pub struct RenderResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub package_root: Option<String>,
 }
+
+/// `onkb review queue` 单条 item。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReviewItem {
+    pub path: String,
+    pub kind: String,
+    pub review_state: String,
+    pub review_score: Option<f64>,
+    pub blocking_flags: Vec<String>,
+    pub alias_candidates: Vec<String>,
+    pub duplicate_candidates: Vec<String>,
+    pub decision: String,
+    pub reason: String,
+    pub pending: bool,
+    pub live_path: String,
+    pub live_exists: bool,
+    pub review_record_path: String,
+}
+
+/// `onkb review queue` 的决策计数。
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ReviewCounts {
+    pub pending: i64,
+    pub approve: i64,
+    pub reject: i64,
+    #[serde(rename = "needs-human")]
+    pub needs_human: i64,
+}
+
+/// `onkb review queue` 的返回结构。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReviewQueue {
+    pub vault_root: String,
+    pub counts: ReviewCounts,
+    pub state_counts: Counts,
+    pub items: Vec<ReviewItem>,
+}

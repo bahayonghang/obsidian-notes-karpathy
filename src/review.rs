@@ -2,9 +2,10 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::Value;
 
 use crate::common::{iter_markdown_records, list_field, parse_number, MarkdownRecord};
+use crate::payload::{ReviewCounts, ReviewItem, ReviewQueue};
 
 pub const REVIEWABLE_DRAFT_ROOTS: [&str; 5] = [
     "wiki/drafts/summaries",
@@ -63,7 +64,7 @@ pub fn compute_review_score(frontmatter: &serde_json::Map<String, Value>) -> Opt
 }
 
 pub fn scan_review_queue(vault_root: &Path) -> Result<Value> {
-    let mut items = Vec::new();
+    let mut items: Vec<ReviewItem> = Vec::new();
     let mut decision_counts: BTreeMap<String, i64> = BTreeMap::new();
     let mut state_counts: BTreeMap<String, i64> = BTreeMap::new();
     let mut pending_count = 0i64;
@@ -136,32 +137,37 @@ pub fn scan_review_queue(vault_root: &Path) -> Result<Value> {
 
         *decision_counts.entry(decision.clone()).or_insert(0) += 1;
         *state_counts.entry(state.clone()).or_insert(0) += 1;
-        items.push(json!({
-            "path": record.path,
-            "kind": record.kind,
-            "review_state": state,
-            "review_score": score,
-            "blocking_flags": blocking_flags,
-            "alias_candidates": alias_candidates,
-            "duplicate_candidates": duplicate_candidates,
-            "decision": decision,
-            "reason": reason,
-            "pending": pending,
-            "live_path": live_path,
-            "live_exists": live_exists,
-            "review_record_path": review_record_for_draft(&record),
-        }));
+        items.push(ReviewItem {
+            path: record.path.clone(),
+            kind: record.kind.clone(),
+            review_state: state,
+            review_score: score,
+            blocking_flags,
+            alias_candidates,
+            duplicate_candidates,
+            decision,
+            reason,
+            pending,
+            live_path,
+            live_exists,
+            review_record_path: review_record_for_draft(&record),
+        });
     }
 
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "counts": {
-            "pending": pending_count,
-            "approve": decision_counts.get("approve").copied().unwrap_or_default(),
-            "reject": decision_counts.get("reject").copied().unwrap_or_default(),
-            "needs-human": decision_counts.get("needs-human").copied().unwrap_or_default(),
-        },
-        "state_counts": state_counts,
-        "items": items,
-    }))
+    let counts = ReviewCounts {
+        pending: pending_count,
+        approve: decision_counts.get("approve").copied().unwrap_or_default(),
+        reject: decision_counts.get("reject").copied().unwrap_or_default(),
+        needs_human: decision_counts
+            .get("needs-human")
+            .copied()
+            .unwrap_or_default(),
+    };
+    let queue = ReviewQueue {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        counts,
+        state_counts,
+        items,
+    };
+    Ok(serde_json::to_value(&queue)?)
 }
