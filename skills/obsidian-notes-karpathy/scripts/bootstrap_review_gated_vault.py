@@ -22,6 +22,7 @@ def main() -> None:
     parser.add_argument("--include-full-outputs", action="store_true", help="Create downstream output directories.")
     parser.add_argument("--include-latest-outputs", action="store_true", help="Create episodic and audit scaffolding.")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite starter files instead of preserving them.")
+    parser.add_argument("--skip-memory", action="store_true", help="Skip generating MEMORY.md (for fast-personal profile or collaboration-free vaults).")
     args = parser.parse_args()
 
     payload = scaffold_review_gated_vault(
@@ -31,6 +32,7 @@ def main() -> None:
         include_full_outputs=args.include_full_outputs,
         include_latest_outputs=args.include_latest_outputs,
         overwrite=args.overwrite,
+        skip_memory=args.skip_memory,
     )
     print(json_dump(payload))
 

@@ -2,6 +2,8 @@
 
 这个 bundle 现在包含 1 个入口技能和 6 个操作技能，也应该对那些只会说“LLM Wiki”“Karpathy wiki”“Obsidian IDE”“知识编译器”“second brain”的用户足够可发现。
 
+它也要兼容先接触 `Chinese-LLM-Wiki` 的用户。他们可能会直接说 `来源页`、`主题页`、`实体页`、`综合页`、`output/analyses`、`output/reports`，而不是先说 `kb-*`。
+
 ## 按生命周期信号选择
 
 | 信号 | 路由到 | 原因 |

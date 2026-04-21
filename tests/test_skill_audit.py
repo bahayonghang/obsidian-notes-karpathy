@@ -16,15 +16,24 @@ class SkillAuditTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["runtime_eval_covered"], 7)
         self.assertEqual(payload["summary"]["blocking_issue_count"], 0)
         self.assertGreaterEqual(payload["summary"]["average_score"], 0.9)
+        self.assertEqual(payload["summary"]["compatibility_reference_covered"], 4)
+        self.assertEqual(payload["summary"]["compatibility_reference_expected"], 4)
+        self.assertTrue(payload["summary"]["chinese_llm_wiki_trigger_covered"])
 
         skills = {item["name"]: item for item in payload["skills"]}
         self.assertIn("obsidian-notes-karpathy", skills)
         self.assertTrue(skills["obsidian-notes-karpathy"]["checks"]["description_has_multilingual_trigger"])
+        self.assertTrue(skills["obsidian-notes-karpathy"]["checks"]["compatibility_reference_covered"])
         self.assertTrue(skills["obsidian-notes-karpathy"]["checks"]["runtime_eval_covered"])
         self.assertTrue(skills["kb-init"]["checks"]["writable_runtime_covered"])
+        self.assertTrue(skills["kb-init"]["checks"]["compatibility_reference_covered"])
         self.assertTrue(skills["kb-ingest"]["checks"]["writable_runtime_covered"])
+        self.assertTrue(skills["kb-query"]["checks"]["compatibility_reference_covered"])
+        self.assertTrue(skills["kb-review"]["checks"]["compatibility_reference_covered"])
         self.assertTrue(skills["kb-review"]["checks"]["writable_runtime_covered"])
         self.assertTrue(skills["kb-render"]["checks"]["writable_runtime_covered"])
+        self.assertEqual(payload["compatibility"]["missing_tokens"], [])
+        self.assertEqual(payload["compatibility"]["missing_routes"], [])
 
     def test_runtime_eval_manifest_now_includes_router_skill(self) -> None:
         result = run_repo_command(

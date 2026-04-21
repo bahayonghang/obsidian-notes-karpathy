@@ -1,6 +1,21 @@
 {
   "contract_family": "review-gated",
+  "companion_skills": {
+    "paper-workbench": {
+      "role": "external-companion",
+      "handles": ["raw/**/papers/*.pdf"],
+      "deferred_by": ["kb-ingest", "kb-compile"],
+      "rationale": "Paper PDFs require dedicated intake and normalization outside this bundle."
+    },
+    "web-access": {
+      "role": "external-companion",
+      "handles": ["web-sourced markdown before raw intake"],
+      "deferred_by": ["kb-ingest"],
+      "rationale": "Upstream collection lane; routes back through kb-ingest once the capture is on disk."
+    }
+  },
   "shared_references": [
+    "chinese-llm-wiki-compat.md",
     "archive-model.md",
     "file-model.md",
     "lifecycle-matrix.md",
@@ -19,12 +34,15 @@
     "profile-contract.md",
     "automation-hooks.md",
     "procedure-template.md",
-    "episode-template.md"
+    "episode-template.md",
+    "web-export-template.md",
+    "draft-schema.md"
   ],
   "skills": {
     "obsidian-notes-karpathy": {
       "role": "router",
       "reads": [
+        "chinese-llm-wiki-compat.md",
         "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
@@ -53,6 +71,7 @@
     "kb-init": {
       "role": "operation",
       "reads": [
+        "chinese-llm-wiki-compat.md",
         "file-model.md",
         "lifecycle-matrix.md",
         "schema-template.md",
@@ -153,7 +172,8 @@
         "graph-contract.md",
         "source-manifest-contract.md",
         "topic-template.md",
-        "procedure-template.md"
+        "procedure-template.md",
+        "draft-schema.md"
       ],
       "baseline_script": "scan_compile_delta.py",
       "writes": [
@@ -173,6 +193,7 @@
     "kb-review": {
       "role": "operation",
       "reads": [
+        "chinese-llm-wiki-compat.md",
         "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
@@ -208,10 +229,12 @@
         "wiki/briefings/",
         "outputs/health/",
         "outputs/health/graph-snapshot.json",
-        "outputs/qa/",
-        "outputs/content/",
         "outputs/audit/operations.jsonl",
         "wiki/log.md"
+      ],
+      "writes_mechanical_fix_only": [
+        "outputs/qa/",
+        "outputs/content/"
       ],
       "outputs": [
         "outputs/reviews/",
@@ -229,6 +252,7 @@
     "kb-query": {
       "role": "operation",
       "reads": [
+        "chinese-llm-wiki-compat.md",
         "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
@@ -243,7 +267,8 @@
         "graph-contract.md",
         "render-template.md",
         "profile-contract.md",
-        "episode-template.md"
+        "episode-template.md",
+        "web-export-template.md"
       ],
       "baseline_script": "scan_query_scope.py",
       "writes": [

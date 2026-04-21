@@ -213,5 +213,105 @@
     "query": "Make a Mermaid architecture diagram for my backend service from the codebase. No Obsidian vault involved.",
     "expected_skill": null,
     "reason": "Diagramming request outside bundle scope."
+  },
+  {
+    "query": "先读 wiki/index.md，再帮我判断这个中文优先 LLM Wiki 现在该先补来源页、主题页、实体页，还是先做综合页。我不确定下一步是 compile、review 还是 query。",
+    "expected_skill": "obsidian-notes-karpathy",
+    "reason": "Single-layer Chinese vocabulary with ambiguous next step should route through the package entry skill."
+  },
+  {
+    "query": "帮我把这个 vault 搭成中文优先 wiki。我要的是 raw/wiki/output 这套脚手架，但可以接受你按现在仓库的 review-gated 方式落地，只要初始化和迁移一步到位。",
+    "expected_skill": "kb-init",
+    "reason": "Single-layer onboarding wording with explicit setup intent should still land on kb-init."
+  },
+  {
+    "query": "raw/human/articles 里新放了一篇文章。请先按原文证据摘录整理成来源页，再把相关主题页和实体页草稿补出来，先不要进 live。",
+    "expected_skill": "kb-compile",
+    "reason": "Chinese source/topic/entity wording still means compile from raw into drafts first."
+  },
+  {
+    "query": "别回答问题，先做一次中文优先 wiki 的 lint。我要看孤儿页、断链、旧结论被覆盖，还有 output/reports 里的治理报告。",
+    "expected_skill": "kb-review",
+    "reason": "Chinese-LLM-Wiki lint and output/reports wording maps to review maintenance."
+  },
+  {
+    "query": "基于已经批准的 live 层做一份综合页式分析，先放 output/analyses。回答前先读 wiki/index.md，尽量复用已有归档问答。",
+    "expected_skill": "kb-query",
+    "reason": "Grounded analysis with output/analyses wording maps to query archive behavior."
+  },
+  {
+    "query": "我不要新的 grounded answer，直接把已经批准的主题做成报告，输出到 output/reports，给团队周会用。",
+    "expected_skill": "kb-render",
+    "reason": "Deterministic report generation from approved knowledge belongs to kb-render."
+  },
+  {
+    "query": "Set up Dataview queries in my Obsidian vault to list all tasks due this week. I just want a TODO view, no drafts or review gate needed.",
+    "expected_skill": null,
+    "reason": "Dataview plugin task listing is not a review-gated KB lifecycle step."
+  },
+  {
+    "query": "Customize an Obsidian theme with CSS snippets so code blocks render better in dark mode. Pure styling, no vault workflow.",
+    "expected_skill": null,
+    "reason": "Obsidian CSS theming is not a KB operation."
+  },
+  {
+    "query": "My Logseq graph is sprawling. Should I consolidate daily journals into topic pages, or keep using block references? Not using Obsidian.",
+    "expected_skill": null,
+    "reason": "Logseq organization is outside this bundle."
+  },
+  {
+    "query": "Convert my Roam Research export into plain markdown while preserving block references. I am migrating off Roam to a plain folder.",
+    "expected_skill": null,
+    "reason": "Roam export conversion is not a KB lifecycle operation."
+  },
+  {
+    "query": "Configure Zotero to auto-tag PDFs by research field using BetterBibTeX. I just want a cleaner library, no KB draft or review pipeline.",
+    "expected_skill": null,
+    "reason": "Zotero library curation is outside this bundle."
+  },
+  {
+    "query": "Design Anki spaced repetition decks from my study notes with cloze deletions. No vault, no review gate, just SRS cards.",
+    "expected_skill": null,
+    "reason": "Anki SRS deck design is not a KB workflow."
+  },
+  {
+    "query": "Build an Astro static site from my existing markdown blog folder and deploy to Vercel. Not an Obsidian vault and not a wiki export.",
+    "expected_skill": null,
+    "reason": "Astro static site build is not kb-query web export."
+  },
+  {
+    "query": "Build a RAG pipeline with LangChain and Chroma for a set of product docs served to a customer support chatbot. Skip Obsidian entirely.",
+    "expected_skill": null,
+    "reason": "Generic RAG pipeline is outside this bundle's query lane."
+  },
+  {
+    "query": "Set up a pgvector index with OpenAI embeddings for our internal docs search. No Obsidian, no markdown wiki.",
+    "expected_skill": null,
+    "reason": "Vector index over docs is search infrastructure outside this bundle."
+  },
+  {
+    "query": "I want to index my personal markdown notes with ripgrep-all plus FZF so I can search them from the terminal. Not building a review-gated workflow.",
+    "expected_skill": null,
+    "reason": "Terminal-side markdown search is not this bundle."
+  },
+  {
+    "query": "Configure husky pre-commit hooks to run lint and format on staged files. Just JS tooling, nothing to do with a wiki.",
+    "expected_skill": null,
+    "reason": "git pre-commit hooks are unrelated to automation-hooks in this bundle."
+  },
+  {
+    "query": "Write a GitHub Actions workflow that deploys my documentation site on every push to main. No Obsidian vault involved.",
+    "expected_skill": null,
+    "reason": "CI workflow configuration is not a KB operation."
+  },
+  {
+    "query": "Use pandoc to batch-convert a folder of markdown posts into EPUB for an e-reader. No drafts, no review gate, no wiki.",
+    "expected_skill": null,
+    "reason": "Pandoc format conversion is not a kb-render mode."
+  },
+  {
+    "query": "Sync Readwise highlights into Notion so my book notes stay searchable alongside product specs. Not an Obsidian vault request.",
+    "expected_skill": null,
+    "reason": "Readwise-to-Notion sync is not a KB workflow in this bundle."
   }
 ]

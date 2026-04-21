@@ -24,6 +24,8 @@
 
 路由与职责归属主要由 `skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json` 和 `skills/obsidian-notes-karpathy/references/lifecycle-matrix.md` 共同定义。需要确认生命周期状态、owner skill 或允许写入的层面时，优先读这两个文件。
 
+如果用户带着 `Chinese-LLM-Wiki` 的 `raw/wiki/output` 话术进来，不要把当前仓库机械改回单层结构。应先通过兼容映射把这些说法翻译到 draft/live 契约上。
+
 ## 设计主线
 
 - 把生产和裁决拆开，避免草稿错误持续复利。
@@ -47,4 +49,6 @@
 Guide、Skills、Workflow 页面描述当前合同；Architecture 页面解释设计理由和前进方向。
 
 归档模型详见 [归档模型](/zh/architecture/archive-model)。
+
+如果想看中文优先单层话术和当前 bundle 的逐项映射，见 [Chinese-LLM-Wiki 兼容映射](/zh/architecture/chinese-llm-wiki-compat)。
 

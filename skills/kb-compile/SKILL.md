@@ -1,6 +1,6 @@
 ---
 name: kb-compile
-description: 'Incrementally compile tracked raw captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants tracked material under `raw/human/**`, `raw/agents/{role}/**`, bootstrap `raw/*.md`, `raw/**/assets/*`, or `raw/**/data/*` turned into reviewable summaries, topics, concepts, entities, and draft indices. Do not treat `raw/**/papers/*.pdf` as a normal compile trigger: those paper ingests still belong to `paper-workbench`, and `kb-compile` should only surface or defer them.'
+description: 'Incrementally compile tracked raw captures into reviewable draft knowledge. Use this skill whenever the user says "compile wiki", "compile kb", "sync drafts", "digest these captures", "turn my clips into drafts", "编译wiki", "更新草稿层", "同步草稿", or wants tracked material under `raw/human/**`, `raw/agents/{role}/**`, bootstrap `raw/*.md`, `raw/**/assets/*`, or `raw/**/data/*` turned into reviewable summaries, topics, concepts, entities, and draft indices. This is also the right skill when Chinese-LLM-Wiki wording such as `来源页`, `主题页`, `实体页`, `综合页草稿`, `整理成来源页`, `补主题页`, or `补实体页草稿` clearly means “build draft pages from raw evidence first.” Do not treat `raw/**/papers/*.pdf` as a normal compile trigger: those paper ingests still belong to `paper-workbench`, and `kb-compile` should only surface or defer them.'
 ---
 
 # KB Compile
@@ -47,6 +47,7 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/source-manifest-contract.md`
 - `../obsidian-notes-karpathy/references/topic-template.md`
 - `../obsidian-notes-karpathy/references/procedure-template.md`
+- `../obsidian-notes-karpathy/references/draft-schema.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and allowed write surfaces.
 
@@ -75,6 +76,12 @@ Accept:
 
 ## Compile posture
 
+Chinese-LLM-Wiki compatibility note:
+
+- `来源页` maps to source-grounded draft summaries first
+- `主题页` and `实体页` map to draft topic/entity updates first
+- `综合页` only becomes approved truth after review, so compile should treat it as a draft synthesis candidate
+
 Before shaping drafts:
 
 - follow the shared compile method in `compile-method.md`
@@ -102,30 +109,9 @@ The compile pass exists to hand clean draft packages to `kb-review`, which then 
 
 ## Draft requirements
 
-Every draft should include:
+Follow `../obsidian-notes-karpathy/references/draft-schema.md` for the authoritative list of required and conditional draft fields (`draft_id`, `compiled_from`, `capture_sources`, `review_state`, `review_score`, `blocking_flags`, `evidence_coverage`, `uncertainty_level`, `promotion_target`, `review_package_meta`, plus conditional alias/duplicate/boundary/assumption/transfer/candidate/topic/confidence fields). Type-specific templates layer their own fields on top of that schema.
 
-- explicit evidence
-- clear separation between source claims and compiler inferences
-- `draft_id`
-- `compiled_from`
-- `capture_sources`
-- `review_state`
-- `review_score`
-- `blocking_flags`
-- `evidence_coverage`
-- `uncertainty_level`
-- `alias_candidates` when terminology overlap is visible
-- `duplicate_candidates` when draft/live pages may already cover the concept
-- `promotion_target` as `semantic` or `procedural`
-- `boundary_conditions` when the conclusion depends on market, scale, geography, recency, or other scope limits
-- `assumption_flags` when the claim relies on unstated premises that review should inspect
-- `transfer_targets` when compile discovers cross-domain analogy, migration value, or hub candidates
-- `candidate_entities` and `candidate_relationships` when compile sees reusable graph structure
-- `topic_candidates` when compile sees a stable browse-layer clustering signal
-- `review_package_meta` pointing at the deterministic source package
-- `confidence_inputs` when the draft is already strong enough to justify a future confidence score
-
-Drafts should be shaped for review, not for final polish.
+Keep source claims and compiler inferences cleanly separated — review depends on that separation to judge accuracy without re-reading the raw capture. Drafts should be shaped for review, not for final polish.
 
 ## Checkpoint
 

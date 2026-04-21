@@ -1,6 +1,6 @@
 ---
 name: kb-review
-description: Run the canonical governance lane for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "kb health", "review gate", "health check", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "lint live wiki", "clear archive backlog", "audit archived outputs", "检查归档内容", "检查风格约束是否冲突", "检查账号 briefing", "审校草稿", "批准草稿", "知识库体检", or whenever lifecycle detection reports `needs-review`, `needs-briefing-refresh`, or `needs-maintenance`. This skill owns both the immediate gate and the longer-horizon maintenance lane through internal `gate` and `maintenance` modes. Do not use it for normal approved-layer retrieval or deterministic derivative rendering.
+description: Run the canonical governance lane for an Obsidian knowledge base. Use this skill whenever the user says "kb review", "kb health", "review gate", "health check", "approve drafts", "reject draft knowledge", "promote to live", "rebuild briefings", "lint live wiki", "clear archive backlog", "audit archived outputs", "检查归档内容", "检查风格约束是否冲突", "检查账号 briefing", "审校草稿", "批准草稿", "知识库体检", or uses Chinese-LLM-Wiki maintenance wording such as `lint`, `孤儿页`, `断链`, `旧结论被覆盖`, `output/reports`, `治理报告`, `先做 lint`, and `原文证据摘录是否充分`. This skill owns both the immediate gate and the longer-horizon maintenance lane through internal `gate` and `maintenance` modes. Do not use it for normal approved-layer retrieval or deterministic derivative rendering.
 ---
 
 # KB Review
@@ -11,6 +11,8 @@ Run the canonical governance lane between draft knowledge and the approved live 
 - `maintenance` mode for approved-layer drift, stale briefings, provenance and alias refresh, creator consistency checks, governance-index rebuilds, graph gaps, backlog pressure, and safe mechanical fixes
 
 In Karpathy's LLM Wiki, this maps to two operations: the implicit quality judgment during ingest (our `gate` mode), and the explicit "Lint" pass he describes — "look for contradictions between pages, stale claims that newer sources have superseded, orphan pages with no inbound links, important concepts mentioned but lacking their own page, missing cross-references" (our `maintenance` mode). This contract makes both operations explicit and separable.
+
+When a user says `output/reports`, decide whether they mean a governance report or a deterministic rendered report. Lint, contradiction, orphan-page, and stale-claim work stays here in `maintenance` mode.
 
 ## Minimal loop
 
@@ -34,6 +36,7 @@ Read these files first:
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
+- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md`
 - `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
@@ -92,6 +95,19 @@ When the draft is borderline, weigh both accuracy and whether the page deserves 
 - should the durable improvement be a promoted page, a stronger relationship edge, or inclusion in a curated hub?
 - does this draft improve the browseable graph of the wiki, or does it just add more prose?
 
+## Procedural promotion
+
+When a draft carries `promotion_target: procedural` in its frontmatter, promote the durable delta into `wiki/live/procedures/{slug}.md` instead of `wiki/live/concepts/`. Use the procedure frontmatter from `../obsidian-notes-karpathy/references/procedure-template.md` (`procedure_id`, `confidence_band`, `decay_class`, `next_review_due_at`, etc.).
+
+Promote procedurally when the durable delta answers "how to do X" rather than "what X is" — a workflow, playbook, or repeated decision pattern. Typical signals: the draft reads as a sequence of steps, the same pattern applies across future situations, repeated question clusters resolve into the same sequence of actions.
+
+Decision rules:
+
+- if `promotion_target: procedural` is set and the signals hold, promote into `wiki/live/procedures/`
+- if the flag is set but the content is actually semantic, flip to `promotion_target: semantic` in the review record and promote into `wiki/live/concepts/`
+- if both targets plausibly fit, prefer procedural when the reuse value is in the sequence of actions; prefer semantic when it is in a definition
+- if neither target fits cleanly, record the ambiguity in the review record and send to human review
+
 ## Outputs
 
 `kb-review` may write:
@@ -104,10 +120,11 @@ When the draft is borderline, weigh both accuracy and whether the page deserves 
 - regenerated `wiki/briefings/{role}.md`
 - maintenance reports under `outputs/health/**`
 - graph snapshot exports under `outputs/health/graph-snapshot.json`
-- safe mechanical fixes in archived `outputs/qa/**` or `outputs/content/**` when the target is unambiguous
 - `review` and `brief` entries in `wiki/log.md`
 
 It should not mutate raw captures.
+
+`outputs/qa/**` and `outputs/content/**` are owned by `kb-query`. `kb-review` touches them only as `writes_mechanical_fix_only` targets declared in `scripts/skill-contract-registry.json` — deterministic, unambiguous mechanical fixes during maintenance mode (broken links, stale frontmatter, scope metadata drift, obvious typos). Any substantive new content or re-synthesis belongs back in `kb-query`, not here.
 
 ## Mode selection
 

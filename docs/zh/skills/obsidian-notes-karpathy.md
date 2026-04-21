@@ -1,6 +1,6 @@
 # obsidian-notes-karpathy
 
-当用户描述的是整个 Obsidian vault 工作流、问“下一步该做什么”，或者只会说“LLM Wiki”“Karpathy wiki”“Obsidian IDE”“知识编译器”“个人知识库 / second brain”时，用这个入口技能。
+当用户描述的是整个 Obsidian vault 工作流、问“下一步该做什么”，或者只会说“LLM Wiki”“Karpathy wiki”“Obsidian IDE”“知识编译器”“个人知识库 / second brain”，甚至直接说 `来源页`、`主题页`、`实体页`、`综合页`、`output/analyses`、`output/reports` 这类 `Chinese-LLM-Wiki` 话术但没有说明具体操作时，用这个入口技能。
 
 如果操作已经很明确，优先直接用对应的操作技能，不要绕路由入口。
 
@@ -22,5 +22,6 @@
 - 如果用户主要想知道“我现在在哪个阶段、下一步是什么”，优先用 status wrapper 给出简明结论
 - 把 `kb-review` 当成统一治理技能，内部再区分即时审校和维护模式
 - 始终守住 `raw/` 是证据、`wiki/drafts/` 是待审层、`wiki/live/` 才是批准真相层的边界
+- 把更简单的 `raw/wiki/output` 话术翻译到当前 draft/live 契约上，而不是机械照搬旧结构
 
 

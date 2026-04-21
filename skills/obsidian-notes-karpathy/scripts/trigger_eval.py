@@ -53,10 +53,13 @@ def build_trigger_prompt(query: str, catalog: dict[str, str]) -> str:
         "You are running an offline trigger-classification benchmark.\n"
         "Do not answer the user request. Do not give policy advice. Do not explain how skills usually work.\n"
         "Classify which single skill should be consulted first for the request below.\n"
+        "The user request may be written in English or Chinese.\n"
+        "Treat Chinese routing phrases such as 来源页, 主题页, 实体页, 综合页, output/analyses, output/reports, 中文优先, 原文证据摘录, and 先读 wiki/index.md as meaningful routing signals rather than defaulting to `none`.\n"
         "Available skills:\n"
         f"{skill_lines}\n\n"
         "Choose exactly one skill from the list above, or `none` if none should be consulted first.\n"
         "Prefer operation-specific skills over the router when the operation is already clear.\n"
+        "Use `none` only when the request clearly sits outside this Obsidian review-gated vault workflow.\n"
         "Do not invent companion skills that are not in the list.\n"
         "Return exactly one minified JSON object and nothing else.\n"
         'Required schema: {"selected_skill":"<skill-name-or-none>","reason":"<short reason>"}\n'

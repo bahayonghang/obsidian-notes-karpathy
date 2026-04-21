@@ -1,6 +1,6 @@
 # kb-init
 
-Initialize, repair, or migrate a vault onto the review-gated contract. This is also the right skill when the user asks for an `LLM Wiki`, a `Karpathy wiki`, an `Obsidian IDE` for notes, a `knowledge compiler`, or a markdown-first personal knowledge base without knowing the `kb-init` name.
+Initialize, repair, or migrate a vault onto the review-gated contract. This is also the right skill when the user asks for an `LLM Wiki`, a `Karpathy wiki`, an `Obsidian IDE` for notes, a `knowledge compiler`, a `中文优先 wiki`, or a `raw/wiki/output` scaffold without knowing the `kb-init` name.
 
 ## Creates or repairs the support layer
 
@@ -52,3 +52,5 @@ Optional downstream scaffolding such as `outputs/qa/**`, `outputs/health/**`, `o
 ## Migration posture
 
 For legacy-layout vaults, `kb-init` should scaffold the review-gated structure first, preserve existing material, and treat direct `wiki/summaries/` or `wiki/concepts/` content as migration work rather than normal compile output.
+
+If the request is phrased in the simpler `Chinese-LLM-Wiki` vocabulary, treat that as onboarding language only. The actual scaffold still lands on `raw/` + `wiki/drafts/` + `wiki/live/` + `outputs/**`.

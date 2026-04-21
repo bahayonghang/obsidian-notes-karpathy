@@ -129,6 +129,15 @@ def check_registry_and_skills() -> list[str]:
         if expected["baseline_script"] not in skill_text:
             errors.append(f"{skill_name} does not mention baseline script {expected['baseline_script']}.")
 
+        mechanical_fix = expected.get("writes_mechanical_fix_only") or []
+        if mechanical_fix:
+            writes_set = set(expected.get("writes") or [])
+            overlap = sorted(set(mechanical_fix) & writes_set)
+            if overlap:
+                errors.append(f"{skill_name} has writes_mechanical_fix_only entries also in writes: {overlap}.")
+            if "mechanical fix" not in skill_text.lower():
+                errors.append(f"{skill_name} declares writes_mechanical_fix_only but SKILL.md lacks 'mechanical fix' policy text.")
+
     for asset_rel_path in KB_INIT_REQUIRED_ASSETS:
         if not (KB_INIT_ASSETS_ROOT / asset_rel_path).exists():
             errors.append(f"kb-init asset is missing: {asset_rel_path}.")

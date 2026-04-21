@@ -4,6 +4,8 @@
 
 这个 bundle 也面向那些不会先说 `kb-init`、`kb-compile` 的用户。他们可能会说“帮我做个 LLM Wiki”“做个 Karpathy 风格知识库”“把 Obsidian 当 IDE”“做个知识编译器”“搭个个人知识库 / second brain”，这些都应该自然落到正确技能。
 
+它也兼容 `Chinese-LLM-Wiki` 那种更简单的 `raw/wiki/output` 话术。像 `来源页`、`主题页`、`实体页`、`综合页`、`output/analyses`、`output/reports` 这类说法，会先被翻译到当前的 review-gated 契约，而不是把仓库退回单层 wiki。
+
 ```text
 raw/            -> 不可变的人类/Agent 捕获层
 raw/_manifest.yaml -> 来源登记表
@@ -45,6 +47,8 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 | 处理 `raw/**/papers/*.pdf` | 不属于核心路由 | `paper-workbench` |
 
 核心 bundle 负责带审校与批准流程的生命周期本身。只有在明显超出核心边界的场景，例如论文 PDF 或 canvas 专项生产时，才切到搭配技能。
+
+如果你想看“中文优先单层 wiki 话术”如何映射到当前 bundle，请看 [Chinese-LLM-Wiki 兼容映射](docs/zh/architecture/chinese-llm-wiki-compat.md)。
 
 ## 关键契约
 

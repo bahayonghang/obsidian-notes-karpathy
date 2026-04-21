@@ -2,6 +2,8 @@
 
 统一的读侧入口：只从已批准知识层做检索、回答、归档、派生产物、已归档 publish artifact 复用和静态网站导出。
 
+如果用户说的是 `综合页`、`output/analyses`、`中文优先分析`，或强调“先读 `wiki/index.md` 再回答”，仍然保持这套读侧契约，只把这些词翻译到当前 bundle 上。
+
 默认读取：
 
 - `wiki/live/**`
@@ -28,6 +30,7 @@ archive 在这里是一等职责：
 - publish archive -> `outputs/content/**`
 - 两者都可复用
 - 两者都不等于 approved truth
+- 老的 `output/analyses` 说法，在这里落到 grounded Q&A archive
 
 如果用户还在说 `kb-search`，直接把它路由到这里的 search mode。
 

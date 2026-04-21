@@ -1,6 +1,6 @@
 # obsidian-notes-karpathy
 
-Use the package entry skill when the user describes the Obsidian vault workflow as a whole, asks what lifecycle step should run next, or uses novice phrases like `LLM Wiki`, `Karpathy wiki`, `Obsidian IDE`, `knowledge compiler`, `personal knowledge base`, or `second brain`.
+Use the package entry skill when the user describes the Obsidian vault workflow as a whole, asks what lifecycle step should run next, or uses novice phrases like `LLM Wiki`, `Karpathy wiki`, `Obsidian IDE`, `knowledge compiler`, `personal knowledge base`, `second brain`, or Chinese-LLM-Wiki terms such as `来源页`, `主题页`, `实体页`, `综合页`, `output/analyses`, and `output/reports` without making the operation explicit.
 
 If the operation is already clear, prefer the operation-specific skill instead of the router.
 
@@ -22,3 +22,4 @@ If the operation is already clear, prefer the operation-specific skill instead o
 - prefer the status wrapper when the user mainly wants a concise current-stage summary
 - treat `kb-review` as the canonical governance skill, with `gate` and `maintenance` modes
 - preserve the hard boundary that `raw/` is evidence, `wiki/drafts/` is reviewable, and `wiki/live/` is the only approved retrieval truth
+- translate simpler `raw/wiki/output` vocabulary onto the review-gated contract instead of mirroring it literally

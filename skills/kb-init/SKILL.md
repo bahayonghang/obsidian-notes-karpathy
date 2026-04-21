@@ -1,6 +1,6 @@
 ---
 name: kb-init
-description: Initialize, migrate, or repair a review-gated Obsidian knowledge base. Use this skill whenever the user says "kb init", "initialize knowledge base", "repair vault", "migrate an old layout", "add draft/live review gate", "set up briefings", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "personal knowledge base", "second brain", "初始化知识库", "迁移知识库", "修复知识库结构", or wants a fresh vault or legacy-layout vault brought onto the review-gated contract. Do not use it for normal compile, review, query, or maintenance work once the support layer is already healthy.
+description: Initialize, migrate, or repair a review-gated Obsidian knowledge base. Use this skill whenever the user says "kb init", "initialize knowledge base", "repair vault", "migrate an old layout", "add draft/live review gate", "set up briefings", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "personal knowledge base", "second brain", "初始化知识库", "迁移知识库", "修复知识库结构", "中文优先 wiki", "raw/wiki/output 脚手架", "把这个 vault 搭成中文优先 wiki", or wants a fresh vault or legacy-layout vault brought onto the review-gated contract. Do not use it for normal compile, review, query, or maintenance work once the support layer is already healthy.
 ---
 
 # KB Init
@@ -20,11 +20,14 @@ After that, use `kb-query` to ask questions, `kb-render` to generate determinist
 
 This mirrors Karpathy's LLM Wiki pattern: raw sources are immutable evidence, the LLM compiles and maintains the wiki, and you curate by sourcing documents and asking the right questions.
 
+If the user arrives with the simpler `raw/wiki/output` language from `Chinese-LLM-Wiki`, keep that as onboarding vocabulary only. The implementation still lands on the review-gated support layer.
+
 ## Read before writing
 
 Read these shared references first:
 
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
+- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
@@ -65,6 +68,8 @@ Surface the operating profile during init or repair:
 - `fast-personal` for solo use where briefings can stay out of default query scope
 
 Persist the chosen profile in scaffolded starter files so later lifecycle and query tooling can see it deterministically.
+
+`MEMORY.md` is recommended collaboration scaffolding but not a blocking requirement. Solo / fast-personal vaults can skip it by running `bootstrap_review_gated_vault.py --skip-memory` (or by passing `skip_memory=True` when calling `scaffold_review_gated_vault` programmatically). The rest of the support layer still lands.
 
 ## Create or repair the canonical structure
 

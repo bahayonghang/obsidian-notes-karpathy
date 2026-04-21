@@ -40,3 +40,18 @@ Some fixture homes intentionally contain `SKILL.md` files under `fixtures/compan
 - query truth boundaries excluding raw, drafts, and `MEMORY.md`
 - health checks for stale briefings, backlog pressure, memory leakage, and writeback backlog
 - bundle validation and runtime-eval scaffolding
+
+## Compatibility benchmark loop
+
+When you need an old/new review pass for skill wording:
+
+1. snapshot the tracked baseline into `skills/obsidian-notes-karpathy-workspace/skill-snapshot/`
+2. run trigger and runtime checks for the current tree
+3. write benchmark artifacts under `skills/obsidian-notes-karpathy-workspace/iteration-1/`
+4. generate a static reviewer with `generate_review.py --static`
+
+On this Windows machine:
+
+- treat `evals/evals.json` as the authoritative scenario list
+- prefer `generate_review.py --static` over the live server path
+- prefer explicit UTF-8 when shelling out to Python tooling

@@ -128,12 +128,15 @@ def _asset_paths(
     *,
     include_governance: bool,
     include_latest_outputs: bool,
+    skip_memory: bool = False,
 ) -> tuple[str, ...]:
     asset_paths = list(BASE_ASSET_FILES)
     if include_governance:
         asset_paths.extend(GOVERNANCE_ASSET_FILES)
     if include_latest_outputs:
         asset_paths.extend(LATEST_ASSET_FILES)
+    if skip_memory:
+        asset_paths = [path for path in asset_paths if path != "MEMORY.md"]
     return tuple(asset_paths)
 
 
@@ -193,6 +196,7 @@ def scaffold_review_gated_vault(
     include_full_outputs: bool = False,
     include_latest_outputs: bool = False,
     overwrite: bool = False,
+    skip_memory: bool = False,
 ) -> dict[str, Any]:
     context = _template_context(vault_root, profile)
     created_dirs: list[str] = []
@@ -211,6 +215,7 @@ def scaffold_review_gated_vault(
     for asset_rel_path in _asset_paths(
         include_governance=include_governance,
         include_latest_outputs=include_latest_outputs,
+        skip_memory=skip_memory,
     ):
         status = _write_asset_file(vault_root, asset_rel_path, context, overwrite=overwrite)
         if status == "written":
@@ -224,6 +229,7 @@ def scaffold_review_gated_vault(
         "created_dirs": created_dirs,
         "written_files": written_files,
         "preserved_files": preserved_files,
+        "skip_memory": skip_memory,
     }
 
 

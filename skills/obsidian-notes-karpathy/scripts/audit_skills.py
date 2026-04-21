@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,34 @@ NAME_RE = re.compile(r"^name:\s*(.+)$", re.MULTILINE)
 USE_TRIGGER_PATTERNS = ("Use this skill when", "Use this skill whenever")
 BOUNDARY_PATTERNS = ("Do not use", "Prefer ", "only route", "not ")
 OUTPUT_SECTION_PATTERNS = ("## Output", "## Outputs", "## Report output")
+COMPATIBILITY_REFERENCE = "chinese-llm-wiki-compat.md"
+COMPATIBILITY_REFERENCE_SKILLS = {
+    "obsidian-notes-karpathy",
+    "kb-init",
+    "kb-query",
+    "kb-review",
+}
+COMPATIBILITY_TRIGGER_TOKENS = (
+    "来源页",
+    "主题页",
+    "实体页",
+    "综合页",
+    "output/analyses",
+    "output/reports",
+    "中文优先",
+    "原文证据摘录",
+    "先读 wiki/index.md",
+)
+COMPATIBILITY_ROUTE_SKILLS = {
+    "obsidian-notes-karpathy",
+    "kb-init",
+    "kb-compile",
+    "kb-review",
+    "kb-query",
+    "kb-render",
+}
+
+logger = logging.getLogger(__name__)
 
 
 def load_json(path: Path) -> dict[str, Any] | list[Any]:
@@ -45,7 +74,7 @@ def load_registry() -> dict[str, Any]:
     return load_json(REGISTRY_PATH)  # type: ignore[return-value]
 
 
-def load_eval_skill_sets() -> tuple[set[str], set[str], set[str]]:
+def load_eval_skill_sets() -> tuple[list[dict[str, Any]], set[str], set[str], set[str]]:
     trigger_data = load_json(TRIGGER_EVALS_PATH)
     runtime_data = load_json(RUNTIME_EVALS_PATH)
     writable_data = load_json(WRITABLE_RUNTIME_EVALS_PATH)
@@ -64,7 +93,35 @@ def load_eval_skill_sets() -> tuple[set[str], set[str], set[str]]:
         for item in writable_data["evals"]  # type: ignore[index]
         if isinstance(item, dict) and item.get("skill")
     }
-    return trigger_skills, runtime_skills, writable_skills
+    return trigger_data, trigger_skills, runtime_skills, writable_skills  # type: ignore[return-value]
+
+
+def compatibility_trigger_report(trigger_data: list[dict[str, Any]]) -> dict[str, Any]:
+    serialized = json.dumps(trigger_data, ensure_ascii=False)
+    missing_tokens = [token for token in COMPATIBILITY_TRIGGER_TOKENS if token not in serialized]
+    route_hits = {skill_name: 0 for skill_name in COMPATIBILITY_ROUTE_SKILLS}
+
+    for item in trigger_data:
+        query = item.get("query", "")
+        if not isinstance(query, str):
+            continue
+        if not any(token in query for token in COMPATIBILITY_TRIGGER_TOKENS):
+            continue
+        expected_skill = item.get("expected_skill")
+        if expected_skill in route_hits:
+            route_hits[expected_skill] += 1
+
+    missing_routes = [
+        skill_name
+        for skill_name, count in route_hits.items()
+        if count == 0
+    ]
+    return {
+        "covered": not missing_tokens and not missing_routes,
+        "missing_tokens": missing_tokens,
+        "missing_routes": missing_routes,
+        "route_hits": route_hits,
+    }
 
 
 def audit_skill(
@@ -80,6 +137,7 @@ def audit_skill(
     frontmatter_name = parse_frontmatter_field(text, NAME_RE)
     registry_entry = registry["skills"].get(skill_name)
     role = registry_entry["role"] if registry_entry else "unknown"
+    compatibility_reference_expected = skill_name in COMPATIBILITY_REFERENCE_SKILLS
 
     checks = {
         "frontmatter_name_matches": frontmatter_name == skill_name,
@@ -99,6 +157,10 @@ def audit_skill(
             or not registry_entry.get("writes")
             or (skill_name in writable_skills)
         ),
+        "compatibility_reference_covered": (
+            (not compatibility_reference_expected)
+            or COMPATIBILITY_REFERENCE in text
+        ),
     }
 
     blocking_issues: list[str] = []
@@ -115,6 +177,7 @@ def audit_skill(
         "trigger_eval_covered",
         "runtime_eval_covered",
         "writable_runtime_covered",
+        "compatibility_reference_covered",
     ):
         if not checks[key]:
             blocking_issues.append(key)
@@ -140,14 +203,54 @@ def audit_skill(
 
 
 def build_payload() -> dict[str, Any]:
+    # ========================================================================
+    # 步骤1：加载审计输入
+    # ========================================================================
+    # 目标：
+    # 1) 读取 registry、trigger eval、runtime eval 三类基线
+    # 2) 生成 Chinese-LLM-Wiki 兼容触发覆盖摘要
+    # 3) 为后续逐 skill 审计准备上下文
+    logger.info("开始加载技能审计输入...")
+
+    trigger_data, trigger_skills, runtime_skills, writable_skills = load_eval_skill_sets()
     registry = load_registry()
-    trigger_skills, runtime_skills, writable_skills = load_eval_skill_sets()
+    compatibility_report = compatibility_trigger_report(trigger_data)
+
+    logger.info("技能审计输入加载完成。")
+
+    # ========================================================================
+    # 步骤2：逐个技能执行审计
+    # ========================================================================
+    # 目标：
+    # 1) 校验 frontmatter、read-before、output section、baseline script
+    # 2) 校验 runtime / writable runtime / trigger eval 覆盖
+    # 3) 校验 Chinese-LLM-Wiki compatibility reference 是否落到目标技能
+    logger.info("开始逐个技能执行审计...")
+
     audits = [
         audit_skill(skill_name, skill_path, registry, trigger_skills, runtime_skills, writable_skills)
         for skill_name, skill_path in SKILL_PATHS.items()
     ]
     blocking_issue_count = sum(len(item["blocking_issues"]) for item in audits)
     warning_count = sum(len(item["warnings"]) for item in audits)
+    compatibility_reference_covered = sum(
+        1
+        for item in audits
+        if item["name"] in COMPATIBILITY_REFERENCE_SKILLS
+        and item["checks"]["compatibility_reference_covered"]
+    )
+
+    logger.info("逐个技能审计完成。")
+
+    # ========================================================================
+    # 步骤3：汇总审计结果
+    # ========================================================================
+    # 目标：
+    # 1) 生成 summary 和 skills 列表
+    # 2) 暴露 compatibility 覆盖结果
+    # 3) 供 tests、CI、人工检查统一消费
+    logger.info("开始汇总技能审计结果...")
+
     payload = {
         "status": "ok" if blocking_issue_count == 0 else "error",
         "summary": {
@@ -155,12 +258,18 @@ def build_payload() -> dict[str, Any]:
             "trigger_eval_covered": sum(1 for item in audits if item["checks"]["trigger_eval_covered"]),
             "runtime_eval_covered": sum(1 for item in audits if item["checks"]["runtime_eval_covered"]),
             "writable_runtime_covered": sum(1 for item in audits if item["checks"]["writable_runtime_covered"]),
+            "compatibility_reference_covered": compatibility_reference_covered,
+            "compatibility_reference_expected": len(COMPATIBILITY_REFERENCE_SKILLS),
+            "chinese_llm_wiki_trigger_covered": compatibility_report["covered"],
             "blocking_issue_count": blocking_issue_count,
             "warning_count": warning_count,
             "average_score": round(sum(item["score"] for item in audits) / len(audits), 3),
         },
+        "compatibility": compatibility_report,
         "skills": audits,
     }
+
+    logger.info("技能审计结果汇总完成。")
     return payload
 
 

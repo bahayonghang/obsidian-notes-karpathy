@@ -2,6 +2,8 @@
 
 This bundle has one package entry skill and six operational skills. It should also feel discoverable to users who ask for an `LLM Wiki`, a `Karpathy wiki`, an `Obsidian IDE`, a `knowledge compiler`, or a markdown-first `second brain` without knowing the `kb-*` names.
 
+It should also stay discoverable for users who learned the simpler `Chinese-LLM-Wiki` language first and ask for `来源页`, `主题页`, `实体页`, `综合页`, `output/analyses`, or `output/reports`.
+
 ## Choose by lifecycle signal
 
 | Signal in the vault or request | Route to | Why |

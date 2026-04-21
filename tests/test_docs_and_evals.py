@@ -81,6 +81,7 @@ class DocsAndEvalsTests(unittest.TestCase):
         trigger_eval_path = ENTRY_SKILL_ROOT / "evals" / "trigger-evals.json"
 
         self.assertIn("provenance-and-alias-policy.md", registry_text)
+        self.assertIn("chinese-llm-wiki-compat.md", registry_text)
         self.assertIn("questions-and-reflection-policy.md", registry_text)
         self.assertIn("query-writeback-lifecycle.md", registry_text)
         self.assertIn("taxonomy-and-hubs.md", registry_text)
@@ -97,6 +98,7 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("outputs/web/", registry_text)
 
         self.assertIn("kb-review", readme)
+        self.assertIn("Chinese-LLM-Wiki", readme)
         self.assertIn("kb-ingest", readme)
         self.assertIn("kb-render", readme)
         self.assertIn("Companion skill matrix", readme)
@@ -107,6 +109,7 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("publish` mode", readme)
         self.assertIn("Archive Surfaces", readme)
         self.assertIn("kb-review", readme_cn)
+        self.assertIn("Chinese-LLM-Wiki", readme_cn)
         self.assertIn("kb-ingest", readme_cn)
         self.assertIn("kb-render", readme_cn)
         self.assertIn("搭配技能矩阵", readme_cn)
@@ -131,11 +134,15 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertIn("素材库 / 网页摘录", readme_cn)
         self.assertIn("architecture/", docs_readme)
         self.assertIn("/architecture/overview", docs_config)
+        self.assertIn("/architecture/chinese-llm-wiki-compat", docs_config)
         self.assertIn("/architecture/archive-model", docs_config)
+        self.assertIn("/zh/architecture/chinese-llm-wiki-compat", docs_config)
         self.assertIn("/zh/architecture/archive-model", docs_config)
         self.assertTrue((REPO_ROOT / "docs" / "architecture" / "overview.md").exists())
+        self.assertTrue((REPO_ROOT / "docs" / "architecture" / "chinese-llm-wiki-compat.md").exists())
         self.assertTrue((REPO_ROOT / "docs" / "architecture" / "archive-model.md").exists())
         self.assertTrue((REPO_ROOT / "docs" / "zh" / "architecture" / "overview.md").exists())
+        self.assertTrue((REPO_ROOT / "docs" / "zh" / "architecture" / "chinese-llm-wiki-compat.md").exists())
         self.assertTrue((REPO_ROOT / "docs" / "zh" / "architecture" / "archive-model.md").exists())
         self.assertTrue(trigger_eval_path.exists())
         trigger_evals = json.loads(trigger_eval_path.read_text(encoding="utf-8"))
@@ -207,6 +214,9 @@ class DocsAndEvalsTests(unittest.TestCase):
         self.assertTrue(any(item["expected_skill"] == "kb-query" and "archive this answer" in item["query"].lower() for item in trigger_evals))
         self.assertTrue(any(item["expected_skill"] == "kb-review" and "archive backlog" in item["query"].lower() for item in trigger_evals))
         self.assertTrue(any(item["expected_skill"] == "obsidian-notes-karpathy" and "raw/09-archive" in item["query"] for item in trigger_evals))
+        serialized = json.dumps(trigger_evals, ensure_ascii=False)
+        for token in ("来源页", "主题页", "实体页", "综合页", "output/analyses", "output/reports", "中文优先", "原文证据摘录", "先读 wiki/index.md"):
+            self.assertIn(token, serialized)
 
     def test_evals_cover_review_gated_routes_and_legacy_migration_cases(self) -> None:
         evals = json.loads((ENTRY_SKILL_ROOT / "evals" / "evals.json").read_text(encoding="utf-8"))["evals"]
@@ -242,6 +252,14 @@ class DocsAndEvalsTests(unittest.TestCase):
             "creator-consistency",
         }:
             self.assertIn(fixture_name, fixture_names)
+
+        prompts = [item["prompt"] for item in evals]
+        compatibility_hits = sum(
+            1
+            for prompt in prompts
+            if any(token in prompt for token in ("来源页", "主题页", "实体页", "综合页", "output/analyses", "output/reports", "中文优先"))
+        )
+        self.assertGreaterEqual(compatibility_hits, 6)
 
         for legacy_fixture in {"legacy-render-breakage", "legacy-compiled-layout", "legacy-answer-drift"}:
             self.assertNotIn(legacy_fixture, fixture_names)

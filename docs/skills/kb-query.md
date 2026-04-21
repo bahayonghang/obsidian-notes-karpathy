@@ -2,6 +2,8 @@
 
 Search the approved live brain, answer questions, archive substantive answers, reuse prior Q&A, reuse archived publish artifacts when appropriate, and export static web packages from one canonical read-side lane.
 
+When users say `综合页`, `output/analyses`, `中文优先分析`, or `先读 wiki/index.md 再回答`, keep the same read-side contract and translate those terms instead of widening the truth boundary.
+
 ## Hard boundary
 
 `kb-query` should read:
@@ -30,6 +32,7 @@ Archive is a first-class responsibility here, not an afterthought:
 - publish archive -> `outputs/content/**`
 - both are reusable artifact archive
 - both still sit below the truth boundary
+- `output/analyses` from the older Chinese single-layer model maps to the grounded Q&A archive here
 
 If the user still says `kb-search`, route it here as `kb-query` search mode.
 

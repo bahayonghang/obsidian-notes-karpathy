@@ -1,6 +1,6 @@
 ---
 name: obsidian-notes-karpathy
-description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "creator knowledge compiler", "personal knowledge base", "second brain", "archive this answer", "归档这个回答", "存回知识库", "复用归档内容", "清理 archive backlog", "这个知识库下一步该做什么", "现在应该初始化/摄取/编译/审校/检索/发布/渲染/体检哪个步骤", mentions review gates, draft/live separation, source manifests, browse topics, local-first search, publish outputs, archive hygiene, governance checks, source integrity, alias drift, open questions, curated hubs, editorial planning surfaces, prior-content reuse, or a markdown-first "living book" in Obsidian. Prefer the operation-specific skills when the user already clearly means init, ingest, compile, review, query, publish, render, or archive maintenance, and only route through this package entry skill when the workflow step is genuinely ambiguous.
+description: Diagnose and route ambiguous, workflow-level review-gated Obsidian vault requests. Use this skill when the user is talking about an Obsidian vault workflow as a whole, asks which lifecycle step should run next, says things like "what should I run first", "which stage am I in", "LLM Wiki", "Karpathy wiki", "Obsidian IDE", "knowledge compiler", "creator knowledge compiler", "personal knowledge base", "second brain", "archive this answer", "归档这个回答", "存回知识库", "复用归档内容", "清理 archive backlog", "先读 wiki/index.md", "这个知识库下一步该做什么", "现在应该初始化/摄取/编译/审校/检索/发布/渲染/体检哪个步骤", or uses Chinese-LLM-Wiki wording such as `中文优先`, `来源页`, `主题页`, `实体页`, `综合页`, `output/analyses`, `output/reports`, `原文证据摘录`, `先读 wiki/index.md 再判断`, or `先判断该做来源页还是综合页` without making the operation explicit. Prefer the operation-specific skills when the user already clearly means init, ingest, compile, review, query, publish, render, or archive maintenance, and only route through this package entry skill when the workflow step is genuinely ambiguous.
 ---
 
 # Obsidian Notes Karpathy
@@ -15,6 +15,8 @@ Archive semantics are split deliberately:
 - artifact archive: durable outputs under `outputs/**`
 
 Neither archive surface bypasses the `draft -> review -> live` truth boundary.
+
+When the user brings in the simpler `raw/wiki/output` vocabulary from `Chinese-LLM-Wiki`, route by meaning rather than mirroring that older structure literally.
 
 ## Minimal loop
 
@@ -42,6 +44,7 @@ The package should behave like a persistent markdown wiki operator, not just a s
 Read these shared references first:
 
 - `./scripts/skill-contract-registry.json`
+- `./references/chinese-llm-wiki-compat.md`
 - `./references/archive-model.md`
 - `./references/file-model.md`
 - `./references/lifecycle-matrix.md`
@@ -144,6 +147,15 @@ Route to `kb-review` in `maintenance` mode when:
 - the user wants to know which repeated outputs, question clusters, or weakly connected topics should become syntheses or hubs next
 
 `kb-review` owns both the immediate gate and the longer-horizon maintenance lane: approved-layer drift, backlog pressure, archived-output hygiene, source-integrity drift, alias splits, graph weakness, hub backlog, and safe mechanical fixes after the immediate review gate has passed.
+
+## Companion skills
+
+These skills are referenced by the lifecycle but live outside this bundle and are not maintained here:
+
+- `paper-workbench` — external companion for paper PDF intake and normalization. Any `raw/**/papers/*.pdf` defers to this skill; when it is absent, `kb-ingest` surfaces the PDF as `ingest_status: deferred` and `kb-compile` refuses to treat it as a normal source.
+- `web-access` / Obsidian Web Clipper — upstream collection lane for web sources before they land under `raw/**`. Routed through `kb-ingest` once the capture is on disk.
+
+Companion skills are declared in `scripts/skill-contract-registry.json` under the top-level `companion_skills` field. Audit tooling treats them as external and does not report them as missing from the bundle.
 
 ## Contract rules
 

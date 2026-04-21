@@ -5,7 +5,7 @@ import unittest
 from _bundle_test_support import REPO_ROOT, SCRIPTS_DIR, run_repo_command
 from _vault_common import parse_simple_yaml
 from runtime_eval import build_prompt, classify_failure, detect_root_leakage, fallback_runner_for, validate_manifest
-from trigger_eval import load_skill_catalog, parse_selected_skill, summarize_trigger_results
+from trigger_eval import build_trigger_prompt, load_skill_catalog, parse_selected_skill, summarize_trigger_results
 
 
 class QualityCommandTests(unittest.TestCase):
@@ -123,6 +123,9 @@ class QualityCommandTests(unittest.TestCase):
     def test_trigger_eval_loads_catalog_and_parses_json_output(self) -> None:
         catalog = load_skill_catalog()
         self.assertIn("kb-init", catalog)
+        prompt = build_trigger_prompt("先读 wiki/index.md，再判断来源页还是综合页。", catalog)
+        self.assertIn("The user request may be written in English or Chinese.", prompt)
+        self.assertIn("Treat Chinese routing phrases such as 来源页", prompt)
         self.assertIsNone(parse_selected_skill('{"selected_skill":"none","reason":"outside scope"}'))
         self.assertEqual(
             parse_selected_skill('{"selected_skill":"kb-query","reason":"live-grounded request"}'),

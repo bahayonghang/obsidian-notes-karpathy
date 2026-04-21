@@ -279,7 +279,7 @@
       ]
     },
     {
-      "id": 17,
+      "id": 18,
       "prompt": "Use evals/fixtures/ready-for-query and explain how optional governance indices like QUESTIONS, GAPS, and ALIASES should be generated from the approved layer without bypassing the review gate.",
       "expected_output": "Explains that governance indices can be generated from approved live pages and archived outputs, while durable knowledge still flows through draft -> review -> live.",
       "files": [
@@ -295,7 +295,7 @@
       ]
     },
     {
-      "id": 18,
+      "id": 19,
       "prompt": "Use evals/fixtures/needs-governance-refresh and explain why governance indices should be refreshed from current approved knowledge rather than treated as permanent truth pages.",
       "expected_output": "Explains that governance indices are derived maintenance views that should be regenerated from approved live pages and archived outputs.",
       "files": [
@@ -307,7 +307,7 @@
       ]
     },
     {
-      "id": 19,
+      "id": 20,
       "prompt": "Use evals/fixtures/governance-enabled-bootstrap and explain when kb-init should generate optional governance scaffolding after the support layer exists.",
       "expected_output": "Explains that kb-init may create governance scaffolding after the canonical support layer is established, without making those files part of the truth layer.",
       "files": [
@@ -319,7 +319,7 @@
       ]
     },
     {
-      "id": 20,
+      "id": 21,
       "prompt": "Use evals/fixtures/confidence-decay. Explain why this vault is a maintenance case, which current confidence fields are incomplete, and why overdue review windows should not be treated as structural repair.",
       "expected_output": "Routes to kb-review maintenance mode, calls out missing confidence metadata plus an overdue review window, and keeps this as a maintenance problem rather than a setup failure.",
       "files": [
@@ -334,7 +334,7 @@
       ]
     },
     {
-      "id": 21,
+      "id": 22,
       "prompt": "Use evals/fixtures/supersession-chain. Explain why the next step is maintenance and what is broken in the supersession chain between the old and new review gate pages.",
       "expected_output": "Routes to kb-review maintenance mode and calls out the broken supersession bookkeeping rather than silently choosing one page as truth.",
       "files": [
@@ -348,7 +348,7 @@
       ]
     },
     {
-      "id": 22,
+      "id": 23,
       "prompt": "Use evals/fixtures/episodic-consolidation. Explain why the archived Q&A should crystallize into episodic memory and how that still stays outside approved truth until review.",
       "expected_output": "Explains the episodic layer, keeps it outside approved truth, and points durable follow-up back into draft/review.",
       "files": [
@@ -362,7 +362,7 @@
       ]
     },
     {
-      "id": 23,
+      "id": 24,
       "prompt": "Use evals/fixtures/procedural-promotion. Explain why this should become a procedure rather than only another concept page, and what maintenance or review signal is currently missing.",
       "expected_output": "Explains the procedural promotion gap and points to wiki/drafts/procedures or wiki/live/procedures as the right landing zone.",
       "files": [
@@ -376,7 +376,7 @@
       ]
     },
     {
-      "id": 24,
+      "id": 25,
       "prompt": "Use evals/fixtures/graph-relationship-gap. Explain how governance indices and graph export should surface the weak relationship structure without widening the truth boundary.",
       "expected_output": "Explains that entities and relationships can be derived into indices and graph JSON, while approved live pages remain the truth surface.",
       "files": [
@@ -390,7 +390,7 @@
       ]
     },
     {
-      "id": 25,
+      "id": 26,
       "prompt": "Use evals/fixtures/private-shared-boundary. Explain what visibility_scope is for and why private/shared scoping should not be confused with the semantic truth boundary.",
       "expected_output": "Explains that visibility_scope is a governance/access signal, not a replacement for the live-vs-episode truth boundary.",
       "files": [
@@ -401,7 +401,7 @@
       ]
     },
     {
-      "id": 26,
+      "id": 27,
       "prompt": "Use evals/fixtures/hybrid-candidate-routing. Explain which files are approved truth, which ones are only candidate surfaces, and why hybrid retrieval should fuse them without citing them as primary truth.",
       "expected_output": "Explains that live pages remain truth while episodes and graph snapshots are candidate-only surfaces for local hybrid retrieval.",
       "files": [
@@ -417,7 +417,7 @@
       ]
     },
     {
-      "id": 27,
+      "id": 28,
       "prompt": "Use evals/fixtures/audit-trail. Explain why a missing operations.jsonl is a maintenance issue once audit scaffolding exists, and what kind of automation should write to it.",
       "expected_output": "Routes to kb-review maintenance mode, flags the audit gap, and explains that automation should append machine-readable events instead of silently mutating derived surfaces.",
       "files": [
@@ -431,7 +431,7 @@
       ]
     },
     {
-      "id": 28,
+      "id": 29,
       "prompt": "Use evals/fixtures/creator-consistency. Explain why this vault is now a creator-consistency maintenance case, including the style-guide/briefing drift, missing reuse bookkeeping in archived content, and the approved summary that is staying underused.",
       "expected_output": "Routes to kb-review maintenance mode and calls out creator consistency drift, reuse gaps, and underused approved sources without widening the truth boundary.",
       "files": [
@@ -450,7 +450,7 @@
       ]
     },
     {
-      "id": 29,
+      "id": 30,
       "prompt": "Use evals/fixtures/ready-for-query. Explain how this vault should archive a strong grounded answer back into `outputs/qa/` without treating that archived note as approved truth.",
       "expected_output": "Explains the archive step for a substantive grounded answer, keeps `outputs/qa/` reusable, and preserves `wiki/live/` as the truth layer.",
       "files": [
@@ -465,7 +465,7 @@
       ]
     },
     {
-      "id": 30,
+      "id": 31,
       "prompt": "Use evals/fixtures/creator-consistency. Explain how an archived publish artifact should be reused and audited without letting polished output outrank the approved live summary behind it.",
       "expected_output": "Explains archived publish artifact reuse, keeps live grounding first, and treats reuse drift as maintenance work.",
       "files": [
@@ -480,7 +480,7 @@
       ]
     },
     {
-      "id": 31,
+      "id": 32,
       "prompt": "Use evals/fixtures/writeback-backlog. Explain why this archived backlog belongs to maintenance work and should not be solved by silently promoting the archived Q&A into live knowledge.",
       "expected_output": "Routes to kb-review maintenance mode and explains that archive backlog is maintenance of the artifact archive, not truth promotion.",
       "files": [
@@ -495,7 +495,7 @@
       ]
     },
     {
-      "id": 32,
+      "id": 33,
       "prompt": "Use evals/fixtures/needs-ingest. Explain why this bundle keeps raw sources retained in place and registered in `raw/_manifest.yaml` instead of moving them into a `raw/09-archive/` folder after processing.",
       "expected_output": "Explains source retention archive semantics, keeps raw immutable, and states that physical source-file archiving is outside the current contract.",
       "files": [
@@ -507,6 +507,87 @@
         "The response distinguishes source retention archive from artifact archive.",
         "The answer explicitly says this repo does not default to `raw/09-archive/`.",
         "The workflow preserves raw immutability and manifest registration."
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "Use evals/fixtures/ready-for-query. A user says: 先读 wiki/index.md，再帮我判断这个中文优先 LLM Wiki 现在该先补来源页、主题页、实体页，还是先做综合页。我不确定下一步是 compile、review 还是 query。Explain the correct next-step routing.",
+      "expected_output": "Routes through the package entry skill because the user is using Chinese-LLM-Wiki vocabulary but the lifecycle step is still ambiguous.",
+      "files": [
+        "evals/fixtures/ready-for-query/AGENTS.md",
+        "evals/fixtures/ready-for-query/wiki/index.md",
+        "evals/fixtures/ready-for-query/wiki/log.md"
+      ],
+      "expectations": [
+        "The response treats `先读 wiki/index.md` as a router/query posture rather than a literal single-layer structure requirement.",
+        "The answer keeps the review-gated contract intact instead of collapsing back into a single wiki layer."
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "Use evals/fixtures/needs-setup. A user asks for a 中文优先 wiki with raw/wiki/output scaffolding, but says they accept the current repo's review-gated layout. Explain why kb-init is still the correct first step.",
+      "expected_output": "Routes to kb-init and explains that single-layer onboarding wording becomes review-gated setup work in this repo.",
+      "files": [
+        "evals/fixtures/needs-setup/README.md"
+      ],
+      "expectations": [
+        "The response chooses kb-init.",
+        "The answer explicitly preserves the review-gated layout instead of reverting to a single canonical wiki."
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "Use evals/fixtures/needs-compilation. Explain why a request for 来源页、主题页、实体页草稿 from a new raw article still belongs to kb-compile first, not direct live editing.",
+      "expected_output": "Routes to kb-compile and maps the Chinese single-layer page names to draft outputs first.",
+      "files": [
+        "evals/fixtures/needs-compilation/AGENTS.md",
+        "evals/fixtures/needs-compilation/raw/human/articles/2026-04-07-new-capture.md",
+        "evals/fixtures/needs-compilation/wiki/index.md"
+      ],
+      "expectations": [
+        "The response maps 来源页 / 主题页 / 实体页 to draft outputs first.",
+        "The answer preserves draft -> review -> live."
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "Use evals/fixtures/needs-maintenance. Explain why a Chinese-LLM-Wiki style lint request mentioning 孤儿页、断链、旧结论被覆盖 and output/reports is a kb-review maintenance task.",
+      "expected_output": "Routes to kb-review maintenance mode and distinguishes governance reports from deterministic rendered reports.",
+      "files": [
+        "evals/fixtures/needs-maintenance/AGENTS.md",
+        "evals/fixtures/needs-maintenance/wiki/index.md",
+        "evals/fixtures/needs-maintenance/outputs/qa/2026-04-01-rag-answer.md"
+      ],
+      "expectations": [
+        "The response treats the request as maintenance.",
+        "The answer distinguishes governance `output/reports` intent from `kb-render` report generation."
+      ]
+    },
+    {
+      "id": 38,
+      "prompt": "Use evals/fixtures/ready-for-query. Explain why a request for 综合页式分析 with output/analyses wording should archive into outputs/qa and still keep wiki/live as truth.",
+      "expected_output": "Routes to kb-query and maps output/analyses wording onto archived grounded analysis rather than approved truth.",
+      "files": [
+        "evals/fixtures/ready-for-query/AGENTS.md",
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+      ],
+      "expectations": [
+        "The response keeps outputs/qa as artifact archive.",
+        "The answer explicitly keeps wiki/live as approved truth."
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "Use evals/fixtures/ready-for-query. Explain why a request to turn approved topic knowledge into a report under output/reports is render work only after the grounding step is already done.",
+      "expected_output": "Routes to kb-render and distinguishes deterministic report output from governance maintenance reports.",
+      "files": [
+        "evals/fixtures/ready-for-query/AGENTS.md",
+        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md"
+      ],
+      "expectations": [
+        "The response chooses kb-render.",
+        "The answer keeps governance/lint report work out of kb-render."
       ]
     }
   ]

@@ -2,6 +2,8 @@
 
 Run the canonical governance lane between draft knowledge and the approved live brain. `kb-review` now covers both the immediate `gate` mode and the longer-horizon `maintenance` mode.
 
+If a user speaks in `Chinese-LLM-Wiki` maintenance terms such as `lint`, `孤儿页`, `断链`, `旧结论被覆盖`, or asks for a governance-style `output/reports`, route that work here rather than to deterministic rendering.
+
 ## What it reads
 
 - `wiki/drafts/**`

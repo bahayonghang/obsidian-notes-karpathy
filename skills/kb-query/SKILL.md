@@ -1,44 +1,33 @@
 ---
 name: kb-query
-description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what their approved notes say about something, wants a grounded answer, ranked local candidates, archived Q&A reuse, an answer archived back into the vault, a publishable outward artifact from approved knowledge, or a static web export from `wiki/live/`, says "query kb", "kb-search", "search live wiki", "archive this answer", "归档这个回答", "把回答存回去", "复用旧 Q&A", "写成公众号", "写成 thread", "对外内容", "一鱼多吃", "复用批准知识出稿", "导出静态知识站", "问知识库", or "搜索批准层并回答". This is the canonical read-side skill for approved retrieval, candidate ranking, grounded answers, archive and reuse of durable answers, creator-facing publish mode, and static web export. Do not use this skill for generic writing, open-ended web research, deterministic slide/report/chart/canvas rendering, or governance/maintenance passes that belong to `kb-render` or `kb-review`.
+description: Query, search, and generate grounded outputs from the approved live layer of an Obsidian vault. Use this skill whenever the user asks what the approved notes already say, wants a grounded answer, ranked local candidates, archived Q&A reuse, a publishable outward artifact from approved knowledge, a static web export from `wiki/live/`, says "query kb", "kb-search", "search live wiki", "archive this answer", "归档这个回答", "把回答存回去", "复用旧 Q&A", "写成公众号", "写成 thread", "对外内容", "一鱼多吃", "复用批准知识出稿", "导出静态知识站", "问知识库", "搜索批准层并回答", or uses Chinese-LLM-Wiki wording such as `综合页`, `综合页式分析`, `output/analyses`, `中文优先分析`, `原文证据摘录`, `先读 wiki/index.md 再回答`, or `先放 output/analyses`. This is the canonical read-side skill for approved retrieval, candidate ranking, grounded answers, archive and reuse of durable answers, creator-facing publish mode, and static web export. Do not use this skill for generic writing, open-ended web research, deterministic slide/report/chart/canvas rendering, or governance/maintenance passes that belong to `kb-render` or `kb-review`.
 ---
 
 # KB Query
 
 Search, answer, and generate outputs from the approved live layer.
 
-In Karpathy's words: "good answers can be filed back into the wiki as new pages." `kb-query` is where explorations compound — every substantive answer should leave the wiki slightly better than before.
+In Karpathy's words: "good answers can be filed back into the wiki as new pages." In this bundle, that compounding still respects `draft -> review -> live`. Strong query results archive cleanly, then feed later writeback or maintenance work.
+
+When a user speaks in the simpler `raw/wiki/output` language from `Chinese-LLM-Wiki`, translate it instead of widening the truth boundary:
+
+- `综合页` usually means a grounded reusable analysis, so start in `outputs/qa/**`
+- `output/analyses` maps to archived grounded analysis, not approved truth
+- `先读 wiki/index.md` remains the default navigation posture
 
 ## Minimal loop
 
 1. locate the best approved live pages and briefings
 2. answer or draft the artifact from `wiki/live/`
 3. archive the result when it is substantive
-4. record the smallest durable delta that would improve the wiki next
-
-## When this compounds the wiki
-
-`kb-query` should not behave like disposable chat over live notes. Strong outputs should either become reusable archived artifacts or leave behind explicit candidates for a better concept page, synthesis page, relationship edge, governed question, or curated hub.
-
-Archive is a first-class responsibility here:
-
-- `research` archives reusable grounded answers
-- `publish` archives creator-facing artifacts
-- `reflect-lite` archives synthesis notes that should stay outside approved truth
-
-That archive layer is durable and reusable, but it is still not the approved truth layer.
-
-## When not to promote
-
-Do not treat a polished answer as approved truth by itself. If the result discovers durable knowledge, it must still re-enter through `draft -> review -> live`.
+4. record the smallest durable delta that should flow back through review later
 
 ## Read before querying
-
-Read these files first:
 
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
+- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md`
 - `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
@@ -54,6 +43,7 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/render-template.md`
 - `../obsidian-notes-karpathy/references/profile-contract.md`
 - `../obsidian-notes-karpathy/references/episode-template.md`
+- `../obsidian-notes-karpathy/references/web-export-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
 
@@ -72,107 +62,78 @@ Then start with:
 
 ## Hard boundary
 
-`kb-query` must not treat `raw/` or `wiki/drafts/` as retrieval truth.
+- `wiki/live/**` is the default truth source
+- `raw/` and `wiki/drafts/` are not retrieval truth
+- `MEMORY.md` is collaboration context, not topic truth
+- `outputs/episodes/` and graph snapshots can surface candidates, but they do not outrank approved live pages
+- archived outputs are reusable, but they remain artifact archive rather than approved truth
 
-`MEMORY.md` is also outside the default knowledge retrieval boundary. Read it only when the user is asking about preferences, editorial priorities, or collaboration behavior rather than topic knowledge.
-
-Those layers may be cited only as evidence if a human explicitly asks for source inspection. Default synthesis should stay on `wiki/live/`.
-`outputs/episodes/` and `outputs/health/graph-snapshot.json` may help surface candidates, but they are not default truth surfaces.
-
-## Source-backed answer discipline
-
-- prefer approved summaries when grounding key conclusions
-- use concept and entity pages as navigation and synthesis aids, not as a shortcut around approved evidence trails
-- when sources disagree, say so explicitly instead of flattening the disagreement
+If a human explicitly asks for source inspection, you may cite raw evidence. Default synthesis should still stay on approved live coverage.
 
 ## Modes
 
-1. **search** — quickly locate approved pages and rank local candidates before synthesis
-   - Example: "这个wiki里有没有关于 transformer attention 的内容"
-   - Output: ranked page list with relevance snippets, no new file created
+### search
 
-2. **research** — grounded answers archived into `outputs/qa/`
-   - Example: "对比一下 RAG 和 LLM Wiki 的优缺点"
-   - Output: structured Q&A markdown saved to `outputs/qa/`
+- use when the user wants ranked local candidates first
+- output a ranked page list with short relevance notes
+- do not create a new archive file unless the user asks
 
-3. **publish** — grounded outward-facing artifacts archived under `outputs/content/`
-   - Example: "把批准知识写成公众号短文"
-   - Output: article, thread, newsletter, or talk-outline grounded in approved live pages or prior archived Q&A
+### research
 
-4. **web** — static browseable web exports under `outputs/web/`
-   - Example: "导出一个静态知识站"
-   - Output: HTML package rooted at `outputs/web/{slug}/index.html`
+- use when the user wants a grounded reusable answer
+- save substantive outputs under `outputs/qa/`
+- this is the closest current mapping to `output/analyses`
 
-5. **reflect-lite** — question resolution, synthesis notes, or gap reports that stay outside live until re-reviewed
-   - Example: "这几个概念之间的关系还没理清楚，帮我整理一下"
-   - Output: reflection note in `outputs/qa/`, with `followup_route: draft` if durable
+### publish
 
-When a substantive answer or artifact creates durable follow-up work, archive explicit `writeback_candidates`, `open_questions_touched`, `source_live_pages`, `writeback_status`, and a `followup_route` so the next compile/review or maintenance pass can decide what should happen next.
+- use when the user wants creator-facing prose grounded in approved knowledge
+- save article / thread / newsletter / talk-outline artifacts under `outputs/content/`
+- reuse prior archived Q&A when it already contains the needed grounded synthesis
 
-Archive reuse order should stay explicit:
+### web
 
-1. reuse approved live coverage first
-2. reuse prior archived Q&A when it already carries the needed grounded synthesis
-3. reuse archived publish artifacts only when they already cite or reuse approved coverage cleanly
+- use when the user wants a static browseable export from approved knowledge
+- save the package under `outputs/web/{slug}/index.html`
+- follow `../obsidian-notes-karpathy/references/web-export-template.md` for the site skeleton, per-page frontmatter, slug rules, navigation structure, and `search.json` shape
 
-Do not let archived outputs outrank live grounding just because they are more polished.
+### reflect-lite
 
-Prefer the smallest durable delta that improves future reuse:
+- use when the user wants a synthesis note, question-resolution memo, or gap note that should stay outside live
+- archive it under `outputs/qa/`
+- set `followup_route: draft` if the result exposes durable knowledge work
 
-- update an existing live concept or entity when the identity is already right
-- draft a missing concept, entity, or synthesis when the knowledge is durable but absent
-- strengthen `related` links or question tracking when the problem is graph quality rather than page absence
-- create or expand a curated hub when repeated outputs keep traversing the same approved cluster
-
-## Retrieval ladder
-
-Default retrieval order:
-
-1. `wiki/index.md`
-2. `wiki/live/indices/*`
-3. governance indices such as `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` when present
-4. relevant `wiki/briefings/{role}.md`
-5. prior `outputs/qa/`
-6. local structured or metadata-driven search
-7. optional semantic retrieval only as candidate surfacing
-
-Semantic retrieval may help discover candidate pages, but approved live pages remain the truth source.
-
-If the user explicitly says `kb-search`, treat that as direct wording for `kb-query` search mode.
-
-If the user wants slides, reports, charts, or canvas derivatives from approved knowledge, hand off to `kb-render` instead of stretching `kb-query` into deterministic rendering work.
-
-When the user wants creator-facing prose from approved knowledge, keep that inside `publish` mode instead of treating it as generic writing.
+If the user wants slides, deterministic reports, chart briefs, or canvas outputs from approved knowledge, hand off to `kb-render`.
 
 ## Writeback contract
 
-Compounding principle: every substantive query should leave the wiki at least slightly better — whether through a new draft page, a stronger relationship, an updated hub, or a promoted question. Writeback is the default posture, not an opt-in extra.
+Every substantive query should leave explicit follow-up metadata behind. At minimum, record:
 
-Use `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md` as the detailed contract.
-
-At minimum, substantive Q&A or publish outputs should:
-
-- record `source_live_pages` when specific approved pages grounded the answer
-- record `open_questions_touched` when the answer materially advances or reframes a standing question
-- record `writeback_candidates` when the output discovers durable follow-up worth re-entering the wiki
-- record `writeback_status` so later passes can see whether the work is still pending
-- record `compounding_value` when future reuse, navigation value, or synthesis payoff should be explicit
-- record `crystallized_from_episode` when the output came out of a broader episodic chain
-- set `followup_route` to `none`, `draft`, or `review`
+- `source_live_pages`
+- `open_questions_touched` when relevant
+- `writeback_candidates`
+- `writeback_status`
+- `followup_route`
 
 Use:
 
-- `none` when the output is grounded and does not create durable follow-up work
-- `draft` when the output suggests new or updated long-term knowledge that must re-enter draft -> review -> live
-- `review` when the next action is an immediate human decision or a governance pass on already-prepared maintenance work
+- `none` when the artifact is grounded and self-contained
+- `draft` when durable knowledge should re-enter `draft -> review -> live`
+- `review` when the next step is a governance or approval pass on already-prepared material
+
+Prefer the smallest durable delta:
+
+- extend an existing live page when the identity is already correct
+- draft a new concept / entity / synthesis when the knowledge is durable but absent
+- strengthen relationships or question tracking when the graph is the weak point
 
 ## Checkpoint
 
 Before archiving a substantive answer, confirm:
 
-- the answer is grounded in approved pages (not fabricated from general knowledge)
-- the `followup_route` is set correctly: `none` when self-contained, `draft` when new knowledge was discovered, `review` when existing approved pages need updating
-- any `writeback_candidates` are concrete and actionable, not vague placeholders
+- the answer is grounded in approved pages
+- archive reuse did not outrank live grounding
+- `followup_route` is concrete
+- any `writeback_candidates` are actionable instead of vague
 
 For simple search-mode lookups, no checkpoint is needed.
 
@@ -184,4 +145,4 @@ Report:
 2. whether prior Q&A was reused
 3. where the new artifact was saved
 4. whether a `query` or `publish` log entry should be appended
-5. whether any follow-up should go back into drafts instead of directly mutating live
+5. whether follow-up work belongs in drafts or maintenance instead of directly mutating live

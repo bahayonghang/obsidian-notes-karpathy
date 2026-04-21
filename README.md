@@ -4,6 +4,8 @@ Review-gated, multi-agent-friendly Obsidian knowledge-base skills inspired by Ka
 
 This bundle is aimed at users who may ask for an `LLM Wiki`, a `Karpathy wiki`, an `Obsidian IDE` for notes, a `knowledge compiler`, a personal knowledge base, or a markdown-first `second brain` without knowing the internal `kb-*` command names yet.
 
+It also accepts the simpler `Chinese-LLM-Wiki` vocabulary. Requests phrased as `来源页`, `主题页`, `实体页`, `综合页`, `output/analyses`, or `output/reports` are translated onto the review-gated contract instead of forcing the repo back into a single-layer wiki.
+
 ```text
 raw/            -> immutable human + agent captures
 raw/_manifest.yaml -> canonical source registry
@@ -45,6 +47,8 @@ The core idea is no longer just "compile notes into a wiki". It is "separate pro
 | Ingest `raw/**/papers/*.pdf` | not a core route | `paper-workbench` |
 
 The core bundle should own the review-gated lifecycle. Companion skills take over only for clearly external lanes such as paper PDFs or canvas-specific authoring.
+
+For the vocabulary bridge from the simpler Chinese single-layer wiki model into this bundle's draft/live contract, see [Chinese-LLM-Wiki Compatibility](docs/architecture/chinese-llm-wiki-compat.md).
 
 ## Contract highlights
 

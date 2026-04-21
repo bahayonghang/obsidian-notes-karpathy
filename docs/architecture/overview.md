@@ -24,6 +24,8 @@ The shipped workflow is review-gated:
 
 The routing and ownership contract lives primarily in `skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json` and `skills/obsidian-notes-karpathy/references/lifecycle-matrix.md`. Read those two files when you need the canonical mapping between lifecycle states, owning skills, and allowed write surfaces.
 
+If the user arrives with the simpler `raw/wiki/output` vocabulary from `Chinese-LLM-Wiki`, do not mirror that structure literally. Use the compatibility bridge to translate those requests onto the draft/live contract instead.
+
 ## Design themes
 
 - Separate production from judgment so draft errors do not compound.
@@ -47,3 +49,5 @@ The main areas still evolving are:
 Use the contract pages under Guide, Skills, and Workflow for the current source of truth. Use Architecture pages to understand the rationale and forward direction.
 
 For the full archive split, see [Archive Model](/architecture/archive-model).
+
+For the term-by-term bridge from the Chinese single-layer model, see [Chinese-LLM-Wiki Compatibility](/architecture/chinese-llm-wiki-compat).
