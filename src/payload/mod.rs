@@ -198,3 +198,15 @@ pub struct ReviewQueue {
     pub state_counts: Counts,
     pub items: Vec<ReviewItem>,
 }
+
+/// `onkb review lint` 的返回结构。
+///
+/// `issues` 暂时保留 `Vec<Value>`，每条 issue 由对应规则构造；
+/// 阶段 4 拆 `rules/` 时再换成 `HealthIssue` internally-tagged enum。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HealthAudit {
+    pub vault_root: String,
+    pub layout_family: String,
+    pub issue_counts: Counts,
+    pub issues: Vec<Value>,
+}

@@ -1039,7 +1039,7 @@ pub fn audit_vault_mechanics(vault_root: &Path) -> Result<Value> {
                 .unwrap_or_default(),
         )
     });
-    let mut issue_counts = BTreeMap::new();
+    let mut issue_counts: BTreeMap<String, i64> = BTreeMap::new();
     for issue in &issues {
         let kind = issue
             .get("kind")
@@ -1048,10 +1048,11 @@ pub fn audit_vault_mechanics(vault_root: &Path) -> Result<Value> {
             .to_string();
         *issue_counts.entry(kind).or_insert(0_i64) += 1;
     }
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "layout_family": crate::layout::detect_layout_family(vault_root),
-        "issue_counts": issue_counts,
-        "issues": issues,
-    }))
+    let audit = crate::payload::HealthAudit {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        layout_family: crate::layout::detect_layout_family(vault_root).to_string(),
+        issue_counts,
+        issues,
+    };
+    Ok(serde_json::to_value(&audit)?)
 }
