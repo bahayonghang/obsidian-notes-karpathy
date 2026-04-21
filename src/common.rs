@@ -20,6 +20,8 @@ pub static TABLE_LINE_RE: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"^\s*\|.*\|\s*$").expect("valid table regex"));
 pub static FRONTMATTER_RE: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"(?s)^---\n(.*?)\n---\n?(.*)$").expect("valid frontmatter regex"));
+static DATE_ONLY_RE: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"^\d{4}-\d{2}-\d{2}$").expect("valid date regex"));
 
 #[derive(Clone, Debug, Serialize)]
 pub struct MarkdownRecord {
@@ -298,10 +300,7 @@ pub fn parse_datetime(value: Option<&Value>) -> Option<DateTime<Utc>> {
     };
     let normalized = if candidate.ends_with('Z') {
         format!("{}+00:00", &candidate[..candidate.len() - 1])
-    } else if Regex::new(r"^\d{4}-\d{2}-\d{2}$")
-        .expect("valid date regex")
-        .is_match(&candidate)
-    {
+    } else if DATE_ONLY_RE.is_match(&candidate) {
         format!("{candidate}T00:00:00+00:00")
     } else {
         candidate

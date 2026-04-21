@@ -1,34 +1,11 @@
-use std::fs;
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 use serde_json::{json, Value};
 
+use crate::audit_log;
 use crate::common::{list_field, now_iso, write_markdown};
 use crate::layout::collect_markdown_records;
-
-fn append_audit_event(vault_root: &Path, action: &str, payload: &Value) -> Result<()> {
-    let audit_path = vault_root
-        .join("outputs")
-        .join("audit")
-        .join("operations.jsonl");
-    if let Some(parent) = audit_path.parent() {
-        fs::create_dir_all(parent)?;
-    }
-    let mut existing = if audit_path.exists() {
-        fs::read_to_string(&audit_path)?
-    } else {
-        String::new()
-    };
-    existing.push_str(&serde_json::to_string(&json!({
-        "timestamp": now_iso(),
-        "action": action,
-        "payload": payload,
-    }))?);
-    existing.push('\n');
-    fs::write(audit_path, existing)?;
-    Ok(())
-}
 
 fn episode_path(vault_root: &Path, rel_output_path: &str) -> PathBuf {
     let name = Path::new(rel_output_path)
@@ -155,7 +132,7 @@ pub fn write_memory_episodes(vault_root: &Path, payload: &Value) -> Result<Vec<S
         written.push(crate::common::relative_posix(&episode_path, vault_root));
     }
     if !written.is_empty() {
-        append_audit_event(
+        audit_log::append_event(
             vault_root,
             "build_memory_episodes",
             &json!({"written_paths": written}),

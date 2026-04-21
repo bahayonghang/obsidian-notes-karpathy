@@ -114,11 +114,13 @@ pub fn scan_review_queue(vault_root: &Path) -> Result<Value> {
                     ("needs-human", "live_conflict")
                 } else if !duplicate_candidates.is_empty() {
                     ("needs-human", "duplicate_candidates")
-                } else if !alias_candidates.is_empty() && score.unwrap_or_default() < 0.90 {
+                } else if !alias_candidates.is_empty()
+                    && score.unwrap_or_default() < crate::config::REVIEW_ALIAS_JUDGMENT_SCORE
+                {
                     ("needs-human", "alias_alignment_requires_judgment")
-                } else if score.unwrap_or_default() >= 0.85 {
+                } else if score.unwrap_or_default() >= crate::config::REVIEW_APPROVE_SCORE {
                     ("approve", "threshold_met")
-                } else if score.unwrap_or_default() < 0.60 {
+                } else if score.unwrap_or_default() < crate::config::REVIEW_REJECT_SCORE {
                     ("reject", "score_below_floor")
                 } else {
                     ("needs-human", "score_band_requires_judgment")

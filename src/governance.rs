@@ -5,7 +5,8 @@ use std::path::Path;
 use anyhow::Result;
 use serde_json::{json, Value};
 
-use crate::common::{list_field, now_iso, slugify_identity};
+use crate::audit_log;
+use crate::common::{list_field, slugify_identity};
 use crate::health::audit_vault_mechanics;
 use crate::layout::collect_markdown_records;
 use crate::query::live_records;
@@ -30,29 +31,6 @@ const GAP_KINDS: [&str; 18] = [
     "procedural_promotion_gap",
     "graph_gap",
 ];
-
-fn append_audit_event(vault_root: &Path, action: &str, payload: &Value) -> Result<()> {
-    let audit_path = vault_root
-        .join("outputs")
-        .join("audit")
-        .join("operations.jsonl");
-    if let Some(parent) = audit_path.parent() {
-        fs::create_dir_all(parent)?;
-    }
-    let mut existing = if audit_path.exists() {
-        fs::read_to_string(&audit_path)?
-    } else {
-        String::new()
-    };
-    existing.push_str(&serde_json::to_string(&json!({
-        "timestamp": now_iso(),
-        "action": action,
-        "payload": payload,
-    }))?);
-    existing.push('\n');
-    fs::write(audit_path, existing)?;
-    Ok(())
-}
 
 fn body_open_questions(record: &crate::common::MarkdownRecord) -> Vec<String> {
     let mut questions = Vec::new();
@@ -638,7 +616,7 @@ pub fn write_governance_indices(vault_root: &Path, payload: &Value) -> Result<Ve
         fs::write(&path, content.as_str().unwrap_or_default())?;
         written_files.push(crate::common::relative_posix(&path, vault_root));
     }
-    append_audit_event(
+    audit_log::append_event(
         vault_root,
         "build_governance_indices",
         &json!({

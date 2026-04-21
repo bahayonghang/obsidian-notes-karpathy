@@ -948,7 +948,10 @@ pub fn duplicate_alias_set_issues(records: &[crate::common::MarkdownRecord]) -> 
 }
 
 pub fn volatile_page_stale_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
-    let thresholds = BTreeMap::from([("high", 90_i64), ("medium", 180_i64), ("low", 365_i64)]);
+    let thresholds: BTreeMap<&str, i64> = crate::config::VOLATILITY_THRESHOLDS
+        .iter()
+        .copied()
+        .collect();
     let now = chrono::Utc::now();
     let mut issues = Vec::new();
     for record in live_records(records) {

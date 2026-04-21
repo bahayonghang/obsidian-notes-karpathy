@@ -22,33 +22,37 @@ const KB_INIT_REQUIRED_ASSETS: [&str; 13] = [
     "wiki/live/indices/RECENT.md",
     "wiki/live/indices/EDITORIAL-PRIORITIES.md",
 ];
+/// 遗留实现的标志串。
+///
+/// `scan_forbidden_legacy_references` 会跳过当前文件（见下方 `relative == "src/dev/contract.rs"`），
+/// 所以这里可以直接以字面量列出，无须字符拼接规避自检。
+const BLOCKED_LEGACY_MARKERS: &[&str] = &[
+    "py -3",
+    "python3",
+    "run_repo_python_script",
+    "\"baseline_script\"",
+    "detect_lifecycle.py",
+    "scan_ingest_delta.py",
+    "scan_compile_delta.py",
+    "scan_review_queue.py",
+    "scan_query_scope.py",
+    "render_live_artifact.py",
+    "bootstrap_review_gated_vault.py",
+    "migrate_legacy_vault.py",
+    "vault_status.py",
+    "audit_skills.py",
+    "validate_bundle_contract.py",
+    "runtime_eval.py",
+    "trigger_eval.py",
+    "render_reference_block.py",
+    "sync_source_manifest.py",
+];
+
 fn blocked_legacy_markers() -> Vec<String> {
-    let py_short = ['p', 'y'].iter().collect::<String>();
-    let py_full = ['p', 'y', 't', 'h', 'o', 'n'].iter().collect::<String>();
-    let ext = format!(".{py_short}");
-    let quoted_legacy_key = format!("\"{}_{}\"", "baseline", "script");
-    let legacy_runner = ["run", "repo", py_full.as_str(), "script"].join("_");
-    vec![
-        format!("{py_short} -3"),
-        format!("{py_full}3"),
-        legacy_runner,
-        quoted_legacy_key,
-        format!("detect_lifecycle{ext}"),
-        format!("scan_ingest_delta{ext}"),
-        format!("scan_compile_delta{ext}"),
-        format!("scan_review_queue{ext}"),
-        format!("scan_query_scope{ext}"),
-        format!("render_live_artifact{ext}"),
-        format!("bootstrap_review_gated_vault{ext}"),
-        format!("migrate_legacy_vault{ext}"),
-        format!("vault_status{ext}"),
-        format!("audit_skills{ext}"),
-        format!("validate_bundle_contract{ext}"),
-        format!("runtime_eval{ext}"),
-        format!("trigger_eval{ext}"),
-        format!("render_reference_block{ext}"),
-        format!("sync_source_manifest{ext}"),
-    ]
+    BLOCKED_LEGACY_MARKERS
+        .iter()
+        .map(|marker| (*marker).to_string())
+        .collect()
 }
 
 fn scan_forbidden_legacy_references(repo_root: &Path) -> Result<Vec<String>> {

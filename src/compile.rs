@@ -23,7 +23,10 @@ fn staleness_hint(
     match (raw_mtime_dt, now_dt) {
         (Some(raw_mtime_dt), Some(now_dt)) => {
             let age_days = ((now_dt - raw_mtime_dt).num_seconds() / 86_400).max(0);
-            (age_days > 730, Some(age_days))
+            (
+                age_days > crate::config::STALENESS_HINT_DAYS,
+                Some(age_days),
+            )
         }
         _ => (false, None),
     }

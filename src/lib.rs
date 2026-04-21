@@ -1,6 +1,8 @@
+pub mod audit_log;
 pub mod automation;
 pub mod common;
 pub mod compile;
+pub mod config;
 pub mod dev;
 pub mod episodes;
 pub mod governance;
