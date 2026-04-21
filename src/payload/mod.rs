@@ -271,3 +271,30 @@ pub struct GovernanceIndices {
     pub hub_candidates: Vec<Value>,
     pub files: BTreeMap<String, String>,
 }
+
+/// `onkb review automation` 的返回结构。
+///
+/// 字段并集覆盖 4 种 mode（scheduled-health / session-end / query-archive / new-source）；
+/// 未使用的字段通过 `skip_serializing_if = "Option::is_none"` 在 JSON 里隐藏。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AutomationPayload {
+    pub vault_root: String,
+    pub mode: String,
+    pub write: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lint: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub governance: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub graph: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub graph_output_path: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub episodes: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub written_paths: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ingest: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub compile_delta: Option<Value>,
+}
