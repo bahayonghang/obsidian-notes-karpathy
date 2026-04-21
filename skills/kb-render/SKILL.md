@@ -30,9 +30,9 @@ Karpathy's LLM Wiki naturally produces slides, charts, and reports. `kb-render` 
 - `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
 - `../obsidian-notes-karpathy/references/profile-contract.md`
 
-Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
+Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and expected write surfaces.
 
-If `../obsidian-notes-karpathy/scripts/render_live_artifact.py` exists, run it first with `--mode` and `--source` to get the deterministic baseline before manual shaping.
+If `onkb` is available, run `onkb --json render <vault-root> --mode <mode> --source <path>` first to get the deterministic baseline before manual shaping.
 
 ## Non-negotiable rules
 

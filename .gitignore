@@ -5,7 +5,10 @@ ref/
 docs/node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+target/
 __pycache__/
 .learnings/
 .claude/
 skills/obsidian-notes-karpathy-workspace/
+
+target/

@@ -33,7 +33,7 @@ Use these first when explaining or debugging the contract:
 Some fixture homes intentionally contain `SKILL.md` files under `fixtures/companion-skill-homes/**`. Those are fixture-only companion skill homes used to test paper/PDF routing. They are not part of this bundle's top-level skill family.
 
 ## Test coverage map
-`tests/test_contract_and_routing.py`, `tests/test_compile_review.py`, `tests/test_query_health.py`, `tests/test_docs_and_evals.py`, and `tests/test_quality_commands.py` mainly protect:
+`tests/contract_routing.rs`, `tests/compile_review.rs`, `tests/query_health.rs`, `tests/docs_contract.rs`, and `tests/dev_tools.rs` mainly protect:
 - lifecycle routing and state detection
 - compile provenance and paper intake policy
 - mixed-gate review behavior
@@ -46,12 +46,12 @@ Some fixture homes intentionally contain `SKILL.md` files under `fixtures/compan
 When you need an old/new review pass for skill wording:
 
 1. snapshot the tracked baseline into `skills/obsidian-notes-karpathy-workspace/skill-snapshot/`
-2. run trigger and runtime checks for the current tree
+2. run `onkb dev eval-trigger --dry-run` and `onkb dev eval-runtime --dry-run` for the current tree
 3. write benchmark artifacts under `skills/obsidian-notes-karpathy-workspace/iteration-1/`
-4. generate a static reviewer with `generate_review.py --static`
+4. capture the result with `onkb dev audit-skills --json`
 
 On this Windows machine:
 
-- treat `evals/evals.json` as the authoritative scenario list
-- prefer `generate_review.py --static` over the live server path
-- prefer explicit UTF-8 when shelling out to Python tooling
+- treat `evals/trigger-evals.json`, `evals/runtime-evals.json`, and `evals/runtime-evals-writable.json` as the authoritative scenario lists
+- prefer `onkb dev audit-skills --json` over ad-hoc reviewer scripts
+- keep evaluation entrypoints on `onkb`; the bundle no longer uses repo-local script wrappers

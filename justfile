@@ -1,8 +1,6 @@
 # Justfile for Obsidian Notes Karpathy
 # Usage: just <command>
 
-python_cmd := if os_family() == "windows" { "py -3" } else { "python3" }
-
 # Default recipe
 default:
   @just --list
@@ -44,19 +42,28 @@ ci:
 
 # Lint / validate bundle contracts and docs
 lint:
-  {{python_cmd}} skills/obsidian-notes-karpathy/scripts/validate_bundle_contract.py
+  cargo fmt --check
+  cargo clippy --all-targets --all-features -- -D warnings
+  cargo run -- --json dev contract-validate
 
 # Run deterministic skill-bundle regression tests
 test:
-  {{python_cmd}} -m unittest discover -s tests -p "test_*.py"
+  cargo test
 
 # Run non-blocking runtime skill comparisons
 runtime-eval:
-  {{python_cmd}} skills/obsidian-notes-karpathy/scripts/runtime_eval.py
+  cargo run -- --json dev eval-runtime --dry-run
 
 # Audit shipped skill quality and evaluation coverage
 skill-audit:
-  {{python_cmd}} skills/obsidian-notes-karpathy/scripts/audit_skills.py
+  cargo run -- --json dev audit-skills
+
+# Install the Rust CLI locally
+install-local: cli-install-local
+
+# Install the Rust CLI locally
+cli-install-local:
+  cargo install --path . --locked --force
 
 # ==================== Git / Workflow ====================
 
@@ -75,7 +82,7 @@ commit msg type="feat":
 
 # Clean build artifacts
 clean:
-  {{python_cmd}} -c "from pathlib import Path; import shutil; [shutil.rmtree(Path(p), ignore_errors=True) for p in ['docs/.vitepress/dist', 'docs/.vitepress/cache', 'docs/node_modules']]"
+  node -e "const fs=require('fs'); ['docs/.vitepress/dist','docs/.vitepress/cache','docs/node_modules'].forEach((p)=>fs.rmSync(p,{recursive:true,force:true}));"
   @echo "Cleaned build artifacts"
 
 # Install all dependencies (docs + skills)

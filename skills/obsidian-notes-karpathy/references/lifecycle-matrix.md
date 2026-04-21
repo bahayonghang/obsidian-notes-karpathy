@@ -6,9 +6,9 @@ Use this table as the shared routing contract for the package entry skill and th
 
 Prefer a structural diagnosis over user phrasing alone.
 
-If `../scripts/detect_lifecycle.py` is available, run it against the target vault before deciding how to route.
+If `onkb` is available, run `onkb --json status <vault-root>` before deciding how to route.
 
-The script is the deterministic baseline for:
+The CLI is the deterministic baseline for:
 
 - setup-needed vault detection
 - repair-needed vault detection
@@ -27,12 +27,12 @@ The script is the deterministic baseline for:
 | `needs-setup` | `kb-init` | The support layer does not exist yet. | target root, desired topic, whether this is a sub-vault | support layer + starter files |
 | `needs-repair` | `kb-init` | The vault has some KB signals but later skills would fail on missing support files. | missing support files, existing content that must be preserved | repaired support layer |
 | `needs-migration` | `kb-init` | The vault still uses the old direct-compiled layout and should be migrated before normal operation. | migration path, old compiled files, missing companions | migration guidance or repair |
-| `needs-ingest` | `kb-ingest` | Raw sources and the canonical source manifest disagree. | `scan_ingest_delta.py`, `raw/_manifest.yaml`, deferred sources | refreshed `raw/_manifest.yaml`, `wiki/log.md` |
-| `needs-compilation` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `scan_compile_delta.py`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
-| `needs-review` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `scan_review_queue.py`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
+| `needs-ingest` | `kb-ingest` | Raw sources and the canonical source manifest disagree. | `onkb --json ingest scan`, `raw/_manifest.yaml`, deferred sources | refreshed `raw/_manifest.yaml`, `wiki/log.md` |
+| `needs-compilation` | `kb-compile` | New or changed raw captures are ahead of the draft layer. | `onkb --json compile scan`, raw captures, matching draft summaries | `wiki/drafts/`, draft indices, `wiki/log.md` |
+| `needs-review` | `kb-review` | Draft knowledge exists and still needs an explicit gate decision. | `onkb --json review queue`, overlapping live pages, referenced raw captures | `outputs/reviews/`, `wiki/live/`, `wiki/briefings/`, `wiki/log.md` |
 | `needs-briefing-refresh` | `kb-review` | The approved brain changed after the last briefing build. | briefing sources, latest live timestamps | regenerated `wiki/briefings/`, `wiki/log.md` |
 | `ready-for-query` | `kb-query` | The live layer exists and there is no obvious source delta, review backlog, or stale briefing. | `wiki/live/index`, live indices, prior `outputs/qa/`, relevant briefings | `outputs/qa/`, `outputs/content/`, `wiki/log.md` |
-| `needs-maintenance` | `kb-review` (`maintenance` mode) | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `lint_obsidian_mechanics.py`, health rubric, local guidance | `outputs/health/`, `wiki/live/indices/`, `wiki/log.md`, deterministic mechanical fixes in approved surfaces only |
+| `needs-maintenance` | `kb-review` (`maintenance` mode) | The approved layer has drift, integrity, or provenance problems that are more urgent than another query. | `onkb --json review lint`, health rubric, local guidance | `outputs/health/`, `wiki/live/indices/`, `wiki/log.md`, deterministic mechanical fixes in approved surfaces only |
 
 ## Symptom overrides
 

@@ -58,7 +58,7 @@ Read these shared references first:
 - `./references/profile-contract.md`
 - `./references/automation-hooks.md`
 
-Treat `skill-contract-registry.json` as the canonical list of package roles, required shared references, baseline scripts, and output surfaces.
+Treat `skill-contract-registry.json` as the canonical list of package roles, required shared references, baseline commands, and output surfaces.
 
 If the target vault already exists, inspect:
 
@@ -67,9 +67,9 @@ If the target vault already exists, inspect:
 - the top of `wiki/index.md`
 - the most recent entries in `wiki/log.md` when available
 
-If `./scripts/detect_lifecycle.py` exists, run it first and treat its JSON output as the deterministic baseline.
+If `onkb` is available, run `onkb --json status <vault-root>` first and treat its JSON output as the deterministic baseline.
 
-If `./scripts/vault_status.py` exists, use it as the user-facing status wrapper after lifecycle detection when the user mainly wants a concise "where am I and what next?" summary.
+If the user mainly wants a concise "where am I and what next?" summary, prefer `onkb status <vault-root>`.
 
 ## Lifecycle signals
 

@@ -45,9 +45,9 @@ When a user speaks in the simpler `raw/wiki/output` language from `Chinese-LLM-W
 - `../obsidian-notes-karpathy/references/episode-template.md`
 - `../obsidian-notes-karpathy/references/web-export-template.md`
 
-Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
+Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and expected write surfaces.
 
-If `../obsidian-notes-karpathy/scripts/scan_query_scope.py` exists, run it first and treat its output as the deterministic baseline for live-layer retrieval boundaries.
+If `onkb` is available, run `onkb --json query scope <vault-root>` first and treat its output as the deterministic baseline for live-layer retrieval boundaries.
 
 Then start with:
 

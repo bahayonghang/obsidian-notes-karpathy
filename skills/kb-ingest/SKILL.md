@@ -12,9 +12,9 @@ In Karpathy's LLM Wiki pattern, ingest is the moment raw evidence becomes visibl
 ## Minimal loop
 
 1. scan `raw/` for all source files
-2. run `scan_ingest_delta.py` to compare against `raw/_manifest.yaml`
+2. run `onkb --json ingest scan <vault-root>` to compare against `raw/_manifest.yaml`
 3. present the delta to the user for confirmation
-4. register new or changed entries via `sync_source_manifest.py`
+4. register new or changed entries via `onkb --json ingest sync <vault-root> --write`
 5. mark deferred sources explicitly with reason
 6. append an `ingest` entry to `wiki/log.md`
 
@@ -34,12 +34,12 @@ Good ingest work makes the source library navigable and trustworthy. Every sourc
 - `../obsidian-notes-karpathy/references/source-manifest-contract.md`
 - `../obsidian-notes-karpathy/references/profile-contract.md`
 
-Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and write surfaces.
+Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and write surfaces.
 
-If available, run:
+If `onkb` is available, run:
 
-- `../obsidian-notes-karpathy/scripts/scan_ingest_delta.py` to detect the delta
-- `../obsidian-notes-karpathy/scripts/sync_source_manifest.py` when the task is writable
+- `onkb --json ingest scan <vault-root>` to detect the delta
+- `onkb --json ingest sync <vault-root> --write` when the task is writable
 
 ## Source discovery
 

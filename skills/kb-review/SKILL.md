@@ -58,15 +58,15 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/episode-template.md`
 - `../obsidian-notes-karpathy/references/procedure-template.md`
 
-Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and expected write surfaces.
+Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and expected write surfaces.
 
-If available, run:
+If `onkb` is available, run:
 
-- `../obsidian-notes-karpathy/scripts/scan_review_queue.py`
-- `../obsidian-notes-karpathy/scripts/scan_query_scope.py` when validating downstream boundaries
-- `../obsidian-notes-karpathy/scripts/lint_obsidian_mechanics.py` for maintenance-mode diagnostics
-- `../obsidian-notes-karpathy/scripts/build_governance_indices.py` when maintenance mode should refresh `QUESTIONS.md`, `GAPS.md`, `ALIASES.md`, `ENTITIES.md`, or `RELATIONSHIPS.md`
-- `../obsidian-notes-karpathy/scripts/build_graph_snapshot.py` when the user wants machine-readable graph export during maintenance
+- `onkb --json review queue <vault-root>`
+- `onkb --json query scope <vault-root>` when validating downstream boundaries
+- `onkb --json review lint <vault-root>` for maintenance-mode diagnostics
+- `onkb --json review governance <vault-root>` when maintenance mode should refresh `QUESTIONS.md`, `GAPS.md`, `ALIASES.md`, `ENTITIES.md`, or `RELATIONSHIPS.md`
+- `onkb --json review graph <vault-root>` when the user wants machine-readable graph export during maintenance
 
 ## Independence rule
 

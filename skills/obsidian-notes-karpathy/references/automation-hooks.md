@@ -47,23 +47,23 @@ Automation must not:
 
 ## Invocation
 
-The CLI harness for these hooks is `skills/obsidian-notes-karpathy/scripts/run_automation_hooks.py`. It dispatches on `--mode` and calls the underlying helpers (`scan_compile_delta`, `scan_ingest_delta`, `build_governance_indices`, `build_graph_snapshot`, `build_memory_episodes`) and always appends a matching audit event.
+The CLI harness for these hooks is `onkb review automation <vault-root> --mode <hook> [--write]`.
 
 Usage pattern:
 
 ```
-python run_automation_hooks.py --vault-root <vault> --mode <hook> [--write]
+onkb --json review automation <vault> --mode <hook> [--write]
 ```
 
-Supported `--mode` values mirror the hook names above: `on_new_source`, `on_session_end`, `on_query_archive`, `scheduled-health`. Without `--write`, the script runs as a dry report.
+Supported `--mode` values mirror the hook names above: `on_new_source`, `on_session_end`, `on_query_archive`, `scheduled-health`. Without `--write`, the command runs as a dry report.
 
-Treat this script as the CI/automation entrypoint. Human-driven lifecycle work still goes through the corresponding `kb-*` skill rather than this harness.
+Treat `onkb` as the CI and automation entrypoint. Human-driven lifecycle work still goes through the corresponding `kb-*` skill rather than this harness.
 
 ## Append responsibility
 
 Who may append to `outputs/audit/operations.jsonl`:
 
-| Skill | Direct append | Via `run_automation_hooks.py` |
+| Skill | Direct append | Via `onkb review automation` |
 | --- | --- | --- |
 | `kb-init` | scaffolds the file on fresh setup | n/a |
 | `kb-ingest` | no | `on_new_source` |

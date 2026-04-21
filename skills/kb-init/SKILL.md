@@ -49,15 +49,14 @@ Read these shared references first:
 - `../obsidian-notes-karpathy/references/procedure-template.md`
 - `../obsidian-notes-karpathy/references/episode-template.md`
 
-Treat `skill-contract-registry.json` as the canonical source for role, baseline script, required references, and expected write surfaces.
+Treat `skill-contract-registry.json` as the canonical source for role, baseline command, required references, and expected write surfaces.
 
-If `../obsidian-notes-karpathy/scripts/detect_lifecycle.py` exists, run it first to distinguish setup, repair, and `needs-migration` / legacy-layout migration.
+If `onkb` is available, use these commands first:
 
-If `../obsidian-notes-karpathy/scripts/bootstrap_review_gated_vault.py` exists, use it for fresh setup and non-destructive repair scaffolding.
-
-If `../obsidian-notes-karpathy/scripts/migrate_legacy_vault.py` exists, use it for legacy single-layer vault migration so old files are preserved and the report is deterministic.
-
-If `../obsidian-notes-karpathy/scripts/build_governance_indices.py` exists and the user wants optional governance scaffolding, use it to generate starter `QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` content after the support layer exists.
+- `onkb --json status <vault-root>` to distinguish setup, repair, and `needs-migration`
+- `onkb --json init <vault-root> ...` for fresh setup and non-destructive repair scaffolding
+- `onkb --json migrate <vault-root> ...` for legacy single-layer vault migration
+- `onkb --json review governance <vault-root> --write` when optional governance scaffolding should be materialized
 
 ## Profile choice
 
@@ -69,7 +68,7 @@ Surface the operating profile during init or repair:
 
 Persist the chosen profile in scaffolded starter files so later lifecycle and query tooling can see it deterministically.
 
-`MEMORY.md` is recommended collaboration scaffolding but not a blocking requirement. Solo / fast-personal vaults can skip it by running `bootstrap_review_gated_vault.py --skip-memory` (or by passing `skip_memory=True` when calling `scaffold_review_gated_vault` programmatically). The rest of the support layer still lands.
+`MEMORY.md` is recommended collaboration scaffolding but not a blocking requirement. Solo / fast-personal vaults can skip it by running `onkb --json init <vault-root> --skip-memory`. The rest of the support layer still lands.
 
 ## Create or repair the canonical structure
 

@@ -56,7 +56,7 @@
         "profile-contract.md",
         "automation-hooks.md"
       ],
-      "baseline_script": "detect_lifecycle.py",
+      "baseline_command": "onkb --json status <vault-root>",
       "writes": [],
       "outputs": [],
       "routes": [
@@ -93,7 +93,7 @@
         "procedure-template.md",
         "episode-template.md"
       ],
-      "baseline_script": "detect_lifecycle.py",
+      "baseline_command": "onkb --json status <vault-root>",
       "writes": [
         "AGENTS.md",
         "CLAUDE.md",
@@ -145,7 +145,7 @@
         "source-manifest-contract.md",
         "profile-contract.md"
       ],
-      "baseline_script": "scan_ingest_delta.py",
+      "baseline_command": "onkb --json ingest scan <vault-root>",
       "writes": [
         "raw/_manifest.yaml",
         "wiki/log.md"
@@ -175,7 +175,7 @@
         "procedure-template.md",
         "draft-schema.md"
       ],
-      "baseline_script": "scan_compile_delta.py",
+      "baseline_command": "onkb --json compile scan <vault-root>",
       "writes": [
         "wiki/drafts/summaries/",
         "wiki/drafts/topics/",
@@ -215,7 +215,7 @@
         "episode-template.md",
         "procedure-template.md"
       ],
-      "baseline_script": "scan_review_queue.py",
+      "baseline_command": "onkb --json review queue <vault-root>",
       "writes": [
         "outputs/reviews/",
         "wiki/live/",
@@ -270,7 +270,7 @@
         "episode-template.md",
         "web-export-template.md"
       ],
-      "baseline_script": "scan_query_scope.py",
+      "baseline_command": "onkb --json query scope <vault-root>",
       "writes": [
         "outputs/qa/",
         "outputs/content/",
@@ -295,7 +295,7 @@
         "obsidian-safe-markdown.md",
         "profile-contract.md"
       ],
-      "baseline_script": "render_live_artifact.py",
+      "baseline_command": "onkb --json render <vault-root> --mode <mode> --source <path>",
       "writes": [
         "outputs/slides/",
         "outputs/charts/",

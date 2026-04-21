@@ -49,9 +49,9 @@ Read these files first:
 - `../obsidian-notes-karpathy/references/procedure-template.md`
 - `../obsidian-notes-karpathy/references/draft-schema.md`
 
-Treat `skill-contract-registry.json` as the canonical source for required references, baseline script, and allowed write surfaces.
+Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and allowed write surfaces.
 
-If `../obsidian-notes-karpathy/scripts/scan_compile_delta.py` exists, run it first.
+If `onkb` is available, run `onkb --json compile scan <vault-root>` first.
 
 ## Non-negotiable rules
 
