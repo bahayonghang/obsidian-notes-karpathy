@@ -1,0 +1,23 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "counts": {
+    "briefings": 1,
+    "draft_pages": 1,
+    "live_pages": 2,
+    "manifest_sources": 0,
+    "pending_reviews": 0,
+    "raw_sources": 1,
+    "review_records": 1
+  },
+  "profile": "governed-team",
+  "route": "kb-review",
+  "signals": [
+    "maintenance_needed"
+  ],
+  "state": "needs-maintenance",
+  "summary": "[SUMMARY]",
+  "vault_root": "[VAULT]"
+}

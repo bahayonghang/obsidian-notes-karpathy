@@ -1,0 +1,54 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "bootstrap_manifest_required": false,
+  "counts": {
+    "changed": 0,
+    "new": 1,
+    "removed": 1,
+    "unchanged": 0
+  },
+  "items": [
+    {
+      "capture_method": "manual-markdown",
+      "capture_origin": "human",
+      "content_hash": "4d90ad170a2bf468c51cc888948a346674622a4329b7b1e121337a20e414a45f",
+      "first_seen_at": "[TIMESTAMP]",
+      "ingest_status": "ready-for-compile",
+      "last_seen_at": "[TIMESTAMP]",
+      "linked_assets": [],
+      "normalized_outputs": [
+        "wiki/drafts/summaries/human/articles/2026-04-10-new-source.md"
+      ],
+      "path": "raw/human/articles/2026-04-10-new-source.md",
+      "source_id": "raw--human--articles--2026-04-10-new-source",
+      "source_type": "markdown",
+      "source_url_or_handle": "https://example.com/new-source",
+      "status": "new"
+    },
+    {
+      "capture_origin": "human",
+      "content_hash": "stale-old-source-hash",
+      "first_seen_at": "[TIMESTAMP]",
+      "ingest_status": "ready-for-compile",
+      "last_seen_at": "[TIMESTAMP]",
+      "linked_assets": [],
+      "normalized_outputs": [
+        "wiki/drafts/summaries/human/articles/2026-04-01-old-source.md"
+      ],
+      "path": "raw/human/articles/2026-04-01-old-source.md",
+      "source_id": "raw--human--articles--2026-04-01-old-source",
+      "source_type": "markdown",
+      "source_url_or_handle": "https://example.com/old-source",
+      "status": "removed"
+    }
+  ],
+  "manifest_path": "raw/_manifest.yaml",
+  "manifest_present": true,
+  "manifest_status": "stale",
+  "needs_ingest": true,
+  "profile": "governed-team",
+  "vault_root": "[VAULT]"
+}

@@ -1,0 +1,14 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "binary_path": "[PATH]",
+  "embedded_assets_detected": true,
+  "missing_steps": [],
+  "needs_python": false,
+  "python_detected": null,
+  "runtime_mode": "standalone-cli",
+  "skill_bundle_available": true,
+  "version": "[VERSION]"
+}

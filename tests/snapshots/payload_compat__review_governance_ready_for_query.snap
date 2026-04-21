@@ -1,0 +1,64 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "alias_rows": [
+    {
+      "aliases": [
+        "approval-gate"
+      ],
+      "canonical_name": "review-gate",
+      "canonical_slug": "review-gate",
+      "path": "wiki/live/concepts/review-gate.md"
+    },
+    {
+      "aliases": [],
+      "canonical_name": "2026-04-05-approved-summary",
+      "canonical_slug": "2026-04-05-approved-summary",
+      "path": "wiki/live/summaries/human/articles/2026-04-05-approved-summary.md"
+    }
+  ],
+  "closure_signals": [],
+  "confidence_maintenance": [],
+  "entity_rows": [],
+  "files": {
+    "ALIASES.md": "# Alias Registry\n\n- `review-gate` -> review-gate | aliases: approval-gate | path: wiki/live/concepts/review-gate.md\n- `2026-04-05-approved-summary` -> 2026-04-05-approved-summary | aliases: (none) | path: wiki/live/summaries/human/articles/2026-04-05-approved-summary.md\n",
+    "ENTITIES.md": "# Entity Registry\n\n- No entity pages found.\n",
+    "GAPS.md": "# Gap Report\n\n- orphan_page: outputs/qa/2026-04-06-review-gate-benefits.md\n\n## Hub And Relationship Hints\n\n- weakly connected live page: wiki/live/concepts/review-gate.md\n- weakly connected live page: wiki/live/summaries/human/articles/2026-04-05-approved-summary.md\n",
+    "QUESTIONS.md": "# Open Questions\n\n- [ ] When should governance indices be refreshed?\n",
+    "RELATIONSHIPS.md": "# Relationship Registry\n\n- wiki/live/concepts/review-gate.md --related--> [[wiki/live/summaries/human/articles/2026-04-05-approved-summary]]\n- wiki/live/summaries/human/articles/2026-04-05-approved-summary.md --related--> [[wiki/live/concepts/review-gate]]\n"
+  },
+  "followup_routes": [],
+  "gap_issue_kinds": [
+    "orphan_page"
+  ],
+  "hub_candidates": [
+    {
+      "path": "wiki/live/concepts/review-gate.md",
+      "reason": "weakly connected live page"
+    },
+    {
+      "path": "wiki/live/summaries/human/articles/2026-04-05-approved-summary.md",
+      "reason": "weakly connected live page"
+    }
+  ],
+  "questions": [
+    "When should governance indices be refreshed?"
+  ],
+  "relationship_rows": [
+    {
+      "relation": "related",
+      "source": "wiki/live/concepts/review-gate.md",
+      "target": "[[wiki/live/summaries/human/articles/2026-04-05-approved-summary]]"
+    },
+    {
+      "relation": "related",
+      "source": "wiki/live/summaries/human/articles/2026-04-05-approved-summary.md",
+      "target": "[[wiki/live/concepts/review-gate]]"
+    }
+  ],
+  "route_counts": {},
+  "vault_root": "[VAULT]",
+  "writeback_backlog": []
+}

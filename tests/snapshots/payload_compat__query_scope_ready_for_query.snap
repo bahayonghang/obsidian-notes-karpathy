@@ -1,0 +1,29 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "candidate_paths": [],
+  "candidate_policy": "candidate-only",
+  "excluded_paths": [
+    "raw/human/articles/2026-04-05-approved-summary.md",
+    "wiki/drafts/summaries/human/articles/2026-04-05-approved-summary.md",
+    "outputs/reviews/human-articles-approved-summary.md"
+  ],
+  "excluded_prefixes": [
+    "raw",
+    "wiki/drafts",
+    "outputs/reviews"
+  ],
+  "included_paths": [
+    "wiki/live/concepts/review-gate.md",
+    "wiki/live/summaries/human/articles/2026-04-05-approved-summary.md",
+    "wiki/briefings/researcher.md",
+    "outputs/qa/2026-04-06-review-gate-benefits.md"
+  ],
+  "layout_family": "review-gated",
+  "profile": "governed-team",
+  "scope_leaks": [],
+  "sensitivity_candidates": [],
+  "vault_root": "[VAULT]"
+}

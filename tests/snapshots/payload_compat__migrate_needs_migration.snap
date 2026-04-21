@@ -1,0 +1,78 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "migrated_live": [
+    {
+      "source": "[PATH]",
+      "target": "[PATH]"
+    }
+  ],
+  "migrated_raw": [
+    {
+      "source": "[PATH]",
+      "target": "[PATH]"
+    }
+  ],
+  "migration_report": "outputs/reviews/migration-report.md",
+  "profile": "governed-team",
+  "scaffold": {
+    "created_dirs": [
+      "raw/human/articles",
+      "raw/human/papers",
+      "raw/human/podcasts",
+      "raw/human/repos",
+      "raw/human/assets",
+      "raw/human/data",
+      "raw/agents",
+      "wiki/drafts/summaries",
+      "wiki/drafts/topics",
+      "wiki/drafts/concepts",
+      "wiki/drafts/entities",
+      "wiki/drafts/procedures",
+      "wiki/drafts/overviews",
+      "wiki/drafts/comparisons",
+      "wiki/drafts/indices",
+      "wiki/live/summaries",
+      "wiki/live/topics",
+      "wiki/live/concepts",
+      "wiki/live/entities",
+      "wiki/live/procedures",
+      "wiki/live/overviews",
+      "wiki/live/comparisons",
+      "wiki/live/indices",
+      "wiki/briefings",
+      "outputs",
+      "outputs/reviews"
+    ],
+    "preserved_files": [
+      "AGENTS.md",
+      "wiki/index.md",
+      "wiki/log.md"
+    ],
+    "profile": "governed-team",
+    "skip_memory": false,
+    "vault_root": "[VAULT]",
+    "written_files": [
+      "CLAUDE.md",
+      "MEMORY.md",
+      "raw/_manifest.yaml",
+      "wiki/briefings/researcher.md",
+      "wiki/live/indices/INDEX.md",
+      "wiki/live/indices/CONCEPTS.md",
+      "wiki/live/indices/SOURCES.md",
+      "wiki/live/indices/TOPICS.md",
+      "wiki/live/indices/RECENT.md",
+      "wiki/live/indices/EDITORIAL-PRIORITIES.md",
+      "wiki/live/indices/QUESTIONS.md",
+      "wiki/live/indices/GAPS.md",
+      "wiki/live/indices/ALIASES.md",
+      "wiki/live/indices/ENTITIES.md",
+      "wiki/live/indices/RELATIONSHIPS.md"
+    ]
+  },
+  "skipped": [],
+  "vault_root": "[VAULT]",
+  "written_manifest": "[PATH]"
+}

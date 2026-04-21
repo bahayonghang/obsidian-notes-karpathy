@@ -1,0 +1,74 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "companion_skills": {
+    "search_roots": [
+      "C:/Users/lyh/.codex/skills",
+      "C:/Users/lyh/.claude/skills",
+      "C:/Users/lyh/.agents/skills"
+    ],
+    "skills": {
+      "paper-workbench": true,
+      "pdf": true
+    }
+  },
+  "counts": {
+    "changed": 0,
+    "new": 1,
+    "skipped": 0,
+    "unchanged": 0
+  },
+  "ingest_counts": {
+    "markdown": 1
+  },
+  "items": [
+    {
+      "agent_role": null,
+      "alias_candidates": [
+        "2026-04-07-new-capture"
+      ],
+      "capture_method": "manual-markdown",
+      "capture_source": "human",
+      "capture_trust": "curated",
+      "duplicate_candidates": [],
+      "ingest_plan": "markdown",
+      "ingest_reason": "markdown_source",
+      "last_verified_at": "[TIMESTAMP]",
+      "layout_family": "review-gated",
+      "legacy_layout": false,
+      "linked_assets": [],
+      "manifest_path": "raw/_manifest.yaml",
+      "manifest_status": "untracked",
+      "path": "raw/human/articles/2026-04-07-new-capture.md",
+      "possibly_outdated": false,
+      "raw_hash": "2616e0541f1d3ad286d45f051b77c1c56c5a296dfe30c785673d8b7ac5505a4b",
+      "raw_mtime": "[TIMESTAMP]",
+      "reason": "missing_summary",
+      "source_age_days": 13,
+      "source_class": "markdown",
+      "source_package": {
+        "capture_method": "manual-markdown",
+        "concept_candidates": [
+          "new-capture"
+        ],
+        "entity_candidates": [],
+        "linked_assets": [],
+        "relationship_candidates": [
+          "belongs_to:[[wiki/live/topics/2026-04-07-new-capture]]",
+          "supports:[[wiki/live/concepts/new-capture]]"
+        ],
+        "review_package_meta": "wiki/drafts/indices/packages/human/articles/2026-04-07-new-capture.md",
+        "summary": "wiki/drafts/summaries/human/articles/2026-04-07-new-capture.md",
+        "topic_candidates": [
+          "2026-04-07-new-capture"
+        ]
+      },
+      "status": "new",
+      "summary_path": "wiki/drafts/summaries/human/articles/2026-04-07-new-capture.md"
+    }
+  ],
+  "layout_family": "review-gated",
+  "vault_root": "[VAULT]"
+}

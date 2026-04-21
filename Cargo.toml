@@ -21,4 +21,5 @@ walkdir = "2.5"
 
 [dev-dependencies]
 assert_cmd = "2.0"
+insta = { version = "1.42", features = ["json", "redactions"] }
 tempfile = "3.15"

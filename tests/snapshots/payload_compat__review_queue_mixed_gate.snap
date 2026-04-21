@@ -1,0 +1,67 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "counts": {
+    "approve": 1,
+    "needs-human": 1,
+    "pending": 3,
+    "reject": 1
+  },
+  "items": [
+    {
+      "alias_candidates": [],
+      "blocking_flags": [
+        "live_conflict"
+      ],
+      "decision": "needs-human",
+      "duplicate_candidates": [],
+      "kind": "summary",
+      "live_exists": false,
+      "live_path": "wiki/live/summaries/agents/editor/2026-04-03-contradictory-summary.md",
+      "path": "wiki/drafts/summaries/agents/editor/2026-04-03-contradictory-summary.md",
+      "pending": true,
+      "reason": "live_conflict",
+      "review_record_path": "outputs/reviews/summaries--agents--editor--2026-04-03-contradictory-summary.md",
+      "review_score": 0.78,
+      "review_state": "pending"
+    },
+    {
+      "alias_candidates": [],
+      "blocking_flags": [
+        "evidence_gap"
+      ],
+      "decision": "reject",
+      "duplicate_candidates": [],
+      "kind": "summary",
+      "live_exists": false,
+      "live_path": "wiki/live/summaries/agents/scout/2026-04-03-hallucinated-bridge.md",
+      "path": "wiki/drafts/summaries/agents/scout/2026-04-03-hallucinated-bridge.md",
+      "pending": true,
+      "reason": "blocking_flags",
+      "review_record_path": "outputs/reviews/summaries--agents--scout--2026-04-03-hallucinated-bridge.md",
+      "review_score": 0.34,
+      "review_state": "pending"
+    },
+    {
+      "alias_candidates": [],
+      "blocking_flags": [],
+      "decision": "approve",
+      "duplicate_candidates": [],
+      "kind": "summary",
+      "live_exists": false,
+      "live_path": "wiki/live/summaries/human/articles/2026-04-03-grounded-article.md",
+      "path": "wiki/drafts/summaries/human/articles/2026-04-03-grounded-article.md",
+      "pending": true,
+      "reason": "threshold_met",
+      "review_record_path": "outputs/reviews/summaries--human--articles--2026-04-03-grounded-article.md",
+      "review_score": 0.93,
+      "review_state": "pending"
+    }
+  ],
+  "state_counts": {
+    "pending": 3
+  },
+  "vault_root": "[VAULT]"
+}

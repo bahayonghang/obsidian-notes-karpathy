@@ -1,0 +1,68 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "candidate_policy": "candidate-only",
+  "edge_count": 2,
+  "edge_type_counts": {
+    "related": 2,
+    "superseded_by": 0,
+    "supersedes": 0
+  },
+  "edges": [
+    {
+      "relation": "related",
+      "source": "wiki/live/concepts/review-gate",
+      "source_kind": "concept",
+      "source_visibility_scope": "shared",
+      "target": "[[wiki/live/summaries/human/articles/2026-04-05-approved-summary]]"
+    },
+    {
+      "relation": "related",
+      "source": "wiki/live/summaries/human/articles/2026-04-05-approved-summary",
+      "source_kind": "summary",
+      "source_visibility_scope": "shared",
+      "target": "[[wiki/live/concepts/review-gate]]"
+    }
+  ],
+  "generated_at": "[TIMESTAMP]",
+  "node_count": 2,
+  "nodes": [
+    {
+      "approved_at": "2026-04-06T08:05:00Z",
+      "confidence_band": null,
+      "confidence_score": null,
+      "graph_required": false,
+      "has_relationship_notes": false,
+      "id": "wiki/live/concepts/review-gate",
+      "kind": "concept",
+      "last_confirmed_at": null,
+      "path": "wiki/live/concepts/review-gate.md",
+      "question_link_count": 0,
+      "related_count": 1,
+      "source_count": 1,
+      "title": "Review Gate",
+      "topic_hub": null,
+      "visibility_scope": "shared"
+    },
+    {
+      "approved_at": "2026-04-06T08:00:00Z",
+      "confidence_band": null,
+      "confidence_score": null,
+      "graph_required": false,
+      "has_relationship_notes": false,
+      "id": "wiki/live/summaries/human/articles/2026-04-05-approved-summary",
+      "kind": "summary",
+      "last_confirmed_at": null,
+      "path": "wiki/live/summaries/human/articles/2026-04-05-approved-summary.md",
+      "question_link_count": 0,
+      "related_count": 1,
+      "source_count": 1,
+      "title": "Summary: Approved Summary Source",
+      "topic_hub": null,
+      "visibility_scope": "shared"
+    }
+  ],
+  "vault_root": "[VAULT]"
+}
