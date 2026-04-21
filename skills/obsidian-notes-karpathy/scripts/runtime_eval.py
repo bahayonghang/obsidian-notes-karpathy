@@ -3,45 +3,72 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import re
-import shutil
-import subprocess
-import sys
-import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-
-SCRIPT_DIR = Path(__file__).resolve().parent
-ENTRY_SKILL_ROOT = SCRIPT_DIR.parent
-REPO_ROOT = ENTRY_SKILL_ROOT.parents[1]
-MANIFEST_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals.json"
-WRITABLE_MANIFEST_PATH = ENTRY_SKILL_ROOT / "evals" / "runtime-evals-writable.json"
-DEFAULT_WORKSPACE_ROOT = REPO_ROOT / ".runtime-evals"
-SKILL_PATHS = {
-    "obsidian-notes-karpathy": ENTRY_SKILL_ROOT / "SKILL.md",
-    "kb-init": REPO_ROOT / "skills" / "kb-init" / "SKILL.md",
-    "kb-ingest": REPO_ROOT / "skills" / "kb-ingest" / "SKILL.md",
-    "kb-compile": REPO_ROOT / "skills" / "kb-compile" / "SKILL.md",
-    "kb-review": REPO_ROOT / "skills" / "kb-review" / "SKILL.md",
-    "kb-query": REPO_ROOT / "skills" / "kb-query" / "SKILL.md",
-    "kb-render": REPO_ROOT / "skills" / "kb-render" / "SKILL.md",
-}
-SUPPORTED_MODES = {"read-only", "writable-copy"}
-INFRA_FAILURE_PATTERNS = (
-    "stream disconnected before completion",
-    "reconnecting...",
-    "timed out",
-    "profile.ps1",
-    "microsoft.powershell_profile.ps1",
-    "cannot dot-source this command",
-    "cannot set property",
-    "os error 123",
+from _runtime_eval_grader import (
+    detect_root_leakage,
+    materialize_files,
+    prepare_target_vault,
+    resolve_source_vault_root,
+    run_checks,
 )
-MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+from _runtime_eval_paths import (
+    DEFAULT_WORKSPACE_ROOT,
+    ENTRY_SKILL_ROOT,
+    MANIFEST_PATH,
+    REPO_ROOT,
+    SKILL_PATHS,
+    SUPPORTED_MODES,
+    WRITABLE_MANIFEST_PATH,
+    fixture_root_for_relpath,
+    repo_relative,
+    resolve_entry_relative,
+)
+from _runtime_eval_runner import (
+    build_prompt,
+    claude_command,
+    classify_failure,
+    codex_command,
+    detect_runner,
+    execute_attempt,
+    execute_run,
+    fallback_runner_for,
+    resolve_runner_invocation,
+)
+
+
+__all__ = [
+    "build_prompt",
+    "claude_command",
+    "classify_failure",
+    "codex_command",
+    "detect_root_leakage",
+    "detect_runner",
+    "execute_attempt",
+    "execute_run",
+    "fallback_runner_for",
+    "fixture_root_for_relpath",
+    "load_manifest",
+    "materialize_files",
+    "prepare_target_vault",
+    "repo_relative",
+    "resolve_entry_relative",
+    "resolve_runner_invocation",
+    "resolve_source_vault_root",
+    "run_checks",
+    "utc_stamp",
+    "validate_manifest",
+    "MANIFEST_PATH",
+    "WRITABLE_MANIFEST_PATH",
+    "DEFAULT_WORKSPACE_ROOT",
+    "ENTRY_SKILL_ROOT",
+    "REPO_ROOT",
+    "SKILL_PATHS",
+    "SUPPORTED_MODES",
+]
 
 
 def utc_stamp() -> str:
@@ -50,48 +77,6 @@ def utc_stamp() -> str:
 
 def load_manifest(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def detect_runner(preferred: str | None) -> str | None:
-    if preferred:
-        return preferred if shutil.which(preferred) else None
-    for candidate in ("codex", "claude"):
-        if shutil.which(candidate):
-            return candidate
-    return None
-
-
-def resolve_runner_invocation(runner: str) -> list[str]:
-    resolved = shutil.which(runner)
-    if not resolved:
-        raise FileNotFoundError(f"Runner not found: {runner}")
-
-    path = Path(resolved)
-    suffix = path.suffix.lower()
-    if sys.platform.startswith("win") and suffix == ".ps1":
-        return ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(path)]
-    if sys.platform.startswith("win") and suffix in {".cmd", ".bat"}:
-        return [str(path)]
-    return [resolved]
-
-
-def repo_relative(path: Path) -> str:
-    try:
-        return path.resolve().relative_to(REPO_ROOT).as_posix()
-    except ValueError:
-        return path.resolve().as_posix()
-
-
-def resolve_entry_relative(path_str: str) -> Path:
-    return (ENTRY_SKILL_ROOT / Path(path_str)).resolve()
-
-
-def fixture_root_for_relpath(path_str: str) -> str | None:
-    rel_path = Path(path_str)
-    parts = rel_path.parts
-    if len(parts) < 3 or parts[0] != "evals" or parts[1] != "fixtures":
-        return None
-    return Path(*parts[:3]).as_posix()
 
 
 def validate_manifest(manifest: dict[str, Any]) -> list[str]:
@@ -132,191 +117,6 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
     return errors
 
 
-def build_prompt(*, use_skill: bool, skill: str, prompt: str, files: list[str], vault_root: str, mode: str) -> str:
-    file_block = "\n".join(f"- {file_path}" for file_path in files)
-    root_instruction = (
-        f"Treat `{vault_root}` as the only target vault root for this task.\n"
-        "The listed files are evidence from that vault, not alternate roots.\n"
-        "Do not reason about the repository root as if it were the vault.\n"
-    )
-    if mode == "writable-copy":
-        common = (
-            "You may modify files only under the declared vault root.\n"
-            "Do not modify repository-tracked files outside that target vault copy.\n"
-            "Use only repository-local evidence from the declared vault root and the listed files.\n"
-            "Prefer the listed files over open-ended repo exploration.\n"
-            "If search is required, prefer rg over grep for repository-local searches.\n"
-            "On Windows, avoid shell globs inside literal paths. Prefer reading the exact listed files, and if search is required use PowerShell-native commands instead of rg against wildcarded absolute paths.\n"
-            "Return a concise answer with:\n"
-            "1. the conclusion\n"
-            "2. the files used\n"
-            "3. any assumptions\n"
-        )
-    else:
-        common = (
-            "Work in read-only mode. Do not modify any files.\n"
-            "Use only repository-local evidence from the declared vault root and the listed files.\n"
-            "Prefer the listed files over open-ended repo exploration.\n"
-            "If search is required, prefer rg over grep for repository-local searches.\n"
-            "On Windows, avoid shell globs inside literal paths. Prefer reading the exact listed files, and if search is required use PowerShell-native commands instead of rg against wildcarded absolute paths.\n"
-            "Return a concise answer with:\n"
-            "1. the conclusion\n"
-            "2. the files used\n"
-            "3. any assumptions\n"
-        )
-
-    if use_skill:
-        return (
-            f"Read and follow the skill at `{SKILL_PATHS[skill]}` for this task.\n"
-            f"{root_instruction}"
-            f"{common}\n"
-            f"Task:\n{prompt}\n\n"
-            f"Relevant files:\n{file_block}\n"
-        )
-    return (
-        "Do not use any external skill instructions beyond the repository itself.\n"
-        f"{root_instruction}"
-        f"{common}\n"
-        f"Task:\n{prompt}\n\n"
-        f"Relevant files:\n{file_block}\n"
-    )
-
-
-def codex_command(output_path: Path, sandbox_mode: str) -> list[str]:
-    return [
-        *resolve_runner_invocation("codex"),
-        "exec",
-        "--ephemeral",
-        "-s",
-        sandbox_mode,
-        "-C",
-        str(REPO_ROOT),
-        "--output-last-message",
-        str(output_path),
-        "-",
-    ]
-
-
-def claude_command(prompt: str) -> list[str]:
-    return [
-        *resolve_runner_invocation("claude"),
-        "-p",
-        "--permission-mode",
-        "default",
-        prompt,
-    ]
-
-
-def classify_failure(returncode: int, stdout: str, stderr: str) -> str:
-    if returncode == 0:
-        return "ok"
-    combined = f"{stdout}\n{stderr}".lower()
-    if any(pattern in combined for pattern in INFRA_FAILURE_PATTERNS):
-        return "infra_failure"
-    return "runner_failure"
-
-
-def fallback_runner_for(runner: str) -> str | None:
-    if runner == "codex" and detect_runner("claude"):
-        return "claude"
-    return None
-
-
-def execute_attempt(runner: str, prompt: str, run_dir: Path, timeout_sec: int, sandbox_mode: str) -> dict[str, Any]:
-    run_dir.mkdir(parents=True, exist_ok=True)
-    output_path = run_dir / "last_message.txt"
-    started = time.monotonic()
-    if runner == "codex":
-        command = codex_command(output_path, sandbox_mode)
-    elif runner == "claude":
-        command = claude_command(prompt)
-    else:
-        raise ValueError(f"Unsupported runner: {runner}")
-
-    try:
-        result = subprocess.run(
-            command,
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            input=prompt if runner == "codex" else None,
-            stdin=None if runner == "codex" else subprocess.DEVNULL,
-            timeout=timeout_sec,
-        )
-        returncode = result.returncode
-        stdout = result.stdout or ""
-        stderr = result.stderr or ""
-    except subprocess.TimeoutExpired as exc:
-        returncode = 124
-        stdout = exc.stdout or ""
-        stderr = exc.stderr or ""
-        if not isinstance(stdout, str):
-            stdout = stdout.decode("utf-8", errors="replace")
-        if not isinstance(stderr, str):
-            stderr = stderr.decode("utf-8", errors="replace")
-        stderr = f"{stderr}\nRuntime eval attempt timed out after {timeout_sec} seconds.".strip()
-
-    duration_ms = round((time.monotonic() - started) * 1000)
-    if runner == "claude" and not output_path.exists():
-        output_path.write_text(stdout, encoding="utf-8")
-    if not output_path.exists():
-        output_path.write_text("", encoding="utf-8")
-    (run_dir / "stdout.txt").write_text(stdout, encoding="utf-8")
-    (run_dir / "stderr.txt").write_text(stderr, encoding="utf-8")
-
-    payload = {
-        "runner": runner,
-        "returncode": returncode,
-        "duration_ms": duration_ms,
-        "output_path": output_path.name,
-        "output_captured": bool(output_path.read_text(encoding="utf-8").strip()),
-        "failure_kind": classify_failure(returncode, stdout, stderr),
-    }
-    (run_dir / "result.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    return payload
-
-
-def copy_attempt_outputs(attempt_dir: Path, run_dir: Path) -> None:
-    for file_name in ("last_message.txt", "stdout.txt", "stderr.txt"):
-        source = attempt_dir / file_name
-        if source.exists():
-            shutil.copy2(source, run_dir / file_name)
-
-
-def execute_run(runner: str, prompt: str, run_dir: Path, timeout_sec: int, sandbox_mode: str) -> dict[str, Any]:
-    run_dir.mkdir(parents=True, exist_ok=True)
-    attempts: list[dict[str, Any]] = []
-
-    primary_dir = run_dir / f"attempt-1-{runner}"
-    primary = execute_attempt(runner, prompt, primary_dir, timeout_sec, sandbox_mode)
-    attempts.append(primary)
-    final_attempt = primary
-
-    fallback_runner = fallback_runner_for(runner)
-    if primary["failure_kind"] == "infra_failure" and fallback_runner:
-        fallback_dir = run_dir / f"attempt-2-{fallback_runner}"
-        fallback = execute_attempt(fallback_runner, prompt, fallback_dir, timeout_sec, sandbox_mode)
-        attempts.append(fallback)
-        final_attempt = fallback
-
-    copy_attempt_outputs(run_dir / f"attempt-{len(attempts)}-{final_attempt['runner']}", run_dir)
-    final_payload = {
-        "requested_runner": runner,
-        "runner": final_attempt["runner"],
-        "returncode": final_attempt["returncode"],
-        "duration_ms": final_attempt["duration_ms"],
-        "output_path": "last_message.txt",
-        "output_captured": bool((run_dir / "last_message.txt").read_text(encoding="utf-8").strip()),
-        "failure_kind": final_attempt["failure_kind"],
-        "fallback_used": len(attempts) > 1,
-        "attempts": attempts,
-    }
-    (run_dir / "result.json").write_text(json.dumps(final_payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    return final_payload
-
-
 def build_plan_payload(manifest: dict[str, Any], workspace_root: Path, runner: str | None, status: str, reason: str | None = None) -> dict[str, Any]:
     return {
         "status": status,
@@ -326,117 +126,6 @@ def build_plan_payload(manifest: dict[str, Any], workspace_root: Path, runner: s
         "reason": reason,
         "skills": sorted({item["skill"] for item in manifest["evals"]}),
         "modes": sorted({item.get("mode", "read-only") for item in manifest["evals"]}),
-    }
-
-
-def resolve_source_vault_root(item: dict[str, Any]) -> Path:
-    return resolve_entry_relative(item["vault_root"])
-
-
-def prepare_target_vault(source_vault_root: Path, eval_dir: Path, run_label: str, mode: str) -> Path:
-    if mode == "read-only":
-        return source_vault_root
-
-    target_vault_root = (eval_dir / "targets" / run_label / source_vault_root.name).resolve()
-    if target_vault_root.exists():
-        shutil.rmtree(target_vault_root)
-    target_vault_root.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(source_vault_root, target_vault_root)
-    return target_vault_root
-
-
-def materialize_files(source_vault_root: Path, target_vault_root: Path, file_paths: list[str]) -> list[Path]:
-    resolved: list[Path] = []
-    for file_path in file_paths:
-        source_file = resolve_entry_relative(file_path)
-        if target_vault_root == source_vault_root:
-            resolved.append(source_file)
-            continue
-
-        relative_inside_vault = source_file.relative_to(source_vault_root)
-        resolved.append((target_vault_root / relative_inside_vault).resolve())
-    return resolved
-
-
-def detect_root_leakage(text: str, vault_root: Path) -> dict[str, Any]:
-    scrubbed = MARKDOWN_LINK_RE.sub(r"\1", text)
-    normalized = scrubbed.replace("\\", "/").lower()
-    repo_root = REPO_ROOT.resolve().as_posix().lower()
-    declared_root = vault_root.resolve().as_posix().lower()
-    reasons: list[str] = []
-
-    if declared_root != repo_root and repo_root in normalized:
-        reasons.append("repo_root_path_mentioned")
-    if declared_root != repo_root and "current workspace root" in normalized:
-        reasons.append("current_workspace_root_referenced")
-
-    return {
-        "detected": bool(reasons),
-        "reasons": reasons,
-    }
-
-
-def file_digest(path: Path) -> str:
-    digest = hashlib.sha256()
-    digest.update(path.read_bytes())
-    return digest.hexdigest()
-
-
-def tree_snapshot(root: Path) -> dict[str, str]:
-    if not root.exists():
-        return {}
-    snapshot: dict[str, str] = {}
-    for path in sorted(root.rglob("*")):
-        if not path.is_file():
-            continue
-        snapshot[path.relative_to(root).as_posix()] = file_digest(path)
-    return snapshot
-
-
-def run_checks(target_vault_root: Path, source_vault_root: Path, checks: list[dict[str, Any]]) -> dict[str, Any]:
-    results: list[dict[str, Any]] = []
-    for check in checks:
-        kind = check["kind"]
-        name = check["name"]
-        if kind == "exists":
-            target = target_vault_root / check["path"]
-            passed = target.exists()
-            evidence = repo_relative(target) if passed else f"missing:{check['path']}"
-        elif kind == "dir_non_empty":
-            target = target_vault_root / check["path"]
-            passed = target.exists() and any(target.iterdir())
-            evidence = repo_relative(target) if passed else f"empty:{check['path']}"
-        elif kind == "same_tree":
-            source = source_vault_root / check["path"]
-            target = target_vault_root / check["path"]
-            passed = tree_snapshot(source) == tree_snapshot(target)
-            evidence = check["path"] if passed else f"tree_mismatch:{check['path']}"
-        elif kind == "glob_count_gte":
-            matches = sorted((target_vault_root).glob(check["pattern"]))
-            minimum = int(check["min_count"])
-            passed = len(matches) >= minimum
-            evidence = f"matches={len(matches)} pattern={check['pattern']}"
-        elif kind == "file_contains":
-            target = target_vault_root / check["path"]
-            needle = check["needle"]
-            passed = target.exists() and needle in target.read_text(encoding="utf-8")
-            evidence = repo_relative(target) if passed else f"missing_needle:{check['path']}"
-        else:
-            passed = False
-            evidence = f"unsupported_check_kind:{kind}"
-        results.append(
-            {
-                "name": name,
-                "kind": kind,
-                "passed": passed,
-                "evidence": evidence,
-            }
-        )
-
-    return {
-        "total": len(results),
-        "passed": sum(1 for result in results if result["passed"]),
-        "results": results,
     }
 
 

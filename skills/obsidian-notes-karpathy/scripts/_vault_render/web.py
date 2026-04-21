@@ -1,103 +1,21 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
 from html import escape
 from pathlib import Path
 from typing import Any
 
-from _vault_common import MarkdownRecord, list_field
-from _vault_layout import collect_markdown_records
+from _vault_common import MarkdownRecord
+
+from .common import (
+    now_iso,
+    resolve_title,
+    slugify_title,
+    source_live_pages_from_records,
+)
 
 
-RENDER_MODES = ("slides", "charts", "canvas", "report", "web")
-ARCHIVED_RENDER_SOURCE_KINDS = {
-    "briefing",
-    "qa",
-    "content_output",
-    "report_output",
-    "slide_output",
-    "chart_output",
-}
-
-
-def _records_by_path(vault_root: Path) -> dict[str, MarkdownRecord]:
-    return {record.path: record for record in collect_markdown_records(vault_root)}
-
-
-def _resolve_sources(vault_root: Path, source_paths: list[str]) -> tuple[list[MarkdownRecord], list[str]]:
-    records = _records_by_path(vault_root)
-    resolved: list[MarkdownRecord] = []
-    rejected: list[str] = []
-    for path in source_paths:
-        normalized = path.replace("\\", "/")
-        candidate = records.get(normalized)
-        if candidate is None:
-            rejected.append(normalized)
-            continue
-        if _is_allowed_render_source(candidate):
-            resolved.append(candidate)
-        else:
-            rejected.append(normalized)
-    return resolved, rejected
-
-
-def _is_allowed_render_source(record: MarkdownRecord) -> bool:
-    if record.path.startswith("wiki/live/"):
-        return True
-    if record.kind in ARCHIVED_RENDER_SOURCE_KINDS:
-        return bool(_source_live_pages([record]))
-    return False
-
-
-def _source_live_pages(records: list[MarkdownRecord]) -> list[str]:
-    pages: set[str] = set()
-    for record in records:
-        if record.path.startswith("wiki/live/"):
-            pages.add(f"[[{record.path_no_ext}]]")
-            continue
-        for source in list_field(record.frontmatter, "source_live_pages"):
-            pages.add(source)
-    return sorted(pages)
-
-
-def _default_output_path(mode: str, title_slug: str) -> str:
-    if mode == "slides":
-        return f"outputs/slides/{title_slug}.md"
-    if mode == "report":
-        return f"outputs/reports/{title_slug}.md"
-    if mode == "charts":
-        return f"outputs/charts/{title_slug}.md"
-    if mode == "web":
-        return f"outputs/web/{title_slug}/index.html"
-    return f"outputs/charts/{title_slug}.canvas"
-
-
-def _title(records: list[MarkdownRecord], explicit_title: str | None) -> str:
-    if explicit_title and explicit_title.strip():
-        return explicit_title.strip()
-    if records:
-        raw_title = records[0].frontmatter.get("title")
-        if isinstance(raw_title, str) and raw_title.strip():
-            return raw_title.strip()
-        return records[0].basename.replace("-", " ").title()
-    return "Rendered Artifact"
-
-
-def _slugify_title(title: str) -> str:
-    return "-".join(part for part in title.lower().replace("/", " ").replace("_", " ").split() if part)
-
-
-def _write_markdown(path: Path, lines: list[str]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-def _now_iso() -> str:
-    return datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-
-
-def _web_shell_html(title: str) -> str:
+def _shell_html(title: str) -> str:
     escaped_title = escape(title)
     return f"""<!doctype html>
 <html lang="en">
@@ -150,7 +68,7 @@ def _web_shell_html(title: str) -> str:
 """
 
 
-def _web_css() -> str:
+def _css() -> str:
     return """* { box-sizing: border-box; }
 body {
   margin: 0;
@@ -266,7 +184,7 @@ body {
 """
 
 
-def _web_app_js() -> str:
+def _app_js() -> str:
     return """const escapeHtml = (value) =>
   value
     .replace(/&/g, "&amp;")
@@ -436,11 +354,11 @@ def _excerpt_from_record(record: MarkdownRecord) -> str:
     return ""
 
 
-def _web_page_payload(record: MarkdownRecord, index: int) -> tuple[str, dict[str, Any], dict[str, Any]]:
-    title = _title([record], None)
-    file_slug = _slugify_title(f"{index:02d}-{title}") or f"page-{index:02d}"
+def _page_payload(record: MarkdownRecord, index: int) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    title = resolve_title([record], None)
+    file_slug = slugify_title(f"{index:02d}-{title}") or f"page-{index:02d}"
     rel_file = f"pages/{file_slug}.json"
-    source_live_pages = _source_live_pages([record])
+    source_live_pages = source_live_pages_from_records([record])
     excerpt = _excerpt_from_record(record)
     manifest_page = {
         "title": title,
@@ -462,7 +380,7 @@ def _web_page_payload(record: MarkdownRecord, index: int) -> tuple[str, dict[str
     return rel_file, manifest_page, page_payload
 
 
-def _write_web_export(
+def write_web_export(
     package_root: Path,
     *,
     title: str,
@@ -476,7 +394,7 @@ def _write_web_export(
 
     manifest_pages: list[dict[str, Any]] = []
     for index, record in enumerate(sources, start=1):
-        rel_file, manifest_page, page_payload = _web_page_payload(record, index)
+        rel_file, manifest_page, page_payload = _page_payload(record, index)
         page_abs = package_root / rel_file
         page_abs.parent.mkdir(parents=True, exist_ok=True)
         page_abs.write_text(json.dumps(page_payload, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -485,146 +403,13 @@ def _write_web_export(
     manifest = {
         "title": title,
         "render_mode": "web",
-        "generated_at": _now_iso(),
+        "generated_at": now_iso(),
         "source_live_pages": source_live_pages,
         "followup_route": "none",
         "rejected_source_paths": rejected_source_paths,
         "pages": manifest_pages,
     }
     (package_root / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
-    (package_root / "index.html").write_text(_web_shell_html(title), encoding="utf-8")
-    (package_root / "styles.css").write_text(_web_css(), encoding="utf-8")
-    (package_root / "app.js").write_text(_web_app_js(), encoding="utf-8")
-
-
-def _canvas_payload(title: str, source_live_pages: list[str]) -> dict[str, Any]:
-    return {
-        "nodes": [
-            {
-                "id": "title",
-                "type": "text",
-                "x": 80,
-                "y": 80,
-                "width": 320,
-                "height": 80,
-                "text": title,
-            },
-            {
-                "id": "sources",
-                "type": "text",
-                "x": 80,
-                "y": 200,
-                "width": 520,
-                "height": 220,
-                "text": "\n".join(source_live_pages or ["No approved live pages supplied"]),
-            },
-        ],
-        "edges": [],
-    }
-
-
-def render_artifact(
-    vault_root: Path,
-    *,
-    mode: str,
-    source_paths: list[str],
-    output_path: str | None = None,
-    title: str | None = None,
-    write: bool = False,
-) -> dict[str, Any]:
-    if mode not in RENDER_MODES:
-        raise ValueError(f"Unsupported render mode: {mode}")
-
-    sources, rejected_source_paths = _resolve_sources(vault_root, source_paths)
-    resolved_title = _title(sources, title)
-    title_slug = _slugify_title(resolved_title) or "rendered-artifact"
-    rel_output_path = output_path or _default_output_path(mode, title_slug)
-    source_live_pages = _source_live_pages(sources)
-    payload = {
-        "vault_root": str(vault_root),
-        "mode": mode,
-        "requested_source_paths": [path.replace("\\", "/") for path in source_paths],
-        "source_paths": [record.path for record in sources],
-        "rejected_source_paths": rejected_source_paths,
-        "source_live_pages": source_live_pages,
-        "output_path": rel_output_path,
-        "title": resolved_title,
-        "followup_route": "none",
-    }
-
-    if not write:
-        return payload
-
-    output_abs = vault_root / rel_output_path
-    if mode == "web":
-        package_root = output_abs.parent
-        payload["package_root"] = package_root.relative_to(vault_root).as_posix()
-        _write_web_export(
-            package_root,
-            title=resolved_title,
-            sources=sources,
-            source_live_pages=source_live_pages,
-            rejected_source_paths=rejected_source_paths,
-        )
-        return payload
-
-    if mode == "canvas":
-        output_abs.parent.mkdir(parents=True, exist_ok=True)
-        output_abs.write_text(json.dumps(_canvas_payload(resolved_title, source_live_pages), ensure_ascii=False, indent=2), encoding="utf-8")
-        return payload
-
-    frontmatter_lines = [
-        "---",
-        f'title: "{resolved_title}"',
-        f'render_mode: "{mode}"',
-        "source_live_pages:",
-    ]
-    frontmatter_lines.extend(f'  - "{value}"' for value in source_live_pages or [""])
-    frontmatter_lines.extend(
-        [
-            'followup_route: "none"',
-            "---",
-            "",
-        ]
-    )
-
-    body_lines: list[str]
-    if mode == "slides":
-        body_lines = [
-            "marp: true",
-            "theme: default",
-            "paginate: true",
-            "---",
-            f"# {resolved_title}",
-            "",
-            "## Grounding",
-            "",
-        ]
-        body_lines.extend(f"- {value}" for value in source_live_pages or ["None"])
-    elif mode == "charts":
-        body_lines = [
-            f"# {resolved_title}",
-            "",
-            "## Chart Intent",
-            "",
-            "- This file is a deterministic chart brief derived from approved knowledge.",
-            "",
-            "## Source Live Pages",
-            "",
-        ]
-        body_lines.extend(f"- {value}" for value in source_live_pages or ["None"])
-    else:
-        body_lines = [
-            f"# {resolved_title}",
-            "",
-            "## Summary",
-            "",
-            "- This report is grounded only in approved live pages or archived outputs that cite them.",
-            "",
-            "## Source Live Pages",
-            "",
-        ]
-        body_lines.extend(f"- {value}" for value in source_live_pages or ["None"])
-
-    _write_markdown(output_abs, [*frontmatter_lines, *body_lines])
-    return payload
+    (package_root / "index.html").write_text(_shell_html(title), encoding="utf-8")
+    (package_root / "styles.css").write_text(_css(), encoding="utf-8")
+    (package_root / "app.js").write_text(_app_js(), encoding="utf-8")
