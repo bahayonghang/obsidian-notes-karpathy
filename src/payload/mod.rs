@@ -210,3 +210,22 @@ pub struct HealthAudit {
     pub issue_counts: Counts,
     pub issues: Vec<Value>,
 }
+
+/// `onkb ingest scan`/`sync` 的返回结构。
+///
+/// `items` 保留 `Vec<Value>`（字段极多且随 source_class 变），阶段 5 拆 `ingest/` 时再拆出 `IngestItem`。
+/// `written_manifest` 仅在 `sync --write` 时填充。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct IngestDelta {
+    pub vault_root: String,
+    pub profile: String,
+    pub manifest_path: String,
+    pub manifest_present: bool,
+    pub manifest_status: String,
+    pub bootstrap_manifest_required: bool,
+    pub needs_ingest: bool,
+    pub counts: Counts,
+    pub items: Vec<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub written_manifest: Option<String>,
+}

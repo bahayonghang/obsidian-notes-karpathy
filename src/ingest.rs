@@ -622,28 +622,39 @@ pub fn scan_ingest_delta(vault_root: &Path) -> Result<Value> {
         && ["new", "changed", "removed"]
             .iter()
             .any(|key| counts.get(*key).copied().unwrap_or_default() > 0);
-    Ok(json!({
-        "vault_root": crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        "profile": manifest.get("profile").and_then(Value::as_str).map(ToString::to_string).unwrap_or_else(|| resolve_vault_profile(vault_root)),
-        "manifest_path": relative_posix(&manifest_path(vault_root), vault_root),
-        "manifest_present": manifest_present,
-        "manifest_status": if manifest_present && !needs_ingest { "current" } else if manifest_present { "stale" } else { "missing" },
-        "bootstrap_manifest_required": !manifest_present && !items.is_empty(),
-        "needs_ingest": needs_ingest,
-        "counts": counts,
-        "items": items,
-    }))
+    let manifest_status = if manifest_present && !needs_ingest {
+        "current"
+    } else if manifest_present {
+        "stale"
+    } else {
+        "missing"
+    };
+    let delta = crate::payload::IngestDelta {
+        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
+        profile: manifest
+            .get("profile")
+            .and_then(Value::as_str)
+            .map(ToString::to_string)
+            .unwrap_or_else(|| resolve_vault_profile(vault_root)),
+        manifest_path: relative_posix(&manifest_path(vault_root), vault_root),
+        manifest_present,
+        manifest_status: manifest_status.to_string(),
+        bootstrap_manifest_required: !manifest_present && !items.is_empty(),
+        needs_ingest,
+        counts,
+        items,
+        written_manifest: None,
+    };
+    Ok(serde_json::to_value(&delta)?)
 }
 
 pub fn sync_source_manifest(vault_root: &Path) -> Result<Value> {
-    let delta = scan_ingest_delta(vault_root)?;
+    let delta_value = scan_ingest_delta(vault_root)?;
+    let mut delta: crate::payload::IngestDelta = serde_json::from_value(delta_value)?;
     let manifest = load_source_manifest(vault_root)?;
     let current_entries = delta
-        .get("items")
-        .and_then(Value::as_array)
-        .cloned()
-        .unwrap_or_default()
-        .into_iter()
+        .items
+        .iter()
         .filter_map(|item| item.as_object().cloned())
         .filter(|item| item.get("status").and_then(Value::as_str) != Some("removed"))
         .collect::<Vec<_>>();
@@ -690,11 +701,10 @@ pub fn sync_source_manifest(vault_root: &Path) -> Result<Value> {
         "sources": sources,
     });
     let output_path = write_source_manifest(vault_root, &payload)?;
-    let mut result = delta;
-    result["written_manifest"] = json!(relative_posix(&output_path, vault_root));
-    result["manifest_present"] = Value::Bool(true);
-    result["manifest_status"] = json!("current");
-    result["needs_ingest"] = Value::Bool(false);
-    result["bootstrap_manifest_required"] = Value::Bool(false);
-    Ok(result)
+    delta.written_manifest = Some(relative_posix(&output_path, vault_root));
+    delta.manifest_present = true;
+    delta.manifest_status = "current".to_string();
+    delta.needs_ingest = false;
+    delta.bootstrap_manifest_required = false;
+    Ok(serde_json::to_value(&delta)?)
 }
