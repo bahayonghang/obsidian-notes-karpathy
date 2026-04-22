@@ -3,9 +3,9 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use chrono::Utc;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
-use crate::dev::{read_utf8, Registry};
+use crate::dev::{Registry, read_utf8};
 
 pub mod grader;
 pub mod paths;
@@ -109,10 +109,10 @@ pub fn validate_manifest(manifest: &Value, registry: &Registry) -> Vec<String> {
             }
         }
 
-        if let Some(checks) = item.get("checks") {
-            if !checks.is_array() {
-                errors.push(format!("{eval_id}: checks must be a list when provided."));
-            }
+        if let Some(checks) = item.get("checks")
+            && !checks.is_array()
+        {
+            errors.push(format!("{eval_id}: checks must be a list when provided."));
         }
     }
 

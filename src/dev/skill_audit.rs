@@ -2,11 +2,11 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 use anyhow::{Context, Result};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use super::{
-    description_re, load_registry, name_re, read_utf8, runtime_evals_path, skill_paths,
-    trigger_evals_path, writable_runtime_evals_path, Registry,
+    Registry, description_re, load_registry, name_re, read_utf8, runtime_evals_path, skill_paths,
+    trigger_evals_path, writable_runtime_evals_path,
 };
 
 const USE_TRIGGER_PATTERNS: [&str; 2] = ["Use this skill when", "Use this skill whenever"];

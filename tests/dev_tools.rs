@@ -256,9 +256,11 @@ fn skill_audit_requires_cli_install_fallback_language() {
     let payload = run_json(&["--json", "dev", "audit-skills"]);
     let skills = payload["skills"].as_array().expect("skills");
     assert!(!skills.is_empty());
-    assert!(skills
-        .iter()
-        .all(|item| { item["checks"]["mentions_cli_install_fallback"].as_bool() == Some(true) }));
+    assert!(
+        skills.iter().all(|item| {
+            item["checks"]["mentions_cli_install_fallback"].as_bool() == Some(true)
+        })
+    );
 }
 
 #[test]
@@ -278,9 +280,11 @@ fn runtime_eval_manifest_validation_rejects_mixed_fixture_roots() {
     });
     let errors = validate_manifest(&manifest, &registry);
     assert!(!errors.is_empty());
-    assert!(errors
-        .iter()
-        .any(|error| error.contains("files must belong to exactly one fixture root")));
+    assert!(
+        errors
+            .iter()
+            .any(|error| error.contains("files must belong to exactly one fixture root"))
+    );
 }
 
 #[test]

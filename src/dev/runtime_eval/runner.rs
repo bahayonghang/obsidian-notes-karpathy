@@ -6,8 +6,8 @@ use std::process::{Command, Stdio};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use anyhow::{anyhow, Context, Result};
-use serde_json::{json, Value};
+use anyhow::{Context, Result, anyhow};
+use serde_json::{Value, json};
 
 use super::paths::INFRA_FAILURE_PATTERNS;
 
@@ -171,12 +171,12 @@ fn spawn_and_capture(
         .spawn()
         .with_context(|| format!("spawn {}", command.join(" ")))?;
 
-    if let Some(input) = input {
-        if let Some(stdin) = child.stdin.as_mut() {
-            stdin
-                .write_all(input.as_bytes())
-                .context("write runner stdin")?;
-        }
+    if let Some(input) = input
+        && let Some(stdin) = child.stdin.as_mut()
+    {
+        stdin
+            .write_all(input.as_bytes())
+            .context("write runner stdin")?;
     }
 
     let start = Instant::now();
@@ -294,20 +294,20 @@ pub fn execute_run(
     let mut attempts = vec![primary.clone()];
     let mut final_attempt = primary;
 
-    if final_attempt.get("failure_kind").and_then(Value::as_str) == Some("infra_failure") {
-        if let Some(fallback_runner) = fallback_runner_for(runner) {
-            let fallback_dir = run_dir.join(format!("attempt-2-{fallback_runner}"));
-            let fallback = execute_attempt(
-                &fallback_runner,
-                prompt,
-                &fallback_dir,
-                timeout_sec,
-                sandbox_mode,
-                repo_root,
-            )?;
-            attempts.push(fallback.clone());
-            final_attempt = fallback;
-        }
+    if final_attempt.get("failure_kind").and_then(Value::as_str) == Some("infra_failure")
+        && let Some(fallback_runner) = fallback_runner_for(runner)
+    {
+        let fallback_dir = run_dir.join(format!("attempt-2-{fallback_runner}"));
+        let fallback = execute_attempt(
+            &fallback_runner,
+            prompt,
+            &fallback_dir,
+            timeout_sec,
+            sandbox_mode,
+            repo_root,
+        )?;
+        attempts.push(fallback.clone());
+        final_attempt = fallback;
     }
 
     let final_attempt_dir = run_dir.join(format!(

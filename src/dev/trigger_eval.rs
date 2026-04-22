@@ -2,7 +2,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use super::runtime_eval::runner;
 use super::skill_audit::load_skill_catalog;
@@ -37,13 +37,13 @@ pub fn parse_selected_skill(text: &str) -> Option<String> {
     if stripped.is_empty() {
         return None;
     }
-    if let Ok(payload) = serde_json::from_str::<Value>(stripped) {
-        if let Some(selected) = payload.get("selected_skill").and_then(Value::as_str) {
-            if selected == "none" {
-                return None;
-            }
-            return Some(selected.to_string());
+    if let Ok(payload) = serde_json::from_str::<Value>(stripped)
+        && let Some(selected) = payload.get("selected_skill").and_then(Value::as_str)
+    {
+        if selected == "none" {
+            return None;
         }
+        return Some(selected.to_string());
     }
     let pattern = regex::Regex::new(
         r#""selected_skill"\s*:\s*"(obsidian-notes-karpathy|kb-init|kb-ingest|kb-compile|kb-review|kb-query|kb-render|none)""#,

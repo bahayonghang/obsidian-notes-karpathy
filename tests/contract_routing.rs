@@ -33,16 +33,20 @@ fn guidance_contract_status_treats_noncanonical_names_as_warnings() {
         summarize_local_guidance(&["agents.md".to_string(), "CLAUDE.md".to_string()]);
     assert_eq!(noncanonical["agents"]["present"].as_bool(), Some(true));
     assert_eq!(noncanonical["agents"]["canonical"].as_bool(), Some(false));
-    assert!(noncanonical["warnings"]
-        .as_array()
-        .expect("warnings")
-        .iter()
-        .any(|item| item.as_str() == Some("noncanonical_agents_guidance_name")));
-    assert!(!noncanonical["blocking_issues"]
-        .as_array()
-        .expect("blocking issues")
-        .iter()
-        .any(|item| item.as_str() == Some("missing_agents_guidance")));
+    assert!(
+        noncanonical["warnings"]
+            .as_array()
+            .expect("warnings")
+            .iter()
+            .any(|item| item.as_str() == Some("noncanonical_agents_guidance_name"))
+    );
+    assert!(
+        !noncanonical["blocking_issues"]
+            .as_array()
+            .expect("blocking issues")
+            .iter()
+            .any(|item| item.as_str() == Some("missing_agents_guidance"))
+    );
 
     let duplicates = summarize_local_guidance(&[
         "AGENTS.md".to_string(),
@@ -50,11 +54,13 @@ fn guidance_contract_status_treats_noncanonical_names_as_warnings() {
         "CLAUDE.md".to_string(),
     ]);
     assert_eq!(duplicates["claude"]["present"].as_bool(), Some(true));
-    assert!(duplicates["blocking_issues"]
-        .as_array()
-        .expect("blocking issues")
-        .iter()
-        .any(|item| item.as_str() == Some("duplicate_claude_guidance_files")));
+    assert!(
+        duplicates["blocking_issues"]
+            .as_array()
+            .expect("blocking issues")
+            .iter()
+            .any(|item| item.as_str() == Some("duplicate_claude_guidance_files"))
+    );
 }
 
 #[test]
@@ -62,18 +68,22 @@ fn registry_matches_skill_docs_and_shared_reference_blocks() {
     let repo_root = common::repo_root();
     let registry = load_registry(&repo_root).expect("registry");
     assert_eq!(registry.contract_family, "review-gated");
-    assert!(registry
-        .skills
-        .get("kb-init")
-        .expect("kb-init")
-        .writes
-        .contains(&"MEMORY.md".to_string()));
-    assert!(registry
-        .skills
-        .get("kb-review")
-        .expect("kb-review")
-        .writes
-        .contains(&"wiki/live/procedures/".to_string()));
+    assert!(
+        registry
+            .skills
+            .get("kb-init")
+            .expect("kb-init")
+            .writes
+            .contains(&"MEMORY.md".to_string())
+    );
+    assert!(
+        registry
+            .skills
+            .get("kb-review")
+            .expect("kb-review")
+            .writes
+            .contains(&"wiki/live/procedures/".to_string())
+    );
 
     for (skill_name, skill_path) in onkb::dev::skill_paths(&repo_root) {
         let skill_text = read_text(&skill_path);

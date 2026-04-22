@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use super::reference_blocks::build_shared_reference_bullets;
 use super::skill_audit::build_payload as build_audit_payload;
