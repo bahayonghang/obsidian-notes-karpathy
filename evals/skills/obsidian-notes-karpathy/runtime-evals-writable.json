@@ -6,10 +6,10 @@
       "id": "kb-init-needs-setup-write",
       "skill": "kb-init",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/needs-setup",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/needs-setup",
       "prompt": "Bring this copied fixture vault onto the review-gated contract. Create the minimum required support layer plus starter files, keep optional downstream outputs minimal, and preserve any existing content.",
       "files": [
-        "evals/fixtures/needs-setup/README.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-setup/README.md"
       ],
       "checks": [
         {"name": "raw-created", "kind": "exists", "path": "raw"},
@@ -26,12 +26,12 @@
       "id": "kb-init-repair-live-only-write",
       "skill": "kb-init",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/needs-repair-live-only",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/needs-repair-live-only",
       "prompt": "Repair the copied fixture vault without discarding the existing live page. Restore the minimum support layer needed for normal review-gated operation.",
       "files": [
-        "evals/fixtures/needs-repair-live-only/AGENTS.md",
-        "evals/fixtures/needs-repair-live-only/wiki/index.md",
-        "evals/fixtures/needs-repair-live-only/wiki/live/summaries/human/articles/2026-04-07-incomplete-live.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-repair-live-only/AGENTS.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-repair-live-only/wiki/index.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-repair-live-only/wiki/live/summaries/human/articles/2026-04-07-incomplete-live.md"
       ],
       "checks": [
         {"name": "drafts-created", "kind": "exists", "path": "wiki/drafts"},
@@ -44,12 +44,12 @@
       "id": "kb-init-migrate-legacy-write",
       "skill": "kb-init",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/needs-migration",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/needs-migration",
       "prompt": "Migrate the copied fixture vault from the old single-layer layout into the review-gated contract. Preserve original legacy files, sync the new manifest, and emit a migration report.",
       "files": [
-        "evals/fixtures/needs-migration/AGENTS.md",
-        "evals/fixtures/needs-migration/raw/articles/2026-03-20-old-pattern.md",
-        "evals/fixtures/needs-migration/wiki/summaries/2026-03-20-old-pattern.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-migration/AGENTS.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-migration/raw/articles/2026-03-20-old-pattern.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-migration/wiki/summaries/2026-03-20-old-pattern.md"
       ],
       "checks": [
         {"name": "legacy-raw-preserved", "kind": "exists", "path": "raw/articles/2026-03-20-old-pattern.md"},
@@ -64,11 +64,11 @@
       "id": "kb-ingest-needs-ingest-write",
       "skill": "kb-ingest",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/needs-ingest",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/needs-ingest",
       "prompt": "Refresh raw/_manifest.yaml for this copied fixture vault, keep raw files immutable, and surface the newly registered source plus removed registry entry clearly.",
       "files": [
-        "evals/fixtures/needs-ingest/raw/_manifest.yaml",
-        "evals/fixtures/needs-ingest/raw/human/articles/2026-04-10-new-source.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-ingest/raw/_manifest.yaml",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-ingest/raw/human/articles/2026-04-10-new-source.md"
       ],
       "checks": [
         {"name": "manifest-written", "kind": "exists", "path": "raw/_manifest.yaml"},
@@ -80,12 +80,12 @@
       "id": "kb-compile-needs-compilation-write",
       "skill": "kb-compile",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/needs-compilation",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/needs-compilation",
       "prompt": "Compile the copied vault so new or changed raw captures become reviewable drafts. Do not rewrite raw files and do not promote anything into live.",
       "files": [
-        "evals/fixtures/needs-compilation/AGENTS.md",
-        "evals/fixtures/needs-compilation/raw/human/articles/2026-04-07-new-capture.md",
-        "evals/fixtures/needs-compilation/wiki/log.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-compilation/AGENTS.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-compilation/raw/human/articles/2026-04-07-new-capture.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-compilation/wiki/log.md"
       ],
       "checks": [
         {"name": "raw-unchanged", "kind": "same_tree", "path": "raw"},
@@ -98,12 +98,12 @@
       "id": "kb-review-needs-review-write",
       "skill": "kb-review",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/needs-review",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/needs-review",
       "prompt": "Run the review gate on the copied vault. Resolve ready drafts, emit review records, and update the approved layer or briefing outputs only where the review outcome allows it.",
       "files": [
-        "evals/fixtures/needs-review/AGENTS.md",
-        "evals/fixtures/needs-review/raw/human/articles/2026-04-01-compiler-safety.md",
-        "evals/fixtures/needs-review/wiki/drafts/summaries/human/articles/2026-04-01-compiler-safety.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-review/AGENTS.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-review/raw/human/articles/2026-04-01-compiler-safety.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-review/wiki/drafts/summaries/human/articles/2026-04-01-compiler-safety.md"
       ],
       "checks": [
         {"name": "review-record-emitted", "kind": "dir_non_empty", "path": "outputs/reviews"},
@@ -116,13 +116,13 @@
       "id": "kb-query-ready-for-query-write",
       "skill": "kb-query",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/ready-for-query",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query",
       "prompt": "Answer what the approved notes say about review gates, save the substantive answer to outputs/qa/2026-04-10-review-gate-runtime.md, and append a query log entry if you archive it. Stay grounded in the approved live layer.",
       "files": [
-        "evals/fixtures/ready-for-query/AGENTS.md",
-        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
-        "evals/fixtures/ready-for-query/wiki/live/summaries/human/articles/2026-04-05-approved-summary.md",
-        "evals/fixtures/ready-for-query/wiki/log.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/AGENTS.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/wiki/live/summaries/human/articles/2026-04-05-approved-summary.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/wiki/log.md"
       ],
       "checks": [
         {"name": "qa-output-written", "kind": "exists", "path": "outputs/qa/2026-04-10-review-gate-runtime.md"},
@@ -135,11 +135,11 @@
       "id": "kb-query-web-export-write",
       "skill": "kb-query",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/ready-for-query",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query",
       "prompt": "Export the approved live notes about review gates as a static web package under outputs/web/2026-04-10-review-gate/. Keep the export grounded only in approved live pages or already-cited archived outputs.",
       "files": [
-        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
-        "evals/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/outputs/qa/2026-04-06-review-gate-benefits.md"
       ],
       "checks": [
         {"name": "web-index-written", "kind": "exists", "path": "outputs/web/2026-04-10-review-gate/index.html"},
@@ -152,11 +152,11 @@
       "id": "kb-render-ready-for-query-write",
       "skill": "kb-render",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/ready-for-query",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query",
       "prompt": "Render a Marp slide deck grounded in the approved live notes about review gates and save it to outputs/slides/2026-04-10-review-gate.md. Keep source_live_pages and followup_route metadata intact.",
       "files": [
-        "evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
-        "evals/fixtures/ready-for-query/wiki/live/summaries/human/articles/2026-04-05-approved-summary.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/wiki/live/concepts/review-gate.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query/wiki/live/summaries/human/articles/2026-04-05-approved-summary.md"
       ],
       "checks": [
         {"name": "slides-output-written", "kind": "exists", "path": "outputs/slides/2026-04-10-review-gate.md"},
@@ -169,13 +169,13 @@
       "id": "kb-review-needs-maintenance-write",
       "skill": "kb-review",
       "mode": "writable-copy",
-      "vault_root": "evals/fixtures/needs-maintenance",
+      "vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/needs-maintenance",
       "prompt": "Run a maintenance pass on the copied vault, write the report to outputs/health/health-check-2026-04-10.md, and refresh the governance indices at wiki/live/indices/QUESTIONS.md, wiki/live/indices/GAPS.md, and wiki/live/indices/ALIASES.md if that is a safe deterministic fix.",
       "files": [
-        "evals/fixtures/needs-maintenance/AGENTS.md",
-        "evals/fixtures/needs-maintenance/wiki/live/concepts/retrieval-augmented-generation.md",
-        "evals/fixtures/needs-maintenance/wiki/briefings/researcher.md",
-        "evals/fixtures/needs-maintenance/outputs/qa/2026-04-01-rag-answer.md"
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-maintenance/AGENTS.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-maintenance/wiki/live/concepts/retrieval-augmented-generation.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-maintenance/wiki/briefings/researcher.md",
+        "evals/skills/obsidian-notes-karpathy/fixtures/needs-maintenance/outputs/qa/2026-04-01-rag-answer.md"
       ],
       "checks": [
         {"name": "health-report-written", "kind": "exists", "path": "outputs/health/health-check-2026-04-10.md"},

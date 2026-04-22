@@ -12,9 +12,9 @@ fn repo_root() -> PathBuf {
 
 fn fixtures_root() -> PathBuf {
     repo_root()
+        .join("evals")
         .join("skills")
         .join("obsidian-notes-karpathy")
-        .join("evals")
         .join("fixtures")
 }
 

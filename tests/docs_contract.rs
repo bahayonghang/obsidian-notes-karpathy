@@ -1,6 +1,9 @@
 mod common;
 
-use common::{entry_skill_root, read_text, repo_root};
+use common::{entry_eval_root, entry_skill_root, read_text, repo_root};
+use onkb::dev::doc_fragments::{
+    build_installation_boundary_fragment, build_skill_inventory_fragment,
+};
 use serde_json::Value;
 
 #[test]
@@ -10,6 +13,14 @@ fn bundle_docs_and_registry_stay_consistent() {
     let readme = read_text(&repo_root.join("README.md"));
     let readme_cn = read_text(&repo_root.join("README_CN.md"));
     let claude = read_text(&repo_root.join("CLAUDE.md"));
+    let install_doc = read_text(&repo_root.join("docs").join("guide").join("installation.md"));
+    let install_doc_zh = read_text(
+        &repo_root
+            .join("docs")
+            .join("zh")
+            .join("guide")
+            .join("installation.md"),
+    );
     let docs_overview = read_text(&repo_root.join("docs").join("skills").join("overview.md"));
     let docs_overview_zh = read_text(
         &repo_root
@@ -31,6 +42,9 @@ fn bundle_docs_and_registry_stay_consistent() {
             .join("scripts")
             .join("skill-contract-registry.json"),
     );
+    let skill_inventory = build_skill_inventory_fragment(&repo_root).expect("skill inventory");
+    let install_boundary =
+        build_installation_boundary_fragment(&repo_root).expect("installation boundary");
 
     for needle in [
         "chinese-llm-wiki-compat.md",
@@ -43,15 +57,17 @@ fn bundle_docs_and_registry_stay_consistent() {
         "compile-method.md",
         "archive-model.md",
         "outputs/web/",
+        "\"path\":",
+        "\"install_scope\":",
+        "\"doc_targets\":",
+        "\"eval_targets\":",
+        "\"companion_refs\":",
     ] {
         assert!(registry_text.contains(needle), "{needle}");
     }
 
     for needle in [
-        "kb-review",
         "Chinese-LLM-Wiki",
-        "kb-ingest",
-        "kb-render",
         "Companion skill matrix",
         "MEMORY.md",
         "outputs/episodes/",
@@ -61,10 +77,7 @@ fn bundle_docs_and_registry_stay_consistent() {
         assert!(readme.contains(needle), "{needle}");
     }
     for needle in [
-        "kb-review",
         "Chinese-LLM-Wiki",
-        "kb-ingest",
-        "kb-render",
         "搭配技能矩阵",
         "outputs/episodes/",
         "outputs/web/",
@@ -74,8 +87,17 @@ fn bundle_docs_and_registry_stay_consistent() {
     assert!(claude.contains("web-access"));
     assert!(claude.contains("publish"));
     assert!(claude.contains("wiki/live/procedures/"));
+    assert!(claude.contains("evals/skills/obsidian-notes-karpathy/fixtures/"));
+    assert!(install_doc.contains("evals/skills/obsidian-notes-karpathy/"));
+    assert!(!install_doc.contains("obsidian-notes-karpathy/evals/"));
+    assert!(install_doc_zh.contains("evals/skills/obsidian-notes-karpathy/"));
+    assert!(!install_doc_zh.contains("obsidian-notes-karpathy/evals/"));
     assert!(docs_overview.contains("one package entry skill and six operational skills"));
     assert!(docs_overview_zh.contains("1 个入口技能和 6 个操作技能"));
+    assert!(skill_inventory.contains("`kb-query`"));
+    assert!(
+        install_boundary.contains("Repo-only dev assets stay outside the installed runtime bundle")
+    );
     assert!(workflow_overview.contains("<WorkflowLifecycleDiagram"));
     assert!(workflow_overview_zh.contains("<WorkflowLifecycleDiagram"));
     assert!(!workflow_overview.contains("```mermaid"));
@@ -93,11 +115,9 @@ fn bundle_docs_and_registry_stay_consistent() {
 
 #[test]
 fn trigger_and_runtime_eval_manifests_cover_core_routes() {
-    let entry_root = entry_skill_root();
-    let trigger_evals: Vec<Value> = serde_json::from_str(&read_text(
-        &entry_root.join("evals").join("trigger-evals.json"),
-    ))
-    .expect("trigger evals");
+    let trigger_evals: Vec<Value> =
+        serde_json::from_str(&read_text(&entry_eval_root().join("trigger-evals.json")))
+            .expect("trigger evals");
     assert!(trigger_evals.len() >= 20);
     let serialized = serde_json::to_string(&trigger_evals).expect("serialize trigger evals");
     for token in [
@@ -114,12 +134,11 @@ fn trigger_and_runtime_eval_manifests_cover_core_routes() {
         assert!(serialized.contains(token), "{token}");
     }
 
-    let runtime_evals: Value = serde_json::from_str(&read_text(
-        &entry_root.join("evals").join("runtime-evals.json"),
-    ))
-    .expect("runtime evals");
+    let runtime_evals: Value =
+        serde_json::from_str(&read_text(&entry_eval_root().join("runtime-evals.json")))
+            .expect("runtime evals");
     let writable_evals: Value = serde_json::from_str(&read_text(
-        &entry_root.join("evals").join("runtime-evals-writable.json"),
+        &entry_eval_root().join("runtime-evals-writable.json"),
     ))
     .expect("writable runtime evals");
 

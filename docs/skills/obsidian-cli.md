@@ -31,13 +31,11 @@ obsidian search path="wiki/live/concepts/"
 - List available vaults
 - Get vault configuration
 
-## Usage in Knowledge Base
+## Usage Around This Bundle
 
-The Karpathy skills use `obsidian-cli` for:
+This repository's shipped `kb-*` skills do not depend on `obsidian-cli` as their primary runtime baseline.
 
-1. **kb-init**: Creating initial directory structure and files
-2. **kb-compile**: Searching and reading vault content during compilation
-3. **kb-query**: Full-text search across the wiki
+Treat it as an adjacent ecosystem tool for people who also want direct app-level Obsidian automation alongside the review-gated `onkb` lifecycle.
 
 ## When CLI is Not Available
 

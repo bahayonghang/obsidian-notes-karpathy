@@ -63,7 +63,11 @@ Then confirm the bundled resources live inside the shared package home:
 
 - `obsidian-notes-karpathy/references/`
 - `obsidian-notes-karpathy/scripts/`
-- `obsidian-notes-karpathy/evals/`
+
+The runtime install intentionally excludes repo-only dev assets such as eval fixtures and benchmark manifests.
+Those stay in the repository tree under:
+
+- `evals/skills/obsidian-notes-karpathy/`
 
 The bundle is embedded in the CLI binary. `onkb skill install` does not depend on the repo source tree being present at install time.
 

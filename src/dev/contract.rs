@@ -113,8 +113,11 @@ pub fn validate_bundle(repo_root: &Path) -> Result<Value> {
     if registry.contract_family != "review-gated" {
         errors.push("Registry contract_family must be review-gated.".to_string());
     }
+    if registry.eval_root.is_empty() {
+        errors.push("Registry eval_root must be set.".to_string());
+    }
 
-    let skill_paths = skill_paths(repo_root);
+    let skill_paths = skill_paths(repo_root)?;
     if registry.skills.keys().cloned().collect::<Vec<_>>()
         != skill_paths.keys().cloned().collect::<Vec<_>>()
     {
@@ -140,6 +143,41 @@ pub fn validate_bundle(repo_root: &Path) -> Result<Value> {
         let Some(expected) = registry.skills.get(skill_name) else {
             continue;
         };
+        if expected.path.is_empty() {
+            errors.push(format!("{skill_name} is missing a manifest path."));
+        }
+        if expected.install_scope != "runtime" {
+            errors.push(format!(
+                "{skill_name} install_scope must be runtime, got {}.",
+                expected.install_scope
+            ));
+        }
+        if expected.doc_targets.is_empty() {
+            errors.push(format!("{skill_name} is missing doc_targets."));
+        } else {
+            for doc_target in &expected.doc_targets {
+                if !repo_root.join(doc_target).exists() {
+                    errors.push(format!("{skill_name} doc target is missing: {doc_target}."));
+                }
+            }
+        }
+        for eval_target in [
+            &expected.eval_targets.trigger_manifest,
+            &expected.eval_targets.runtime_manifest,
+            &expected.eval_targets.writable_runtime_manifest,
+        ] {
+            if eval_target.is_empty() {
+                errors.push(format!(
+                    "{skill_name} is missing an eval_targets manifest path."
+                ));
+                continue;
+            }
+            if !repo_root.join(eval_target).exists() {
+                errors.push(format!(
+                    "{skill_name} eval target is missing: {eval_target}."
+                ));
+            }
+        }
         let referenced_paths = super::reference_blocks::extract_reference_bullets(&skill_text);
         for bullet in build_shared_reference_bullets(skill_name, &registry)? {
             let target = bullet
@@ -199,6 +237,23 @@ pub fn validate_bundle(repo_root: &Path) -> Result<Value> {
 
     errors.extend(forbidden_script_files_present(repo_root)?);
     errors.extend(scan_forbidden_legacy_references(repo_root)?);
+    if repo_root
+        .join("skills")
+        .join("obsidian-notes-karpathy")
+        .join("evals")
+        .exists()
+    {
+        errors.push(
+            "skills/obsidian-notes-karpathy/evals should not exist; dev assets belong under evals/skills/obsidian-notes-karpathy/."
+                .to_string(),
+        );
+    }
+    if !repo_root.join(&registry.eval_root).exists() {
+        errors.push(format!(
+            "Registry eval_root directory is missing: {}.",
+            registry.eval_root
+        ));
+    }
 
     let readme = read_utf8(&repo_root.join("README.md"))?;
     let readme_cn = read_utf8(&repo_root.join("README_CN.md"))?;

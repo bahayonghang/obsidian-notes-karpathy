@@ -20,7 +20,17 @@ pub fn default_workspace_root(repo_root: &Path) -> PathBuf {
 }
 
 pub fn entry_relative(repo_root: &Path, path_str: &str) -> PathBuf {
-    normalize_path(&entry_skill_root(repo_root).join(path_str))
+    let normalized = path_str.replace('\\', "/");
+    let repo_relative_roots = [
+        "skills/", "evals/", "docs/", "tests/", "README", "CLAUDE", "justfile",
+    ];
+    if repo_relative_roots
+        .iter()
+        .any(|prefix| normalized.starts_with(prefix))
+    {
+        return normalize_path(&repo_root.join(normalized));
+    }
+    normalize_path(&entry_skill_root(repo_root).join(normalized))
 }
 
 pub fn fixture_root_for_relpath(path_str: &str) -> Option<String> {
@@ -29,16 +39,34 @@ pub fn fixture_root_for_relpath(path_str: &str) -> Option<String> {
         .components()
         .map(|part| part.as_os_str().to_string_lossy().into_owned())
         .collect::<Vec<_>>();
-    if parts.len() < 3 || parts[0] != "evals" || parts[1] != "fixtures" {
-        return None;
+    if parts.len() >= 5
+        && parts[0] == "evals"
+        && parts[1] == "skills"
+        && parts[2] == "obsidian-notes-karpathy"
+        && parts[3] == "fixtures"
+    {
+        return Some(
+            PathBuf::from(&parts[0])
+                .join(&parts[1])
+                .join(&parts[2])
+                .join(&parts[3])
+                .join(&parts[4])
+                .to_string_lossy()
+                .replace('\\', "/"),
+        );
     }
-    Some(
-        PathBuf::from(&parts[0])
-            .join(&parts[1])
-            .join(&parts[2])
-            .to_string_lossy()
-            .replace('\\', "/"),
-    )
+
+    if parts.len() >= 3 && parts[0] == "evals" && parts[1] == "fixtures" {
+        return Some(
+            PathBuf::from(&parts[0])
+                .join(&parts[1])
+                .join(&parts[2])
+                .to_string_lossy()
+                .replace('\\', "/"),
+        );
+    }
+
+    None
 }
 
 pub fn repo_relative(repo_root: &Path, path: &Path) -> String {
@@ -54,7 +82,7 @@ pub fn normalize_path(path: &Path) -> PathBuf {
 }
 
 pub fn skill_doc_path(repo_root: &Path, skill: &str) -> Result<PathBuf> {
-    let paths = skill_paths(repo_root);
+    let paths = skill_paths(repo_root)?;
     paths
         .get(skill)
         .cloned()

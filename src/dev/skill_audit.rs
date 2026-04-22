@@ -41,7 +41,7 @@ const COMPATIBILITY_ROUTE_SKILLS: [&str; 6] = [
 
 pub fn load_skill_catalog(repo_root: &Path) -> Result<BTreeMap<String, String>> {
     let mut catalog = BTreeMap::new();
-    for (skill_name, skill_path) in skill_paths(repo_root) {
+    for (skill_name, skill_path) in skill_paths(repo_root)? {
         let text = read_utf8(&skill_path)?;
         let description = parse_frontmatter_field(&text, &description_re()).with_context(|| {
             format!(
@@ -321,7 +321,7 @@ pub fn build_payload(repo_root: &Path, skill_filters: &[String]) -> Result<Value
     let registry = load_registry(repo_root)?;
     let compatibility_report = compatibility_trigger_report(&eval_sets.trigger_data);
 
-    let audits = skill_paths(repo_root)
+    let audits = skill_paths(repo_root)?
         .iter()
         .filter(|(skill_name, _)| {
             skill_filters.is_empty() || skill_filters.iter().any(|item| item == *skill_name)

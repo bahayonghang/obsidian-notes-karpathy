@@ -57,7 +57,11 @@ onkb skill install --dir D:\path\to\your\obsidian-vault --claude --codex
 
 - `obsidian-notes-karpathy/references/`
 - `obsidian-notes-karpathy/scripts/`
-- `obsidian-notes-karpathy/evals/`
+
+运行时安装不会把 repo 内的 dev / eval 资源一起带进去。
+这些资源仍然留在仓库树里：
+
+- `evals/skills/obsidian-notes-karpathy/`
 
 这个 bundle 直接内嵌在 CLI 二进制里。`onkb skill install` 安装时不依赖仓库源码仍然留在本地。
 

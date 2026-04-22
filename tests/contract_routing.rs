@@ -85,7 +85,7 @@ fn registry_matches_skill_docs_and_shared_reference_blocks() {
             .contains(&"wiki/live/procedures/".to_string())
     );
 
-    for (skill_name, skill_path) in onkb::dev::skill_paths(&repo_root) {
+    for (skill_name, skill_path) in onkb::dev::skill_paths(&repo_root).expect("skill paths") {
         let skill_text = read_text(&skill_path);
         let referenced_paths = onkb::dev::reference_blocks::extract_reference_bullets(&skill_text);
         let expected_bullets =

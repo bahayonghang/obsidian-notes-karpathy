@@ -31,13 +31,11 @@ obsidian search path="wiki/live/concepts/"
 - 列出可用的 vault
 - 获取 vault 配置
 
-## 在知识库中的使用
+## 与本 bundle 的关系
 
-Karpathy 技能使用 `obsidian-cli` 进行：
+本仓库发货的 `kb-*` 技能不再把 `obsidian-cli` 当作主要运行时基线。
 
-1. **kb-init**：创建初始目录结构和文件
-2. **kb-compile**：在编译期间搜索和阅读 vault 内容
-3. **kb-query**：跨 wiki 的全文搜索
+把它看成相邻生态工具更合适：当你除了 review-gated `onkb` 生命周期之外，还想做直接的 Obsidian 应用级自动化时，再额外搭配它。
 
 ## 当 CLI 不可用时
 

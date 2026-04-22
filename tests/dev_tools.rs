@@ -97,7 +97,7 @@ fn runtime_eval_can_reuse_previous_read_only_baseline() {
             "files": ["evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md"],
             "prompt": "Explain web export grounding.",
             "mode": "read-only",
-            "source_vault_root": "skills/obsidian-notes-karpathy/evals/fixtures/ready-for-query",
+            "source_vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query",
             "checks": [],
         }))
         .expect("metadata json"),
@@ -131,7 +131,7 @@ fn runtime_eval_can_reuse_previous_read_only_baseline() {
             "files": ["evals/fixtures/ready-for-query/wiki/live/concepts/review-gate.md"],
             "prompt": "Explain web export grounding.",
             "mode": "read-only",
-            "source_vault_root": "skills/obsidian-notes-karpathy/evals/fixtures/ready-for-query",
+            "source_vault_root": "evals/skills/obsidian-notes-karpathy/fixtures/ready-for-query",
             "checks": [],
         }),
         &target_dir,

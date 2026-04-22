@@ -1,0 +1,16 @@
+---
+source: tests/doc_fragments.rs
+assertion_line: 18
+expression: fragment
+---
+Runtime bundle installs these skill directories:
+- `kb-compile` -> `skills/kb-compile`
+- `kb-ingest` -> `skills/kb-ingest`
+- `kb-init` -> `skills/kb-init`
+- `kb-query` -> `skills/kb-query`
+- `kb-render` -> `skills/kb-render`
+- `kb-review` -> `skills/kb-review`
+- `obsidian-notes-karpathy` -> `skills/obsidian-notes-karpathy`
+Repo-only dev assets stay outside the installed runtime bundle:
+- `evals/skills/obsidian-notes-karpathy`
+- `target/`, `.runtime-evals/`, and other generated workspaces

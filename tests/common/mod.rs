@@ -16,8 +16,15 @@ pub fn entry_skill_root() -> PathBuf {
     repo_root().join("skills").join("obsidian-notes-karpathy")
 }
 
+pub fn entry_eval_root() -> PathBuf {
+    repo_root()
+        .join("evals")
+        .join("skills")
+        .join("obsidian-notes-karpathy")
+}
+
 pub fn fixtures_root() -> PathBuf {
-    entry_skill_root().join("evals").join("fixtures")
+    entry_eval_root().join("fixtures")
 }
 
 pub fn run_json(args: &[&str]) -> Value {

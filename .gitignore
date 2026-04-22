@@ -17,3 +17,7 @@ target/
 task_plan.md
 findings.md
 progress.md
+
+evals/
+
+tests/snapshots/

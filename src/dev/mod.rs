@@ -1,4 +1,5 @@
 pub mod contract;
+pub mod doc_fragments;
 pub mod reference_blocks;
 mod registry;
 mod repo;

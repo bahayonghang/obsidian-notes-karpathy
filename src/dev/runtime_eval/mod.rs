@@ -80,7 +80,7 @@ pub fn validate_manifest(manifest: &Value, registry: &Registry) -> Vec<String> {
         let vault_fixture_root = vault_root.and_then(paths::fixture_root_for_relpath);
         if vault_fixture_root.is_none() {
             errors.push(format!(
-                "{eval_id}: vault_root must point at a fixture root under evals/fixtures/."
+                "{eval_id}: vault_root must point at a fixture root under the eval fixture root."
             ));
         }
 
@@ -91,7 +91,7 @@ pub fn validate_manifest(manifest: &Value, registry: &Registry) -> Vec<String> {
             .collect::<Vec<_>>();
         if fixture_roots.iter().any(|value| value.is_none()) {
             errors.push(format!(
-                "{eval_id}: all files must live under evals/fixtures/."
+                "{eval_id}: all files must live under the eval fixture root."
             ));
         } else {
             fixture_roots.sort();

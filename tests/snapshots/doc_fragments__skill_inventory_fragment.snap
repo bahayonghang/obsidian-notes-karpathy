@@ -1,0 +1,14 @@
+---
+source: tests/doc_fragments.rs
+assertion_line: 11
+expression: fragment
+---
+| Skill | Role | Runtime install | Docs | Baseline |
+| --- | --- | --- | --- | --- |
+| `kb-compile` | operation | runtime | docs/skills/kb-compile.md<br>docs/zh/skills/kb-compile.md | `onkb --json compile scan <vault-root>` |
+| `kb-ingest` | operation | runtime | docs/skills/kb-ingest.md<br>docs/zh/skills/kb-ingest.md | `onkb --json ingest scan <vault-root>` |
+| `kb-init` | operation | runtime | docs/skills/kb-init.md<br>docs/zh/skills/kb-init.md | `onkb --json status <vault-root>` |
+| `kb-query` | operation | runtime | docs/skills/kb-query.md<br>docs/zh/skills/kb-query.md | `onkb --json query scope <vault-root>` |
+| `kb-render` | operation | runtime | docs/skills/kb-render.md<br>docs/zh/skills/kb-render.md | `onkb --json render <vault-root> --mode <mode> --source <path>` |
+| `kb-review` | operation | runtime | docs/skills/kb-review.md<br>docs/zh/skills/kb-review.md | `onkb --json review queue <vault-root>` |
+| `obsidian-notes-karpathy` | router | runtime | docs/skills/obsidian-notes-karpathy.md<br>docs/zh/skills/obsidian-notes-karpathy.md | `onkb --json status <vault-root>` |

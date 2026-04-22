@@ -29,7 +29,7 @@ Canonical workflow:
 - `src/` - Rust CLI implementation for `onkb`
 - `skills/obsidian-notes-karpathy/references/` - shared review-gated file model, lifecycle matrix, templates, governance policy, and rubric
 - `skills/obsidian-notes-karpathy/scripts/` - compatibility and repo-maintenance helpers that should no longer be the primary skill baseline
-- `skills/obsidian-notes-karpathy/evals/fixtures/` - legacy and review-gated fixture vaults
+- `evals/skills/obsidian-notes-karpathy/fixtures/` - legacy and review-gated fixture vaults
 - `README.md` and `README_CN.md` - public docs that must stay aligned
 
 ## Contract Rules

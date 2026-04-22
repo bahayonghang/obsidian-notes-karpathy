@@ -1,5 +1,6 @@
 {
   "contract_family": "review-gated",
+  "eval_root": "evals/skills/obsidian-notes-karpathy",
   "companion_skills": {
     "paper-workbench": {
       "role": "external-companion",
@@ -41,6 +42,18 @@
   "skills": {
     "obsidian-notes-karpathy": {
       "role": "router",
+      "path": "skills/obsidian-notes-karpathy/SKILL.md",
+      "install_scope": "runtime",
+      "doc_targets": [
+        "docs/skills/obsidian-notes-karpathy.md",
+        "docs/zh/skills/obsidian-notes-karpathy.md"
+      ],
+      "eval_targets": {
+        "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
+        "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
+        "writable_runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals-writable.json"
+      },
+      "companion_refs": ["web-access", "paper-workbench"],
       "reads": [
         "chinese-llm-wiki-compat.md",
         "archive-model.md",
@@ -70,6 +83,18 @@
     },
     "kb-init": {
       "role": "operation",
+      "path": "skills/kb-init/SKILL.md",
+      "install_scope": "runtime",
+      "doc_targets": [
+        "docs/skills/kb-init.md",
+        "docs/zh/skills/kb-init.md"
+      ],
+      "eval_targets": {
+        "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
+        "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
+        "writable_runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals-writable.json"
+      },
+      "companion_refs": ["web-access", "paper-workbench"],
       "reads": [
         "chinese-llm-wiki-compat.md",
         "file-model.md",
@@ -137,6 +162,18 @@
     },
     "kb-ingest": {
       "role": "operation",
+      "path": "skills/kb-ingest/SKILL.md",
+      "install_scope": "runtime",
+      "doc_targets": [
+        "docs/skills/kb-ingest.md",
+        "docs/zh/skills/kb-ingest.md"
+      ],
+      "eval_targets": {
+        "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
+        "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
+        "writable_runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals-writable.json"
+      },
+      "companion_refs": ["web-access", "paper-workbench"],
       "reads": [
         "file-model.md",
         "lifecycle-matrix.md",
@@ -157,6 +194,18 @@
     },
     "kb-compile": {
       "role": "operation",
+      "path": "skills/kb-compile/SKILL.md",
+      "install_scope": "runtime",
+      "doc_targets": [
+        "docs/skills/kb-compile.md",
+        "docs/zh/skills/kb-compile.md"
+      ],
+      "eval_targets": {
+        "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
+        "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
+        "writable_runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals-writable.json"
+      },
+      "companion_refs": ["paper-workbench"],
       "reads": [
         "file-model.md",
         "compile-method.md",
@@ -192,6 +241,18 @@
     },
     "kb-review": {
       "role": "operation",
+      "path": "skills/kb-review/SKILL.md",
+      "install_scope": "runtime",
+      "doc_targets": [
+        "docs/skills/kb-review.md",
+        "docs/zh/skills/kb-review.md"
+      ],
+      "eval_targets": {
+        "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
+        "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
+        "writable_runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals-writable.json"
+      },
+      "companion_refs": [],
       "reads": [
         "chinese-llm-wiki-compat.md",
         "archive-model.md",
@@ -251,6 +312,18 @@
     },
     "kb-query": {
       "role": "operation",
+      "path": "skills/kb-query/SKILL.md",
+      "install_scope": "runtime",
+      "doc_targets": [
+        "docs/skills/kb-query.md",
+        "docs/zh/skills/kb-query.md"
+      ],
+      "eval_targets": {
+        "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
+        "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
+        "writable_runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals-writable.json"
+      },
+      "companion_refs": [],
       "reads": [
         "chinese-llm-wiki-compat.md",
         "archive-model.md",
@@ -286,6 +359,18 @@
     },
     "kb-render": {
       "role": "operation",
+      "path": "skills/kb-render/SKILL.md",
+      "install_scope": "runtime",
+      "doc_targets": [
+        "docs/skills/kb-render.md",
+        "docs/zh/skills/kb-render.md"
+      ],
+      "eval_targets": {
+        "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
+        "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
+        "writable_runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals-writable.json"
+      },
+      "companion_refs": [],
       "reads": [
         "archive-model.md",
         "file-model.md",
