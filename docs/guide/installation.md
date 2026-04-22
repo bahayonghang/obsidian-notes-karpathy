@@ -13,14 +13,17 @@ cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karp
 For local development from the repo root:
 
 ```bash
-cargo install --path . --locked
+cargo install --path . --locked --force
 ```
 
 Verify the binary:
 
 ```bash
-onkb --json doctor
+onkb version
+onkb doctor
 ```
+
+Use `onkb --json doctor` when a script needs machine-readable output.
 
 If a skill or shell step reports that `onkb` is not installed, use the GitHub install command above as the default fallback, then rerun the same `onkb ...` command.
 

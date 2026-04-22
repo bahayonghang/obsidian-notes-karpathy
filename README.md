@@ -31,7 +31,8 @@ The core idea is no longer just "compile notes into a wiki". It is "separate pro
 
 Key commands:
 
-- `onkb --json doctor`
+- `onkb version`
+- `onkb doctor`
 - `onkb --json status <vault-root>`
 - `onkb --json ingest scan <vault-root>`
 - `onkb --json compile scan <vault-root>`
@@ -190,6 +191,8 @@ For creator-style workflows, a practical mapping is:
 
 Rust-first CLI surface:
 
+- `onkb version`
+- `onkb doctor`
 - `onkb --json doctor`
 - `onkb skill install|list|show`
 - `onkb --json status <vault-root>`
@@ -224,3 +227,12 @@ cargo install --path . --locked
 ```
 
 If a skill step says `onkb` is not installed, use the GitHub install command above as the default fallback, then retry the same lifecycle command.
+
+## Docs site maintenance
+
+The contributor docs site lives under `docs/` and is built with VitePress.
+
+- from the repo root, use `just install`, `just docs`, and `just docs-build`
+- keep `docs/package-lock.json` committed when the docs toolchain changes
+- the docs package uses npm `overrides` to keep transitive `vite` on a patched release line
+- after changing docs dependencies, rerun `npm audit` and `npm run build` in `docs/`

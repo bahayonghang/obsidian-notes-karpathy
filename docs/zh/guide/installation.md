@@ -13,14 +13,17 @@ cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karp
 如果你是在仓库根目录做本地开发，再执行：
 
 ```bash
-cargo install --path . --locked
+cargo install --path . --locked --force
 ```
 
 确认二进制可用：
 
 ```bash
-onkb --json doctor
+onkb version
+onkb doctor
 ```
+
+如果脚本需要机器可读输出，再用 `onkb --json doctor`。
 
 如果 skill 或 shell 提示 `onkb` 没有安装，默认就用上面的 GitHub 安装命令补装，然后重试同一个 `onkb ...` 命令。
 

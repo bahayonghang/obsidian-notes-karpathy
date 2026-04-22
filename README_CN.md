@@ -31,7 +31,8 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 
 关键命令：
 
-- `onkb --json doctor`
+- `onkb version`
+- `onkb doctor`
 - `onkb --json status <vault-root>`
 - `onkb --json ingest scan <vault-root>`
 - `onkb --json compile scan <vault-root>`
@@ -190,6 +191,8 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 
 Rust-first CLI：
 
+- `onkb version`
+- `onkb doctor`
 - `onkb --json doctor`
 - `onkb skill install|list|show`
 - `onkb --json status <vault-root>`
@@ -224,5 +227,14 @@ cargo install --path . --locked
 ```
 
 如果 skill 提示 `onkb` 没有安装，默认就用上面的 GitHub 安装命令补装，然后重试原来的生命周期命令。
+
+## Docs 站点维护
+
+贡献者文档站点位于 `docs/`，底层用 VitePress 构建。
+
+- 在仓库根目录优先用 `just install`、`just docs`、`just docs-build`
+- docs 工具链有改动时，要把 `docs/package-lock.json` 一起提交
+- `docs/package.json` 用 npm `overrides` 把传递依赖里的 `vite` 固定在已修复的补丁线
+- 调整 docs 依赖后，要在 `docs/` 下重新跑 `npm audit` 和 `npm run build`
 
 

@@ -12,3 +12,8 @@ __pycache__/
 skills/obsidian-notes-karpathy-workspace/
 
 target/
+
+# File-based planning artifacts
+task_plan.md
+findings.md
+progress.md

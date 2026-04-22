@@ -37,28 +37,34 @@ docs/
 
 ## Local development
 
-Install dependencies:
+From the repo root, prefer the `just` shortcuts:
+
+```bash
+just install
+just docs
+just docs-build
+```
+
+If you are already inside `docs/`, the equivalent npm commands are:
 
 ```bash
 npm install
-```
-
-Start the dev server:
-
-```bash
 npm run dev
-```
-
-Build the static site:
-
-```bash
 npm run build
-```
-
-Preview the production build:
-
-```bash
 npm run preview
 ```
 
 The build output is written to `.vitepress/dist/`.
+
+## Dependency hygiene
+
+- `docs/package.json` pins `vitepress` and uses npm `overrides` to force `vite` onto a patched release line.
+- Keep `docs/package-lock.json` committed whenever the docs toolchain changes.
+- After bumping docs dependencies, run:
+
+```bash
+npm audit
+npm run build
+```
+
+- Do not treat a green install as sufficient. The expected verification is `0 vulnerabilities` plus a successful VitePress build.
