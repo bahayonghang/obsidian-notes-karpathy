@@ -14,28 +14,36 @@ fn query_scope_ignores_raw_and_drafts_for_review_gated_layout() {
         fixtures_root().join("ready-for-query").to_str().unwrap(),
     ]);
     assert_eq!(payload["layout_family"].as_str(), Some("review-gated"));
-    assert!(payload["included_paths"]
-        .as_array()
-        .expect("included")
-        .iter()
-        .any(|item| item.as_str()
-            == Some("wiki/live/summaries/human/articles/2026-04-05-approved-summary.md")));
-    assert!(payload["included_paths"]
-        .as_array()
-        .expect("included")
-        .iter()
-        .any(|item| item.as_str() == Some("wiki/briefings/researcher.md")));
-    assert!(payload["excluded_paths"]
-        .as_array()
-        .expect("excluded")
-        .iter()
-        .any(|item| item.as_str() == Some("raw/human/articles/2026-04-05-approved-summary.md")));
-    assert!(payload["excluded_paths"]
-        .as_array()
-        .expect("excluded")
-        .iter()
-        .any(|item| item.as_str()
-            == Some("wiki/drafts/summaries/human/articles/2026-04-05-approved-summary.md")));
+    assert!(
+        payload["included_paths"]
+            .as_array()
+            .expect("included")
+            .iter()
+            .any(|item| item.as_str()
+                == Some("wiki/live/summaries/human/articles/2026-04-05-approved-summary.md"))
+    );
+    assert!(
+        payload["included_paths"]
+            .as_array()
+            .expect("included")
+            .iter()
+            .any(|item| item.as_str() == Some("wiki/briefings/researcher.md"))
+    );
+    assert!(
+        payload["excluded_paths"]
+            .as_array()
+            .expect("excluded")
+            .iter()
+            .any(|item| item.as_str() == Some("raw/human/articles/2026-04-05-approved-summary.md"))
+    );
+    assert!(
+        payload["excluded_paths"]
+            .as_array()
+            .expect("excluded")
+            .iter()
+            .any(|item| item.as_str()
+                == Some("wiki/drafts/summaries/human/articles/2026-04-05-approved-summary.md"))
+    );
 }
 
 #[test]
@@ -47,16 +55,20 @@ fn query_scope_excludes_memory_from_topic_retrieval() {
         fixtures_root().join("memory-boundary").to_str().unwrap(),
     ]);
     assert_eq!(payload["layout_family"].as_str(), Some("review-gated"));
-    assert!(payload["included_paths"]
-        .as_array()
-        .expect("included")
-        .iter()
-        .any(|item| item.as_str() == Some("wiki/live/concepts/editorial-boundary.md")));
-    assert!(payload["excluded_paths"]
-        .as_array()
-        .expect("excluded")
-        .iter()
-        .any(|item| item.as_str() == Some("MEMORY.md")));
+    assert!(
+        payload["included_paths"]
+            .as_array()
+            .expect("included")
+            .iter()
+            .any(|item| item.as_str() == Some("wiki/live/concepts/editorial-boundary.md"))
+    );
+    assert!(
+        payload["excluded_paths"]
+            .as_array()
+            .expect("excluded")
+            .iter()
+            .any(|item| item.as_str() == Some("MEMORY.md"))
+    );
 }
 
 #[test]
@@ -106,11 +118,13 @@ fn review_governance_can_write_indices() {
     assert!(indices_root.join("ALIASES.md").exists());
     assert!(indices_root.join("ENTITIES.md").exists());
     assert!(indices_root.join("RELATIONSHIPS.md").exists());
-    assert!(payload["questions"]
-        .as_array()
-        .expect("questions")
-        .iter()
-        .any(|item| item.as_str() == Some("When should governance indices be refreshed?")));
+    assert!(
+        payload["questions"]
+            .as_array()
+            .expect("questions")
+            .iter()
+            .any(|item| item.as_str() == Some("When should governance indices be refreshed?"))
+    );
 }
 
 #[test]

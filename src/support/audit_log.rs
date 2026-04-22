@@ -8,7 +8,7 @@ use std::io::Write;
 use std::path::Path;
 
 use anyhow::{Context, Result};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::common::now_iso;
 

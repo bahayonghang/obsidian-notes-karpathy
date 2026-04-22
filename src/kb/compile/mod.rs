@@ -3,7 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::Result;
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::common::{
     list_field, load_markdown, normalize_identity, parse_datetime, relative_posix,
@@ -44,10 +44,10 @@ fn identity_candidates(raw_path: &Path, metadata: &Map<String, Value>) -> BTreeS
             .unwrap_or_default(),
     ]);
     for key in ["title", "author"] {
-        if let Some(Value::String(value)) = metadata.get(key) {
-            if !value.trim().is_empty() {
-                identities.insert(value.trim().to_string());
-            }
+        if let Some(Value::String(value)) = metadata.get(key)
+            && !value.trim().is_empty()
+        {
+            identities.insert(value.trim().to_string());
         }
     }
     identities
@@ -61,7 +61,7 @@ fn candidate_record(
     raw_path: &Path,
 ) -> Result<Option<crate::common::MarkdownRecord>> {
     if raw_path.extension().and_then(|value| value.to_str()) == Some("md") {
-        return Ok(Some(load_markdown(raw_path, Some(vault_root))?));
+        return Ok(Some((*load_markdown(raw_path, Some(vault_root))?).clone()));
     }
     let sidecar_path = raw_path.with_file_name(format!(
         "{}.source.md",
@@ -71,7 +71,9 @@ fn candidate_record(
             .unwrap_or_default()
     ));
     if sidecar_path.exists() {
-        return Ok(Some(load_markdown(&sidecar_path, Some(vault_root))?));
+        return Ok(Some(
+            (*load_markdown(&sidecar_path, Some(vault_root))?).clone(),
+        ));
     }
     Ok(None)
 }
@@ -120,13 +122,12 @@ fn topic_candidates(
     if source_class == "data_asset" {
         candidates.insert("data".to_string());
     }
-    if candidates.is_empty() {
-        if let Some(slug) = raw_path
+    if candidates.is_empty()
+        && let Some(slug) = raw_path
             .file_stem()
             .and_then(|value| clean_candidate_slug(&value.to_string_lossy()))
-        {
-            candidates.insert(slug);
-        }
+    {
+        candidates.insert(slug);
     }
     candidates.into_iter().collect()
 }
@@ -144,19 +145,18 @@ fn concept_candidates(
                 }
             }
         }
-        if let Some(Value::String(title)) = record.frontmatter.get("title") {
-            if let Some(slug) = clean_candidate_slug(title) {
-                candidates.insert(slug);
-            }
-        }
-    }
-    if candidates.is_empty() {
-        if let Some(slug) = raw_path
-            .file_stem()
-            .and_then(|value| clean_candidate_slug(&value.to_string_lossy()))
+        if let Some(Value::String(title)) = record.frontmatter.get("title")
+            && let Some(slug) = clean_candidate_slug(title)
         {
             candidates.insert(slug);
         }
+    }
+    if candidates.is_empty()
+        && let Some(slug) = raw_path
+            .file_stem()
+            .and_then(|value| clean_candidate_slug(&value.to_string_lossy()))
+    {
+        candidates.insert(slug);
     }
     candidates.into_iter().collect()
 }
@@ -168,10 +168,10 @@ fn entity_candidates(
     let mut candidates = BTreeSet::new();
     if let Some(record) = record {
         for key in ["author", "project", "tool", "library", "dataset", "entity"] {
-            if let Some(Value::String(value)) = record.frontmatter.get(key) {
-                if let Some(slug) = clean_candidate_slug(value) {
-                    candidates.insert(slug);
-                }
+            if let Some(Value::String(value)) = record.frontmatter.get(key)
+                && let Some(slug) = clean_candidate_slug(value)
+            {
+                candidates.insert(slug);
             }
         }
         for value in list_field(&record.frontmatter, "authors") {
@@ -183,13 +183,11 @@ fn entity_candidates(
     if raw_path
         .components()
         .any(|part| part.as_os_str().to_string_lossy() == "repos")
-    {
-        if let Some(slug) = raw_path
+        && let Some(slug) = raw_path
             .file_stem()
             .and_then(|value| clean_candidate_slug(&value.to_string_lossy()))
-        {
-            candidates.insert(slug);
-        }
+    {
+        candidates.insert(slug);
     }
     candidates.into_iter().collect()
 }
@@ -293,26 +291,22 @@ fn compile_method_payload(
     let mut core_conclusions = record_list(record, &["core_conclusions"]);
     let mut key_evidence = record_list(record, &["key_evidence"]);
 
-    if core_conclusions.is_empty() {
-        if let Some(record) = record {
-            if let Some(Value::String(title)) = record.frontmatter.get("title") {
-                if !title.trim().is_empty() {
-                    core_conclusions.push(format!(
-                        "{} introduces a durable candidate for the review gate.",
-                        title.trim()
-                    ));
-                }
-            }
-        }
+    if core_conclusions.is_empty()
+        && let Some(record) = record
+        && let Some(Value::String(title)) = record.frontmatter.get("title")
+        && !title.trim().is_empty()
+    {
+        core_conclusions.push(format!(
+            "{} introduces a durable candidate for the review gate.",
+            title.trim()
+        ));
     }
-    if key_evidence.is_empty() {
-        if let Some(record) = record {
-            if let Some(Value::String(source)) = record.frontmatter.get("source") {
-                if !source.trim().is_empty() {
-                    key_evidence.push(source.trim().to_string());
-                }
-            }
-        }
+    if key_evidence.is_empty()
+        && let Some(record) = record
+        && let Some(Value::String(source)) = record.frontmatter.get("source")
+        && !source.trim().is_empty()
+    {
+        key_evidence.push(source.trim().to_string());
     }
     if transfer_targets.is_empty() {
         if let Some(topic) = topic_candidates.first() {
@@ -406,13 +400,13 @@ pub fn scan_compile_delta(vault_root: &Path) -> Result<Value> {
                 .or_default()
                 .insert(record.path.clone());
             for key in ["title", "canonical_name"] {
-                if let Some(Value::String(value)) = record.frontmatter.get(key) {
-                    if !value.trim().is_empty() {
-                        identity_registry
-                            .entry(slugify_identity(value))
-                            .or_default()
-                            .insert(record.path.clone());
-                    }
+                if let Some(Value::String(value)) = record.frontmatter.get(key)
+                    && !value.trim().is_empty()
+                {
+                    identity_registry
+                        .entry(slugify_identity(value))
+                        .or_default()
+                        .insert(record.path.clone());
                 }
             }
             for alias in list_field(&record.frontmatter, "aliases") {
@@ -550,10 +544,10 @@ pub fn scan_compile_delta(vault_root: &Path) -> Result<Value> {
                 .cloned()
                 .unwrap_or_else(|| json!([])),
         );
-        if let Some(source_profile) = item.get("source_profile") {
-            if !source_profile.is_null() {
-                source_package.insert("source_profile".to_string(), source_profile.clone());
-            }
+        if let Some(source_profile) = item.get("source_profile")
+            && !source_profile.is_null()
+        {
+            source_package.insert("source_profile".to_string(), source_profile.clone());
         }
         item.insert("source_package".to_string(), Value::Object(source_package));
 
@@ -651,12 +645,11 @@ pub fn scan_compile_delta(vault_root: &Path) -> Result<Value> {
 }
 
 fn title_for_source(raw_path: &Path, record: Option<&crate::common::MarkdownRecord>) -> String {
-    if let Some(record) = record {
-        if let Some(Value::String(title)) = record.frontmatter.get("title") {
-            if !title.trim().is_empty() {
-                return title.trim().to_string();
-            }
-        }
+    if let Some(record) = record
+        && let Some(Value::String(title)) = record.frontmatter.get("title")
+        && !title.trim().is_empty()
+    {
+        return title.trim().to_string();
     }
     raw_path
         .file_stem()

@@ -36,6 +36,14 @@ fn doctor_payload_snapshot() {
 }
 
 #[test]
+fn version_payload_snapshot() {
+    let payload = run_json(&["--json", "version"]);
+    insta::assert_json_snapshot!("version", payload, {
+        ".version" => "[VERSION]",
+    });
+}
+
+#[test]
 fn status_ready_for_query_snapshot() {
     let payload = run_json(&["--json", "status", &fixture_str("ready-for-query")]);
     insta::assert_json_snapshot!("status_ready_for_query", payload, {
@@ -68,6 +76,7 @@ fn compile_scan_needs_compilation_snapshot() {
         ".vault_root" => VAULT_REDACT,
         ".items[].raw_mtime" => TS_REDACT,
         ".items[].last_verified_at" => TS_REDACT,
+        ".items[].source_age_days" => "[AGE_DAYS]",
     });
 }
 

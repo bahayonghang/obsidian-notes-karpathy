@@ -1,0 +1,8 @@
+---
+source: tests/payload_compat.rs
+expression: payload
+---
+{
+  "name": "onkb",
+  "version": "[VERSION]"
+}

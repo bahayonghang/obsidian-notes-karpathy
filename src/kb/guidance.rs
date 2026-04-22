@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 const GUIDANCE_CONTRACTS: [(&str, &str, bool); 2] = [
     ("agents", "AGENTS.md", true),

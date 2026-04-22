@@ -46,7 +46,7 @@ expression: payload
       "raw_hash": "2616e0541f1d3ad286d45f051b77c1c56c5a296dfe30c785673d8b7ac5505a4b",
       "raw_mtime": "[TIMESTAMP]",
       "reason": "missing_summary",
-      "source_age_days": 13,
+      "source_age_days": "[AGE_DAYS]",
       "source_class": "markdown",
       "source_package": {
         "capture_method": "manual-markdown",

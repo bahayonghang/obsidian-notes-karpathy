@@ -120,26 +120,32 @@ fn compile_build_writes_topics_and_review_meta() {
     ]);
 
     assert!(payload["package_count"].as_i64().unwrap_or_default() >= 1);
-    assert!(fixture_copy
-        .join("wiki")
-        .join("drafts")
-        .join("topics")
-        .exists());
-    assert!(fixture_copy
-        .join("wiki")
-        .join("drafts")
-        .join("indices")
-        .join("packages")
-        .exists());
+    assert!(
+        fixture_copy
+            .join("wiki")
+            .join("drafts")
+            .join("topics")
+            .exists()
+    );
+    assert!(
+        fixture_copy
+            .join("wiki")
+            .join("drafts")
+            .join("indices")
+            .join("packages")
+            .exists()
+    );
     let written_paths = payload["written_paths"].as_array().expect("written_paths");
-    assert!(written_paths.iter().any(|item| item
-        .as_str()
-        .unwrap_or_default()
-        .starts_with("wiki/drafts/topics/")));
-    assert!(written_paths.iter().any(|item| item
-        .as_str()
-        .unwrap_or_default()
-        .starts_with("wiki/drafts/indices/packages/")));
+    assert!(written_paths.iter().any(|item| {
+        item.as_str()
+            .unwrap_or_default()
+            .starts_with("wiki/drafts/topics/")
+    }));
+    assert!(written_paths.iter().any(|item| {
+        item.as_str()
+            .unwrap_or_default()
+            .starts_with("wiki/drafts/indices/packages/")
+    }));
 }
 
 #[test]

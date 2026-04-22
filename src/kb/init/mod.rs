@@ -3,8 +3,8 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::Result;
-use include_dir::{include_dir, Dir};
-use serde_json::{json, Value};
+use include_dir::{Dir, include_dir};
+use serde_json::{Value, json};
 
 use crate::common::{now_iso, relative_posix, write_markdown};
 use crate::compile::scan_compile_delta;

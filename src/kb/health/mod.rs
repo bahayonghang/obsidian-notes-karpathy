@@ -1,137 +1,29 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::Path;
+use std::sync::Arc;
 
 use anyhow::Result;
-use serde_json::{json, Value};
+use rayon::prelude::*;
+use serde_json::{Value, json};
+
+mod context;
+mod rules;
 
 use crate::common::{
-    extract_wikilinks, list_field, load_markdown, normalize_identity, parse_datetime,
-    record_identities, registry_for_records, resolve_target, slugify_identity, strip_link_alias,
-    ALIAS_WIKILINK_RE, TABLE_LINE_RE,
+    MarkdownRecord, list_field, load_markdown, parse_datetime, registry_for_records,
+    resolve_target, slugify_identity, strip_link_alias,
 };
 use crate::guidance::inspect_local_guidance;
-use crate::layout::collect_markdown_records;
 use crate::query::live_records;
 use crate::review::{reviewable_draft_records, scan_review_queue};
+use context::AuditContext;
+use rules::{
+    alias_wikilink_table_issues, broken_wikilink_issues, duplicate_identity_issues,
+    orphan_page_issues,
+};
 
-pub fn duplicate_identity_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
-    let mut identity_map: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
-    let mut identity_type: BTreeMap<String, String> = BTreeMap::new();
-    for record in records {
-        if !matches!(record.kind.as_str(), "concept" | "entity") || record.path.contains("/drafts/")
-        {
-            continue;
-        }
-        for identity in record_identities(record) {
-            let normalized = normalize_identity(&identity);
-            if normalized.is_empty() {
-                continue;
-            }
-            identity_map
-                .entry(normalized.clone())
-                .or_default()
-                .insert(record.path.clone());
-            identity_type.insert(normalized, record.kind.clone());
-        }
-    }
-    let mut issues = Vec::new();
-    for (normalized, paths) in identity_map {
-        if paths.len() < 2 {
-            continue;
-        }
-        issues.push(json!({
-            "kind": format!("duplicate_{}", identity_type.get(&normalized).cloned().unwrap_or_else(|| "concept".to_string())),
-            "normalized_key": slugify_identity(&normalized),
-            "paths": paths.into_iter().collect::<Vec<_>>(),
-        }));
-    }
-    issues
-}
-
-pub fn alias_wikilink_table_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
-    let mut issues = Vec::new();
-    for record in records {
-        for (index, line) in record.text.lines().enumerate() {
-            if !TABLE_LINE_RE.is_match(line) || !ALIAS_WIKILINK_RE.is_match(line) {
-                continue;
-            }
-            issues.push(json!({
-                "kind": "alias_wikilink_in_table",
-                "path": record.path,
-                "line": index + 1,
-                "excerpt": line.trim(),
-            }));
-        }
-    }
-    issues
-}
-
-pub fn broken_wikilink_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
-    let (by_path, by_basename) = registry_for_records(records);
-    let mut issues = Vec::new();
-    let mut seen = BTreeSet::new();
-    for record in records {
-        for target in extract_wikilinks(&record.text) {
-            let stripped = strip_link_alias(&target);
-            let key = format!("{}::{stripped}", record.path);
-            if !seen.insert(key) {
-                continue;
-            }
-            if resolve_target(record, &stripped, &by_path, &by_basename).is_empty() {
-                issues.push(json!({
-                    "kind": "broken_wikilink",
-                    "path": record.path,
-                    "target": stripped,
-                }));
-            }
-        }
-    }
-    issues
-}
-
-pub fn orphan_page_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
-    let (by_path, by_basename) = registry_for_records(records);
-    let mut inbound: BTreeMap<String, i64> = BTreeMap::new();
-    let trackable = records
-        .iter()
-        .filter(|record| {
-            matches!(
-                record.kind.as_str(),
-                "topic" | "concept" | "entity" | "summary" | "qa"
-            ) && !record.basename().starts_with('_')
-                && !record.path.contains("/drafts/")
-        })
-        .cloned()
-        .collect::<Vec<_>>();
-
-    for record in records {
-        for target in extract_wikilinks(&record.text) {
-            for resolved in resolve_target(record, &target, &by_path, &by_basename) {
-                *inbound.entry(resolved.path_no_ext()).or_insert(0) += 1;
-            }
-        }
-    }
-
-    let mut issues = Vec::new();
-    for record in trackable {
-        if inbound
-            .get(&record.path_no_ext())
-            .copied()
-            .unwrap_or_default()
-            > 0
-        {
-            continue;
-        }
-        issues.push(json!({
-            "kind": "orphan_page",
-            "path": record.path,
-        }));
-    }
-    issues
-}
-
-pub fn stale_qa_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn stale_qa_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let (by_path, by_basename) = registry_for_records(records);
     let mut issues = Vec::new();
     for record in records {
@@ -152,10 +44,10 @@ pub fn stale_qa_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> 
                 .or_else(|| parse_datetime(candidate.frontmatter.get("approved_at")))
                 .or_else(|| parse_datetime(candidate.frontmatter.get("compiled_at")))
                 .or_else(|| parse_datetime(candidate.frontmatter.get("date")));
-            if let Some(updated_at) = updated_at {
-                if updated_at > asked_at {
-                    newer_sources.push(candidate.path.clone());
-                }
+            if let Some(updated_at) = updated_at
+                && updated_at > asked_at
+            {
+                newer_sources.push(candidate.path.clone());
             }
         }
         if !newer_sources.is_empty() {
@@ -172,8 +64,8 @@ pub fn stale_qa_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> 
 }
 
 pub fn briefing_staleness_issues(vault_root: &Path) -> Result<Vec<String>> {
-    let records = collect_markdown_records(vault_root)?;
-    Ok(briefing_staleness_issue_values(vault_root, &records)?
+    let ctx = AuditContext::load(vault_root)?;
+    Ok(briefing_staleness_issue_values(ctx.records())?
         .into_iter()
         .filter_map(|item| {
             item.get("kind")
@@ -184,8 +76,7 @@ pub fn briefing_staleness_issues(vault_root: &Path) -> Result<Vec<String>> {
 }
 
 fn briefing_staleness_issue_values(
-    _vault_root: &Path,
-    records: &[crate::common::MarkdownRecord],
+    records: &[Arc<crate::common::MarkdownRecord>],
 ) -> Result<Vec<Value>> {
     let (by_path, by_basename) = registry_for_records(records);
     let mut issues = Vec::new();
@@ -206,34 +97,31 @@ fn briefing_staleness_issue_values(
             let candidate_time = parse_datetime(source.frontmatter.get("updated_at"))
                 .or_else(|| parse_datetime(source.frontmatter.get("approved_at")))
                 .or_else(|| parse_datetime(source.frontmatter.get("compiled_at")));
-            if let Some(candidate_time) = candidate_time {
-                if newest_source_time
+            if let Some(candidate_time) = candidate_time
+                && newest_source_time
                     .map(|current| candidate_time > current)
                     .unwrap_or(true)
-                {
-                    newest_source_time = Some(candidate_time);
-                    newest_source_path = Some(source.path.clone());
-                }
+            {
+                newest_source_time = Some(candidate_time);
+                newest_source_path = Some(source.path.clone());
             }
         }
 
         let mut stale = false;
         let mut reason = None;
-        if let (Some(newest_source_time), Some(updated_at)) = (newest_source_time, updated_at) {
-            if newest_source_time > updated_at {
-                stale = true;
-                reason = Some("source_live_page_newer_than_briefing");
-            }
+        if let (Some(newest_source_time), Some(updated_at)) = (newest_source_time, updated_at)
+            && newest_source_time > updated_at
+        {
+            stale = true;
+            reason = Some("source_live_page_newer_than_briefing");
         }
-        if !stale {
-            if let (Some(newest_source_time), Some(staleness_after)) =
+        if !stale
+            && let (Some(newest_source_time), Some(staleness_after)) =
                 (newest_source_time, staleness_after)
-            {
-                if newest_source_time > staleness_after {
-                    stale = true;
-                    reason = Some("staleness_threshold_crossed");
-                }
-            }
+            && newest_source_time > staleness_after
+        {
+            stale = true;
+            reason = Some("staleness_threshold_crossed");
         }
         if stale {
             issues.push(json!({
@@ -247,7 +135,7 @@ fn briefing_staleness_issue_values(
     Ok(issues)
 }
 
-pub fn weak_live_sources_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn weak_live_sources_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     live_records(records)
         .into_iter()
         .filter(|record| {
@@ -268,7 +156,7 @@ pub fn weak_live_sources_issues(records: &[crate::common::MarkdownRecord]) -> Ve
         .collect()
 }
 
-pub fn memory_knowledge_mix_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn memory_knowledge_mix_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let knowledge_keys = [
         "sources",
         "source_file",
@@ -341,7 +229,7 @@ pub fn memory_knowledge_mix_issues(records: &[crate::common::MarkdownRecord]) ->
     issues
 }
 
-pub fn writeback_backlog_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn writeback_backlog_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let mut issues = Vec::new();
     for record in records {
         if !(record.path.starts_with("outputs/qa/") || record.path.starts_with("outputs/content/"))
@@ -375,7 +263,9 @@ pub fn writeback_backlog_issues(records: &[crate::common::MarkdownRecord]) -> Ve
     issues
 }
 
-pub fn missing_confidence_metadata_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn missing_confidence_metadata_issues(
+    records: &[Arc<crate::common::MarkdownRecord>],
+) -> Vec<Value> {
     let required_keys = [
         "confidence_score",
         "confidence_band",
@@ -436,7 +326,7 @@ pub fn missing_confidence_metadata_issues(records: &[crate::common::MarkdownReco
     issues
 }
 
-pub fn confidence_decay_due_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn confidence_decay_due_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let now = chrono::Utc::now();
     let mut issues = Vec::new();
     for record in live_records(records) {
@@ -465,7 +355,7 @@ pub fn confidence_decay_due_issues(records: &[crate::common::MarkdownRecord]) ->
     issues
 }
 
-pub fn supersession_gap_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn supersession_gap_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let (by_path, by_basename) = registry_for_records(records);
     let mut issues = Vec::new();
     for record in live_records(records) {
@@ -523,7 +413,7 @@ pub fn supersession_gap_issues(records: &[crate::common::MarkdownRecord]) -> Vec
     issues
 }
 
-pub fn episodic_backlog_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn episodic_backlog_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     records
         .iter()
         .filter(|record| record.kind == "episode")
@@ -549,7 +439,7 @@ pub fn episodic_backlog_issues(records: &[crate::common::MarkdownRecord]) -> Vec
         .collect()
 }
 
-pub fn graph_gap_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn graph_gap_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let mut issues = Vec::new();
     for record in live_records(records) {
         if !matches!(
@@ -586,10 +476,10 @@ fn creator_account_key(record: &crate::common::MarkdownRecord) -> String {
         "creator_profile",
         "source_profile",
     ] {
-        if let Some(Value::String(value)) = record.frontmatter.get(key) {
-            if !value.trim().is_empty() {
-                return slugify_identity(value);
-            }
+        if let Some(Value::String(value)) = record.frontmatter.get(key)
+            && !value.trim().is_empty()
+        {
+            return slugify_identity(value);
         }
     }
     let basename = record.basename();
@@ -616,7 +506,7 @@ fn creator_rules(record: &crate::common::MarkdownRecord) -> Value {
 
 pub fn creator_guidance_issues(
     vault_root: &Path,
-    records: &[crate::common::MarkdownRecord],
+    records: &[Arc<crate::common::MarkdownRecord>],
 ) -> Result<Vec<Value>> {
     let mut issues = Vec::new();
     let guidance = inspect_local_guidance(vault_root);
@@ -762,7 +652,7 @@ pub fn creator_guidance_issues(
     Ok(issues)
 }
 
-pub fn reuse_gap_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn reuse_gap_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     records
         .iter()
         .filter(|record| record.kind == "content_output")
@@ -773,7 +663,7 @@ pub fn reuse_gap_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value>
         .collect()
 }
 
-pub fn underused_source_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn underused_source_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let mut used_sources = BTreeSet::new();
     for record in records {
         if record.kind == "summary" && record.path.starts_with("wiki/live/") {
@@ -797,7 +687,7 @@ pub fn underused_source_issues(records: &[crate::common::MarkdownRecord]) -> Vec
         .collect()
 }
 
-pub fn unapproved_live_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn unapproved_live_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     live_records(records)
         .into_iter()
         .filter(|record| {
@@ -819,7 +709,7 @@ pub fn unapproved_live_issues(records: &[crate::common::MarkdownRecord]) -> Vec<
         .collect()
 }
 
-pub fn approved_conflict_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn approved_conflict_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     live_records(records)
         .into_iter()
         .filter(|record| {
@@ -853,7 +743,9 @@ pub fn review_backlog_issues(vault_root: &Path) -> Result<Vec<Value>> {
         .collect())
 }
 
-pub fn sensitivity_metadata_gap_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn sensitivity_metadata_gap_issues(
+    records: &[Arc<crate::common::MarkdownRecord>],
+) -> Vec<Value> {
     let allowed = [
         "qa",
         "content_output",
@@ -875,7 +767,7 @@ pub fn sensitivity_metadata_gap_issues(records: &[crate::common::MarkdownRecord]
         .collect()
 }
 
-pub fn private_scope_leak_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn private_scope_leak_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     records
         .iter()
         .filter(|record| matches!(record.kind.as_str(), "qa" | "briefing"))
@@ -919,7 +811,7 @@ pub fn audit_trail_gap_issues(vault_root: &Path) -> Vec<Value> {
     vec![json!({"kind": "audit_trail_gap", "path": "outputs/audit/operations.jsonl"})]
 }
 
-pub fn duplicate_alias_set_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn duplicate_alias_set_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let mut alias_map: BTreeMap<Vec<String>, Vec<String>> = BTreeMap::new();
     for record in live_records(records) {
         if !matches!(record.kind.as_str(), "topic" | "concept" | "entity") {
@@ -947,7 +839,7 @@ pub fn duplicate_alias_set_issues(records: &[crate::common::MarkdownRecord]) -> 
         .collect()
 }
 
-pub fn volatile_page_stale_issues(records: &[crate::common::MarkdownRecord]) -> Vec<Value> {
+pub fn volatile_page_stale_issues(records: &[Arc<crate::common::MarkdownRecord>]) -> Vec<Value> {
     let thresholds: BTreeMap<&str, i64> = crate::config::VOLATILITY_THRESHOLDS
         .iter()
         .copied()
@@ -991,35 +883,46 @@ pub fn volatile_page_stale_issues(records: &[crate::common::MarkdownRecord]) -> 
     issues
 }
 
+type RecordRule = fn(&[Arc<MarkdownRecord>]) -> Vec<Value>;
+
+fn collect_record_rule_issues(ctx: &AuditContext) -> Vec<Value> {
+    let rules: [RecordRule; 21] = [
+        alias_wikilink_table_issues,
+        duplicate_identity_issues,
+        missing_confidence_metadata_issues,
+        confidence_decay_due_issues,
+        supersession_gap_issues,
+        stale_qa_issues,
+        writeback_backlog_issues,
+        episodic_backlog_issues,
+        broken_wikilink_issues,
+        orphan_page_issues,
+        duplicate_alias_set_issues,
+        volatile_page_stale_issues,
+        memory_knowledge_mix_issues,
+        graph_gap_issues,
+        reuse_gap_issues,
+        underused_source_issues,
+        unapproved_live_issues,
+        weak_live_sources_issues,
+        approved_conflict_issues,
+        private_scope_leak_issues,
+        sensitivity_metadata_gap_issues,
+    ];
+    rules
+        .par_iter()
+        .flat_map_iter(|rule| rule(ctx.records()))
+        .collect()
+}
+
 pub fn audit_vault_mechanics(vault_root: &Path) -> Result<Value> {
-    let records = collect_markdown_records(vault_root)?;
-    let mut issues = Vec::new();
-    issues.extend(alias_wikilink_table_issues(&records));
-    issues.extend(duplicate_identity_issues(&records));
-    issues.extend(missing_confidence_metadata_issues(&records));
-    issues.extend(confidence_decay_due_issues(&records));
-    issues.extend(supersession_gap_issues(&records));
-    issues.extend(stale_qa_issues(&records));
-    issues.extend(writeback_backlog_issues(&records));
-    issues.extend(episodic_backlog_issues(&records));
-    issues.extend(broken_wikilink_issues(&records));
-    issues.extend(orphan_page_issues(&records));
-    issues.extend(duplicate_alias_set_issues(&records));
-    issues.extend(volatile_page_stale_issues(&records));
-    issues.extend(memory_knowledge_mix_issues(&records));
-    issues.extend(graph_gap_issues(&records));
-    issues.extend(creator_guidance_issues(vault_root, &records)?);
-    issues.extend(reuse_gap_issues(&records));
-    issues.extend(underused_source_issues(&records));
-    issues.extend(unapproved_live_issues(&records));
-    issues.extend(weak_live_sources_issues(&records));
-    issues.extend(approved_conflict_issues(&records));
-    issues.extend(review_backlog_issues(vault_root)?);
-    issues.extend(private_scope_leak_issues(&records));
-    issues.extend(sensitivity_metadata_gap_issues(&records));
-    issues.extend(procedural_promotion_gap_issues(vault_root)?);
-    issues.extend(audit_trail_gap_issues(vault_root));
-    issues.extend(briefing_staleness_issue_values(vault_root, &records)?);
+    let ctx = AuditContext::load(vault_root)?;
+    let mut issues = collect_record_rule_issues(&ctx);
+    issues.extend(creator_guidance_issues(ctx.vault_root(), ctx.records())?);
+    issues.extend(review_backlog_issues(ctx.vault_root())?);
+    issues.extend(procedural_promotion_gap_issues(ctx.vault_root())?);
+    issues.extend(audit_trail_gap_issues(ctx.vault_root()));
+    issues.extend(briefing_staleness_issue_values(ctx.records())?);
 
     issues.sort_by_key(|issue| {
         (
@@ -1049,8 +952,10 @@ pub fn audit_vault_mechanics(vault_root: &Path) -> Result<Value> {
         *issue_counts.entry(kind).or_insert(0_i64) += 1;
     }
     let audit = crate::payload::HealthAudit {
-        vault_root: crate::common::normalize_path_string(vault_root.to_string_lossy().as_ref()),
-        layout_family: crate::layout::detect_layout_family(vault_root).to_string(),
+        vault_root: crate::common::normalize_path_string(
+            ctx.vault_root().to_string_lossy().as_ref(),
+        ),
+        layout_family: ctx.layout_family().to_string(),
         issue_counts,
         issues,
     };

@@ -3,7 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::audit_log;
 use crate::common::{list_field, now_iso};

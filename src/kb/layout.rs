@@ -2,16 +2,17 @@ use std::collections::BTreeMap;
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use anyhow::Result;
 use chrono::{DateTime, Timelike, Utc};
 use once_cell::sync::Lazy;
 use regex::Regex;
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 use sha2::{Digest, Sha256};
 
 use crate::common::{
-    iter_markdown_records, load_markdown, normalize_path_string, relative_posix, MarkdownRecord,
+    MarkdownRecord, iter_markdown_records, load_markdown, normalize_path_string, relative_posix,
 };
 
 pub static ARXIV_ID_RE: Lazy<Regex> =
@@ -163,14 +164,12 @@ pub fn resolve_vault_profile(vault_root: &Path) -> String {
         return profile;
     }
     let index_path = vault_root.join("wiki").join("index.md");
-    if index_path.exists() {
-        if let Ok(record) = load_markdown(&index_path, Some(vault_root)) {
-            if let Some(Value::String(profile)) = record.frontmatter.get("kb_profile") {
-                if !profile.trim().is_empty() {
-                    return profile.trim().to_string();
-                }
-            }
-        }
+    if index_path.exists()
+        && let Ok(record) = load_markdown(&index_path, Some(vault_root))
+        && let Some(Value::String(profile)) = record.frontmatter.get("kb_profile")
+        && !profile.trim().is_empty()
+    {
+        return profile.trim().to_string();
     }
     DEFAULT_KB_PROFILE.to_string()
 }
@@ -279,33 +278,33 @@ pub fn pdf_ingest_plan(
     );
 
     let sidecar_path = sidecar_for_pdf(raw_path);
-    if sidecar_path.exists() {
-        if let Ok(sidecar_record) = load_markdown(&sidecar_path, Some(vault_root)) {
-            plan.insert(
-                "metadata_path".to_string(),
-                json!(sidecar_record.path.clone()),
-            );
-            if let Some(Value::String(title)) = sidecar_record.frontmatter.get("title") {
-                if !title.trim().is_empty() {
-                    plan.insert("paper_title".to_string(), json!(title.trim()));
-                }
-            }
-            if let Some(Value::String(source_url)) = sidecar_record.frontmatter.get("source") {
-                if !source_url.trim().is_empty() {
-                    plan.insert("source_url".to_string(), json!(source_url.trim()));
-                }
-            }
-            for (source_name, candidate) in [
-                ("paper_id", sidecar_record.frontmatter.get("paper_id")),
-                ("source", sidecar_record.frontmatter.get("source")),
-            ] {
-                if let Some(Value::String(text)) = candidate {
-                    if let Some(handle) = extract_paper_handle(text) {
-                        plan.insert("paper_handle".to_string(), json!(handle));
-                        plan.insert("paper_handle_source".to_string(), json!(source_name));
-                        break;
-                    }
-                }
+    if sidecar_path.exists()
+        && let Ok(sidecar_record) = load_markdown(&sidecar_path, Some(vault_root))
+    {
+        plan.insert(
+            "metadata_path".to_string(),
+            json!(sidecar_record.path.clone()),
+        );
+        if let Some(Value::String(title)) = sidecar_record.frontmatter.get("title")
+            && !title.trim().is_empty()
+        {
+            plan.insert("paper_title".to_string(), json!(title.trim()));
+        }
+        if let Some(Value::String(source_url)) = sidecar_record.frontmatter.get("source")
+            && !source_url.trim().is_empty()
+        {
+            plan.insert("source_url".to_string(), json!(source_url.trim()));
+        }
+        for (source_name, candidate) in [
+            ("paper_id", sidecar_record.frontmatter.get("paper_id")),
+            ("source", sidecar_record.frontmatter.get("source")),
+        ] {
+            if let Some(Value::String(text)) = candidate
+                && let Some(handle) = extract_paper_handle(text)
+            {
+                plan.insert("paper_handle".to_string(), json!(handle));
+                plan.insert("paper_handle_source".to_string(), json!(source_name));
+                break;
             }
         }
     }
@@ -458,7 +457,7 @@ pub fn compute_hash(path: &Path) -> Result<String> {
         .collect())
 }
 
-pub fn collect_markdown_records(vault_root: &Path) -> Result<Vec<MarkdownRecord>> {
+pub fn collect_markdown_records(vault_root: &Path) -> Result<Vec<Arc<MarkdownRecord>>> {
     let layout_family = detect_layout_family(vault_root);
     let mut records = if layout_family == "review-gated" {
         iter_markdown_records(

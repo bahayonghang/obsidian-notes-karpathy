@@ -52,7 +52,7 @@ impl MarkdownRecord {
     }
 }
 
-pub fn load_markdown(path: &Path, vault_root: Option<&Path>) -> Result<MarkdownRecord> {
+pub fn load_markdown(path: &Path, vault_root: Option<&Path>) -> Result<Arc<MarkdownRecord>> {
     let rel_path = match vault_root {
         Some(root) if path.is_absolute() => relative_posix(path, root),
         _ => normalize_path_string(path.to_string_lossy().as_ref()),
@@ -60,13 +60,13 @@ pub fn load_markdown(path: &Path, vault_root: Option<&Path>) -> Result<MarkdownR
     let text =
         fs::read_to_string(path).with_context(|| format!("read markdown {}", path.display()))?;
     let (frontmatter, body) = parse_frontmatter(&text);
-    Ok(MarkdownRecord {
+    Ok(Arc::new(MarkdownRecord {
         path: rel_path.clone(),
         kind: classify_markdown_path(&rel_path),
         text,
         body,
         frontmatter,
-    })
+    }))
 }
 
 pub fn classify_markdown_path(rel_path: &str) -> String {
@@ -232,10 +232,10 @@ pub fn parse_scalar(value: &str) -> Value {
     if let Ok(number) = stripped.parse::<i64>() {
         return Value::Number(number.into());
     }
-    if let Ok(number) = stripped.parse::<f64>() {
-        if let Some(value) = Number::from_f64(number) {
-            return Value::Number(value);
-        }
+    if let Ok(number) = stripped.parse::<f64>()
+        && let Some(value) = Number::from_f64(number)
+    {
+        return Value::Number(value);
     }
     if stripped == "true" {
         return Value::Bool(true);
@@ -311,7 +311,10 @@ pub fn parse_datetime(value: Option<&Value>) -> Option<DateTime<Utc>> {
         .map(|value| value.with_timezone(&Utc))
 }
 
-pub fn iter_markdown_records(vault_root: &Path, roots: &[&str]) -> Result<Vec<MarkdownRecord>> {
+pub fn iter_markdown_records(
+    vault_root: &Path,
+    roots: &[&str],
+) -> Result<Vec<Arc<MarkdownRecord>>> {
     let mut records = Vec::new();
     for rel_root in roots {
         let root = vault_root.join(rel_root);
@@ -374,13 +377,15 @@ pub type RecordByPath = HashMap<String, Arc<MarkdownRecord>>;
 /// basename → records 的 Arc 共享倒排索引（basename 重名时有多个）。
 pub type RecordByBasename = HashMap<String, Vec<Arc<MarkdownRecord>>>;
 
-pub fn registry_for_records(records: &[MarkdownRecord]) -> (RecordByPath, RecordByBasename) {
+pub fn registry_for_records(records: &[Arc<MarkdownRecord>]) -> (RecordByPath, RecordByBasename) {
     let mut by_path: RecordByPath = HashMap::new();
     let mut by_basename: RecordByBasename = HashMap::new();
     for record in records {
-        let arc = Arc::new(record.clone());
-        by_path.insert(record.path_no_ext(), Arc::clone(&arc));
-        by_basename.entry(record.basename()).or_default().push(arc);
+        by_path.insert(record.path_no_ext(), Arc::clone(record));
+        by_basename
+            .entry(record.basename())
+            .or_default()
+            .push(Arc::clone(record));
     }
     (by_path, by_basename)
 }
@@ -447,10 +452,10 @@ pub fn slugify_identity(value: &str) -> String {
 
 pub fn record_identities(record: &MarkdownRecord) -> Vec<String> {
     let mut identities = Vec::new();
-    if let Some(Value::String(title)) = record.frontmatter.get("title") {
-        if !title.trim().is_empty() {
-            identities.push(title.trim().to_string());
-        }
+    if let Some(Value::String(title)) = record.frontmatter.get("title")
+        && !title.trim().is_empty()
+    {
+        identities.push(title.trim().to_string());
     }
     identities.push(record.basename().replace('-', " "));
     identities.push(record.basename());

@@ -30,6 +30,20 @@ fn run_json(args: &[&str]) -> Value {
     serde_json::from_slice(&output).expect("valid json")
 }
 
+fn run_stdout(args: &[&str]) -> String {
+    String::from_utf8(
+        Command::cargo_bin("onkb")
+            .expect("binary")
+            .args(args)
+            .assert()
+            .success()
+            .get_output()
+            .stdout
+            .clone(),
+    )
+    .expect("utf8 stdout")
+}
+
 fn copy_dir(source: &Path, target: &Path) {
     for entry in WalkDir::new(source) {
         let entry = entry.expect("walkdir");
@@ -51,6 +65,28 @@ fn doctor_reports_embedded_bundle() {
     let payload = run_json(&["--json", "doctor"]);
     assert_eq!(payload["embedded_assets_detected"], Value::Bool(true));
     assert_eq!(payload["skill_bundle_available"], Value::Bool(true));
+}
+
+#[test]
+fn version_command_reports_package_version() {
+    let stdout = run_stdout(&["version"]);
+    assert_eq!(stdout.trim(), concat!("onkb ", env!("CARGO_PKG_VERSION")));
+}
+
+#[test]
+fn clap_version_flag_reports_package_version() {
+    let stdout = run_stdout(&["--version"]);
+    assert_eq!(stdout.trim(), concat!("onkb ", env!("CARGO_PKG_VERSION")));
+}
+
+#[test]
+fn doctor_default_output_is_human_readable() {
+    let stdout = run_stdout(&["doctor"]);
+    assert!(stdout.contains("onkb doctor"));
+    assert!(stdout.contains(&format!("version: {}", env!("CARGO_PKG_VERSION"))));
+    assert!(stdout.contains("bundle: ready"));
+    assert!(stdout.contains("status: ready"));
+    assert!(!stdout.trim_start().starts_with('{'));
 }
 
 #[test]
@@ -89,12 +125,16 @@ fn query_scope_keeps_live_boundary() {
     let excluded = payload["excluded_paths"]
         .as_array()
         .expect("excluded_paths");
-    assert!(included
-        .iter()
-        .any(|item| item.as_str() == Some("wiki/live/concepts/review-gate.md")));
-    assert!(excluded
-        .iter()
-        .any(|item| item.as_str() == Some("raw/human/articles/2026-04-05-approved-summary.md")));
+    assert!(
+        included
+            .iter()
+            .any(|item| item.as_str() == Some("wiki/live/concepts/review-gate.md"))
+    );
+    assert!(
+        excluded
+            .iter()
+            .any(|item| item.as_str() == Some("raw/human/articles/2026-04-05-approved-summary.md"))
+    );
 }
 
 #[test]
@@ -109,17 +149,21 @@ fn init_scaffolds_governance_assets() {
         "--include-governance",
     ]);
     assert!(target.join("AGENTS.md").exists());
-    assert!(target
-        .join("wiki")
-        .join("live")
-        .join("indices")
-        .join("QUESTIONS.md")
-        .exists());
-    assert!(payload["created_dirs"]
-        .as_array()
-        .expect("created_dirs")
-        .iter()
-        .any(|item| item.as_str() == Some("raw/human/articles")));
+    assert!(
+        target
+            .join("wiki")
+            .join("live")
+            .join("indices")
+            .join("QUESTIONS.md")
+            .exists()
+    );
+    assert!(
+        payload["created_dirs"]
+            .as_array()
+            .expect("created_dirs")
+            .iter()
+            .any(|item| item.as_str() == Some("raw/human/articles"))
+    );
 }
 
 #[test]
@@ -128,26 +172,34 @@ fn migrate_preserves_and_rehomes_legacy_content() {
     let target = temp.path().join("needs-migration");
     copy_dir(&fixtures_root().join("needs-migration"), &target);
     let payload = run_json(&["--json", "migrate", target.to_str().unwrap()]);
-    assert!(target
-        .join("raw")
-        .join("articles")
-        .join("2026-03-20-old-pattern.md")
-        .exists());
-    assert!(target
-        .join("raw")
-        .join("human")
-        .join("articles")
-        .join("2026-03-20-old-pattern.md")
-        .exists());
-    assert!(target
-        .join("wiki")
-        .join("live")
-        .join("summaries")
-        .join("2026-03-20-old-pattern.md")
-        .exists());
-    assert!(target
-        .join(payload["migration_report"].as_str().unwrap())
-        .exists());
+    assert!(
+        target
+            .join("raw")
+            .join("articles")
+            .join("2026-03-20-old-pattern.md")
+            .exists()
+    );
+    assert!(
+        target
+            .join("raw")
+            .join("human")
+            .join("articles")
+            .join("2026-03-20-old-pattern.md")
+            .exists()
+    );
+    assert!(
+        target
+            .join("wiki")
+            .join("live")
+            .join("summaries")
+            .join("2026-03-20-old-pattern.md")
+            .exists()
+    );
+    assert!(
+        target
+            .join(payload["migration_report"].as_str().unwrap())
+            .exists()
+    );
 }
 
 #[test]

@@ -80,13 +80,15 @@ fn bundle_docs_and_registry_stay_consistent() {
     assert!(workflow_overview_zh.contains("<WorkflowLifecycleDiagram"));
     assert!(!workflow_overview.contains("```mermaid"));
     assert!(!workflow_overview_zh.contains("```mermaid"));
-    assert!(repo_root
-        .join("docs")
-        .join(".vitepress")
-        .join("theme")
-        .join("components")
-        .join("WorkflowLifecycleDiagram.vue")
-        .exists());
+    assert!(
+        repo_root
+            .join("docs")
+            .join(".vitepress")
+            .join("theme")
+            .join("components")
+            .join("WorkflowLifecycleDiagram.vue")
+            .exists()
+    );
 }
 
 #[test]

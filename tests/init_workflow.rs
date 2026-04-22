@@ -18,28 +18,34 @@ fn init_creates_canonical_starter_assets() {
         "--include-governance",
     ]);
 
-    assert!(payload["created_dirs"]
-        .as_array()
-        .expect("created_dirs")
-        .iter()
-        .any(|item| item.as_str() == Some("raw/human/articles")));
+    assert!(
+        payload["created_dirs"]
+            .as_array()
+            .expect("created_dirs")
+            .iter()
+            .any(|item| item.as_str() == Some("raw/human/articles"))
+    );
     assert!(fixture_copy.join("AGENTS.md").exists());
     assert!(fixture_copy.join("CLAUDE.md").exists());
     assert!(fixture_copy.join("MEMORY.md").exists());
     assert!(fixture_copy.join("raw").join("_manifest.yaml").exists());
     assert!(fixture_copy.join("wiki").join("index.md").exists());
     assert!(fixture_copy.join("wiki").join("log.md").exists());
-    assert!(fixture_copy
-        .join("wiki")
-        .join("briefings")
-        .join("researcher.md")
-        .exists());
-    assert!(fixture_copy
-        .join("wiki")
-        .join("live")
-        .join("indices")
-        .join("QUESTIONS.md")
-        .exists());
+    assert!(
+        fixture_copy
+            .join("wiki")
+            .join("briefings")
+            .join("researcher.md")
+            .exists()
+    );
+    assert!(
+        fixture_copy
+            .join("wiki")
+            .join("live")
+            .join("indices")
+            .join("QUESTIONS.md")
+            .exists()
+    );
     let manifest_text =
         fs::read_to_string(fixture_copy.join("raw").join("_manifest.yaml")).expect("manifest");
     assert!(manifest_text.contains("profile: \"governed-team\""));
@@ -64,11 +70,13 @@ fn init_preserves_existing_support_files_while_repairing_structure() {
     let original_live_text = fs::read_to_string(&live_path).expect("live text");
     let payload = run_json(&["--json", "init", fixture_copy.to_str().unwrap()]);
 
-    assert!(payload["preserved_files"]
-        .as_array()
-        .expect("preserved_files")
-        .iter()
-        .any(|item| item.as_str() == Some("wiki/index.md")));
+    assert!(
+        payload["preserved_files"]
+            .as_array()
+            .expect("preserved_files")
+            .iter()
+            .any(|item| item.as_str() == Some("wiki/index.md"))
+    );
     assert!(fixture_copy.join("wiki").join("drafts").exists());
     assert!(fixture_copy.join("wiki").join("briefings").exists());
     assert!(fixture_copy.join("outputs").join("reviews").exists());
@@ -115,31 +123,41 @@ fn migrate_preserves_originals_and_syncs_manifest() {
 
     let payload = run_json(&["--json", "migrate", fixture_copy.to_str().unwrap()]);
 
-    assert!(fixture_copy
-        .join("raw")
-        .join("articles")
-        .join("2026-03-20-old-pattern.md")
-        .exists());
-    assert!(fixture_copy
-        .join("raw")
-        .join("human")
-        .join("articles")
-        .join("2026-03-20-old-pattern.md")
-        .exists());
-    assert!(fixture_copy
-        .join("wiki")
-        .join("summaries")
-        .join("2026-03-20-old-pattern.md")
-        .exists());
-    assert!(fixture_copy
-        .join("wiki")
-        .join("live")
-        .join("summaries")
-        .join("2026-03-20-old-pattern.md")
-        .exists());
-    assert!(fixture_copy
-        .join(payload["migration_report"].as_str().unwrap())
-        .exists());
+    assert!(
+        fixture_copy
+            .join("raw")
+            .join("articles")
+            .join("2026-03-20-old-pattern.md")
+            .exists()
+    );
+    assert!(
+        fixture_copy
+            .join("raw")
+            .join("human")
+            .join("articles")
+            .join("2026-03-20-old-pattern.md")
+            .exists()
+    );
+    assert!(
+        fixture_copy
+            .join("wiki")
+            .join("summaries")
+            .join("2026-03-20-old-pattern.md")
+            .exists()
+    );
+    assert!(
+        fixture_copy
+            .join("wiki")
+            .join("live")
+            .join("summaries")
+            .join("2026-03-20-old-pattern.md")
+            .exists()
+    );
+    assert!(
+        fixture_copy
+            .join(payload["migration_report"].as_str().unwrap())
+            .exists()
+    );
     let manifest_text =
         fs::read_to_string(fixture_copy.join(payload["written_manifest"].as_str().unwrap()))
             .expect("manifest");
@@ -165,10 +183,12 @@ fn status_reports_stage_route_and_counts_for_key_states() {
         assert_eq!(payload["state"].as_str(), Some(expected_state));
         assert!(payload["counts"].get("raw_sources").is_some());
         assert!(payload["counts"].get("live_pages").is_some());
-        assert!(payload["summary"]
-            .as_str()
-            .unwrap_or_default()
-            .contains("Next step:"));
+        assert!(
+            payload["summary"]
+                .as_str()
+                .unwrap_or_default()
+                .contains("Next step:")
+        );
     }
 }
 

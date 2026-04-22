@@ -4,7 +4,7 @@ use std::path::Path;
 use anyhow::Result;
 use serde_json::Value;
 
-use crate::common::{iter_markdown_records, list_field, parse_number, MarkdownRecord};
+use crate::common::{MarkdownRecord, iter_markdown_records, list_field, parse_number};
 use crate::payload::{ReviewCounts, ReviewItem, ReviewQueue};
 
 pub const REVIEWABLE_DRAFT_ROOTS: [&str; 5] = [
@@ -20,6 +20,7 @@ pub fn reviewable_draft_records(vault_root: &Path) -> Result<Vec<MarkdownRecord>
     Ok(records
         .into_iter()
         .filter(|record| !record.basename().starts_with('_'))
+        .map(|record| (*record).clone())
         .collect())
 }
 

@@ -2,9 +2,9 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
-use crate::common::{json_string, list_field, now_iso, write_markdown, MarkdownRecord};
+use crate::common::{MarkdownRecord, json_string, list_field, now_iso, write_markdown};
 use crate::layout::collect_markdown_records;
 use crate::payload::RenderResult;
 
@@ -102,7 +102,7 @@ pub fn render_artifact(
 fn records_by_path(vault_root: &Path) -> Result<std::collections::HashMap<String, MarkdownRecord>> {
     Ok(collect_markdown_records(vault_root)?
         .into_iter()
-        .map(|record| (record.path.clone(), record))
+        .map(|record| (record.path.clone(), (*record).clone()))
         .collect())
 }
 
@@ -169,16 +169,16 @@ fn default_output_path(mode: &str, title_slug: &str) -> String {
 }
 
 fn resolve_title(records: &[MarkdownRecord], explicit_title: Option<&str>) -> String {
-    if let Some(title) = explicit_title {
-        if !title.trim().is_empty() {
-            return title.trim().to_string();
-        }
+    if let Some(title) = explicit_title
+        && !title.trim().is_empty()
+    {
+        return title.trim().to_string();
     }
     if let Some(record) = records.first() {
-        if let Some(title) = record.frontmatter.get("title").and_then(Value::as_str) {
-            if !title.trim().is_empty() {
-                return title.trim().to_string();
-            }
+        if let Some(title) = record.frontmatter.get("title").and_then(Value::as_str)
+            && !title.trim().is_empty()
+        {
+            return title.trim().to_string();
         }
         return record.basename().replace('-', " ").to_string();
     }

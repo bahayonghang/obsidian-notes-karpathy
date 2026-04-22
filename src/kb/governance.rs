@@ -3,7 +3,7 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::audit_log;
 use crate::common::{list_field, slugify_identity};
@@ -85,10 +85,11 @@ pub fn build_governance_indices(vault_root: &Path) -> Result<Value> {
                 questions.push(question);
             }
         }
-        if let Some(Value::String(question)) = record.frontmatter.get("question") {
-            if !question.trim().is_empty() && seen_questions.insert(question.trim().to_string()) {
-                questions.push(question.trim().to_string());
-            }
+        if let Some(Value::String(question)) = record.frontmatter.get("question")
+            && !question.trim().is_empty()
+            && seen_questions.insert(question.trim().to_string())
+        {
+            questions.push(question.trim().to_string());
         }
 
         let canonical = record

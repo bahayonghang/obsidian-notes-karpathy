@@ -1,12 +1,13 @@
 use std::collections::BTreeSet;
 use std::path::Path;
+use std::sync::Arc;
 
 use anyhow::Result;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use serde_json::Value;
 
-use crate::common::{list_field, load_markdown, MarkdownRecord};
+use crate::common::{MarkdownRecord, list_field, load_markdown};
 use crate::layout::{collect_markdown_records, resolve_vault_profile};
 use crate::payload::{QueryRanked, QueryScope, RankedEntry, ScopeLeak, SensitivityCandidate};
 
@@ -162,7 +163,7 @@ pub fn query_scope(vault_root: &Path) -> Result<Value> {
     Ok(serde_json::to_value(&scope)?)
 }
 
-pub fn live_records(records: &[MarkdownRecord]) -> Vec<MarkdownRecord> {
+pub fn live_records(records: &[Arc<MarkdownRecord>]) -> Vec<Arc<MarkdownRecord>> {
     records
         .iter()
         .filter(|record| record.path.starts_with("wiki/live/"))

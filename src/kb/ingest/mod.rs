@@ -3,7 +3,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::common::{list_field, load_markdown, now_iso, parse_scalar, relative_posix};
 use crate::layout::{
@@ -79,11 +79,13 @@ fn source_record(
     source_class: &str,
 ) -> Result<Option<crate::common::MarkdownRecord>> {
     if source_class == "markdown" {
-        return Ok(Some(load_markdown(raw_path, Some(vault_root))?));
+        return Ok(Some((*load_markdown(raw_path, Some(vault_root))?).clone()));
     }
     let sidecar_path = sidecar_for_pdf(raw_path);
     if sidecar_path.exists() {
-        return Ok(Some(load_markdown(&sidecar_path, Some(vault_root))?));
+        return Ok(Some(
+            (*load_markdown(&sidecar_path, Some(vault_root))?).clone(),
+        ));
     }
     Ok(None)
 }
@@ -139,11 +141,11 @@ pub fn manifest_optional_metadata_for_source(
     let mut source_profile = String::new();
     if let Some(record) = record.as_ref() {
         for key in ["source_profile", "account_id", "creator_profile", "channel"] {
-            if let Some(Value::String(value)) = record.frontmatter.get(key) {
-                if !value.trim().is_empty() {
-                    source_profile = value.trim().to_string();
-                    break;
-                }
+            if let Some(Value::String(value)) = record.frontmatter.get(key)
+                && !value.trim().is_empty()
+            {
+                source_profile = value.trim().to_string();
+                break;
             }
         }
     }
@@ -159,12 +161,11 @@ pub fn manifest_optional_metadata_for_source(
     if !source_profile.is_empty() {
         payload.insert("source_profile".to_string(), json!(source_profile));
     }
-    if let Some(plan) = plan {
-        if let Some(Value::String(metadata_path)) = plan.get("metadata_path") {
-            if !metadata_path.trim().is_empty() {
-                payload.insert("metadata_path".to_string(), json!(metadata_path.trim()));
-            }
-        }
+    if let Some(plan) = plan
+        && let Some(Value::String(metadata_path)) = plan.get("metadata_path")
+        && !metadata_path.trim().is_empty()
+    {
+        payload.insert("metadata_path".to_string(), json!(metadata_path.trim()));
     }
     Ok(payload)
 }
@@ -246,22 +247,22 @@ pub fn load_source_manifest(vault_root: &Path) -> Result<Value> {
                 continue;
             }
         }
-        if let Some(field) = active_list_field.as_ref() {
-            if let Some(stripped) = raw_line.strip_prefix("      - ") {
-                current_map
-                    .entry(field.clone())
-                    .or_insert_with(|| Value::Array(Vec::new()))
-                    .as_array_mut()
-                    .expect("manifest list")
-                    .push(parse_manifest_scalar(stripped));
-                continue;
-            }
+        if let Some(field) = active_list_field.as_ref()
+            && let Some(stripped) = raw_line.strip_prefix("      - ")
+        {
+            current_map
+                .entry(field.clone())
+                .or_insert_with(|| Value::Array(Vec::new()))
+                .as_array_mut()
+                .expect("manifest list")
+                .push(parse_manifest_scalar(stripped));
+            continue;
         }
         active_list_field = None;
-        if raw_line.starts_with("    ") {
-            if let Some((key, value)) = raw_line.trim().split_once(':') {
-                current_map.insert(key.trim().to_string(), parse_manifest_scalar(value));
-            }
+        if raw_line.starts_with("    ")
+            && let Some((key, value)) = raw_line.trim().split_once(':')
+        {
+            current_map.insert(key.trim().to_string(), parse_manifest_scalar(value));
         }
     }
 
@@ -427,20 +428,20 @@ fn source_url_or_handle(
 ) -> Result<String> {
     if let Some(plan) = plan {
         for key in ["source_url", "paper_handle"] {
-            if let Some(Value::String(value)) = plan.get(key) {
-                if !value.trim().is_empty() {
-                    return Ok(value.trim().to_string());
-                }
+            if let Some(Value::String(value)) = plan.get(key)
+                && !value.trim().is_empty()
+            {
+                return Ok(value.trim().to_string());
             }
         }
     }
     if source_class == "markdown" {
         let record = load_markdown(raw_path, Some(vault_root))?;
         for key in ["source", "paper_id"] {
-            if let Some(Value::String(value)) = record.frontmatter.get(key) {
-                if !value.trim().is_empty() {
-                    return Ok(value.trim().to_string());
-                }
+            if let Some(Value::String(value)) = record.frontmatter.get(key)
+                && !value.trim().is_empty()
+            {
+                return Ok(value.trim().to_string());
             }
         }
     }
@@ -448,10 +449,10 @@ fn source_url_or_handle(
     if sidecar_path.exists() {
         let record = load_markdown(&sidecar_path, Some(vault_root))?;
         for key in ["source", "paper_id"] {
-            if let Some(Value::String(value)) = record.frontmatter.get(key) {
-                if !value.trim().is_empty() {
-                    return Ok(value.trim().to_string());
-                }
+            if let Some(Value::String(value)) = record.frontmatter.get(key)
+                && !value.trim().is_empty()
+            {
+                return Ok(value.trim().to_string());
             }
         }
     }
@@ -532,12 +533,11 @@ fn manifest_entry_for_source(
     for (key, value) in optional_meta {
         entry.insert(key, value);
     }
-    if let Some(plan) = plan {
-        if let Some(Value::String(ingest_plan)) = plan.get("ingest_plan") {
-            if ingest_plan == "paper-workbench" || ingest_plan == "skip" {
-                entry.insert("deferred_to".to_string(), json!("paper-workbench"));
-            }
-        }
+    if let Some(plan) = plan
+        && let Some(Value::String(ingest_plan)) = plan.get("ingest_plan")
+        && (ingest_plan == "paper-workbench" || ingest_plan == "skip")
+    {
+        entry.insert("deferred_to".to_string(), json!("paper-workbench"));
     }
     Ok(entry)
 }

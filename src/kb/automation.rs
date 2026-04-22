@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::compile::scan_compile_delta;
 use crate::episodes::{build_memory_episodes, write_memory_episodes};

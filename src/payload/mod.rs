@@ -23,6 +23,13 @@ pub struct DoctorPayload {
     pub missing_steps: Vec<String>,
 }
 
+/// `onkb version` 的返回结构。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VersionPayload {
+    pub name: String,
+    pub version: String,
+}
+
 /// `onkb skill install` 的单个目标结果。
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SkillInstallTarget {

@@ -2,7 +2,7 @@ use std::fs;
 use std::path::Path;
 
 use anyhow::{Context, Result};
-use include_dir::{include_dir, Dir};
+use include_dir::{Dir, include_dir};
 use serde_json::Value;
 
 use crate::payload::{SkillInstallPayload, SkillInstallTarget};
