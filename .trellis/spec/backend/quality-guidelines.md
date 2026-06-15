@@ -29,6 +29,10 @@ runtime code, public docs, skill contracts, fixtures, or generated payloads.
   depends on realistic vault state.
 - Use `insta` JSON snapshots for stable payload compatibility. Redact unstable
   fields such as timestamps, local vault roots, and binary paths.
+- Do not let payload snapshots depend on the developer's real home directory or
+  installed companion skills. When a command reads companion skill homes, pass
+  `KB_COMPANION_SKILL_PATHS` with fixture homes and redact the reported search
+  roots.
 - Keep tests machine-readable by using `tests/common/mod.rs::run_json` for CLI
   commands that should return JSON.
 - Run docs contract tests when `README.md`, `README_CN.md`, `CLAUDE.md`,

@@ -12,7 +12,7 @@ use tempfile::tempdir;
 
 mod common;
 
-use common::{copy_dir, fixtures_root, run_json};
+use common::{copy_dir, fixtures_root, repo_root, run_json, run_json_with_env};
 
 const VAULT_REDACT: &str = "[VAULT]";
 const TS_REDACT: &str = "[TIMESTAMP]";
@@ -66,17 +66,26 @@ fn ingest_scan_needs_ingest_snapshot() {
 
 #[test]
 fn compile_scan_needs_compilation_snapshot() {
-    let payload = run_json(&[
-        "--json",
-        "compile",
-        "scan",
-        &fixture_str("needs-compilation"),
-    ]);
+    let skill_home_root = fixtures_root().join("companion-skill-homes");
+    let payload = run_json_with_env(
+        &[
+            "--json",
+            "compile",
+            "scan",
+            &fixture_str("needs-compilation"),
+        ],
+        &repo_root(),
+        &[(
+            "KB_COMPANION_SKILL_PATHS",
+            skill_home_root.join("both").to_str().unwrap(),
+        )],
+    );
     insta::assert_json_snapshot!("compile_scan_needs_compilation", payload, {
         ".vault_root" => VAULT_REDACT,
         ".items[].raw_mtime" => TS_REDACT,
         ".items[].last_verified_at" => TS_REDACT,
         ".items[].source_age_days" => "[AGE_DAYS]",
+        ".companion_skills.search_roots[]" => PATH_REDACT,
     });
 }
 

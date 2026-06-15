@@ -1,13 +1,12 @@
 ---
 source: tests/payload_compat.rs
+assertion_line: 78
 expression: payload
 ---
 {
   "companion_skills": {
     "search_roots": [
-      "C:/Users/lyh/.codex/skills",
-      "C:/Users/lyh/.claude/skills",
-      "C:/Users/lyh/.agents/skills"
+      "[PATH]"
     ],
     "skills": {
       "paper-workbench": true,
