@@ -65,6 +65,22 @@ pub struct SkillInstallArgs {
     #[arg(long)]
     pub codex: bool,
     #[arg(long)]
+    pub cursor: bool,
+    #[arg(long)]
+    pub windsurf: bool,
+    #[arg(long)]
+    pub kiro: bool,
+    #[arg(long)]
+    pub pi: bool,
+    #[arg(long)]
+    pub agents: bool,
+    #[arg(long)]
+    pub gemini: bool,
+    #[arg(long)]
+    pub all_local: bool,
+    #[arg(long)]
+    pub global: bool,
+    #[arg(long)]
     pub dir: Option<PathBuf>,
     #[arg(long)]
     pub overwrite: bool,

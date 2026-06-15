@@ -1,5 +1,3 @@
-use std::env;
-
 use anyhow::Result;
 use clap::Parser;
 use serde_json::json;
@@ -101,12 +99,7 @@ fn dispatch(cli: Cli) -> Result<CommandOutcome> {
 
 fn dispatch_skill(command: SkillCommand) -> Result<serde_json::Value> {
     match command {
-        SkillCommand::Install(args) => install_skills(
-            &args.dir.unwrap_or(env::current_dir()?),
-            args.claude,
-            args.codex,
-            args.overwrite,
-        ),
+        SkillCommand::Install(args) => install_skills(&args),
         SkillCommand::List => Ok(json!({"skills": list_skills()})),
         SkillCommand::Show { name } => Ok(json!({"name": name, "content": show_skill(&name)?})),
     }

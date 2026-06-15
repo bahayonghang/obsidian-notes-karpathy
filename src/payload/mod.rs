@@ -32,7 +32,20 @@ pub struct VersionPayload {
 
 /// `onkb skill install` 的单个目标结果。
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct SkillInstallTarget {
+    pub target_dir: String,
+    pub installed: Vec<String>,
+    pub skipped: Vec<String>,
+}
+
+/// `onkb skill install` 的可扩展目标结果。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub struct SkillInstallTargetResult {
+    pub key: String,
+    pub scope: String,
+    pub label: String,
     pub target_dir: String,
     pub installed: Vec<String>,
     pub skipped: Vec<String>,
@@ -40,9 +53,11 @@ pub struct SkillInstallTarget {
 
 /// `onkb skill install` 的完整返回。
 ///
-/// 字段随 `--claude` / `--codex` 开关决定是否出现，用 `skip_serializing_if` 处理。
+/// `targets` 始终存在；`claude` / `codex` 仅作为兼容旧客户端的可选字段保留。
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub struct SkillInstallPayload {
+    pub targets: Vec<SkillInstallTargetResult>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub claude: Option<SkillInstallTarget>,
     #[serde(skip_serializing_if = "Option::is_none")]
