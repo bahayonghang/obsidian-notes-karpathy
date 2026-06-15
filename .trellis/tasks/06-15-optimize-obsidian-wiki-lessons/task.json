@@ -1,0 +1,28 @@
+{
+  "id": "optimize-obsidian-wiki-lessons",
+  "name": "optimize-obsidian-wiki-lessons",
+  "title": "Optimize KB CLI and skill ecosystem from obsidian-wiki analysis",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-06-15",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-15-improve-onkb-install-targets"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
