@@ -19,3 +19,24 @@ Tests use Rust integration tests. When changing routing, vault mechanics, or con
 
 ## Commit & Pull Request Guidelines
 Follow the existing Conventional Commit pattern from history: `feat(知识库): ...`, `fix(知识库): ...`, `docs(知识库): ...`, or `build(仓库): ...`. Keep each commit focused on one concern and write imperative subjects. `just commit msg="..." type="feat"` is available for simple commits. Pull requests should explain the affected skills or docs pages, list verification commands run, call out any new fixture coverage, and include screenshots when `docs/` output changes.
+<!-- TRELLIS:START -->
+# Trellis Instructions
+
+These instructions are for AI assistants working in this project.
+
+This project is managed by Trellis. The working knowledge you need lives under `.trellis/`:
+
+- `.trellis/workflow.md` — development phases, when to create tasks, skill routing
+- `.trellis/spec/` — package- and layer-scoped coding guidelines (read before writing code in a given layer)
+- `.trellis/workspace/` — per-developer journals and session traces
+- `.trellis/tasks/` — active and archived tasks (PRDs, research, jsonl context)
+
+If a Trellis command is available on your platform (e.g. `/trellis:finish-work`, `/trellis:continue`), prefer it over manual steps. Not every platform exposes every command.
+
+If you're using Codex or another agent-capable tool, additional project-scoped helpers may live in:
+- `.agents/skills/` — reusable Trellis skills
+- `.codex/agents/` — optional custom subagents
+
+Managed by Trellis. Edits outside this block are preserved; edits inside may be overwritten by a future `trellis update`.
+
+<!-- TRELLIS:END -->
