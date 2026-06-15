@@ -67,3 +67,11 @@ Canonical workflow:
 cargo install --path . --locked
 onkb skill install
 ```
+
+`onkb skill install` defaults to safe local targets only: `.claude/skills` and
+`.agents/skills` under the current workspace. Use `--cursor --windsurf --kiro
+--pi` or `--all-local` for additional local homes. Use `--global --claude
+--codex --gemini --agents` for explicit user-home installs. Existing skill
+directories are skipped unless `--overwrite` is passed; the JSON output reports
+all selected targets in `targets[]`. This command copies embedded skills only
+and does not write bootstrap files, rules, or steering files.

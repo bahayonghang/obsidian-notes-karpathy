@@ -220,6 +220,28 @@ cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karp
 onkb skill install
 ```
 
+默认情况下，`onkb skill install` 只把内嵌运行时 skills 安装到当前工作目录下的本地目标：
+
+- `.claude/skills`
+- `.agents/skills`
+
+其他本地 Agent 目录需要显式开启：
+
+```bash
+onkb skill install --cursor --windsurf --kiro --pi
+onkb skill install --all-local
+```
+
+写入用户 home 下的全局 skills 目录也必须显式开启：
+
+```bash
+onkb skill install --global --claude --codex --gemini --agents
+```
+
+如果目标 skill 目录已存在，默认会跳过并在 JSON `targets[]` 里报告；需要替换时传
+`--overwrite`。这个命令只复制内嵌 skills，不会写 bootstrap 文件、Cursor rules 或
+Kiro steering files。
+
 如果你是在本地 clone 的仓库里做开发，也可以用：
 
 ```bash

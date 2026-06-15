@@ -32,20 +32,63 @@ If a skill or shell step reports that `onkb` is not installed, use the GitHub in
 Inside the target vault or workspace:
 
 ```bash
-onkb skill install --claude --codex
+onkb skill install
 ```
 
 Or point at another directory explicitly:
 
 ```bash
-onkb skill install --dir /path/to/your/obsidian-vault --claude --codex
+onkb skill install --dir /path/to/your/obsidian-vault
 ```
 
 PowerShell:
 
 ```powershell
-onkb skill install --dir D:\path\to\your\obsidian-vault --claude --codex
+onkb skill install --dir D:\path\to\your\obsidian-vault
 ```
+
+The default is intentionally local and backward compatible. It installs into:
+
+| Target | Directory |
+| --- | --- |
+| Claude Code | `.claude/skills` |
+| Codex / generic AGENTS tools | `.agents/skills` |
+
+Additional local targets are opt-in:
+
+```bash
+onkb skill install --cursor --windsurf --kiro --pi
+onkb skill install --all-local
+```
+
+| Flag | Directory |
+| --- | --- |
+| `--cursor` | `.cursor/skills` |
+| `--windsurf` | `.windsurf/skills` |
+| `--kiro` | `.kiro/skills` |
+| `--pi` | `.pi/skills` |
+
+Global user-home targets require `--global`:
+
+```bash
+onkb skill install --global --claude --codex --gemini --agents
+```
+
+| Flag | Directory |
+| --- | --- |
+| `--claude` | `~/.claude/skills` |
+| `--codex` | `~/.codex/skills` |
+| `--gemini` | `~/.gemini/skills` |
+| `--agents` | `~/.agents/skills` |
+
+Use `--overwrite` to replace existing installed skill directories. Without it,
+existing directories are skipped. `--json` output includes a `targets[]` array
+with each selected target key, label, target directory, installed skills, and
+skipped skills. Legacy local `claude` and `codex` fields remain available for
+compatibility.
+
+`onkb skill install` only copies the embedded skill bundle. It does not write
+bootstrap files such as `AGENTS.md`, Cursor rules, or Kiro steering files.
 
 ## Verify
 

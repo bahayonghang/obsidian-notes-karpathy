@@ -32,14 +32,55 @@ onkb doctor
 在目标 vault 或工作目录中执行：
 
 ```bash
-onkb skill install --claude --codex
+onkb skill install
 ```
 
 PowerShell：
 
 ```powershell
-onkb skill install --dir D:\path\to\your\obsidian-vault --claude --codex
+onkb skill install --dir D:\path\to\your\obsidian-vault
 ```
+
+默认行为是安全且向后兼容的，只会安装到当前工作目录下的本地目标：
+
+| 目标 | 目录 |
+| --- | --- |
+| Claude Code | `.claude/skills` |
+| Codex / 通用 AGENTS 工具 | `.agents/skills` |
+
+其他本地目标需要显式开启：
+
+```bash
+onkb skill install --cursor --windsurf --kiro --pi
+onkb skill install --all-local
+```
+
+| Flag | 目录 |
+| --- | --- |
+| `--cursor` | `.cursor/skills` |
+| `--windsurf` | `.windsurf/skills` |
+| `--kiro` | `.kiro/skills` |
+| `--pi` | `.pi/skills` |
+
+写入用户 home 下的全局目标必须显式加 `--global`：
+
+```bash
+onkb skill install --global --claude --codex --gemini --agents
+```
+
+| Flag | 目录 |
+| --- | --- |
+| `--claude` | `~/.claude/skills` |
+| `--codex` | `~/.codex/skills` |
+| `--gemini` | `~/.gemini/skills` |
+| `--agents` | `~/.agents/skills` |
+
+`--overwrite` 会替换已有的 skill 目录；不传时默认跳过已有目录。`--json` 输出会带
+`targets[]` 数组，里面包含每个目标的 key、label、target_dir、installed 和
+skipped。兼容用的旧字段 `claude` 和 `codex` 仍然保留。
+
+`onkb skill install` 只复制内嵌 skill bundle，不会写 bootstrap 文件、Cursor
+rules 或 Kiro steering files。
 
 ## 验证
 

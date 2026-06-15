@@ -220,6 +220,30 @@ cargo install --locked --git https://github.com/bahayonghang/obsidian-notes-karp
 onkb skill install
 ```
 
+By default, `onkb skill install` installs the embedded runtime skills into the
+current workspace only:
+
+- `.claude/skills`
+- `.agents/skills`
+
+Additional local agent homes are explicit:
+
+```bash
+onkb skill install --cursor --windsurf --kiro --pi
+onkb skill install --all-local
+```
+
+Global user-home installs are opt-in:
+
+```bash
+onkb skill install --global --claude --codex --gemini --agents
+```
+
+Use `--overwrite` to replace existing installed skill directories. Without it,
+existing skill directories are skipped and reported in the JSON `targets[]`
+payload. This command copies the embedded skills only; it does not write
+bootstrap files, Cursor rules, or Kiro steering files.
+
 For local development from a checked-out repo, use:
 
 ```bash
