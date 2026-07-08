@@ -52,18 +52,18 @@ Key commands:
 
 ## Companion skill matrix
 
-| Need | Core route | Companion route |
-| --- | --- | --- |
-| Fresh setup, repair, or legacy migration | `kb-init` | none |
-| Register raw markdown, assets, or data into the manifest | `kb-ingest` | none |
-| Collect a webpage into the vault before manifest registration | not a core route yet | `web-access` or Obsidian Web Clipper |
-| Compile raw markdown into drafts | `kb-compile` | none |
-| Review and promote draft knowledge | `kb-review` | none |
-| Query, rank approved candidates, reuse archived answers, or export a static knowledge site from approved live knowledge | `kb-query` | none |
-| Render deterministic slides, reports, charts, or canvas artifacts from approved knowledge | `kb-render` | none |
-| Legacy `kb-search` wording | `kb-query` | literal wording is absorbed by the canonical query skill |
-| Legacy `kb-health` wording, approved-layer drift, or backlog maintenance | `kb-review` | use maintenance mode under the canonical governance skill |
-| Ingest `raw/**/papers/*.pdf` | not a core route | `paper-workbench` |
+| Need                                                                                                                    | Core route           | Companion route                                           |
+| ----------------------------------------------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------- |
+| Fresh setup, repair, or legacy migration                                                                                | `kb-init`            | none                                                      |
+| Register raw markdown, assets, or data into the manifest                                                                | `kb-ingest`          | none                                                      |
+| Collect a webpage into the vault before manifest registration                                                           | not a core route yet | `web-access` or Obsidian Web Clipper                      |
+| Compile raw markdown into drafts                                                                                        | `kb-compile`         | none                                                      |
+| Review and promote draft knowledge                                                                                      | `kb-review`          | none                                                      |
+| Query, rank approved candidates, reuse archived answers, or export a static knowledge site from approved live knowledge | `kb-query`           | none                                                      |
+| Render deterministic slides, reports, charts, or canvas artifacts from approved knowledge                               | `kb-render`          | none                                                      |
+| Legacy `kb-search` wording                                                                                              | `kb-query`           | literal wording is absorbed by the canonical query skill  |
+| Legacy `kb-health` wording, approved-layer drift, or backlog maintenance                                                | `kb-review`          | use maintenance mode under the canonical governance skill |
+| Ingest `raw/**/papers/*.pdf`                                                                                            | not a core route     | `paper-workbench`                                         |
 
 The core bundle should own the review-gated lifecycle. Companion skills take over only for clearly external lanes such as paper PDFs or canvas-specific authoring.
 
@@ -126,14 +126,15 @@ This keeps provenance visible and prevents fast ingest from silently hardening i
 
 This project implements [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) with one key extension: an explicit review gate.
 
-| Karpathy's pattern | This project | Why the extension |
-| --- | --- | --- |
-| Raw sources (immutable) | `raw/` + `raw/_manifest.yaml` | Added a canonical manifest for tracked intake |
-| The wiki (LLM-maintained) | `wiki/drafts/` → `wiki/live/` | Split into draft and approved layers with a promotion gate |
-| The schema (CLAUDE.md) | `AGENTS.md` + `CLAUDE.md` + shared `references/` | Expanded into a full contract registry |
-| Ingest | `kb-ingest` + `kb-compile` | Separated source registration from draft compilation |
-| Query / publish | `kb-query` + `kb-render` | Kept creator-facing prose in the read-side lane and deterministic derivatives in the render lane |
-| Lint | `kb-review` maintenance mode | Made the health check a first-class governance lane |
+| Karpathy's pattern        | This project                                     | Why the extension                                                                                  |
+| ------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| Raw sources (immutable)   | `raw/` + `raw/_manifest.yaml`                    | Added a canonical manifest for tracked intake                                                      |
+| The wiki (LLM-maintained) | `wiki/drafts/` → `wiki/live/`                    | Split into draft and approved layers with a promotion gate                                         |
+| The schema (CLAUDE.md)    | `AGENTS.md` + `CLAUDE.md` + shared `references/` | Expanded into a full contract registry                                                             |
+| Ingest                    | `kb-ingest` + `kb-compile`                       | Separated source registration from draft compilation                                               |
+| Query / publish           | `kb-query` + `kb-render`                         | Kept creator-facing prose in the read-side lane and deterministic derivatives in the render lane   |
+| Lint                      | `kb-review` maintenance mode                     | Made the health check a first-class governance lane                                                |
+| Index upkeep              | `onkb review indices`                            | Retrieval-entry indices are rebuilt deterministically instead of relying on cross-session LLM sync |
 
 The core metaphor is preserved: "Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase." The user curates sources and asks questions. The LLM handles all the bookkeeping that makes knowledge compound over time.
 
@@ -152,15 +153,15 @@ Downstream output surfaces are created when the later stages need them:
 
 The archive posture across those surfaces is:
 
-| Surface | Archive type | Truth status | Reusable | Can trigger maintenance |
-| --- | --- | --- | --- | --- |
-| `raw/**` + `raw/_manifest.yaml` | source retention archive | no | yes | yes |
-| `outputs/qa/**` | artifact archive | no | yes | yes |
-| `outputs/content/**` | artifact archive | no | yes | yes |
-| `outputs/episodes/**` | artifact archive | no | yes | yes |
-| `outputs/reviews/**` | artifact archive | no | yes | yes |
-| `outputs/health/**` | artifact archive | no | yes | yes |
-| `outputs/web/**` | artifact archive | no | yes | yes |
+| Surface                         | Archive type             | Truth status | Reusable | Can trigger maintenance |
+| ------------------------------- | ------------------------ | ------------ | -------- | ----------------------- |
+| `raw/**` + `raw/_manifest.yaml` | source retention archive | no           | yes      | yes                     |
+| `outputs/qa/**`                 | artifact archive         | no           | yes      | yes                     |
+| `outputs/content/**`            | artifact archive         | no           | yes      | yes                     |
+| `outputs/episodes/**`           | artifact archive         | no           | yes      | yes                     |
+| `outputs/reviews/**`            | artifact archive         | no           | yes      | yes                     |
+| `outputs/health/**`             | artifact archive         | no           | yes      | yes                     |
+| `outputs/web/**`                | artifact archive         | no           | yes      | yes                     |
 
 Optional governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when the user wants richer maintenance surfaces.
 
@@ -200,7 +201,7 @@ Rust-first CLI surface:
 - `onkb --json migrate <vault-root> ...`
 - `onkb --json ingest scan|sync <vault-root>`
 - `onkb --json compile scan|build <vault-root>`
-- `onkb --json review queue|lint|governance|graph <vault-root>`
+- `onkb --json review queue|lint|governance|indices|graph <vault-root>`
 - `onkb --json query scope|rank <vault-root>`
 - `onkb --json render <vault-root> --mode <mode> --source <path>`
 

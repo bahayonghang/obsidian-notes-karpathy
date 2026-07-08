@@ -8,7 +8,7 @@ description: Run the canonical governance lane for an Obsidian knowledge base. U
 Run the canonical governance lane between draft knowledge and the approved live brain. `kb-review` owns two internal modes:
 
 - `gate` mode for pending draft decisions, promotion/rejection, and briefing rebuilds tied to the same review pass
-- `maintenance` mode for approved-layer drift, stale briefings, provenance and alias refresh, creator consistency checks, governance-index rebuilds, graph gaps, backlog pressure, and safe mechanical fixes
+- `maintenance` mode for approved-layer drift, stale briefings, provenance and alias refresh, creator consistency checks, governance-index rebuilds, deterministic navigation-index rebuilds, graph gaps, backlog pressure, and safe mechanical fixes
 
 In Karpathy's LLM Wiki, this maps to two operations: the implicit quality judgment during ingest (our `gate` mode), and the explicit "Lint" pass he describes — "look for contradictions between pages, stale claims that newer sources have superseded, orphan pages with no inbound links, important concepts mentioned but lacking their own page, missing cross-references" (our `maintenance` mode). This contract makes both operations explicit and separable.
 
@@ -66,6 +66,7 @@ If `onkb` is available, run:
 - `onkb --json query scope <vault-root>` when validating downstream boundaries
 - `onkb --json review lint <vault-root>` for maintenance-mode diagnostics
 - `onkb --json review governance <vault-root>` when maintenance mode should refresh `QUESTIONS.md`, `GAPS.md`, `ALIASES.md`, `ENTITIES.md`, or `RELATIONSHIPS.md`
+- `onkb --json review indices <vault-root>` when maintenance mode should check the retrieval navigation indices (`INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `TOPICS.md`, `RECENT.md`, plus the managed `onkb:indices` block in `wiki/index.md`) for drift; add `--write` to rebuild them deterministically from the approved live layer. `EDITORIAL-PRIORITIES.md` stays editorially owned and is never rewritten by this command.
 - `onkb --json review graph <vault-root>` when the user wants machine-readable graph export during maintenance
 
 If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
@@ -119,6 +120,7 @@ Decision rules:
 - promoted pages under `wiki/live/**`
 - promoted browse-layer topic pages under `wiki/live/topics/**`
 - refreshed governance indices under `wiki/live/indices/**`
+- rebuilt navigation indices (`INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `TOPICS.md`, `RECENT.md`) and the managed `onkb:indices` block in `wiki/index.md` via `onkb review indices --write`
 - regenerated `wiki/briefings/{role}.md`
 - maintenance reports under `outputs/health/**`
 - graph snapshot exports under `outputs/health/graph-snapshot.json`
@@ -142,7 +144,7 @@ Use `maintenance` mode when:
 - archived answers or content have writeback backlog
 - archived outputs have reuse drift, stale claims, or private/shared scope leaks
 - confidence metadata, supersession bookkeeping, or audit trails have decayed
-- governance indices or graph exports need deterministic refresh
+- governance indices, retrieval navigation indices, or graph exports need deterministic refresh
 - safe mechanical fixes in approved or archived surfaces are clearer than creating new prose
 - creator-facing guidance surfaces such as `CLAUDE.md`, `MEMORY.md`, account `_style-guide.md`, or account briefings may be drifting apart
 - archived publish outputs are not reusing prior approved coverage cleanly

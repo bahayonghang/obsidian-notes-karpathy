@@ -59,6 +59,7 @@ Canonical workflow:
 - `outputs/qa/` and `outputs/content/` may carry structured writeback candidates that must still re-enter the system through draft -> review -> live.
 - bootstrap root captures under `raw/*.md` are valid compile inputs, but missing support directories still make the vault a repair case.
 - optional governance indices like `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when richer maintenance surfaces are useful.
+- retrieval navigation indices (`wiki/live/indices/INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `TOPICS.md`, `RECENT.md`) and the managed `onkb:indices` block in `wiki/index.md` are rebuilt deterministically by `onkb review indices`; `EDITORIAL-PRIORITIES.md` stays editorially owned.
 - `kb-review` maintenance mode is report-first and may apply deterministic mechanical fixes in approved surfaces only; it must never mutate `raw/` or promote drafts without the review gate.
 
 ## Installation

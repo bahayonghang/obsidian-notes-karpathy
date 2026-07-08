@@ -19,6 +19,7 @@ Start with file-system and command driven hooks before deeper runtime integratio
 - `scheduled_health`
   - run health lint
   - refresh governance indices
+  - rebuild the retrieval navigation indices deterministically (`onkb review indices`)
   - refresh `outputs/health/graph-snapshot.json`
 
 ## Audit requirement
@@ -63,13 +64,13 @@ Treat `onkb` as the CI and automation entrypoint. Human-driven lifecycle work st
 
 Who may append to `outputs/audit/operations.jsonl`:
 
-| Skill | Direct append | Via `onkb review automation` |
-| --- | --- | --- |
-| `kb-init` | scaffolds the file on fresh setup | n/a |
-| `kb-ingest` | no | `on_new_source` |
-| `kb-compile` | no | `on_new_source` |
-| `kb-review` | gate and maintenance events | `scheduled-health` |
-| `kb-query` | no | `on_query_archive`, `on_session_end` |
-| `kb-render` | no | `on_session_end` |
+| Skill        | Direct append                     | Via `onkb review automation`         |
+| ------------ | --------------------------------- | ------------------------------------ |
+| `kb-init`    | scaffolds the file on fresh setup | n/a                                  |
+| `kb-ingest`  | no                                | `on_new_source`                      |
+| `kb-compile` | no                                | `on_new_source`                      |
+| `kb-review`  | gate and maintenance events       | `scheduled-health`                   |
+| `kb-query`   | no                                | `on_query_archive`, `on_session_end` |
+| `kb-render`  | no                                | `on_session_end`                     |
 
 Every appended line must carry `timestamp` (ISO-8601 UTC, e.g. `2026-04-20T11:32:00Z`), `action` (hook or skill event name), and a `payload` object describing the effect. Skills that do not append directly rely on the automation harness to attribute events. `operations.jsonl` is append-only; compaction or rotation belongs to maintenance work, not to the emitting skill.

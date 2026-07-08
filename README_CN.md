@@ -134,6 +134,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 | Ingest | `kb-ingest` + `kb-compile` | 将来源登记与草稿编译分离 |
 | Query / publish | `kb-query` + `kb-render` | 将 grounded 对外内容与确定性派生物分离 |
 | Lint | `kb-review` 维护模式 | 将健康检查提升为一等治理通道 |
+| Index upkeep | `onkb review indices` | 检索入口索引改为确定性重建，不再依赖 LLM 跨会话手工同步 |
 
 核心隐喻保持不变："Obsidian 是 IDE；LLM 是程序员；wiki 是代码库。" 用户负责策展来源和提问。LLM 负责所有让知识持续复利的记账工作。
 
@@ -200,7 +201,7 @@ Rust-first CLI：
 - `onkb --json migrate <vault-root> ...`
 - `onkb --json ingest scan|sync <vault-root>`
 - `onkb --json compile scan|build <vault-root>`
-- `onkb --json review queue|lint|governance|graph <vault-root>`
+- `onkb --json review queue|lint|governance|indices|graph <vault-root>`
 - `onkb --json query scope|rank <vault-root>`
 - `onkb --json render <vault-root> --mode <mode> --source <path>`
 

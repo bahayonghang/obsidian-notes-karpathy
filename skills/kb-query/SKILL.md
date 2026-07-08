@@ -62,6 +62,8 @@ Then start with:
 - relevant `wiki/briefings/{role}.md` when the request maps to a role
 - prior `outputs/qa/`
 
+The navigation indices (`INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `TOPICS.md`, `RECENT.md`) and the managed `onkb:indices` block in `wiki/index.md` are rebuilt deterministically by `onkb review indices`, so treat them as trustworthy entry points. If they look stale relative to `wiki/live/**`, run `onkb --json review indices <vault-root>` as a dry drift check and route the repair through `kb-review` maintenance mode instead of hand-editing them.
+
 ## Hard boundary
 
 - `wiki/live/**` is the default truth source

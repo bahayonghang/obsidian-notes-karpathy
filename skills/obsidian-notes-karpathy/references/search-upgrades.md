@@ -28,6 +28,7 @@ Use this first for small to medium vaults.
 
 - read `wiki/index.md`
 - read `wiki/live/indices/INDEX.md`, `wiki/live/indices/CONCEPTS.md`, and `wiki/live/indices/SOURCES.md`
+- trust these entry indices as machine-rebuilt surfaces: `onkb review indices` regenerates `INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `TOPICS.md`, `RECENT.md`, and the managed `onkb:indices` block in `wiki/index.md` deterministically from approved live pages; if they look stale, run the dry drift check instead of hand-editing them
 - read `wiki/live/topics/*` when the request is thematic rather than source-specific
 - check governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` when they exist
 - check role briefings when the request maps to a stable audience or workflow

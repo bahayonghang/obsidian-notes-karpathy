@@ -85,10 +85,7 @@
       "role": "operation",
       "path": "skills/kb-init/SKILL.md",
       "install_scope": "runtime",
-      "doc_targets": [
-        "docs/skills/kb-init.md",
-        "docs/zh/skills/kb-init.md"
-      ],
+      "doc_targets": ["docs/skills/kb-init.md", "docs/zh/skills/kb-init.md"],
       "eval_targets": {
         "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
         "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
@@ -183,14 +180,8 @@
         "profile-contract.md"
       ],
       "baseline_command": "onkb --json ingest scan <vault-root>",
-      "writes": [
-        "raw/_manifest.yaml",
-        "wiki/log.md"
-      ],
-      "outputs": [
-        "raw/_manifest.yaml",
-        "wiki/log.md"
-      ]
+      "writes": ["raw/_manifest.yaml", "wiki/log.md"],
+      "outputs": ["raw/_manifest.yaml", "wiki/log.md"]
     },
     "kb-compile": {
       "role": "operation",
@@ -234,10 +225,7 @@
         "wiki/drafts/indices/",
         "wiki/log.md"
       ],
-      "outputs": [
-        "wiki/drafts/",
-        "wiki/log.md"
-      ]
+      "outputs": ["wiki/drafts/", "wiki/log.md"]
     },
     "kb-review": {
       "role": "operation",
@@ -279,9 +267,15 @@
       "baseline_command": "onkb --json review queue <vault-root>",
       "writes": [
         "outputs/reviews/",
+        "wiki/index.md",
         "wiki/live/",
         "wiki/live/topics/",
         "wiki/live/procedures/",
+        "wiki/live/indices/INDEX.md",
+        "wiki/live/indices/CONCEPTS.md",
+        "wiki/live/indices/SOURCES.md",
+        "wiki/live/indices/TOPICS.md",
+        "wiki/live/indices/RECENT.md",
         "wiki/live/indices/QUESTIONS.md",
         "wiki/live/indices/GAPS.md",
         "wiki/live/indices/ALIASES.md",
@@ -293,10 +287,7 @@
         "outputs/audit/operations.jsonl",
         "wiki/log.md"
       ],
-      "writes_mechanical_fix_only": [
-        "outputs/qa/",
-        "outputs/content/"
-      ],
+      "writes_mechanical_fix_only": ["outputs/qa/", "outputs/content/"],
       "outputs": [
         "outputs/reviews/",
         "wiki/live/",
@@ -314,10 +305,7 @@
       "role": "operation",
       "path": "skills/kb-query/SKILL.md",
       "install_scope": "runtime",
-      "doc_targets": [
-        "docs/skills/kb-query.md",
-        "docs/zh/skills/kb-query.md"
-      ],
+      "doc_targets": ["docs/skills/kb-query.md", "docs/zh/skills/kb-query.md"],
       "eval_targets": {
         "trigger_manifest": "evals/skills/obsidian-notes-karpathy/trigger-evals.json",
         "runtime_manifest": "evals/skills/obsidian-notes-karpathy/runtime-evals.json",
