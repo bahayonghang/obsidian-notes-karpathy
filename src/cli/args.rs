@@ -158,6 +158,11 @@ pub enum ReviewCommand {
         #[arg(long)]
         write: bool,
     },
+    Indices {
+        vault: PathBuf,
+        #[arg(long)]
+        write: bool,
+    },
     Automation {
         vault: PathBuf,
         #[arg(long)]

@@ -1,9 +1,10 @@
 ---
 title: "Approved Concepts"
-generated_at: "{{GENERATED_AT}}"
-kb_profile: "{{KB_PROFILE}}"
+managed_by: "onkb review indices"
 ---
 
 # Approved Concepts
 
-List approved concept pages here after review promotes them into `wiki/live/concepts/`.
+Approved concept pages under `wiki/live/concepts/`.
+
+- No approved concept pages yet.

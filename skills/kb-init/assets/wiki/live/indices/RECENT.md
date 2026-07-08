@@ -1,9 +1,10 @@
 ---
 title: "Recently Approved Changes"
-generated_at: "{{GENERATED_AT}}"
-kb_profile: "{{KB_PROFILE}}"
+managed_by: "onkb review indices"
 ---
 
 # Recently Approved Changes
 
-Track the latest approved live edits and review outcomes here.
+Most recently approved live pages, newest first (top 20).
+
+- No approved live pages recorded yet.

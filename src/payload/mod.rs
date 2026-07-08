@@ -294,6 +294,21 @@ pub struct GovernanceIndices {
     pub files: BTreeMap<String, String>,
 }
 
+/// `onkb review indices` 的返回结构。
+///
+/// `files` 的 value 是 per-file 状态对象：`status` 取
+/// `in_sync | drifted | missing | unmanaged | excluded`，
+/// `wiki/live/indices/RECENT.md` 额外携带 `unlisted_count`。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NavigationIndices {
+    pub action: String,
+    pub vault: String,
+    pub write: bool,
+    pub files: BTreeMap<String, Value>,
+    pub drift_count: usize,
+    pub written_paths: Vec<String>,
+}
+
 /// `onkb review automation` 的返回结构。
 ///
 /// 字段并集覆盖 4 种 mode（scheduled-health / session-end / query-archive / new-source）；
@@ -311,6 +326,8 @@ pub struct AutomationPayload {
     pub graph: Option<Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub graph_output_path: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub navigation_indices: Option<Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub episodes: Option<Value>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -1,9 +1,10 @@
 ---
 title: "Approved Topics"
-generated_at: "{{GENERATED_AT}}"
-kb_profile: "{{KB_PROFILE}}"
+managed_by: "onkb review indices"
 ---
 
 # Approved Topics
 
-Use topic pages as the browse-layer entry surface over approved knowledge clusters.
+Approved topic pages under `wiki/live/topics/`.
+
+- No approved topic pages yet.

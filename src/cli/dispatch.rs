@@ -18,6 +18,7 @@ use crate::{
     health::audit_vault_mechanics,
     ingest::{scan_ingest_delta, sync_source_manifest},
     init::{describe_vault_status, migrate_legacy_vault, scaffold_review_gated_vault},
+    navigation::{build_navigation_indices, write_navigation_indices},
     query::{query_scope, rank_query_candidates},
     render::render_artifact,
     review::scan_review_queue,
@@ -140,6 +141,15 @@ fn dispatch_review(command: ReviewCommand) -> Result<serde_json::Value> {
             let mut payload = build_graph_snapshot(&vault)?;
             if write {
                 payload["output_path"] = json!(write_graph_snapshot(&vault, &payload)?);
+            }
+            Ok(payload)
+        }
+        ReviewCommand::Indices { vault, write } => {
+            let mut payload = build_navigation_indices(&vault)?;
+            if write {
+                let written_paths = write_navigation_indices(&vault, &payload)?;
+                payload["write"] = json!(true);
+                payload["written_paths"] = json!(written_paths);
             }
             Ok(payload)
         }

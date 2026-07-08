@@ -10,6 +10,7 @@ pub mod ingest;
 pub mod init;
 pub mod layout;
 pub mod markdown;
+pub mod navigation;
 pub mod query;
 pub mod render;
 pub mod review;

@@ -69,6 +69,10 @@ pub mod layout {
     pub use crate::kb::layout::*;
 }
 
+pub mod navigation {
+    pub use crate::kb::navigation::*;
+}
+
 pub mod query {
     pub use crate::kb::query::*;
 }

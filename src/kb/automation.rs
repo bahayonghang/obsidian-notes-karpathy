@@ -9,6 +9,7 @@ use crate::governance::{build_governance_indices, write_governance_indices};
 use crate::graph::{build_graph_snapshot, write_graph_snapshot};
 use crate::health::audit_vault_mechanics;
 use crate::ingest::{scan_ingest_delta, sync_source_manifest};
+use crate::navigation::{build_navigation_indices, write_navigation_indices};
 use crate::payload::AutomationPayload;
 
 pub fn run_automation(vault_root: &Path, mode: &str, write: bool) -> Result<Value> {
@@ -20,6 +21,7 @@ pub fn run_automation(vault_root: &Path, mode: &str, write: bool) -> Result<Valu
         governance: None,
         graph: None,
         graph_output_path: None,
+        navigation_indices: None,
         episodes: None,
         written_paths: None,
         ingest: None,
@@ -30,12 +32,15 @@ pub fn run_automation(vault_root: &Path, mode: &str, write: bool) -> Result<Valu
             let lint = audit_vault_mechanics(vault_root)?;
             let governance = build_governance_indices(vault_root)?;
             let graph = build_graph_snapshot(vault_root)?;
+            let navigation = build_navigation_indices(vault_root)?;
             payload.lint = Some(lint);
             payload.governance = Some(governance.clone());
             payload.graph = Some(graph.clone());
+            payload.navigation_indices = Some(navigation.clone());
             if write {
                 write_governance_indices(vault_root, &governance)?;
                 payload.graph_output_path = Some(write_graph_snapshot(vault_root, &graph)?);
+                write_navigation_indices(vault_root, &navigation)?;
             }
         }
         "session-end" => {

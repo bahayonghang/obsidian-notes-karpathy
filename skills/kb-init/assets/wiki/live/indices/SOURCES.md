@@ -1,9 +1,10 @@
 ---
 title: "Approved Sources"
-generated_at: "{{GENERATED_AT}}"
-kb_profile: "{{KB_PROFILE}}"
+managed_by: "onkb review indices"
 ---
 
 # Approved Sources
 
-Track the source summaries and approved evidence trail here.
+Approved source summaries under `wiki/live/summaries/`.
+
+- No approved source summaries yet.
