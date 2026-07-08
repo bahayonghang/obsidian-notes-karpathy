@@ -1,0 +1,14 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/backend/index.md", "reason": "Pre-development checklist entry point for backend (Rust CLI) work"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Module placement rules for new src/kb/navigation.rs"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Vault file read/write and manifest conventions for index rebuild writes"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Error conventions for new review indices command"}
+{"file": ".trellis/spec/backend/logging-guidelines.md", "reason": "Audit event shape for rebuild_navigation_indices"}
+{"file": "src/kb/governance.rs", "reason": "Pattern to mirror: build_governance_indices (line 67) + write_governance_indices (line 612), zero-timestamp deterministic output"}
+{"file": "src/kb/automation.rs", "reason": "scheduled-health arm (line 29) to extend with navigation_indices check"}
+{"file": "src/cli/args.rs", "reason": "ReviewCommand enum (line 144) to extend with Indices variant"}
+{"file": "src/cli/dispatch.rs", "reason": "Command dispatch wiring and JSON output conventions"}
+{"file": "src/kb/init/legacy_impl.rs", "reason": "Scaffold asset lists (BASE_ASSET_FILES line 57) and template rendering affected by managed markers"}
+{"file": "skills/kb-init/assets/wiki/index.md", "reason": "Template needing onkb:indices managed-region markers"}
+{"file": "skills/obsidian-notes-karpathy/references/file-model.md", "reason": "approved_at / last_reviewed_at frontmatter fields feeding RECENT.md rebuild"}
+{"file": ".trellis/tasks/07-08-llm-wiki-gap-optimization/research/llm-wiki-gap-analysis.md", "reason": "Gap-analysis evidence: why index drift is P1 and what community mitigation looks like"}

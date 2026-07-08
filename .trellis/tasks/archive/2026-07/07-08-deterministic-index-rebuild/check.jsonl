@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": "tests/query_health.rs", "reason": "Existing governance/health test patterns to model review indices tests on"}
+{"file": "tests/cli_smoke.rs", "reason": "CLI smoke test conventions for new subcommand"}
+{"file": "tests/init_workflow.rs", "reason": "Init/scaffold tests affected by template marker changes"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Quality gates: test selection, contract/doc/fixture update requirements"}
+{"file": "AGENTS.md", "reason": "Commit conventions, just test / just ci requirements, machine-readable JSON assertion rule"}
