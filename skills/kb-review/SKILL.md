@@ -36,27 +36,12 @@ Read these files first:
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
-- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md`
-- `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
-- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
 - `../obsidian-notes-karpathy/references/schema-template.md`
 - `../obsidian-notes-karpathy/references/review-template.md`
 - `../obsidian-notes-karpathy/references/briefing-template.md`
-- `../obsidian-notes-karpathy/references/activity-log-template.md`
 - `../obsidian-notes-karpathy/references/health-rubric.md`
-- `../obsidian-notes-karpathy/references/search-upgrades.md`
 - `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
-- `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
-- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
-- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
-- `../obsidian-notes-karpathy/references/graph-contract.md`
-- `../obsidian-notes-karpathy/references/source-manifest-contract.md`
-- `../obsidian-notes-karpathy/references/topic-template.md`
-- `../obsidian-notes-karpathy/references/profile-contract.md`
-- `../obsidian-notes-karpathy/references/automation-hooks.md`
-- `../obsidian-notes-karpathy/references/episode-template.md`
-- `../obsidian-notes-karpathy/references/procedure-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and expected write surfaces.
 
@@ -70,6 +55,26 @@ If `onkb` is available, run:
 - `onkb --json review graph <vault-root>` when the user wants machine-readable graph export during maintenance
 
 If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
+## Load on demand
+
+Load these only when the trigger applies:
+
+- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md` — when the request leans on Chinese-LLM-Wiki vocabulary beyond the mappings inlined in this SKILL
+- `../obsidian-notes-karpathy/references/archive-model.md` — when archive reuse, truth-status, or output-surface posture questions arise
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md` — when `onkb` is missing (install fallback) or a stage handoff is unclear
+- `../obsidian-notes-karpathy/references/activity-log-template.md` — when appending an entry to `wiki/log.md`
+- `../obsidian-notes-karpathy/references/search-upgrades.md` — when retrieval quality tuning or scaling beyond the default ranking is on the table
+- `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md` — when standing questions, reflection notes, or `QUESTIONS.md` governance is involved
+- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md` — when writeback candidates, `writeback_status`, or archive backlog work is involved
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md` — when `MEMORY.md` or episodic memory boundaries are involved
+- `../obsidian-notes-karpathy/references/graph-contract.md` — when graph exports, `related` edges, or relationship candidates are involved
+- `../obsidian-notes-karpathy/references/source-manifest-contract.md` — when `raw/_manifest.yaml` fields or manifest anomalies are involved
+- `../obsidian-notes-karpathy/references/topic-template.md` — when shaping or promoting browse-layer topic pages
+- `../obsidian-notes-karpathy/references/profile-contract.md` — when account profiles or `source_profile` metadata is involved
+- `../obsidian-notes-karpathy/references/automation-hooks.md` — when wiring or invoking `onkb review automation` modes
+- `../obsidian-notes-karpathy/references/episode-template.md` — when `outputs/episodes/**` work is involved
+- `../obsidian-notes-karpathy/references/procedure-template.md` — when the durable delta is procedural (workflow or playbook)
 
 ## Independence rule
 

@@ -55,19 +55,51 @@
       },
       "companion_refs": ["web-access", "paper-workbench"],
       "reads": [
-        "chinese-llm-wiki-compat.md",
-        "archive-model.md",
         "file-model.md",
         "lifecycle-matrix.md",
-        "search-upgrades.md",
-        "activity-log-template.md",
-        "provenance-and-alias-policy.md",
-        "questions-and-reflection-policy.md",
-        "memory-lifecycle.md",
-        "graph-contract.md",
-        "source-manifest-contract.md",
-        "profile-contract.md",
-        "automation-hooks.md"
+        "chinese-llm-wiki-compat.md"
+      ],
+      "reads_on_demand": [
+        {
+          "file": "archive-model.md",
+          "when": "when archive reuse, truth-status, or output-surface posture questions arise"
+        },
+        {
+          "file": "search-upgrades.md",
+          "when": "when retrieval quality tuning or scaling beyond the default ranking is on the table"
+        },
+        {
+          "file": "activity-log-template.md",
+          "when": "when appending an entry to `wiki/log.md`"
+        },
+        {
+          "file": "provenance-and-alias-policy.md",
+          "when": "when alias overlap, duplicate candidates, or provenance drift surfaces"
+        },
+        {
+          "file": "questions-and-reflection-policy.md",
+          "when": "when standing questions, reflection notes, or `QUESTIONS.md` governance is involved"
+        },
+        {
+          "file": "memory-lifecycle.md",
+          "when": "when `MEMORY.md` or episodic memory boundaries are involved"
+        },
+        {
+          "file": "graph-contract.md",
+          "when": "when graph exports, `related` edges, or relationship candidates are involved"
+        },
+        {
+          "file": "source-manifest-contract.md",
+          "when": "when `raw/_manifest.yaml` fields or manifest anomalies are involved"
+        },
+        {
+          "file": "profile-contract.md",
+          "when": "when account profiles or `source_profile` metadata is involved"
+        },
+        {
+          "file": "automation-hooks.md",
+          "when": "when wiring or invoking `onkb review automation` modes"
+        }
       ],
       "baseline_command": "onkb --json status <vault-root>",
       "writes": [],
@@ -93,27 +125,74 @@
       },
       "companion_refs": ["web-access", "paper-workbench"],
       "reads": [
-        "chinese-llm-wiki-compat.md",
         "file-model.md",
         "lifecycle-matrix.md",
-        "schema-template.md",
-        "summary-template.md",
-        "review-template.md",
-        "briefing-template.md",
-        "activity-log-template.md",
+        "chinese-llm-wiki-compat.md",
         "index-home-template.md",
-        "questions-template.md",
-        "provenance-and-alias-policy.md",
-        "query-writeback-lifecycle.md",
-        "taxonomy-and-hubs.md",
-        "memory-lifecycle.md",
-        "graph-contract.md",
         "source-manifest-contract.md",
-        "topic-template.md",
-        "profile-contract.md",
-        "automation-hooks.md",
-        "procedure-template.md",
-        "episode-template.md"
+        "memory-lifecycle.md"
+      ],
+      "reads_on_demand": [
+        {
+          "file": "schema-template.md",
+          "when": "when vault-wide frontmatter fields beyond this skill's core schema need checking"
+        },
+        {
+          "file": "summary-template.md",
+          "when": "when creating or repairing draft source summaries"
+        },
+        {
+          "file": "review-template.md",
+          "when": "when repairing `outputs/reviews/**` records"
+        },
+        {
+          "file": "briefing-template.md",
+          "when": "when rebuilding or repairing `wiki/briefings/**`"
+        },
+        {
+          "file": "activity-log-template.md",
+          "when": "when appending an entry to `wiki/log.md`"
+        },
+        {
+          "file": "questions-template.md",
+          "when": "when scaffolding or repairing `wiki/live/indices/QUESTIONS.md`"
+        },
+        {
+          "file": "provenance-and-alias-policy.md",
+          "when": "when alias overlap, duplicate candidates, or provenance drift surfaces"
+        },
+        {
+          "file": "query-writeback-lifecycle.md",
+          "when": "when writeback candidates, `writeback_status`, or archive backlog work is involved"
+        },
+        {
+          "file": "taxonomy-and-hubs.md",
+          "when": "when repairing the topics layer or curated hubs"
+        },
+        {
+          "file": "graph-contract.md",
+          "when": "when graph exports, `related` edges, or relationship candidates are involved"
+        },
+        {
+          "file": "topic-template.md",
+          "when": "when shaping or promoting browse-layer topic pages"
+        },
+        {
+          "file": "profile-contract.md",
+          "when": "when account profiles or `source_profile` metadata is involved"
+        },
+        {
+          "file": "automation-hooks.md",
+          "when": "when wiring or invoking `onkb review automation` modes"
+        },
+        {
+          "file": "procedure-template.md",
+          "when": "when the durable delta is procedural (workflow or playbook)"
+        },
+        {
+          "file": "episode-template.md",
+          "when": "when `outputs/episodes/**` work is involved"
+        }
       ],
       "baseline_command": "onkb --json status <vault-root>",
       "writes": [
@@ -174,10 +253,21 @@
       "reads": [
         "file-model.md",
         "lifecycle-matrix.md",
-        "activity-log-template.md",
-        "paper-ingestion-lifecycle.md",
-        "source-manifest-contract.md",
-        "profile-contract.md"
+        "source-manifest-contract.md"
+      ],
+      "reads_on_demand": [
+        {
+          "file": "activity-log-template.md",
+          "when": "when appending an entry to `wiki/log.md`"
+        },
+        {
+          "file": "paper-ingestion-lifecycle.md",
+          "when": "when `raw/**/papers/*.pdf` appears in scans or plans"
+        },
+        {
+          "file": "profile-contract.md",
+          "when": "when account profiles or `source_profile` metadata is involved"
+        }
       ],
       "baseline_command": "onkb --json ingest scan <vault-root>",
       "writes": ["raw/_manifest.yaml", "wiki/log.md"],
@@ -200,20 +290,58 @@
       "reads": [
         "file-model.md",
         "compile-method.md",
-        "lifecycle-matrix.md",
-        "schema-template.md",
-        "summary-template.md",
-        "concept-template.md",
-        "entity-template.md",
-        "activity-log-template.md",
-        "provenance-and-alias-policy.md",
-        "paper-ingestion-lifecycle.md",
-        "memory-lifecycle.md",
-        "graph-contract.md",
-        "source-manifest-contract.md",
-        "topic-template.md",
-        "procedure-template.md",
-        "draft-schema.md"
+        "draft-schema.md",
+        "summary-template.md"
+      ],
+      "reads_on_demand": [
+        {
+          "file": "lifecycle-matrix.md",
+          "when": "when `onkb` is missing (install fallback) or a stage handoff is unclear"
+        },
+        {
+          "file": "schema-template.md",
+          "when": "when vault-wide frontmatter fields beyond this skill's core schema need checking"
+        },
+        {
+          "file": "concept-template.md",
+          "when": "when shaping concept drafts"
+        },
+        {
+          "file": "entity-template.md",
+          "when": "when shaping entity drafts"
+        },
+        {
+          "file": "activity-log-template.md",
+          "when": "when appending an entry to `wiki/log.md`"
+        },
+        {
+          "file": "provenance-and-alias-policy.md",
+          "when": "when alias overlap, duplicate candidates, or provenance drift surfaces"
+        },
+        {
+          "file": "paper-ingestion-lifecycle.md",
+          "when": "when `raw/**/papers/*.pdf` appears in scans or plans"
+        },
+        {
+          "file": "memory-lifecycle.md",
+          "when": "when `MEMORY.md` or episodic memory boundaries are involved"
+        },
+        {
+          "file": "graph-contract.md",
+          "when": "when graph exports, `related` edges, or relationship candidates are involved"
+        },
+        {
+          "file": "source-manifest-contract.md",
+          "when": "when `raw/_manifest.yaml` fields or manifest anomalies are involved"
+        },
+        {
+          "file": "topic-template.md",
+          "when": "when shaping or promoting browse-layer topic pages"
+        },
+        {
+          "file": "procedure-template.md",
+          "when": "when the durable delta is procedural (workflow or playbook)"
+        }
       ],
       "baseline_command": "onkb --json compile scan <vault-root>",
       "writes": [
@@ -244,27 +372,74 @@
       },
       "companion_refs": [],
       "reads": [
-        "chinese-llm-wiki-compat.md",
-        "archive-model.md",
         "file-model.md",
-        "lifecycle-matrix.md",
         "schema-template.md",
         "review-template.md",
         "briefing-template.md",
-        "activity-log-template.md",
         "health-rubric.md",
-        "search-upgrades.md",
-        "provenance-and-alias-policy.md",
-        "questions-and-reflection-policy.md",
-        "query-writeback-lifecycle.md",
-        "memory-lifecycle.md",
-        "graph-contract.md",
-        "source-manifest-contract.md",
-        "topic-template.md",
-        "profile-contract.md",
-        "automation-hooks.md",
-        "episode-template.md",
-        "procedure-template.md"
+        "provenance-and-alias-policy.md"
+      ],
+      "reads_on_demand": [
+        {
+          "file": "chinese-llm-wiki-compat.md",
+          "when": "when the request leans on Chinese-LLM-Wiki vocabulary beyond the mappings inlined in this SKILL"
+        },
+        {
+          "file": "archive-model.md",
+          "when": "when archive reuse, truth-status, or output-surface posture questions arise"
+        },
+        {
+          "file": "lifecycle-matrix.md",
+          "when": "when `onkb` is missing (install fallback) or a stage handoff is unclear"
+        },
+        {
+          "file": "activity-log-template.md",
+          "when": "when appending an entry to `wiki/log.md`"
+        },
+        {
+          "file": "search-upgrades.md",
+          "when": "when retrieval quality tuning or scaling beyond the default ranking is on the table"
+        },
+        {
+          "file": "questions-and-reflection-policy.md",
+          "when": "when standing questions, reflection notes, or `QUESTIONS.md` governance is involved"
+        },
+        {
+          "file": "query-writeback-lifecycle.md",
+          "when": "when writeback candidates, `writeback_status`, or archive backlog work is involved"
+        },
+        {
+          "file": "memory-lifecycle.md",
+          "when": "when `MEMORY.md` or episodic memory boundaries are involved"
+        },
+        {
+          "file": "graph-contract.md",
+          "when": "when graph exports, `related` edges, or relationship candidates are involved"
+        },
+        {
+          "file": "source-manifest-contract.md",
+          "when": "when `raw/_manifest.yaml` fields or manifest anomalies are involved"
+        },
+        {
+          "file": "topic-template.md",
+          "when": "when shaping or promoting browse-layer topic pages"
+        },
+        {
+          "file": "profile-contract.md",
+          "when": "when account profiles or `source_profile` metadata is involved"
+        },
+        {
+          "file": "automation-hooks.md",
+          "when": "when wiring or invoking `onkb review automation` modes"
+        },
+        {
+          "file": "episode-template.md",
+          "when": "when `outputs/episodes/**` work is involved"
+        },
+        {
+          "file": "procedure-template.md",
+          "when": "when the durable delta is procedural (workflow or playbook)"
+        }
       ],
       "baseline_command": "onkb --json review queue <vault-root>",
       "writes": [
@@ -315,23 +490,64 @@
       },
       "companion_refs": [],
       "reads": [
-        "chinese-llm-wiki-compat.md",
-        "archive-model.md",
         "file-model.md",
-        "lifecycle-matrix.md",
-        "briefing-template.md",
+        "archive-model.md",
         "qa-template.md",
-        "content-output-template.md",
-        "activity-log-template.md",
-        "questions-and-reflection-policy.md",
-        "query-writeback-lifecycle.md",
-        "search-upgrades.md",
-        "memory-lifecycle.md",
-        "graph-contract.md",
-        "render-template.md",
-        "profile-contract.md",
-        "episode-template.md",
-        "web-export-template.md"
+        "query-writeback-lifecycle.md"
+      ],
+      "reads_on_demand": [
+        {
+          "file": "chinese-llm-wiki-compat.md",
+          "when": "when the request leans on Chinese-LLM-Wiki vocabulary beyond the mappings inlined in this SKILL"
+        },
+        {
+          "file": "lifecycle-matrix.md",
+          "when": "when `onkb` is missing (install fallback) or a stage handoff is unclear"
+        },
+        {
+          "file": "briefing-template.md",
+          "when": "when rebuilding or repairing `wiki/briefings/**`"
+        },
+        {
+          "file": "content-output-template.md",
+          "when": "when producing publish-mode artifacts under `outputs/content/`"
+        },
+        {
+          "file": "activity-log-template.md",
+          "when": "when appending an entry to `wiki/log.md`"
+        },
+        {
+          "file": "questions-and-reflection-policy.md",
+          "when": "when standing questions, reflection notes, or `QUESTIONS.md` governance is involved"
+        },
+        {
+          "file": "search-upgrades.md",
+          "when": "when retrieval quality tuning or scaling beyond the default ranking is on the table"
+        },
+        {
+          "file": "memory-lifecycle.md",
+          "when": "when `MEMORY.md` or episodic memory boundaries are involved"
+        },
+        {
+          "file": "graph-contract.md",
+          "when": "when graph exports, `related` edges, or relationship candidates are involved"
+        },
+        {
+          "file": "render-template.md",
+          "when": "when handing off to `kb-render`"
+        },
+        {
+          "file": "profile-contract.md",
+          "when": "when account profiles or `source_profile` metadata is involved"
+        },
+        {
+          "file": "episode-template.md",
+          "when": "when `outputs/episodes/**` work is involved"
+        },
+        {
+          "file": "web-export-template.md",
+          "when": "when running web export mode"
+        }
       ],
       "baseline_command": "onkb --json query scope <vault-root>",
       "writes": [
@@ -362,13 +578,27 @@
       },
       "companion_refs": [],
       "reads": [
-        "archive-model.md",
         "file-model.md",
-        "lifecycle-matrix.md",
-        "content-output-template.md",
         "render-template.md",
-        "obsidian-safe-markdown.md",
-        "profile-contract.md"
+        "obsidian-safe-markdown.md"
+      ],
+      "reads_on_demand": [
+        {
+          "file": "archive-model.md",
+          "when": "when archive reuse, truth-status, or output-surface posture questions arise"
+        },
+        {
+          "file": "lifecycle-matrix.md",
+          "when": "when `onkb` is missing (install fallback) or a stage handoff is unclear"
+        },
+        {
+          "file": "content-output-template.md",
+          "when": "when producing publish-mode artifacts under `outputs/content/`"
+        },
+        {
+          "file": "profile-contract.md",
+          "when": "when account profiles or `source_profile` metadata is involved"
+        }
       ],
       "baseline_command": "onkb --json render <vault-root> --mode <mode> --source <path>",
       "writes": [

@@ -216,6 +216,8 @@ Repo 契约与维护入口：
 - `onkb --json dev eval-trigger [--dry-run] [--skill <name>]`
 - `onkb --json dev eval-runtime [--dry-run] [--skill <name>] [--eval-id <id>] [--reuse-baseline-from <workspace>]`
 
+skill 契约的 references 按两层加载，均以 `skill-contract-registry.json` 为 canonical：小而无条件的 core 集合（每 skill 上限 6 个文件，由 `dev contract-validate` 强制），加上带明确触发条件的按需 references（列在各 SKILL 的 `Load on demand` 小节）。
+
 ## 安装
 
 ```bash

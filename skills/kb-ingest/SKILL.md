@@ -29,10 +29,7 @@ Good ingest work makes the source library navigable and trustworthy. Every sourc
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
-- `../obsidian-notes-karpathy/references/activity-log-template.md`
-- `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md`
 - `../obsidian-notes-karpathy/references/source-manifest-contract.md`
-- `../obsidian-notes-karpathy/references/profile-contract.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and write surfaces.
 
@@ -42,6 +39,14 @@ If `onkb` is available, run:
 - `onkb --json ingest sync <vault-root> --write` when the task is writable
 
 If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
+## Load on demand
+
+Load these only when the trigger applies:
+
+- `../obsidian-notes-karpathy/references/activity-log-template.md` — when appending an entry to `wiki/log.md`
+- `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md` — when `raw/**/papers/*.pdf` appears in scans or plans
+- `../obsidian-notes-karpathy/references/profile-contract.md` — when account profiles or `source_profile` metadata is involved
 
 ## Source discovery
 

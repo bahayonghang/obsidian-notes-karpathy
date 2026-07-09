@@ -216,6 +216,8 @@ Compatibility and repo-maintenance scripts:
 - `onkb --json dev eval-trigger [--dry-run] [--skill <name>]`
 - `onkb --json dev eval-runtime [--dry-run] [--skill <name>] [--eval-id <id>] [--reuse-baseline-from <workspace>]`
 
+Skill contracts load references in two layers, both declared canonically in `skill-contract-registry.json`: a small unconditional core set (capped at 6 files per skill, enforced by `dev contract-validate`) plus on-demand references that each carry an explicit trigger condition in the SKILL's `Load on demand` section.
+
 ## Install
 
 ```bash

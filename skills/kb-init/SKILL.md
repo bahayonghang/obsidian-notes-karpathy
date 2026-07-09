@@ -27,27 +27,12 @@ If the user arrives with the simpler `raw/wiki/output` language from `Chinese-LL
 Read these shared references first:
 
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
-- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
-- `../obsidian-notes-karpathy/references/schema-template.md`
-- `../obsidian-notes-karpathy/references/summary-template.md`
-- `../obsidian-notes-karpathy/references/review-template.md`
-- `../obsidian-notes-karpathy/references/briefing-template.md`
-- `../obsidian-notes-karpathy/references/activity-log-template.md`
+- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md`
 - `../obsidian-notes-karpathy/references/index-home-template.md`
-- `../obsidian-notes-karpathy/references/questions-template.md`
-- `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
-- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
-- `../obsidian-notes-karpathy/references/taxonomy-and-hubs.md`
-- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
-- `../obsidian-notes-karpathy/references/graph-contract.md`
 - `../obsidian-notes-karpathy/references/source-manifest-contract.md`
-- `../obsidian-notes-karpathy/references/topic-template.md`
-- `../obsidian-notes-karpathy/references/profile-contract.md`
-- `../obsidian-notes-karpathy/references/automation-hooks.md`
-- `../obsidian-notes-karpathy/references/procedure-template.md`
-- `../obsidian-notes-karpathy/references/episode-template.md`
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
 
 Treat `skill-contract-registry.json` as the canonical source for role, baseline command, required references, and expected write surfaces.
 
@@ -59,6 +44,26 @@ If `onkb` is available, use these commands first:
 - `onkb --json review governance <vault-root> --write` when optional governance scaffolding should be materialized
 
 If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
+## Load on demand
+
+Load these only when the trigger applies:
+
+- `../obsidian-notes-karpathy/references/schema-template.md` — when vault-wide frontmatter fields beyond this skill's core schema need checking
+- `../obsidian-notes-karpathy/references/summary-template.md` — when creating or repairing draft source summaries
+- `../obsidian-notes-karpathy/references/review-template.md` — when repairing `outputs/reviews/**` records
+- `../obsidian-notes-karpathy/references/briefing-template.md` — when rebuilding or repairing `wiki/briefings/**`
+- `../obsidian-notes-karpathy/references/activity-log-template.md` — when appending an entry to `wiki/log.md`
+- `../obsidian-notes-karpathy/references/questions-template.md` — when scaffolding or repairing `wiki/live/indices/QUESTIONS.md`
+- `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md` — when alias overlap, duplicate candidates, or provenance drift surfaces
+- `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md` — when writeback candidates, `writeback_status`, or archive backlog work is involved
+- `../obsidian-notes-karpathy/references/taxonomy-and-hubs.md` — when repairing the topics layer or curated hubs
+- `../obsidian-notes-karpathy/references/graph-contract.md` — when graph exports, `related` edges, or relationship candidates are involved
+- `../obsidian-notes-karpathy/references/topic-template.md` — when shaping or promoting browse-layer topic pages
+- `../obsidian-notes-karpathy/references/profile-contract.md` — when account profiles or `source_profile` metadata is involved
+- `../obsidian-notes-karpathy/references/automation-hooks.md` — when wiring or invoking `onkb review automation` modes
+- `../obsidian-notes-karpathy/references/procedure-template.md` — when the durable delta is procedural (workflow or playbook)
+- `../obsidian-notes-karpathy/references/episode-template.md` — when `outputs/episodes/**` work is involved
 
 ## Profile choice
 

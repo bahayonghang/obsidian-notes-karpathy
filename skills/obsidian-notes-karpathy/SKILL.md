@@ -33,19 +33,9 @@ The creator-ready extension is that compile should behave like a knowledge compi
 Read these shared references first:
 
 - `./scripts/skill-contract-registry.json`
-- `./references/chinese-llm-wiki-compat.md`
-- `./references/archive-model.md`
 - `./references/file-model.md`
 - `./references/lifecycle-matrix.md`
-- `./references/search-upgrades.md`
-- `./references/activity-log-template.md`
-- `./references/provenance-and-alias-policy.md`
-- `./references/questions-and-reflection-policy.md`
-- `./references/memory-lifecycle.md`
-- `./references/graph-contract.md`
-- `./references/source-manifest-contract.md`
-- `./references/profile-contract.md`
-- `./references/automation-hooks.md`
+- `./references/chinese-llm-wiki-compat.md`
 
 Treat `skill-contract-registry.json` as the canonical list of package roles, required shared references, baseline commands, and output surfaces.
 
@@ -61,6 +51,21 @@ If `onkb` is available, run `onkb --json status <vault-root>` first and treat it
 If `onkb` is missing, follow the install fallback in `./references/lifecycle-matrix.md`, then rerun the same command.
 
 If the user mainly wants a concise "where am I and what next?" summary, prefer `onkb status <vault-root>`.
+
+## Load on demand
+
+Load these only when the trigger applies:
+
+- `./references/archive-model.md` — when archive reuse, truth-status, or output-surface posture questions arise
+- `./references/search-upgrades.md` — when retrieval quality tuning or scaling beyond the default ranking is on the table
+- `./references/activity-log-template.md` — when appending an entry to `wiki/log.md`
+- `./references/provenance-and-alias-policy.md` — when alias overlap, duplicate candidates, or provenance drift surfaces
+- `./references/questions-and-reflection-policy.md` — when standing questions, reflection notes, or `QUESTIONS.md` governance is involved
+- `./references/memory-lifecycle.md` — when `MEMORY.md` or episodic memory boundaries are involved
+- `./references/graph-contract.md` — when graph exports, `related` edges, or relationship candidates are involved
+- `./references/source-manifest-contract.md` — when `raw/_manifest.yaml` fields or manifest anomalies are involved
+- `./references/profile-contract.md` — when account profiles or `source_profile` metadata is involved
+- `./references/automation-hooks.md` — when wiring or invoking `onkb review automation` modes
 
 ## Lifecycle signals
 

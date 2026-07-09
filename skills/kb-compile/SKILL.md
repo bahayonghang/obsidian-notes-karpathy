@@ -34,26 +34,31 @@ Read these files first:
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
 - `../obsidian-notes-karpathy/references/file-model.md`
 - `../obsidian-notes-karpathy/references/compile-method.md`
-- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
-- `../obsidian-notes-karpathy/references/schema-template.md`
-- `../obsidian-notes-karpathy/references/summary-template.md`
-- `../obsidian-notes-karpathy/references/concept-template.md`
-- `../obsidian-notes-karpathy/references/entity-template.md`
-- `../obsidian-notes-karpathy/references/activity-log-template.md`
-- `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md`
-- `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md`
-- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
-- `../obsidian-notes-karpathy/references/graph-contract.md`
-- `../obsidian-notes-karpathy/references/source-manifest-contract.md`
-- `../obsidian-notes-karpathy/references/topic-template.md`
-- `../obsidian-notes-karpathy/references/procedure-template.md`
 - `../obsidian-notes-karpathy/references/draft-schema.md`
+- `../obsidian-notes-karpathy/references/summary-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and allowed write surfaces.
 
 If `onkb` is available, run `onkb --json compile scan <vault-root>` first.
 
 If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
+## Load on demand
+
+Load these only when the trigger applies:
+
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md` — when `onkb` is missing (install fallback) or a stage handoff is unclear
+- `../obsidian-notes-karpathy/references/schema-template.md` — when vault-wide frontmatter fields beyond this skill's core schema need checking
+- `../obsidian-notes-karpathy/references/concept-template.md` — when shaping concept drafts
+- `../obsidian-notes-karpathy/references/entity-template.md` — when shaping entity drafts
+- `../obsidian-notes-karpathy/references/activity-log-template.md` — when appending an entry to `wiki/log.md`
+- `../obsidian-notes-karpathy/references/provenance-and-alias-policy.md` — when alias overlap, duplicate candidates, or provenance drift surfaces
+- `../obsidian-notes-karpathy/references/paper-ingestion-lifecycle.md` — when `raw/**/papers/*.pdf` appears in scans or plans
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md` — when `MEMORY.md` or episodic memory boundaries are involved
+- `../obsidian-notes-karpathy/references/graph-contract.md` — when graph exports, `related` edges, or relationship candidates are involved
+- `../obsidian-notes-karpathy/references/source-manifest-contract.md` — when `raw/_manifest.yaml` fields or manifest anomalies are involved
+- `../obsidian-notes-karpathy/references/topic-template.md` — when shaping or promoting browse-layer topic pages
+- `../obsidian-notes-karpathy/references/procedure-template.md` — when the durable delta is procedural (workflow or playbook)
 
 ## Non-negotiable rules
 

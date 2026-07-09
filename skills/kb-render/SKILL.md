@@ -22,19 +22,24 @@ Karpathy's LLM Wiki naturally produces slides, charts, and reports. `kb-render` 
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
-- `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
-- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
-- `../obsidian-notes-karpathy/references/content-output-template.md`
 - `../obsidian-notes-karpathy/references/render-template.md`
 - `../obsidian-notes-karpathy/references/obsidian-safe-markdown.md`
-- `../obsidian-notes-karpathy/references/profile-contract.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and expected write surfaces.
 
 If `onkb` is available, run `onkb --json render <vault-root> --mode <mode> --source <path>` first to get the deterministic baseline before manual shaping.
 
 If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy/references/lifecycle-matrix.md`, then rerun the same command.
+
+## Load on demand
+
+Load these only when the trigger applies:
+
+- `../obsidian-notes-karpathy/references/archive-model.md` — when archive reuse, truth-status, or output-surface posture questions arise
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md` — when `onkb` is missing (install fallback) or a stage handoff is unclear
+- `../obsidian-notes-karpathy/references/content-output-template.md` — when producing publish-mode artifacts under `outputs/content/`
+- `../obsidian-notes-karpathy/references/profile-contract.md` — when account profiles or `source_profile` metadata is involved
 
 ## Non-negotiable rules
 

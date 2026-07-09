@@ -27,23 +27,10 @@ When a user speaks in the simpler `raw/wiki/output` language from `Chinese-LLM-W
 - local `AGENTS.md`
 - local `CLAUDE.md` if present
 - `../obsidian-notes-karpathy/scripts/skill-contract-registry.json`
-- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md`
-- `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/file-model.md`
-- `../obsidian-notes-karpathy/references/lifecycle-matrix.md`
-- `../obsidian-notes-karpathy/references/briefing-template.md`
+- `../obsidian-notes-karpathy/references/archive-model.md`
 - `../obsidian-notes-karpathy/references/qa-template.md`
-- `../obsidian-notes-karpathy/references/content-output-template.md`
-- `../obsidian-notes-karpathy/references/activity-log-template.md`
-- `../obsidian-notes-karpathy/references/search-upgrades.md`
-- `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md`
 - `../obsidian-notes-karpathy/references/query-writeback-lifecycle.md`
-- `../obsidian-notes-karpathy/references/memory-lifecycle.md`
-- `../obsidian-notes-karpathy/references/graph-contract.md`
-- `../obsidian-notes-karpathy/references/render-template.md`
-- `../obsidian-notes-karpathy/references/profile-contract.md`
-- `../obsidian-notes-karpathy/references/episode-template.md`
-- `../obsidian-notes-karpathy/references/web-export-template.md`
 
 Treat `skill-contract-registry.json` as the canonical source for required references, baseline command, and expected write surfaces.
 
@@ -63,6 +50,24 @@ Then start with:
 - prior `outputs/qa/`
 
 The navigation indices (`INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `TOPICS.md`, `RECENT.md`) and the managed `onkb:indices` block in `wiki/index.md` are rebuilt deterministically by `onkb review indices`, so treat them as trustworthy entry points. If they look stale relative to `wiki/live/**`, run `onkb --json review indices <vault-root>` as a dry drift check and route the repair through `kb-review` maintenance mode instead of hand-editing them.
+
+## Load on demand
+
+Load these only when the trigger applies:
+
+- `../obsidian-notes-karpathy/references/chinese-llm-wiki-compat.md` — when the request leans on Chinese-LLM-Wiki vocabulary beyond the mappings inlined in this SKILL
+- `../obsidian-notes-karpathy/references/lifecycle-matrix.md` — when `onkb` is missing (install fallback) or a stage handoff is unclear
+- `../obsidian-notes-karpathy/references/briefing-template.md` — when rebuilding or repairing `wiki/briefings/**`
+- `../obsidian-notes-karpathy/references/content-output-template.md` — when producing publish-mode artifacts under `outputs/content/`
+- `../obsidian-notes-karpathy/references/activity-log-template.md` — when appending an entry to `wiki/log.md`
+- `../obsidian-notes-karpathy/references/questions-and-reflection-policy.md` — when standing questions, reflection notes, or `QUESTIONS.md` governance is involved
+- `../obsidian-notes-karpathy/references/search-upgrades.md` — when retrieval quality tuning or scaling beyond the default ranking is on the table
+- `../obsidian-notes-karpathy/references/memory-lifecycle.md` — when `MEMORY.md` or episodic memory boundaries are involved
+- `../obsidian-notes-karpathy/references/graph-contract.md` — when graph exports, `related` edges, or relationship candidates are involved
+- `../obsidian-notes-karpathy/references/render-template.md` — when handing off to `kb-render`
+- `../obsidian-notes-karpathy/references/profile-contract.md` — when account profiles or `source_profile` metadata is involved
+- `../obsidian-notes-karpathy/references/episode-template.md` — when `outputs/episodes/**` work is involved
+- `../obsidian-notes-karpathy/references/web-export-template.md` — when running web export mode
 
 ## Hard boundary
 
