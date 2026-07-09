@@ -1,0 +1,9 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Pre-development checklist entry point"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Contract synchronization surfaces and required gates for contract wording changes"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Validator error collection pattern (validate_bundle model)"}
+{"file": "src/dev/reference_blocks.rs", "reason": "Existing bullet build/extract machinery to extend with on-demand section support"}
+{"file": "src/dev/contract.rs", "reason": "Validation loop where core-cap and on-demand checks land (lines 181-230)"}
+{"file": "src/dev/registry.rs", "reason": "SkillEntry schema to extend with reads_on_demand"}
+{"file": "skills/obsidian-notes-karpathy/scripts/skill-contract-registry.json", "reason": "Canonical reads data to re-layer per design.md tables"}
+{"file": ".trellis/tasks/07-08-skill-context-slimming/design.md", "reason": "Per-skill core/on-demand split tables with byte metrics - the implementation source of truth"}
+{"file": ".trellis/tasks/07-08-llm-wiki-gap-optimization/research/llm-wiki-gap-analysis.md", "reason": "Gap-analysis evidence: why contract context weight is P3"}

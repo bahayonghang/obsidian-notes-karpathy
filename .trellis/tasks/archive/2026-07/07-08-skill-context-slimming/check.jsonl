@@ -1,0 +1,4 @@
+{"file": "tests/contract_routing.rs", "reason": "Existing registry-vs-SKILL mirror assertions that must stay green and gain layering cases"}
+{"file": "tests/docs_contract.rs", "reason": "Reference existence and template wording assertions affected by contract text changes"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Required gates: just ci when contract wording and docs change together"}
+{"file": "AGENTS.md", "reason": "Commit conventions and repository term exactness for SKILL wording"}
