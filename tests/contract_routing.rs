@@ -1,7 +1,12 @@
 mod common;
 
 use common::{entry_skill_root, fixtures_root, read_text, run_json};
-use onkb::dev::{load_registry, reference_blocks::build_shared_reference_bullets};
+use onkb::dev::{
+    load_registry,
+    reference_blocks::{
+        build_on_demand_bullets, build_shared_reference_bullets, extract_on_demand_bullets,
+    },
+};
 use onkb::guidance::summarize_local_guidance;
 
 #[test]
@@ -104,4 +109,56 @@ fn registry_matches_skill_docs_and_shared_reference_blocks() {
 
     let router_skill = read_text(&entry_skill_root().join("SKILL.md"));
     assert!(router_skill.contains("creator knowledge compiler"));
+}
+
+#[test]
+fn registry_layers_reads_into_core_and_on_demand() {
+    let repo_root = common::repo_root();
+    let registry = load_registry(&repo_root).expect("registry");
+    let references_root = entry_skill_root().join("references");
+
+    for (skill_name, entry) in &registry.skills {
+        assert!(
+            entry.reads.len() <= 6,
+            "{skill_name}: unconditional reads cap is 6, got {}",
+            entry.reads.len()
+        );
+        let core: std::collections::BTreeSet<_> = entry.reads.iter().collect();
+        for on_demand in &entry.reads_on_demand {
+            assert!(
+                !core.contains(&on_demand.file),
+                "{skill_name}: {} is in both reads and reads_on_demand",
+                on_demand.file
+            );
+            assert!(
+                references_root.join(&on_demand.file).exists(),
+                "{skill_name}: on-demand read missing on disk: {}",
+                on_demand.file
+            );
+            assert!(
+                !on_demand.when.trim().is_empty(),
+                "{skill_name}: {} has an empty trigger condition",
+                on_demand.file
+            );
+        }
+    }
+
+    // SKILL.md 的 Load on demand 小节与 registry 期望逐条一致（round-trip）。
+    for (skill_name, skill_path) in onkb::dev::skill_paths(&repo_root).expect("skill paths") {
+        let skill_text = read_text(&skill_path);
+        let actual = extract_on_demand_bullets(&skill_text);
+        let expected = build_on_demand_bullets(&skill_name, &registry).expect("bullets");
+        for bullet in &expected {
+            assert!(
+                actual.contains(bullet),
+                "{skill_name}: missing on-demand bullet {bullet}"
+            );
+        }
+        if !expected.is_empty() {
+            assert!(
+                skill_text.contains("## Load on demand"),
+                "{skill_name}: missing Load on demand section"
+            );
+        }
+    }
 }
