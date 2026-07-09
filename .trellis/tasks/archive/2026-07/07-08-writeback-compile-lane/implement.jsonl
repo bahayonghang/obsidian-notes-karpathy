@@ -1,0 +1,16 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Pre-development checklist entry point for backend (Rust CLI) work"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Module placement rules for new src/kb/compile/writeback.rs"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Vault file read/write conventions for scaffold writes and frontmatter advance"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Error conventions for the new compile writeback command"}
+{"file": ".trellis/spec/backend/logging-guidelines.md", "reason": "Audit event shape for compile_writeback"}
+{"file": "src/kb/compile/legacy_impl.rs", "reason": "Pattern to mirror: build_draft_packages scaffold shape (line 675), summary/package frontmatter lines"}
+{"file": "src/kb/navigation.rs", "reason": "build/write two-function paradigm with audit event, formatter-stable generated markdown"}
+{"file": "src/kb/health/engine.rs", "reason": "writeback_backlog_issues skip-set (line 244) to align with 6-state lifecycle"}
+{"file": "src/kb/review.rs", "reason": "REVIEWABLE_DRAFT_ROOTS (line 10) proving drafts/summaries/** scaffolds enter review queue"}
+{"file": "src/cli/args.rs", "reason": "CompileCommand enum (line 131) to extend with Writeback variant"}
+{"file": "src/cli/dispatch.rs", "reason": "ReviewCommand::Indices arm (line 147) wiring shape to copy for write flag handling"}
+{"file": "skills/obsidian-notes-karpathy/references/query-writeback-lifecycle.md", "reason": "6-state lifecycle semantics the lane must honor; pending-only pickup rule"}
+{"file": "skills/obsidian-notes-karpathy/references/draft-schema.md", "reason": "Required draft fields the scaffold must satisfy; checklist wording to amend"}
+{"file": "skills/obsidian-notes-karpathy/references/qa-template.md", "reason": "Archived artifact frontmatter shape: source_live_pages, writeback_candidates, followup_route"}
+{"file": "evals/skills/obsidian-notes-karpathy/fixtures/writeback-backlog/outputs/qa/2026-04-08-writeback-gap.md", "reason": "Canonical pending+draft-route fixture used as the test base"}
+{"file": ".trellis/tasks/07-08-llm-wiki-gap-optimization/research/llm-wiki-gap-analysis.md", "reason": "Gap-analysis evidence: why the writeback loop is P2 and the self-reference poisoning concern"}

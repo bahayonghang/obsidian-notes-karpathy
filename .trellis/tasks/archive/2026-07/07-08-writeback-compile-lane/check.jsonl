@@ -1,0 +1,5 @@
+{"file": "tests/query_health.rs", "reason": "Existing writeback-backlog fixture assertions (lines 132-166) that must not regress"}
+{"file": "tests/review_indices.rs", "reason": "tree_snapshot byte-level idempotence pattern to reuse for rerun assertions"}
+{"file": "tests/cli_smoke.rs", "reason": "CLI smoke test conventions for new subcommand"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Quality gates: test selection, contract/doc/fixture update requirements"}
+{"file": "AGENTS.md", "reason": "Commit conventions, just test / just ci requirements, machine-readable JSON assertion rule"}
