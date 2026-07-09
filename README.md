@@ -126,15 +126,16 @@ This keeps provenance visible and prevents fast ingest from silently hardening i
 
 This project implements [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) with one key extension: an explicit review gate.
 
-| Karpathy's pattern        | This project                                     | Why the extension                                                                                  |
-| ------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Raw sources (immutable)   | `raw/` + `raw/_manifest.yaml`                    | Added a canonical manifest for tracked intake                                                      |
-| The wiki (LLM-maintained) | `wiki/drafts/` → `wiki/live/`                    | Split into draft and approved layers with a promotion gate                                         |
-| The schema (CLAUDE.md)    | `AGENTS.md` + `CLAUDE.md` + shared `references/` | Expanded into a full contract registry                                                             |
-| Ingest                    | `kb-ingest` + `kb-compile`                       | Separated source registration from draft compilation                                               |
-| Query / publish           | `kb-query` + `kb-render`                         | Kept creator-facing prose in the read-side lane and deterministic derivatives in the render lane   |
-| Lint                      | `kb-review` maintenance mode                     | Made the health check a first-class governance lane                                                |
-| Index upkeep              | `onkb review indices`                            | Retrieval-entry indices are rebuilt deterministically instead of relying on cross-session LLM sync |
+| Karpathy's pattern        | This project                                     | Why the extension                                                                                                                       |
+| ------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Raw sources (immutable)   | `raw/` + `raw/_manifest.yaml`                    | Added a canonical manifest for tracked intake                                                                                           |
+| The wiki (LLM-maintained) | `wiki/drafts/` → `wiki/live/`                    | Split into draft and approved layers with a promotion gate                                                                              |
+| The schema (CLAUDE.md)    | `AGENTS.md` + `CLAUDE.md` + shared `references/` | Expanded into a full contract registry                                                                                                  |
+| Ingest                    | `kb-ingest` + `kb-compile`                       | Separated source registration from draft compilation                                                                                    |
+| Query / publish           | `kb-query` + `kb-render`                         | Kept creator-facing prose in the read-side lane and deterministic derivatives in the render lane                                        |
+| Lint                      | `kb-review` maintenance mode                     | Made the health check a first-class governance lane                                                                                     |
+| Index upkeep              | `onkb review indices`                            | Retrieval-entry indices are rebuilt deterministically instead of relying on cross-session LLM sync                                      |
+| Answers filed back        | `onkb compile writeback`                         | "Good answers can be filed back into the wiki" gets a deterministic `pending -> drafted` lane that still routes through the review gate |
 
 The core metaphor is preserved: "Obsidian is the IDE; the LLM is the programmer; the wiki is the codebase." The user curates sources and asks questions. The LLM handles all the bookkeeping that makes knowledge compound over time.
 
@@ -165,7 +166,7 @@ The archive posture across those surfaces is:
 
 Optional governance indices such as `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when the user wants richer maintenance surfaces.
 
-Substantive answers and publish artifacts may also carry structured writeback candidates so later compile/review passes can decide whether they should feed back into the wiki.
+Substantive answers and publish artifacts may also carry structured writeback candidates so later compile/review passes can decide whether they should feed back into the wiki. Candidates left at `writeback_status: pending` with `followup_route: draft` are picked up by `onkb --json compile writeback <vault-root>`, which scaffolds a reviewable draft grounded in the recorded approved pages and advances the status to `drafted`.
 
 For creator-style workflows, a practical mapping is:
 
@@ -201,6 +202,7 @@ Rust-first CLI surface:
 - `onkb --json migrate <vault-root> ...`
 - `onkb --json ingest scan|sync <vault-root>`
 - `onkb --json compile scan|build <vault-root>`
+- `onkb --json compile writeback <vault-root> [--write]`
 - `onkb --json review queue|lint|governance|indices|graph <vault-root>`
 - `onkb --json query scope|rank <vault-root>`
 - `onkb --json render <vault-root> --mode <mode> --source <path>`

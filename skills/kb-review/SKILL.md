@@ -161,4 +161,6 @@ Archive hygiene in maintenance mode should stay explicit:
 - archive backlog with `writeback_status: pending`
 - scope leaks or sensitivity metadata drift in archived outputs
 
+For backlog stuck at `pending` with `followup_route: draft`, the standard disposal action is the deterministic writeback lane: run `onkb --json compile writeback <vault-root>` as a dry-run report, then `--write` to scaffold drafts and advance those artifacts to `drafted`. The scaffolds re-enter this skill through the normal gate. Backlog with `followup_route: review` stays here as maintenance judgment work.
+
 This is maintenance of the artifact archive, not promotion of archive into truth.

@@ -58,7 +58,8 @@ If `onkb` is missing, follow the install fallback in `../obsidian-notes-karpathy
 ## Non-negotiable rules
 
 - do not rewrite `raw/`
-- write only to `wiki/drafts/` and draft indices
+- write only to `wiki/drafts/` and draft indices, plus the single writeback exception below
+- the writeback lane may advance `writeback_status` (and add the `writeback_draft` pointer) in `outputs/qa/**` and `outputs/content/**` frontmatter; it must not mutate any other archive content
 - never promote directly into `wiki/live/`
 - keep human captures and agent captures distinguishable in provenance
 - keep PDF paper handling strict: `raw/**/papers/*.pdf` still routes through `paper-workbench`
@@ -75,6 +76,20 @@ Accept:
 - data assets under `raw/**/data/*`
 - legacy-layout markdown captures under older paths only during migration
 - paper PDFs under any `papers/` subtree inside raw
+- archived writeback candidates under `outputs/qa/**` and `outputs/content/**`, only when `writeback_status: pending` and `followup_route: draft`, through the writeback lane below
+
+## Writeback lane
+
+`pending -> drafted` is owned by the deterministic writeback lane:
+
+```
+onkb --json compile writeback <vault-root> [--write]
+```
+
+- dry-run first: the report classifies every archived artifact as `eligible` or `skipped` with a reason; `triaged`, `rejected`, and `followup_route: review` artifacts are never picked up
+- `--write` scaffolds one draft per eligible artifact under `wiki/drafts/summaries/writeback/`, writes its review package under `wiki/drafts/indices/packages/writeback/`, advances the artifact to `writeback_status: "drafted"` with a `writeback_draft` pointer, and appends a `compile_writeback` audit event
+- the archived artifact is the trigger, not a truth source: the scaffold's `compiled_from` / `capture_sources` ground in the artifact's `source_live_pages` (approved pages or raw evidence), and the artifact itself is only referenced through `writeback_source`
+- after scaffolding, refine the draft with the normal `浓缩 -> 质疑 -> 对标` method — distill the durable delta, split concept/entity/topic drafts when warranted — and hand the package to `kb-review`; the scaffold never bypasses the gate
 
 ## Compile posture
 
@@ -105,6 +120,7 @@ Before shaping drafts:
 - `wiki/drafts/procedures/**` when the durable delta is a workflow rather than a semantic page
 - `wiki/drafts/indices/*`
 - `wiki/drafts/indices/packages/**`
+- advanced `writeback_status` markers (plus `writeback_draft` pointers) in `outputs/qa/**` and `outputs/content/**` when the writeback lane runs
 - batch `ingest` entry in `wiki/log.md`
 
 The compile pass exists to hand clean draft packages to `kb-review`, which then writes `outputs/reviews/**`, promotes approved pages into `wiki/live/**`, and rebuilds `wiki/briefings/**`.

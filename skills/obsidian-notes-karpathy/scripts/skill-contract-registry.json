@@ -223,8 +223,10 @@
         "wiki/drafts/entities/",
         "wiki/drafts/procedures/",
         "wiki/drafts/indices/",
+        "outputs/audit/operations.jsonl",
         "wiki/log.md"
       ],
+      "writes_status_advance_only": ["outputs/qa/", "outputs/content/"],
       "outputs": ["wiki/drafts/", "wiki/log.md"]
     },
     "kb-review": {

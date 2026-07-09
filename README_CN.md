@@ -135,6 +135,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 | Query / publish | `kb-query` + `kb-render` | 将 grounded 对外内容与确定性派生物分离 |
 | Lint | `kb-review` 维护模式 | 将健康检查提升为一等治理通道 |
 | Index upkeep | `onkb review indices` | 检索入口索引改为确定性重建，不再依赖 LLM 跨会话手工同步 |
+| Answers filed back | `onkb compile writeback` | "好回答可以回流进 wiki" 有了确定性的 `pending -> drafted` 车道，且仍走评审门 |
 
 核心隐喻保持不变："Obsidian 是 IDE；LLM 是程序员；wiki 是代码库。" 用户负责策展来源和提问。LLM 负责所有让知识持续复利的记账工作。
 
@@ -165,7 +166,7 @@ outputs/        -> reviews、Q&A、health 报告、审计轨和对外交付物
 
 可选治理索引如 `wiki/live/indices/QUESTIONS.md`、`GAPS.md`、`ALIASES.md` 可按需创建，用于跟踪开放问题、知识空白和别名映射。
 
-高价值回答和对外内容也可以携带结构化 writeback candidates，供后续 compile / review 决定是否回流进 wiki。
+高价值回答和对外内容也可以携带结构化 writeback candidates，供后续 compile / review 决定是否回流进 wiki。停留在 `writeback_status: pending` 且 `followup_route: draft` 的候选由 `onkb --json compile writeback <vault-root>` 拾取：以记录的批准页为接地生成可评审草稿，并把状态推进到 `drafted`。
 
 面向创作者的常见工作面可这样映射：
 
@@ -201,6 +202,7 @@ Rust-first CLI：
 - `onkb --json migrate <vault-root> ...`
 - `onkb --json ingest scan|sync <vault-root>`
 - `onkb --json compile scan|build <vault-root>`
+- `onkb --json compile writeback <vault-root> [--write]`
 - `onkb --json review queue|lint|governance|indices|graph <vault-root>`
 - `onkb --json query scope|rank <vault-root>`
 - `onkb --json render <vault-root> --mode <mode> --source <path>`

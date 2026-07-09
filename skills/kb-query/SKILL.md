@@ -124,6 +124,8 @@ Use:
 - `draft` when durable knowledge should re-enter `draft -> review -> live`
 - `review` when the next step is a governance or approval pass on already-prepared material
 
+Candidates left at `writeback_status: pending` with `followup_route: draft` are picked up later by the deterministic writeback lane (`onkb --json compile writeback <vault-root>` in `kb-compile`), which scaffolds a reviewable draft grounded in the recorded `source_live_pages` and advances the status to `drafted`. Keep `source_live_pages` accurate: the lane grounds draft provenance in those approved pages, never in the archived artifact itself.
+
 Prefer the smallest durable delta:
 
 - extend an existing live page when the identity is already correct

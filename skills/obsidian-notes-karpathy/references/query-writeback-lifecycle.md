@@ -45,9 +45,11 @@ Substantive Q&A or publish artifacts should record these fields when relevant:
 ## How to choose `followup_route`
 
 ### `none`
+
 Use when the output is grounded, complete enough for archival reuse, and does not create durable follow-up work.
 
 ### `draft`
+
 Use when the output suggests:
 
 - a new concept/entity/summary note
@@ -57,9 +59,11 @@ Use when the output suggests:
 - a creator-facing brief or publish synthesis that discovered durable knowledge worth formalizing beyond the artifact itself
 
 ### `review`
+
 Use when the next step is an immediate human decision on an already-prepared candidate, disputed interpretation, or promotion boundary question.
 
 ### `review`
+
 Use `review` when the next step is an immediate human decision or a governance pass on already-prepared maintenance work, including:
 
 - writeback backlog
@@ -82,6 +86,8 @@ Use these statuses as a lightweight lifecycle for durable follow-up:
 - `rejected` — the follow-up was examined and deliberately not carried forward
 
 Prefer advancing status explicitly instead of leaving old artifacts forever at `pending`.
+
+The `pending -> drafted` hop has a deterministic owner: `onkb --json compile writeback <vault-root> [--write]` scaffolds a reviewable draft for every `pending` artifact whose `followup_route` is `draft`, grounds the scaffold in the recorded `source_live_pages`, links back through `writeback_source`, and advances this status. `triaged` and `rejected` artifacts are never picked up automatically.
 
 ## Writeback candidate posture
 
@@ -147,7 +153,7 @@ The full 6-status lifecycle (`none → pending → triaged → drafted → revie
 
 1. **Query** produces an answer grounded in live pages
 2. **Writeback signal** — the output records `followup_route` and `writeback_candidates`
-3. **Draft** — the candidate re-enters through `wiki/drafts/` (or a relationship / hub upgrade)
+3. **Draft** — the candidate re-enters through `wiki/drafts/` (or a relationship / hub upgrade); `onkb --json compile writeback <vault-root> --write` is the deterministic way to scaffold that draft and advance the status
 4. **Approve** — the owner reviews and promotes to `wiki/live/`
 
 In this mode, `pending → drafted` is the common happy path. Use `triaged` and `rejected` only when the backlog grows large enough to need triage.

@@ -56,7 +56,7 @@ Canonical workflow:
 - The required support layer is `raw/`, `wiki/drafts/`, `wiki/live/`, `wiki/briefings/`, `wiki/index.md`, `wiki/log.md`, `outputs/reviews/`, `AGENTS.md`, and `CLAUDE.md`.
 - `outputs/qa/`, `outputs/content/`, and `outputs/health/` are downstream output surfaces created when later stages need them.
 - `MEMORY.md` is recommended collaboration scaffolding rather than a blocking support-layer requirement.
-- `outputs/qa/` and `outputs/content/` may carry structured writeback candidates that must still re-enter the system through draft -> review -> live.
+- `outputs/qa/` and `outputs/content/` may carry structured writeback candidates that must still re-enter the system through draft -> review -> live; `onkb compile writeback` is the deterministic `pending -> drafted` lane and grounds scaffolds in approved pages, never in the archived artifact itself.
 - bootstrap root captures under `raw/*.md` are valid compile inputs, but missing support directories still make the vault a repair case.
 - optional governance indices like `wiki/live/indices/QUESTIONS.md`, `GAPS.md`, and `ALIASES.md` may be created when richer maintenance surfaces are useful.
 - retrieval navigation indices (`wiki/live/indices/INDEX.md`, `CONCEPTS.md`, `SOURCES.md`, `TOPICS.md`, `RECENT.md`) and the managed `onkb:indices` block in `wiki/index.md` are rebuilt deterministically by `onkb review indices`; `EDITORIAL-PRIORITIES.md` stays editorially owned.
