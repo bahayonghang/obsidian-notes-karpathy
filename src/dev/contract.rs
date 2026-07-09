@@ -3,9 +3,14 @@ use std::path::Path;
 use anyhow::Result;
 use serde_json::{Value, json};
 
-use super::reference_blocks::build_shared_reference_bullets;
+use super::reference_blocks::{
+    build_on_demand_bullets, build_shared_reference_bullets, extract_on_demand_bullets,
+};
 use super::skill_audit::build_payload as build_audit_payload;
 use super::{list_repo_files, load_registry, read_utf8, skill_paths};
+
+/// 无条件必读（registry `reads`）的硬上限；情境性 references 走 `reads_on_demand`。
+const UNCONDITIONAL_READS_CAP: usize = 6;
 
 const KB_INIT_REQUIRED_ASSETS: [&str; 13] = [
     "AGENTS.md",
@@ -243,6 +248,56 @@ pub fn validate_bundle(repo_root: &Path) -> Result<Value> {
                 errors.push(format!(
                     "{skill_name} declares writes_status_advance_only but SKILL.md lacks 'writeback_status' policy text."
                 ));
+            }
+        }
+        if expected.reads.len() > UNCONDITIONAL_READS_CAP {
+            errors.push(format!(
+                "{skill_name} has {} unconditional reads; cap is {UNCONDITIONAL_READS_CAP}. Move situational references to reads_on_demand.",
+                expected.reads.len()
+            ));
+        }
+        let references_root = repo_root
+            .join("skills")
+            .join("obsidian-notes-karpathy")
+            .join("references");
+        for reference in &expected.reads {
+            if !references_root.join(reference).exists() {
+                errors.push(format!("{skill_name} core read is missing: {reference}."));
+            }
+        }
+        if !expected.reads_on_demand.is_empty() {
+            let core = expected
+                .reads
+                .iter()
+                .cloned()
+                .collect::<std::collections::BTreeSet<_>>();
+            for entry in &expected.reads_on_demand {
+                if core.contains(&entry.file) {
+                    errors.push(format!(
+                        "{skill_name} lists {} in both reads and reads_on_demand.",
+                        entry.file
+                    ));
+                }
+                if !references_root.join(&entry.file).exists() {
+                    errors.push(format!(
+                        "{skill_name} on-demand read is missing: {}.",
+                        entry.file
+                    ));
+                }
+                if entry.when.trim().is_empty() {
+                    errors.push(format!(
+                        "{skill_name} on-demand read {} has an empty trigger condition.",
+                        entry.file
+                    ));
+                }
+            }
+            let actual_bullets = extract_on_demand_bullets(&skill_text);
+            for bullet in build_on_demand_bullets(skill_name, &registry)? {
+                if !actual_bullets.contains(&bullet) {
+                    errors.push(format!(
+                        "{skill_name} is missing on-demand bullet: {bullet}"
+                    ));
+                }
             }
         }
     }

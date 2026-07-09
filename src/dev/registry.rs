@@ -40,6 +40,8 @@ pub struct SkillEntry {
     #[serde(default)]
     pub reads: Vec<String>,
     #[serde(default)]
+    pub reads_on_demand: Vec<OnDemandRead>,
+    #[serde(default)]
     pub baseline_command: String,
     #[serde(default)]
     pub writes: Vec<String>,
@@ -51,6 +53,13 @@ pub struct SkillEntry {
     pub writes_status_advance_only: Vec<String>,
     #[serde(default)]
     pub routes: Vec<String>,
+}
+
+/// 按需加载的 reference 条目：`file` 相对 `references/`，`when` 是触发条件。
+#[derive(Clone, Debug, Deserialize)]
+pub struct OnDemandRead {
+    pub file: String,
+    pub when: String,
 }
 
 #[derive(Clone, Debug, Default, Deserialize)]
