@@ -1,0 +1,30 @@
+{
+  "id": "llm-wiki-gap-optimization",
+  "name": "llm-wiki-gap-optimization",
+  "title": "对标 Karpathy LLM Wiki 模式与社区教训的实现优化",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lyh",
+  "assignee": "lyh",
+  "createdAt": "2026-07-08",
+  "completedAt": "2026-07-09",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-08-deterministic-index-rebuild",
+    "07-08-writeback-compile-lane",
+    "07-08-skill-context-slimming"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
