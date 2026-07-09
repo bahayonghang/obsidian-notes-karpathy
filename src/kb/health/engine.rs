@@ -241,7 +241,12 @@ pub fn writeback_backlog_issues(records: &[Arc<crate::common::MarkdownRecord>]) 
             .unwrap_or_default()
             .trim()
             .to_lowercase();
-        if candidates.is_empty() || matches!(status.as_str(), "compiled" | "rejected") {
+        if candidates.is_empty()
+            || matches!(
+                status.as_str(),
+                "compiled" | "drafted" | "reviewed" | "rejected"
+            )
+        {
             continue;
         }
         let reason = if status == "pending" {

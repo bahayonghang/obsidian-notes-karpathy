@@ -138,6 +138,11 @@ pub enum CompileCommand {
         #[arg(long)]
         write: bool,
     },
+    Writeback {
+        vault: PathBuf,
+        #[arg(long)]
+        write: bool,
+    },
 }
 
 #[derive(Subcommand)]

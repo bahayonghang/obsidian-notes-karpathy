@@ -274,6 +274,21 @@ pub struct CompileBuildResult {
     pub written_paths: Vec<String>,
 }
 
+/// `onkb compile writeback` 的返回结构。
+///
+/// `items` 的元素是 per-artifact 状态对象：`status` 取 `eligible | skipped`，
+/// skipped 项携带 `reason`，eligible 项携带 `draft_path` / `package_path` / `grounding`。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompileWriteback {
+    pub action: String,
+    pub vault_root: String,
+    pub write: bool,
+    pub counts: BTreeMap<String, usize>,
+    pub items: Vec<Value>,
+    pub written_paths: Vec<String>,
+    pub advanced_sources: Vec<Value>,
+}
+
 /// `onkb review governance` 的返回结构。
 ///
 /// 各子集合保留 `Vec<Value>`，阶段 5 拆 `governance/` 时再细化（alias/entity/relationship row 都有差异字段）。

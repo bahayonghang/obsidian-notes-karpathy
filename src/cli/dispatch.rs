@@ -4,7 +4,10 @@ use serde_json::json;
 
 use crate::{
     automation::run_automation,
-    compile::{build_draft_packages, scan_compile_delta},
+    compile::{
+        build_draft_packages, build_writeback_scaffolds, scan_compile_delta,
+        write_writeback_scaffolds,
+    },
     dev::{
         contract::validate_bundle,
         current_repo_root, load_registry,
@@ -123,6 +126,16 @@ fn dispatch_compile(command: CompileCommand) -> Result<serde_json::Value> {
     match command {
         CompileCommand::Scan { vault } => scan_compile_delta(&vault),
         CompileCommand::Build { vault, write } => build_draft_packages(&vault, write),
+        CompileCommand::Writeback { vault, write } => {
+            let mut payload = build_writeback_scaffolds(&vault)?;
+            if write {
+                let (written_paths, advanced_sources) = write_writeback_scaffolds(&vault)?;
+                payload["write"] = json!(true);
+                payload["written_paths"] = written_paths;
+                payload["advanced_sources"] = advanced_sources;
+            }
+            Ok(payload)
+        }
     }
 }
 

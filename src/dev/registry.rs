@@ -48,6 +48,8 @@ pub struct SkillEntry {
     #[serde(default)]
     pub writes_mechanical_fix_only: Vec<String>,
     #[serde(default)]
+    pub writes_status_advance_only: Vec<String>,
+    #[serde(default)]
     pub routes: Vec<String>,
 }
 

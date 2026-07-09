@@ -221,6 +221,30 @@ pub fn validate_bundle(repo_root: &Path) -> Result<Value> {
                 ));
             }
         }
+        if !expected.writes_status_advance_only.is_empty() {
+            let writes = expected
+                .writes
+                .iter()
+                .cloned()
+                .collect::<std::collections::BTreeSet<_>>();
+            let overlap = expected
+                .writes_status_advance_only
+                .iter()
+                .filter(|item| writes.contains(*item))
+                .cloned()
+                .collect::<Vec<_>>();
+            if !overlap.is_empty() {
+                errors.push(format!(
+                    "{skill_name} has writes_status_advance_only entries also in writes: {:?}.",
+                    overlap
+                ));
+            }
+            if !skill_text.contains("writeback_status") {
+                errors.push(format!(
+                    "{skill_name} declares writes_status_advance_only but SKILL.md lacks 'writeback_status' policy text."
+                ));
+            }
+        }
     }
 
     let kb_init_assets_root = repo_root.join("skills").join("kb-init").join("assets");
