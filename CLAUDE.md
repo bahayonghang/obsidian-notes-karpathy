@@ -2,6 +2,9 @@
 
 This repository defines a review-gated Obsidian knowledge-base contract.
 
+Before broad grep, read `./code_map.md` for repo navigation and search anchors.
+Build, test, lint, CI, and commit conventions live in `AGENTS.md`, imported at the bottom of this file.
+
 ## Project Overview
 
 This is a Rust CLI plus skills project. The deliverables are:
@@ -76,3 +79,11 @@ onkb skill install
 directories are skipped unless `--overwrite` is passed; the JSON output reports
 all selected targets in `targets[]`. This command copies embedded skills only
 and does not write bootstrap files, rules, or steering files.
+
+## Development Guidelines
+
+Build/test/lint commands, coding style, testing, commit conventions, and the
+Trellis workflow are maintained in `AGENTS.md` and imported here so they load in
+every Claude Code session.
+
+@AGENTS.md
